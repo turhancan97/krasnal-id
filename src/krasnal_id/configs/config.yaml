@@ -1,0 +1,9 @@
+defaults:
+  - data: wikimedia
+  - backbone: dinov2
+  - experiment: baseline
+  - logging: default
+  - paths: default
+  - thresholds: default
+  - seeds: default
+  - _self_

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Downloaded and generated research artifacts
+data/images/
+data/embeddings/
+data/manifest*.json
+results/*
+!results/README.md
+
+# Model and experiment caches
+.cache/
+outputs/
+multirun/
+*.npy
+*.npz
+*.pt
+*.pth

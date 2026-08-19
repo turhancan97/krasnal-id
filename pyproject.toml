@@ -1,0 +1,102 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "krasnal-id"
+version = "0.0.0"
+description = "Fine-grained visual instance retrieval for Wroclaw dwarf statues."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Krasnal-ID contributors" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "httpx==0.28.1",
+    "hydra-core==1.3.5",
+    "numpy==2.5.2",
+    "pillow==12.3.0",
+    "pydantic==2.13.4",
+    "typer==0.27.1",
+]
+
+[project.optional-dependencies]
+ml = [
+    "torch==2.13.0",
+    "transformers==5.15.1",
+]
+analysis = [
+    "matplotlib==3.11.1",
+    "pandas==3.0.5",
+    "scikit-learn==1.9.0",
+    "seaborn==0.13.2",
+    "umap-learn==0.5.12",
+]
+demo = [
+    "gradio==6.24.0",
+]
+
+[project.scripts]
+krasnal-id = "krasnal_id.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy==2.3.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.16.3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/krasnal_id"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/krasnal_id"]
+warn_unreachable = true
+
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+  "--cov=krasnal_id",
+  "--cov-report=term-missing",
+  "--cov-fail-under=85",
+]
+testpaths = ["tests"]
+markers = ["integration: tests that access live external services"]
+
+[tool.coverage.run]
+branch = true
+source = ["krasnal_id"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+]

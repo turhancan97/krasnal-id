@@ -1,0 +1,5 @@
+data_dir: data
+images_dir: data/images
+embeddings_dir: data/embeddings
+manifest_path: data/manifest.json
+results_dir: results

@@ -1,0 +1,3 @@
+kind: confusion
+seed: ${seeds.primary}
+top_pairs: ${thresholds.confusion_top_pairs}

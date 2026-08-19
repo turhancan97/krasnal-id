@@ -60,40 +60,59 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 
 Agent should scaffold the full directory structure with stubs and docstrings before writing any real logic, in build order.
 
-## 9. Suggested repo structure
+## 9. Repository structure
+
 ```
 krasnal-id/
+├── .github/workflows/ci.yml   # Python 3.12 quality gate
 ├── AGENTS.md
-├── CHANGELOG.md               # chronological implementation record and agent handoff context
-├── README.md                  # the story: problem, method, headline result
-├── pyproject.toml             # pinned deps
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE                    # MIT applies to original source code only
+├── README.md
+├── pyproject.toml             # exact direct dependency pins and tool configuration
+├── uv.lock                    # locked transitive dependency graph
 ├── data/
-│   ├── manifest.json          # per-image metadata incl. license/attribution
-│   └── images/                # cached raw images
-├── src/
+│   ├── images/                # ignored cached raw images
+│   ├── embeddings/            # ignored embedding cache
+│   └── manifest.json          # ignored generated manifest
+├── src/krasnal_id/
+│   ├── cli.py                 # unified Typer CLI
+│   ├── config.py              # Hydra composition + Pydantic validation
+│   ├── models.py              # manifest and attribution schema
+│   ├── configs/               # packaged Hydra configuration groups
 │   ├── data_pipeline/
 │   │   ├── wikidata_query.py
 │   │   ├── commons_fetch.py
 │   │   └── build_manifest.py
 │   ├── embeddings/
-│   │   ├── backbone.py        # swappable embedding-extraction interface
+│   │   ├── backbone.py
 │   │   └── cache.py
 │   ├── retrieval/
 │   │   └── knn.py
 │   ├── experiments/
 │   │   ├── baseline_accuracy.py
-│   │   ├── pool_size_ablation.py   # the headline experiment
+│   │   ├── pool_size_ablation.py
 │   │   └── confusion_analysis.py
 │   └── viz/
 │       └── embedding_plot.py
-├── results/                   # saved plots, metrics tables
-└── demo/                      # optional v0.3 Gradio app
+├── results/                   # ignored generated results
+└── tests/                     # schemas, configs, CLI, and interface contracts
 ```
 
 ## 10. Engineering conventions
+
+- Require Python 3.12 or newer. Use `uv` for environment management and commit `uv.lock`.
+- Keep all importable code under the single `src/krasnal_id/` package. Use Hatchling as the build backend.
+- Use Pydantic v2 for manifest and application contracts, packaged Hydra configuration groups for composition, and one Typer CLI (`krasnal-id`) for all pipeline stages.
 - Pinned dependencies, structured (JSON) logging for experiment runs, cached embeddings — don't recompute what's already on disk.
+- Keep PyTorch/Transformers, analysis libraries, and Gradio in separate optional dependency groups; core imports and CI must work without them.
+- Pin backbone configurations to immutable upstream model revisions before inference.
 - Every stored image record keeps license/attribution metadata; treat this as a schema requirement, not optional.
 - Config-driven experiment parameters (pool sizes, seeds, thresholds) — no magic numbers buried in scripts.
+- Enforce Ruff formatting/linting, strict mypy checks, pytest coverage of at least 85%, and the same checks in GitHub Actions on Python 3.12.
+- Do not introduce DVC. Ignore downloaded data, manifests, embeddings, and generated results by default; selectively tracking final portfolio artifacts requires a later documented decision.
+- Original source code uses the MIT License. It does not relicense downloaded Wikimedia assets.
 
 ## 11. Deliverables
 - Clean GitHub repo with a README that tells the story: the problem, why naive classification is hard, the pool-size ablation as the key result, and what it implies for a real location-aware version.

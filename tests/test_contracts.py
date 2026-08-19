@@ -1,0 +1,101 @@
+"""Smoke tests for scaffolded interfaces and dependency boundaries."""
+
+from datetime import UTC, datetime
+from pathlib import Path
+
+import numpy as np
+import pytest
+from PIL import Image
+
+from krasnal_id.config import load_config
+from krasnal_id.data_pipeline.build_manifest import build_dataset_manifest
+from krasnal_id.data_pipeline.commons_fetch import fetch_images
+from krasnal_id.data_pipeline.wikidata_query import query_dwarfs
+from krasnal_id.demo.app import launch
+from krasnal_id.embeddings.backbone import EmbeddingBackbone
+from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
+from krasnal_id.embeddings.clip import ClipBackbone
+from krasnal_id.embeddings.dinov2 import DinoV2Backbone
+from krasnal_id.experiments.baseline_accuracy import run_baseline
+from krasnal_id.experiments.confusion_analysis import run_confusion_analysis
+from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
+from krasnal_id.experiments.pool_size_ablation import run_pool_size_ablation
+from krasnal_id.retrieval.knn import RetrievalMatch, RetrievalResult, cosine_knn
+from krasnal_id.viz.embedding_plot import create_embedding_plot
+
+
+def test_cache_key_is_stable_and_sensitive() -> None:
+    key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
+    same_key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
+    other_key = EmbeddingCacheKey("b" * 64, "model", "revision", "processor")
+
+    assert key.digest() == same_key.digest()
+    assert key.digest() != other_key.digest()
+
+
+def test_backbone_adapters_satisfy_protocol_without_optional_ml_imports() -> None:
+    dinov2 = DinoV2Backbone(load_config().backbone)
+    clip = ClipBackbone(load_config(["backbone=clip"]).backbone)
+
+    assert isinstance(dinov2, EmbeddingBackbone)
+    assert isinstance(clip, EmbeddingBackbone)
+    assert dinov2.model_id == "facebook/dinov2-base"
+    assert dinov2.revision == "f9e44c814b77203eaa57a6bdbbd535f21ede1415"
+    assert clip.preprocessing_id == "transformers-auto-processor"
+
+    image = Image.new("RGB", (1, 1))
+    with pytest.raises(NotImplementedError):
+        dinov2.get_embedding(image)
+    with pytest.raises(NotImplementedError):
+        clip.get_embedding(image)
+
+
+def test_result_contracts() -> None:
+    match = RetrievalMatch(rank=1, image_id="image-1", dwarf_id="Q1", cosine_similarity=0.95)
+    retrieval = RetrievalResult(query_image_id="query-1", matches=(match,))
+    experiment = ExperimentResult(
+        experiment="baseline",
+        backbone="dinov2",
+        created_at=datetime.now(UTC),
+        seed=42,
+        metrics=(MetricSummary(name="top_1", value=0.5),),
+    )
+
+    assert retrieval.matches[0].rank == 1
+    assert experiment.metrics[0].lower_bound is None
+
+
+def test_v01_placeholders_are_explicit(tmp_path: Path) -> None:
+    config = load_config()
+    now = datetime.now(UTC)
+    cache = EmbeddingCache(tmp_path)
+    key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
+    vector = np.zeros(2, dtype=np.float32)
+
+    with pytest.raises(NotImplementedError):
+        query_dwarfs(config.data)
+    with pytest.raises(NotImplementedError):
+        fetch_images((), tmp_path, config.data)
+    with pytest.raises(NotImplementedError):
+        build_dataset_manifest((), (), now, 3)
+    with pytest.raises(NotImplementedError):
+        cache.load(key)
+    with pytest.raises(NotImplementedError):
+        cache.store(key, vector)
+    with pytest.raises(NotImplementedError):
+        cosine_knn(vector, np.zeros((1, 2), dtype=np.float32), ("i",), ("d",), 1)
+    with pytest.raises(NotImplementedError):
+        run_baseline(config)
+
+
+def test_later_version_placeholders_are_explicit() -> None:
+    config = load_config()
+
+    with pytest.raises(NotImplementedError):
+        run_pool_size_ablation(config)
+    with pytest.raises(NotImplementedError):
+        run_confusion_analysis(config)
+    with pytest.raises(NotImplementedError):
+        create_embedding_plot(config)
+    with pytest.raises(NotImplementedError):
+        launch()
