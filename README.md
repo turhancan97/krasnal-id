@@ -7,10 +7,9 @@ would help.
 
 ## Project status
 
-The repository currently contains the complete typed scaffold for versions 0.1–0.3. Data
-downloads, model inference, retrieval algorithms, and experiments are intentionally not yet
-implemented. Commands that represent those stages validate their configuration and exit with
-a clear `not implemented` message.
+The repository contains the complete typed scaffold for versions 0.1–0.3 and an implemented,
+cached Wikidata discovery stage. Commons image fetching, model inference, retrieval algorithms,
+and experiments remain explicit placeholders.
 
 ## Setup
 
@@ -28,6 +27,25 @@ uv sync --extra ml
 uv sync --extra analysis
 uv sync --extra demo
 ```
+
+## Discover dwarf records
+
+Live Wikidata requests require a contact-bearing user agent supplied outside Git:
+
+```bash
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.0.0 (mailto:you@example.com)'
+uv run krasnal-id data query
+```
+
+Use a deterministic pilot subset or bypass a valid cache:
+
+```bash
+uv run krasnal-id data query --limit 5
+uv run krasnal-id data query --refresh
+```
+
+The command writes ignored raw-cache, normalized-record, and audit files below
+`data/discovery/`. Cached results can be normalized again without the environment variable.
 
 ## Development checks
 

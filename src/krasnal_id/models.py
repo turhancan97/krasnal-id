@@ -1,7 +1,9 @@
 """Validated data contracts shared by acquisition and experiments."""
 
 from datetime import datetime
+from enum import StrEnum
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
@@ -72,3 +74,75 @@ class DatasetManifest(BaseModel):
             unknown = ", ".join(sorted(unknown_ids))
             raise ValueError(f"images reference unknown dwarf IDs: {unknown}")
         return self
+
+
+class AuditDisposition(StrEnum):
+    """Whether a discovery audit entry blocks inclusion."""
+
+    EXCLUDED = "excluded"
+    WARNING = "warning"
+
+
+class AuditReason(StrEnum):
+    """Stable reason codes for Wikidata discovery decisions."""
+
+    MISSING_COMMONS_CATEGORY = "missing_commons_category"
+    EXPLICIT_GROUP_ENTITY = "explicit_group_entity"
+    CONFLICTING_SOURCE_VALUES = "conflicting_source_values"
+    INVALID_RECORD = "invalid_record"
+    POSSIBLE_UNLINKED_GROUP = "possible_unlinked_group"
+
+
+class DiscoveryAuditRecord(BaseModel):
+    """One reviewable inclusion warning or exclusion decision."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    dwarf_id: str = Field(min_length=1)
+    disposition: AuditDisposition
+    reason: AuditReason
+    details: str = Field(min_length=1)
+
+
+class DwarfDiscoveryFile(BaseModel):
+    """Deterministic staging artifact consumed by later data stages."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    query_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    selection_limit: int | None = Field(default=None, gt=0)
+    eligible_total: int = Field(ge=0)
+    records: tuple[DwarfRecord, ...]
+
+
+class DiscoveryAuditFile(BaseModel):
+    """Deterministic exclusions and warnings from one normalization pass."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    query_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    records: tuple[DiscoveryAuditRecord, ...]
+
+
+class QueryCacheMetadata(BaseModel):
+    """Provenance used to validate a cached raw SPARQL response."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    endpoint: HttpUrl
+    query_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    retrieved_at: datetime
+
+
+class DiscoveryResult(BaseModel):
+    """In-memory result returned by the Wikidata query stage."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    records: tuple[DwarfRecord, ...]
+    audit: tuple[DiscoveryAuditRecord, ...]
+    eligible_total: int = Field(ge=0)
+    cache_status: Literal["hit", "fetched", "refreshed", "recovered"]

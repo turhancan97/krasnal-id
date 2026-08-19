@@ -36,6 +36,14 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 3. Filter to dwarves meeting the ≥3-image threshold.
 4. Cache raw images + metadata to disk in a structured format (e.g. one JSON manifest + image files, not a database — this is a research repo, not a service).
 
+### 5.4 Wikidata discovery decisions
+
+- Discover only items explicitly typed as Wikidata class `Q136276280`. Require a `P373` Commons category, keep `P625` coordinates optional, and prefer Polish labels, then English labels, then QID.
+- Exclude group entities only when `P527` links to independently eligible member records. Naming heuristics may create manual-review warnings but must not exclude records.
+- Cache the complete raw SPARQL response with endpoint/query-hash provenance. A deterministic `--limit` is applied only after full normalization; `--refresh` bypasses a valid cache.
+- Live requests require a contact-bearing `KRASNAL_ID_USER_AGENT` environment variable. Cached normalization does not.
+- Write ignored, atomic artifacts below `data/discovery/`: raw response, cache metadata, normalized dwarf records, and an exclusion/warning audit.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone
@@ -73,6 +81,7 @@ krasnal-id/
 ├── pyproject.toml             # exact direct dependency pins and tool configuration
 ├── uv.lock                    # locked transitive dependency graph
 ├── data/
+│   ├── discovery/             # ignored Wikidata cache, normalized records, and audit
 │   ├── images/                # ignored cached raw images
 │   ├── embeddings/            # ignored embedding cache
 │   └── manifest.json          # ignored generated manifest

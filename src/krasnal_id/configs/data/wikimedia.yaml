@@ -1,4 +1,6 @@
 wikidata_endpoint: https://query.wikidata.org/sparql
 commons_api_endpoint: https://commons.wikimedia.org/w/api.php
-user_agent: krasnal-id/0.0.0 (research prototype; contact details required before live use)
 request_timeout_seconds: 30.0
+max_attempts: 3
+retry_backoff_seconds: [1.0, 2.0]
+max_retry_after_seconds: 60.0

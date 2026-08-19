@@ -1,0 +1,96 @@
+{
+  "head": {
+    "vars": [
+      "item",
+      "labelPl",
+      "labelEn",
+      "commonsCategory",
+      "coordinates",
+      "member"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q14"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Członek"},
+        "commonsCategory": {"type": "literal", "value": "Czlonek dwarf, Wroclaw"},
+        "coordinates": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "value": "Point(17.03 51.11)"
+        }
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q10"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Polska nazwa"},
+        "labelEn": {"type": "literal", "xml:lang": "en", "value": "English name"},
+        "commonsCategory": {"type": "literal", "value": "Polska nazwa dwarf"},
+        "coordinates": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "value": "Point(17.04 51.12)"
+        }
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q9"},
+        "labelEn": {"type": "literal", "xml:lang": "en", "value": "English only"},
+        "commonsCategory": {"type": "literal", "value": "English only dwarf"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11"},
+        "commonsCategory": {"type": "literal", "value": "Unnamed dwarf"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q12"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Bez kategorii"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q13"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Grupa i Członek"},
+        "commonsCategory": {"type": "literal", "value": "Group dwarves"},
+        "member": {"type": "uri", "value": "http://www.wikidata.org/entity/Q14"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q15"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Krasnale Testowe"},
+        "commonsCategory": {"type": "literal", "value": "Krasnale testowe"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q16"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Konflikt"},
+        "commonsCategory": {"type": "literal", "value": "Category one"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q16"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Konflikt"},
+        "commonsCategory": {"type": "literal", "value": "Category two"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q17"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Złe współrzędne"},
+        "commonsCategory": {"type": "literal", "value": "Bad coordinates dwarf"},
+        "coordinates": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "value": "not-a-point"
+        }
+      },
+      {
+        "item": {"type": "uri", "value": "https://example.com/entity/Q18"},
+        "commonsCategory": {"type": "literal", "value": "Invalid URI dwarf"}
+      },
+      {
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q10"},
+        "labelPl": {"type": "literal", "xml:lang": "pl", "value": "Polska nazwa"},
+        "labelEn": {"type": "literal", "xml:lang": "en", "value": "English name"},
+        "commonsCategory": {"type": "literal", "value": "Polska nazwa dwarf"},
+        "coordinates": {
+          "type": "literal",
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "value": "Point(17.04 51.12)"
+        }
+      }
+    ]
+  }
+}

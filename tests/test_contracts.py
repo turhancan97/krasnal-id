@@ -10,7 +10,6 @@ from PIL import Image
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_manifest import build_dataset_manifest
 from krasnal_id.data_pipeline.commons_fetch import fetch_images
-from krasnal_id.data_pipeline.wikidata_query import query_dwarfs
 from krasnal_id.demo.app import launch
 from krasnal_id.embeddings.backbone import EmbeddingBackbone
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
@@ -72,8 +71,6 @@ def test_v01_placeholders_are_explicit(tmp_path: Path) -> None:
     key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
     vector = np.zeros(2, dtype=np.float32)
 
-    with pytest.raises(NotImplementedError):
-        query_dwarfs(config.data)
     with pytest.raises(NotImplementedError):
         fetch_images((), tmp_path, config.data)
     with pytest.raises(NotImplementedError):

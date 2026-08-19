@@ -6,11 +6,26 @@ from typing import Annotated
 import typer
 
 from krasnal_id.config import load_config
+from krasnal_id.data_pipeline.wikidata_query import (
+    WikidataConfigurationError,
+    WikidataQueryError,
+    discovery_paths,
+    query_dwarfs,
+)
 from krasnal_id.logging import configure_logging
+from krasnal_id.models import AuditDisposition
 
 OverrideOption = Annotated[
     list[str] | None,
     typer.Option("--override", "-o", help="Hydra override; repeat for multiple values."),
+]
+LimitOption = Annotated[
+    int | None,
+    typer.Option("--limit", min=1, help="Emit only the first N eligible records by QID."),
+]
+RefreshOption = Annotated[
+    bool,
+    typer.Option("--refresh", help="Ignore a valid cache and query Wikidata again."),
 ]
 
 app = typer.Typer(help="Fine-grained retrieval research for Wroclaw dwarf statues.")
@@ -40,9 +55,38 @@ def _run_placeholder(
 
 
 @data_app.command("query")
-def query_wikidata(override: OverrideOption = None) -> None:
+def query_wikidata(
+    override: OverrideOption = None,
+    limit: LimitOption = None,
+    refresh: RefreshOption = False,
+) -> None:
     """Discover Wroclaw dwarf records through Wikidata."""
-    _run_placeholder("data query", override)
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        result = query_dwarfs(
+            config.data,
+            config.paths.discovery_dir,
+            limit=limit,
+            refresh=refresh,
+        )
+    except WikidataConfigurationError as error:
+        typer.echo(f"Configuration error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    except WikidataQueryError as error:
+        typer.echo(f"Query failed: {error}", err=True)
+        raise typer.Exit(code=1) from error
+
+    excluded = sum(record.disposition is AuditDisposition.EXCLUDED for record in result.audit)
+    warnings = sum(record.disposition is AuditDisposition.WARNING for record in result.audit)
+    paths = discovery_paths(config.paths.discovery_dir)
+    typer.echo(
+        "Wikidata discovery complete: "
+        f"cache={result.cache_status} eligible={result.eligible_total} "
+        f"emitted={len(result.records)} excluded={excluded} warnings={warnings}"
+    )
+    typer.echo(f"Records: {paths.dwarfs}")
+    typer.echo(f"Audit: {paths.audit}")
 
 
 @data_app.command("fetch")

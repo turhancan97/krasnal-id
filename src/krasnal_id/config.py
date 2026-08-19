@@ -5,7 +5,7 @@ from typing import Annotated, Literal
 
 from hydra import compose, initialize_config_module
 from omegaconf import OmegaConf
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 
 class PathsConfig(BaseModel):
@@ -16,6 +16,7 @@ class PathsConfig(BaseModel):
     data_dir: Path
     images_dir: Path
     embeddings_dir: Path
+    discovery_dir: Path
     manifest_path: Path
     results_dir: Path
 
@@ -27,8 +28,19 @@ class WikimediaDataConfig(BaseModel):
 
     wikidata_endpoint: HttpUrl
     commons_api_endpoint: HttpUrl
-    user_agent: str = Field(min_length=1)
     request_timeout_seconds: float = Field(gt=0)
+    max_attempts: int = Field(ge=1)
+    retry_backoff_seconds: tuple[float, ...]
+    max_retry_after_seconds: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_retry_schedule(self) -> "WikimediaDataConfig":
+        """Require one backoff delay between every pair of attempts."""
+        if len(self.retry_backoff_seconds) != self.max_attempts - 1:
+            raise ValueError("retry_backoff_seconds must contain max_attempts - 1 values")
+        if any(delay < 0 for delay in self.retry_backoff_seconds):
+            raise ValueError("retry backoff values cannot be negative")
+        return self
 
 
 class ThresholdsConfig(BaseModel):
