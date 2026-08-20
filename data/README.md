@@ -29,3 +29,7 @@ Commons acquisition adds these ignored artifacts:
   revision provenance for images eligible for manifest construction.
 - `fetch-audit.json` records policy exclusions, duplicates, warnings, and operational errors.
 - `data/images/<QID>/` contains atomically downloaded, Pillow-verified research copies.
+
+Manifest construction reads only the validated `fetched-images.json` records and writes the
+ignored `data/manifest.json` artifact. It never scans the local image directory. The manifest
+records the discovery query, fetched staging, and image-review provenance hashes.

@@ -183,8 +183,9 @@ krasnal-id/
   two images each; Abruzjusz, Szpitalnik, Troszka, Adoratorek, Komisia i Euruś, Tancerka
   Balerina, Śpiewak Operowy, Bankierek, Ditek, Glamour, Gryfosław, Solidariusz Walczący, and
   Unicefuś have one each.
-- The deterministic image-level exclusion/override contract is now recorded in tracked
-  `data/image-review.json`, tied to the current `fetched-images.json` staging hash. Do not
-  hand-edit generated staging JSON. The next implementation step is `data build-manifest`,
-  which must consume `fetched-images.json` plus both tracked review files rather than scanning
-  the filesystem.
+- The deterministic image-level exclusion/override contract is recorded in tracked
+  `data/image-review.json`, tied to the current `fetched-images.json` staging hash.
+- `data build-manifest` is implemented. It consumes `fetched-images.json` plus both tracked
+  review files, applies the three-image threshold, records discovery/staging/review provenance
+  hashes, and writes the manifest atomically. It never scans the filesystem; the current
+  audited artifacts produce 23 classes and 146 images.

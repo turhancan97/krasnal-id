@@ -6,6 +6,11 @@ from typing import Annotated
 import typer
 
 from krasnal_id.config import load_config
+from krasnal_id.data_pipeline.build_manifest import (
+    ManifestConfigurationError,
+    build_manifest_from_artifacts,
+    write_dataset_manifest,
+)
 from krasnal_id.data_pipeline.commons_fetch import (
     CommonsConfigurationError,
     fetch_images,
@@ -176,7 +181,27 @@ def fetch_commons(
 @data_app.command("build-manifest")
 def build_manifest(override: OverrideOption = None) -> None:
     """Build and validate the versioned dataset manifest."""
-    _run_placeholder("data build-manifest", override)
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        manifest = build_manifest_from_artifacts(
+            config.paths.discovery_dir / "dwarfs.json",
+            config.paths.discovery_dir / "fetched-images.json",
+            config.paths.category_review_path,
+            config.paths.image_review_path,
+            config.thresholds.minimum_images_per_dwarf,
+        )
+        write_dataset_manifest(config.paths.manifest_path, manifest)
+    except ManifestConfigurationError as error:
+        typer.echo(f"Manifest configuration error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(
+        "Manifest build complete: "
+        f"dwarfs={len(manifest.dwarfs)} images={len(manifest.images)} "
+        f"threshold={manifest.minimum_images_per_dwarf} "
+        f"output={config.paths.manifest_path}"
+    )
 
 
 @embeddings_app.command("extract")

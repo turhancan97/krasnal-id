@@ -92,6 +92,16 @@ is tied to the current authoritative staging hash. Display-name corrections are 
 `display_name_override` values in `data/category-review.json`; generated discovery files are
 not edited by hand.
 
+Build the validated manifest offline from the cached artifacts:
+
+````bash
+uv run krasnal-id data build-manifest
+````
+
+The command applies both review files, rejects stale or inconsistent staging inputs, filters
+classes below the configured threshold, records discovery/staging/review provenance hashes,
+and writes `data/manifest.json` atomically.
+
 ## Development checks
 
 ```bash

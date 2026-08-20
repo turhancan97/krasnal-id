@@ -26,6 +26,7 @@ from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
 
 from krasnal_id.config import WikimediaDataConfig
+from krasnal_id.data_pipeline.build_manifest import category_review_sha256
 from krasnal_id.models import (
     AuditDisposition,
     CategoryReviewFile,
@@ -805,13 +806,7 @@ def _load_previous_records(path: Path) -> dict[tuple[str, int], ImageRecord]:
 
 
 def _review_hash(review: CategoryReviewFile) -> str:
-    payload = json.dumps(
-        review.model_dump(mode="json"),
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-    return hashlib.sha256(payload.encode()).hexdigest()
+    return category_review_sha256(review)
 
 
 def _audit_sort_key(

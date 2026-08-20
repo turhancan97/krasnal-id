@@ -13,6 +13,9 @@ def valid_manifest_data() -> Callable[[], dict[str, Any]]:
     def factory() -> dict[str, Any]:
         return {
             "schema_version": "1.0",
+            "source_query_sha256": "b" * 64,
+            "staging_sha256": "c" * 64,
+            "image_review_sha256": "d" * 64,
             "generated_at": "2026-08-19T12:00:00Z",
             "minimum_images_per_dwarf": 3,
             "dwarfs": [

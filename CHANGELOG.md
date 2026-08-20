@@ -26,6 +26,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Added comprehensive mocked Commons coverage and an opt-in live Commons integration test.
 - Added a tracked image-level review contract with retain/exclude reasons, staging provenance,
   duplicate handling, and validation tests.
+- Added audited manifest construction with strict artifact/hash validation, review application,
+  threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
+  coverage.
 
 ### Changed
 
@@ -51,5 +54,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 - Repository scaffolding, Wikidata discovery, and reviewed Commons image acquisition are
   complete, with automated checks passing.
-- Manifest construction, model inference, embedding persistence, retrieval algorithms,
-  experiment computation, plotting, and the Gradio interface remain intentionally unimplemented.
+- Audited manifest construction is implemented and produces 23 classes and 146 images from
+  the current local artifacts.
+- Model inference, embedding persistence, retrieval algorithms, experiment computation, plotting,
+  and the Gradio interface remain intentionally unimplemented.

@@ -56,6 +56,9 @@ class DatasetManifest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    source_query_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    staging_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    image_review_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     generated_at: datetime
     minimum_images_per_dwarf: int = Field(ge=1)
     dwarfs: tuple[DwarfRecord, ...]

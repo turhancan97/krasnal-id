@@ -63,15 +63,24 @@ def test_result_contracts() -> None:
     assert experiment.metrics[0].lower_bound is None
 
 
-def test_v01_placeholders_are_explicit(tmp_path: Path) -> None:
+def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -> None:
     config = load_config()
     now = datetime.now(UTC)
     cache = EmbeddingCache(tmp_path)
     key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
     vector = np.zeros(2, dtype=np.float32)
 
-    with pytest.raises(NotImplementedError):
-        build_dataset_manifest((), (), now, 3)
+    manifest = build_dataset_manifest(
+        (),
+        (),
+        now,
+        3,
+        source_query_sha256="a" * 64,
+        staging_sha256="b" * 64,
+        image_review_sha256="c" * 64,
+    )
+    assert manifest.dwarfs == ()
+    assert manifest.images == ()
     with pytest.raises(NotImplementedError):
         cache.load(key)
     with pytest.raises(NotImplementedError):
