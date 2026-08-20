@@ -34,7 +34,7 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 1. Query Wikidata for Wrocław dwarf-statue entities (name, coordinates if present, linked Commons category).
 2. Pull images from each linked Commons category via the Commons API.
 3. Filter to dwarves meeting the ≥3-image threshold.
-4. Cache raw images + metadata to disk in a structured format (e.g. one JSON manifest + image files, not a database — this is a research repo, not a service).
+4. Cache bounded research image copies + metadata to disk in a structured format (one JSON manifest + image files, not a database).
 
 ### 5.4 Wikidata discovery decisions
 
@@ -44,10 +44,26 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Live requests require a contact-bearing `KRASNAL_ID_USER_AGENT` environment variable. Cached normalization does not.
 - Write ignored, atomic artifacts below `data/discovery/`: raw response, cache metadata, normalized dwarf records, and an exclusion/warning audit.
 
+### 5.5 Commons acquisition decisions
+
+- Treat `data/discovery/dwarfs.json` as the exact handoff into fetching. Every emitted
+  Wikidata-to-Commons mapping must be approved or rejected in tracked
+  `data/category-review.json`; corrections belong there rather than in generated discovery
+  files. New or changed mappings return to `pending`.
+- Query direct category files only, follow pagination, and cache complete API responses.
+  Accept known Public Domain, CC0, CC BY, and CC BY-SA static rasters with complete attribution.
+- Store Pillow-verified research copies with a 512-pixel minimum short side and 1,600-pixel
+  maximum long side. Preserve Commons page/revision provenance and reuse verified unchanged
+  files.
+- Retain the lowest Commons page ID for same-label byte duplicates. Exclude byte-identical
+  content spanning different labels to prevent evaluation leakage. Never delete orphan files
+  automatically.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone
 - DINOv2 and CLIP, used for zero-shot/near-zero-training feature extraction (no fine-tuning needed for the core experiment).
+
 - **Design for a swappable backbone interface** (`get_embedding(image) -> vector`) rather than hard-coding a single library call. This keeps the option open to plug in a shared embedding-extraction module later without this repo depending on it existing or being finished first. Until then, load DINOv2/CLIP directly (e.g. via `transformers`).
 - Cache embeddings to disk — never recompute per experiment run.
 
@@ -81,8 +97,9 @@ krasnal-id/
 ├── pyproject.toml             # exact direct dependency pins and tool configuration
 ├── uv.lock                    # locked transitive dependency graph
 ├── data/
-│   ├── discovery/             # ignored Wikidata cache, normalized records, and audit
-│   ├── images/                # ignored cached raw images
+│   ├── category-review.json   # tracked human review of Commons mappings
+│   ├── discovery/             # ignored Wikidata/Commons caches, staging, and audits
+│   ├── images/                # ignored cached research copies
 │   ├── embeddings/            # ignored embedding cache
 │   └── manifest.json          # ignored generated manifest
 ├── src/krasnal_id/
@@ -92,7 +109,7 @@ krasnal-id/
 │   ├── configs/               # packaged Hydra configuration groups
 │   ├── data_pipeline/
 │   │   ├── wikidata_query.py
-│   │   ├── commons_fetch.py
+│   │   ├── commons_fetch.py   # reviewed, cached Commons acquisition
 │   │   └── build_manifest.py
 │   ├── embeddings/
 │   │   ├── backbone.py

@@ -7,9 +7,9 @@ would help.
 
 ## Project status
 
-The repository contains the complete typed scaffold for versions 0.1–0.3 and an implemented,
-cached Wikidata discovery stage. Commons image fetching, model inference, retrieval algorithms,
-and experiments remain explicit placeholders.
+The repository contains the complete typed scaffold for versions 0.1–0.3 plus implemented,
+cached Wikidata discovery and reviewed Wikimedia Commons image acquisition. Manifest building,
+model inference, retrieval algorithms, and experiments remain explicit placeholders.
 
 ## Setup
 
@@ -46,6 +46,43 @@ uv run krasnal-id data query --refresh
 
 The command writes ignored raw-cache, normalized-record, and audit files below
 `data/discovery/`. Cached results can be normalized again without the environment variable.
+
+## Review categories and fetch images
+
+Generate or update the tracked review file without making network requests:
+
+```bash
+uv run krasnal-id data fetch --prepare-review
+```
+
+Open `data/category-review.json`, inspect each Wikidata-to-Commons mapping, and change its
+`status` from `pending` to either `approved` or `rejected`. Use
+`corrected_category` when Wikidata points to a broad or incorrect category. A changed source
+mapping is reset to `pending` the next time review preparation runs.
+
+After every emitted mapping has a decision, fetch the approved categories:
+
+```bash
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.0.0 (mailto:you@example.com)'
+uv run krasnal-id data fetch
+```
+
+Pilot runs and metadata refreshes are deterministic:
+
+```bash
+uv run krasnal-id data fetch --max-images-per-dwarf 5
+uv run krasnal-id data fetch --refresh
+```
+
+The fetcher reads exactly the current `dwarfs.json`, visits only direct category files,
+accepts known Public Domain/CC0/CC BY/CC BY-SA static rasters, verifies attribution and image
+content, and stores at most 1,600-pixel research copies under `data/images/<QID>/`. It caches
+complete paginated API responses and reuses verified local files when their Commons revision
+has not changed. Generated image records and a detailed audit are written atomically below
+`data/discovery/`.
+
+Exit code 2 indicates invalid input or unfinished review. Exit code 1 indicates that processing
+continued but at least one API or download operation still failed.
 
 ## Development checks
 

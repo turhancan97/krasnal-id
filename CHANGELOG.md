@@ -18,9 +18,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Added the MIT source-code license, setup and contribution documentation, and tracked guidance for ignored data and result directories.
 - Added deterministic Wikidata dwarf discovery with typed normalization, explicit group filtering, audit records, atomic staging outputs, raw-response caching, refresh/limit controls, retry handling, and contact-bearing user-agent enforcement.
 - Added synthetic fixture coverage for normalization, cache reuse and recovery, transport failures, CLI behavior, and an opt-in live Wikidata integration test.
+- Added an offline, tracked category-review workflow that preserves decisions, supports
+  corrected Commons categories, and resets changed mappings to pending.
+- Added paginated Commons acquisition with raw-response caching, strict reusable-license and
+  attribution checks, bounded Pillow-verified downloads, revision-aware reuse, deterministic
+  caps, checksum deduplication, atomic staging outputs, retries, audits, and CLI exit semantics.
+- Added comprehensive mocked Commons coverage and an opt-in live Commons integration test.
 
 ### Current state
 
-- Repository scaffolding and the Wikidata `data query` stage are complete, with automated checks passing.
-- Wikidata discovery, configuration composition, validation contracts, structured logging, CLI routing, deterministic caches, and discovery audits are implemented.
-- Commons API acquisition, image downloading, manifest construction, model inference, embedding persistence, retrieval algorithms, experiment computation, plotting, and the Gradio interface remain intentionally unimplemented.
+- Repository scaffolding, Wikidata discovery, and reviewed Commons image acquisition are
+  complete, with automated checks passing.
+- Manifest construction, model inference, embedding persistence, retrieval algorithms,
+  experiment computation, plotting, and the Gradio interface remain intentionally unimplemented.

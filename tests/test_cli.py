@@ -19,7 +19,6 @@ def test_root_help_lists_pipeline_groups() -> None:
 @pytest.mark.parametrize(
     "arguments",
     [
-        ["data", "fetch"],
         ["data", "build-manifest"],
         ["embeddings", "extract"],
         ["retrieve"],

@@ -17,6 +17,7 @@ class PathsConfig(BaseModel):
     images_dir: Path
     embeddings_dir: Path
     discovery_dir: Path
+    category_review_path: Path
     manifest_path: Path
     results_dir: Path
 
@@ -32,14 +33,24 @@ class WikimediaDataConfig(BaseModel):
     max_attempts: int = Field(ge=1)
     retry_backoff_seconds: tuple[float, ...]
     max_retry_after_seconds: float = Field(gt=0)
+    image_max_long_side: int = Field(gt=0)
+    image_min_short_side: int = Field(gt=0)
+    allowed_license_families: tuple[str, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def validate_retry_schedule(self) -> "WikimediaDataConfig":
-        """Require one backoff delay between every pair of attempts."""
+        """Validate retry, image-size, and license-policy invariants."""
         if len(self.retry_backoff_seconds) != self.max_attempts - 1:
             raise ValueError("retry_backoff_seconds must contain max_attempts - 1 values")
         if any(delay < 0 for delay in self.retry_backoff_seconds):
             raise ValueError("retry backoff values cannot be negative")
+        if self.image_min_short_side > self.image_max_long_side:
+            raise ValueError("image_min_short_side cannot exceed image_max_long_side")
+        supported = {"public-domain", "cc0", "cc-by", "cc-by-sa"}
+        if not set(self.allowed_license_families).issubset(supported):
+            raise ValueError("allowed_license_families contains an unknown family")
+        if len(self.allowed_license_families) != len(set(self.allowed_license_families)):
+            raise ValueError("allowed_license_families cannot contain duplicates")
         return self
 
 

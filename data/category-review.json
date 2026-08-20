@@ -1,0 +1,50 @@
+{
+  "records": [
+    {
+      "corrected_category": null,
+      "discovered_category": "Olaf Brzeski",
+      "discovery_warning": false,
+      "display_name": "Pomnik Pomarańczowej Alternatywy",
+      "dwarf_id": "Q11823412",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wroclaw blacksmith dwarf",
+      "discovery_warning": false,
+      "display_name": "Kowal",
+      "dwarf_id": "Q65742089",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Olbiniusz",
+      "discovery_warning": false,
+      "display_name": "Ołbiniusz",
+      "dwarf_id": "Q65742728",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale Filharmonii Wrocławskiej",
+      "discovery_warning": true,
+      "display_name": "Krasnale Filharmonii Wrocławskiej",
+      "dwarf_id": "Q130986871",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Abruzjusz dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Q136001294",
+      "dwarf_id": "Q136001294",
+      "notes": null,
+      "status": "approved"
+    }
+  ],
+  "schema_version": "1.0"
+}
