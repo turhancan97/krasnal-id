@@ -165,15 +165,17 @@ krasnal-id/
 - `data/discovery/fetched-images.json` is authoritative. There are currently 199 files under
   `data/images/`, so 26 files are quarantined or orphaned and must not enter a manifest through
   directory scanning. Do not delete them automatically.
-- Resolve these image-level audit findings before manifest construction:
-  - Papa Krasnal Commons page `22381955` is a differently encoded copy of page `166491`; retain
-    the lower page ID (`166491`) and exclude `22381955`.
-  - Capgeminiusz Programista page `134103757` is heavily posterized and should be excluded as a
-    non-photographic retrieval reference.
-  - Manually decide whether low-subject-prominence pages `22398133` (Papa Krasnal), `52890654`
-    and `52890655` (Pralinka), and `89462414` (Binio) are usable.
-  - Replace fallback display names `Q136001318` and `Q136001344` with `Ossolinek` and
-    `Demokracja`, respectively, before publishing a manifest.
+- Image-level audit decisions are recorded in tracked `data/image-review.json`:
+  - retain Papa Krasnal page `166491` as the canonical lower-page-ID duplicate winner;
+  - exclude Papa Krasnal page `22381955` as its differently encoded duplicate;
+  - exclude pages `22398133` (Papa Krasnal), `52890654` and `52890655` (Pralinka), and
+    `89462414` (Binio) for low subject prominence;
+  - exclude Capgeminiusz Programista page `134103757` as a heavily posterized,
+    non-photographic reference.
+- Tracked `data/category-review.json` stores durable display-name overrides for
+  `Q136001294` -> `Abruzjusz`, `Q136001318` -> `Ossolinek`, and `Q136001344` -> `Demokracja`.
+  Generated discovery files remain unchanged; downstream manifest construction must use the
+  reviewed override when present.
 - Cross-label protection is working: 14 Troszka/Adoratorek records and six Śpiewak
   Operowy/Tancerka Balerina records were quarantined as exact cross-label duplicates. Perceptual
   hashing found no remaining cross-class near-duplicate candidate in staging.
@@ -181,7 +183,8 @@ krasnal-id/
   two images each; Abruzjusz, Szpitalnik, Troszka, Adoratorek, Komisia i Euruś, Tancerka
   Balerina, Śpiewak Operowy, Bankierek, Ditek, Glamour, Gryfosław, Solidariusz Walczący, and
   Unicefuś have one each.
-- The next session must decide a deterministic image-level exclusion/override contract (for
-  example, a tracked review file consumed by `data build-manifest`). Do not hand-edit generated
-  staging JSON. After recording that decision, implement `data build-manifest` from
-  `fetched-images.json`, not from a filesystem scan.
+- The deterministic image-level exclusion/override contract is now recorded in tracked
+  `data/image-review.json`, tied to the current `fetched-images.json` staging hash. Do not
+  hand-edit generated staging JSON. The next implementation step is `data build-manifest`,
+  which must consume `fetched-images.json` plus both tracked review files rather than scanning
+  the filesystem.

@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "commons_page_id": 166491,
+      "dwarf_id": "Q11823412",
+      "notes": "Retain the lower Commons page ID as the canonical copy of this image content.",
+      "reason": "preferred_duplicate",
+      "status": "retain"
+    },
+    {
+      "commons_page_id": 22381955,
+      "dwarf_id": "Q11823412",
+      "notes": "Exclude: differently encoded byte duplicate of Commons page 166491; the lower page ID is canonical.",
+      "reason": "same_content_duplicate",
+      "status": "exclude"
+    },
+    {
+      "commons_page_id": 22398133,
+      "dwarf_id": "Q11823412",
+      "notes": "Exclude: the statue has too little visual prominence for a reliable retrieval reference.",
+      "reason": "low_subject_prominence",
+      "status": "exclude"
+    },
+    {
+      "commons_page_id": 52890654,
+      "dwarf_id": "Q136338464",
+      "notes": "Exclude: the statue has too little visual prominence for a reliable retrieval reference.",
+      "reason": "low_subject_prominence",
+      "status": "exclude"
+    },
+    {
+      "commons_page_id": 52890655,
+      "dwarf_id": "Q136338464",
+      "notes": "Exclude: the statue has too little visual prominence for a reliable retrieval reference.",
+      "reason": "low_subject_prominence",
+      "status": "exclude"
+    },
+    {
+      "commons_page_id": 134103757,
+      "dwarf_id": "Q136341125",
+      "notes": "Exclude: heavily posterized graphic, not a photographic retrieval reference.",
+      "reason": "non_photographic",
+      "status": "exclude"
+    },
+    {
+      "commons_page_id": 89462414,
+      "dwarf_id": "Q136343586",
+      "notes": "Exclude: the statue has too little visual prominence for a reliable retrieval reference.",
+      "reason": "low_subject_prominence",
+      "status": "exclude"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_query_sha256": "447f1ec1dffc1b9eb0ad1eccd0ce9f8fd42264c458cb5c44f682828623bac0bc",
+  "staging_sha256": "164b00037d48e109f5ab4695d33587fbcbe0824daf227c5dc34d63ec82b45db2"
+}

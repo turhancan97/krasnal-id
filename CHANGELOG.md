@@ -24,6 +24,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   attribution checks, bounded Pillow-verified downloads, revision-aware reuse, deterministic
   caps, checksum deduplication, atomic staging outputs, retries, audits, and CLI exit semantics.
 - Added comprehensive mocked Commons coverage and an opt-in live Commons integration test.
+- Added a tracked image-level review contract with retain/exclude reasons, staging provenance,
+  duplicate handling, and validation tests.
 
 ### Changed
 
@@ -32,9 +34,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Re-reviewed all 41 tracked category mappings, corrected the stale `Q11823412` mapping to
   `Papa Krasnal`, rejected the visually heterogeneous Philharmonic umbrella category, and
   recorded evidence-based notes for every decision.
-- Documented the 2026-08-20 dataset-audit handoff, including image-level exclusions requiring a
-  future review contract, below-threshold classes, display-name corrections, and the canonical
-  staging boundary for manifest construction.
+- Added durable display-name overrides for Abruzjusz, Ossolinek, and Demokracja to the tracked
+  category review without modifying generated Wikidata discovery artifacts.
+- Documented the 2026-08-20 dataset-audit handoff, including resolved image-level exclusions,
+  below-threshold classes, display-name corrections, and the canonical staging boundary for
+  manifest construction.
 
 ### Fixed
 

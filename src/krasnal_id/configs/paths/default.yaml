@@ -3,5 +3,6 @@ images_dir: data/images
 embeddings_dir: data/embeddings
 discovery_dir: data/discovery
 category_review_path: data/category-review.json
+image_review_path: data/image-review.json
 manifest_path: data/manifest.json
 results_dir: results

@@ -86,6 +86,12 @@ has not changed. Generated image records and a detailed audit are written atomic
 Exit code 2 indicates invalid input or unfinished review. Exit code 1 indicates that processing
 continued but at least one API or download operation still failed.
 
+Image-level review decisions are tracked in `data/image-review.json`. It is keyed by dwarf ID
+and Commons page ID, records explicit retain/exclude reasons for known staging exceptions, and
+is tied to the current authoritative staging hash. Display-name corrections are stored as
+`display_name_override` values in `data/category-review.json`; generated discovery files are
+not edited by hand.
+
 ## Development checks
 
 ```bash

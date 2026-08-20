@@ -166,6 +166,7 @@ class CategoryReviewRecord(BaseModel):
 
     dwarf_id: str = Field(pattern=r"^Q[1-9]\d*$")
     display_name: str = Field(min_length=1)
+    display_name_override: str | None = Field(default=None, min_length=1)
     discovered_category: str = Field(min_length=1)
     status: CategoryReviewStatus = CategoryReviewStatus.PENDING
     corrected_category: str | None = Field(default=None, min_length=1)
@@ -176,6 +177,11 @@ class CategoryReviewRecord(BaseModel):
     def selected_category(self) -> str:
         """Return the reviewed category used for Commons requests."""
         return self.corrected_category or self.discovered_category
+
+    @property
+    def selected_display_name(self) -> str:
+        """Return the reviewed display name used by downstream artifacts."""
+        return self.display_name_override or self.display_name
 
 
 class CategoryReviewFile(BaseModel):
@@ -192,6 +198,53 @@ class CategoryReviewFile(BaseModel):
         dwarf_ids = [record.dwarf_id for record in self.records]
         if len(dwarf_ids) != len(set(dwarf_ids)):
             raise ValueError("category review dwarf IDs must be unique")
+        return self
+
+
+class ImageReviewStatus(StrEnum):
+    """Human decision for one image-level dataset exception."""
+
+    RETAIN = "retain"
+    EXCLUDE = "exclude"
+
+
+class ImageReviewReason(StrEnum):
+    """Stable reason codes for tracked image-level decisions."""
+
+    PREFERRED_DUPLICATE = "preferred_duplicate"
+    SAME_CONTENT_DUPLICATE = "same_content_duplicate"
+    NON_PHOTOGRAPHIC = "non_photographic"
+    LOW_SUBJECT_PROMINENCE = "low_subject_prominence"
+
+
+class ImageReviewRecord(BaseModel):
+    """One tracked retain/exclude decision for a Commons image."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    dwarf_id: str = Field(pattern=r"^Q[1-9]\d*$")
+    commons_page_id: int = Field(gt=0)
+    status: ImageReviewStatus
+    reason: ImageReviewReason
+    notes: str = Field(min_length=1)
+
+
+class ImageReviewFile(BaseModel):
+    """Tracked image-level decisions tied to one fetched-images staging artifact."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    source_query_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    staging_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    records: tuple[ImageReviewRecord, ...]
+
+    @model_validator(mode="after")
+    def validate_unique_image_keys(self) -> "ImageReviewFile":
+        """Require one decision per dwarf/page pair."""
+        keys = [(record.dwarf_id, record.commons_page_id) for record in self.records]
+        if len(keys) != len(set(keys)):
+            raise ValueError("image review dwarf/page pairs must be unique")
         return self
 
 

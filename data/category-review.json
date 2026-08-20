@@ -41,6 +41,7 @@
       "discovered_category": "Abruzjusz dwarf, Wroclaw",
       "discovery_warning": false,
       "display_name": "Q136001294",
+      "display_name_override": "Abruzjusz",
       "dwarf_id": "Q136001294",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -50,6 +51,7 @@
       "discovered_category": "Ossolinek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Q136001318",
+      "display_name_override": "Ossolinek",
       "dwarf_id": "Q136001318",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -59,6 +61,7 @@
       "discovered_category": "Demokracja dwarf, Wroclaw",
       "discovery_warning": false,
       "display_name": "Q136001344",
+      "display_name_override": "Demokracja",
       "dwarf_id": "Q136001344",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"

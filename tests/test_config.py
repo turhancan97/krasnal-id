@@ -21,6 +21,7 @@ def test_composes_every_experiment(override: str, expected_kind: str) -> None:
     assert config.data.image_min_short_side == 400
     assert config.data.allowed_license_families == ("public-domain", "cc0", "cc-by", "cc-by-sa")
     assert config.paths.category_review_path.as_posix() == "data/category-review.json"
+    assert config.paths.image_review_path.as_posix() == "data/image-review.json"
 
     assert config.experiment.kind == expected_kind
     assert config.thresholds.minimum_images_per_dwarf == 3

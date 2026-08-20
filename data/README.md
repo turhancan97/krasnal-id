@@ -6,9 +6,14 @@ embeddings. Generated contents are ignored by Git and are not managed with DVC.
 Every image admitted to a manifest must include `source_url`, `author`, `license`, and
 `license_url`. Do not place images with unknown or incompatible licensing here.
 
-`category-review.json` is the one tracked data-control artifact. It records human approval,
-rejection, optional category corrections, and notes for every discovered mapping. Never
-auto-approve new or changed mappings.
+`category-review.json` is the tracked category-control artifact. It records human approval,
+rejection, optional category corrections, display-name overrides, and notes for every
+discovered mapping. Never auto-approve new or changed mappings.
+
+`image-review.json` is the tracked image-control artifact. It records explicit retain or
+exclude decisions for image-level exceptions, keyed by dwarf ID and Commons page ID. Its
+staging hash must match the canonical `fetched-images.json` artifact before downstream code
+uses the decisions. Unlisted images retain the acquisition pipeline's decision.
 
 Wikidata discovery owns the ignored `data/discovery/` directory:
 

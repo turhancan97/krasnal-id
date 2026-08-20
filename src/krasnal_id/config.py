@@ -18,6 +18,7 @@ class PathsConfig(BaseModel):
     embeddings_dir: Path
     discovery_dir: Path
     category_review_path: Path
+    image_review_path: Path
     manifest_path: Path
     results_dir: Path
 
