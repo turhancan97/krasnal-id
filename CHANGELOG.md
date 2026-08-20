@@ -25,6 +25,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   caps, checksum deduplication, atomic staging outputs, retries, audits, and CLI exit semantics.
 - Added comprehensive mocked Commons coverage and an opt-in live Commons integration test.
 
+### Changed
+
+- Changed the default Commons research-image bounds to a 400-pixel minimum short side and a
+  2,000-pixel maximum long side.
+
+### Fixed
+
+- Fixed Commons response parsing to accept scalar-valued extension metadata returned by the
+  live API while continuing to require string-valued attribution and license fields.
+
 ### Current state
 
 - Repository scaffolding, Wikidata discovery, and reviewed Commons image acquisition are

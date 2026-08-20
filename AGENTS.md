@@ -52,7 +52,7 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   files. New or changed mappings return to `pending`.
 - Query direct category files only, follow pagination, and cache complete API responses.
   Accept known Public Domain, CC0, CC BY, and CC BY-SA static rasters with complete attribution.
-- Store Pillow-verified research copies with a 512-pixel minimum short side and 1,600-pixel
+- Store Pillow-verified research copies with a 400-pixel minimum short side and 2,000-pixel
   maximum long side. Preserve Commons page/revision provenance and reuse verified unchanged
   files.
 - Retain the lowest Commons page ID for same-label byte duplicates. Exclude byte-identical

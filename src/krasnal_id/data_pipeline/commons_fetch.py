@@ -77,7 +77,7 @@ class CommonsFetchError(RuntimeError):
 
 class _MetadataValue(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
-    value: str
+    value: str | int | float | bool | None
 
 
 class _ImageInfo(BaseModel):
@@ -516,7 +516,9 @@ def _plain_text(value: str) -> str:
 
 def _metadata_value(info: _ImageInfo, key: str) -> str:
     metadata = info.extmetadata.get(key)
-    return "" if metadata is None else metadata.value.strip()
+    if metadata is None or not isinstance(metadata.value, str):
+        return ""
+    return metadata.value.strip()
 
 
 def _license_family(token: str, short_name: str) -> str | None:

@@ -104,7 +104,7 @@ def _review(path: Path, *records: CategoryReviewRecord) -> None:
     _dump(path, model.model_dump(mode="json"))
 
 
-def _value(value: str) -> dict[str, str]:
+def _value(value: str | int | float | bool | None) -> dict[str, object]:
     return {"value": value}
 
 
@@ -121,6 +121,8 @@ def _page(
     sha: str = "a",
 ) -> dict[str, Any]:
     metadata: dict[str, object] = {
+        "AuthorCount": _value(2),
+        "CommonsMetadataExtension": _value(1.2),
         "License": _value(license_token),
         "LicenseShortName": _value(license_name),
     }
@@ -370,7 +372,7 @@ def test_filters_metadata_and_invalid_downloads(
     _review(path, _decision(dwarf))
     pages = [
         _page(1, mime="image/svg+xml"),
-        _page(2, width=400),
+        _page(2, width=399),
         _page(3, author=None),
         _page(
             4,
@@ -391,7 +393,7 @@ def test_filters_metadata_and_invalid_downloads(
         if page_id == 7:
             return httpx.Response(200, content=_animated())
         if page_id == 8:
-            return httpx.Response(200, content=_image(size=(1600, 400)))
+            return httpx.Response(200, content=_image(size=(1600, 399)))
         return httpx.Response(200, content=b"bad")
 
     with _client(handler) as client:
