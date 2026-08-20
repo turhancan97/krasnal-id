@@ -53,8 +53,12 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Query direct category files only, follow pagination, and cache complete API responses.
   Accept known Public Domain, CC0, CC BY, and CC BY-SA static rasters with complete attribution.
 - Store Pillow-verified research copies with a 400-pixel minimum short side and 2,000-pixel
-  maximum long side. Preserve Commons page/revision provenance and reuse verified unchanged
-  files.
+  maximum long side. Downscale oversized Commons derivatives locally with Pillow using
+  aspect-ratio-preserving Lanczos resampling; never upscale undersized images. Preserve Commons
+  page/revision provenance and reuse verified unchanged files.
+- Treat a fixed multi-dwarf sculpture installation as one class only when its direct files
+  consistently depict that installation. Reject umbrella categories whose files represent many
+  distinct statues. Component categories may remain approved, but shared files are quarantined.
 - Retain the lowest Commons page ID for same-label byte duplicates. Exclude byte-identical
   content spanning different labels to prevent evaluation leakage. Never delete orphan files
   automatically.
@@ -151,3 +155,33 @@ krasnal-id/
 - Changelog entries must describe what is actually present and working in the repository, not planned work. This gives future AI agents an accurate handoff point.
 - When cutting a version, move the relevant `Unreleased` entries into a dated version section and recreate an empty `Unreleased` section.
 - Before completing an implementation task, verify whether both this file and `CHANGELOG.md` need corresponding updates. Documentation-only wording fixes do not require a new architectural decision, but should still be logged when material.
+
+### 12.1 Current dataset-audit handoff (2026-08-20)
+
+- The latest canonical staging output contains 173 images across 40 represented classes; 24
+  classes meet the current three-image threshold. All staged files decode, match their recorded
+  checksums and dimensions, stay within the 400–2,000-pixel bounds, and have complete attribution
+  and recognized licenses.
+- `data/discovery/fetched-images.json` is authoritative. There are currently 199 files under
+  `data/images/`, so 26 files are quarantined or orphaned and must not enter a manifest through
+  directory scanning. Do not delete them automatically.
+- Resolve these image-level audit findings before manifest construction:
+  - Papa Krasnal Commons page `22381955` is a differently encoded copy of page `166491`; retain
+    the lower page ID (`166491`) and exclude `22381955`.
+  - Capgeminiusz Programista page `134103757` is heavily posterized and should be excluded as a
+    non-photographic retrieval reference.
+  - Manually decide whether low-subject-prominence pages `22398133` (Papa Krasnal), `52890654`
+    and `52890655` (Pralinka), and `89462414` (Binio) are usable.
+  - Replace fallback display names `Q136001318` and `Q136001344` with `Ossolinek` and
+    `Demokracja`, respectively, before publishing a manifest.
+- Cross-label protection is working: 14 Troszka/Adoratorek records and six Śpiewak
+  Operowy/Tancerka Balerina records were quarantined as exact cross-label duplicates. Perceptual
+  hashing found no remaining cross-class near-duplicate candidate in staging.
+- Sixteen represented classes remain below threshold: Ołbiniusz, Adwokatka, and Rowerzysta have
+  two images each; Abruzjusz, Szpitalnik, Troszka, Adoratorek, Komisia i Euruś, Tancerka
+  Balerina, Śpiewak Operowy, Bankierek, Ditek, Glamour, Gryfosław, Solidariusz Walczący, and
+  Unicefuś have one each.
+- The next session must decide a deterministic image-level exclusion/override contract (for
+  example, a tracked review file consumed by `data build-manifest`). Do not hand-edit generated
+  staging JSON. After recording that decision, implement `data build-manifest` from
+  `fetched-images.json`, not from a filesystem scan.

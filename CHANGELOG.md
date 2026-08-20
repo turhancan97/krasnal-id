@@ -29,11 +29,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 - Changed the default Commons research-image bounds to a 400-pixel minimum short side and a
   2,000-pixel maximum long side.
+- Re-reviewed all 41 tracked category mappings, corrected the stale `Q11823412` mapping to
+  `Papa Krasnal`, rejected the visually heterogeneous Philharmonic umbrella category, and
+  recorded evidence-based notes for every decision.
+- Documented the 2026-08-20 dataset-audit handoff, including image-level exclusions requiring a
+  future review contract, below-threshold classes, display-name corrections, and the canonical
+  staging boundary for manifest construction.
 
 ### Fixed
 
 - Fixed Commons response parsing to accept scalar-valued extension metadata returned by the
   live API while continuing to require string-valued attribution and license fields.
+- Fixed Commons downloads whose responsive derivative exceeds the requested bound by locally
+  downscaling static images to the configured maximum while preserving their aspect ratio.
 
 ### Current state
 

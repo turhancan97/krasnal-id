@@ -684,6 +684,43 @@ def _inspect_image(path: Path, config: WikimediaDataConfig) -> tuple[int, int]:
     return width, height
 
 
+def _resize_oversized_image(path: Path, config: WikimediaDataConfig) -> tuple[int, int]:
+    """Downscale one verified static image to the configured bounding square."""
+    try:
+        with Image.open(path) as image:
+            if getattr(image, "n_frames", 1) != 1:
+                raise CommonsFetchError("animated images are not supported")
+            image.load()
+            width, height = image.size
+            if min(width, height) < config.image_min_short_side:
+                raise CommonsFetchError(
+                    f"stored dimensions {width}x{height} are below the short-side minimum"
+                )
+            if max(width, height) <= config.image_max_long_side:
+                return width, height
+            image_format = image.format
+            if image_format is None:
+                raise CommonsFetchError("downloaded image format could not be determined")
+            resized = image.copy()
+        try:
+            resized.thumbnail(
+                (config.image_max_long_side, config.image_max_long_side),
+                Image.Resampling.LANCZOS,
+                reducing_gap=3.0,
+            )
+            with path.open("wb") as handle:
+                resized.save(handle, format=image_format)
+                handle.flush()
+                os.fsync(handle.fileno())
+        finally:
+            resized.close()
+    except CommonsFetchError:
+        raise
+    except (OSError, SyntaxError, UnidentifiedImageError) as error:
+        raise CommonsFetchError("downloaded content is not a valid static image") from error
+    return _inspect_image(path, config)
+
+
 def _can_reuse(
     candidate: _Candidate,
     expected_path: Path,
@@ -731,7 +768,7 @@ def _download_candidate(
             handle.write(response.content)
             handle.flush()
             os.fsync(handle.fileno())
-        width, height = _inspect_image(temporary_path, config)
+        width, height = _resize_oversized_image(temporary_path, config)
         checksum = _sha256(temporary_path)
         temporary_path.replace(destination)
     finally:

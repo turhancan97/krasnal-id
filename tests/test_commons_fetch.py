@@ -418,6 +418,47 @@ def test_filters_metadata_and_invalid_downloads(
     }.issubset(reasons)
 
 
+@pytest.mark.parametrize(
+    ("downloaded_size", "expected_size"),
+    [
+        ((3840, 2560), (2000, 1333)),
+        ((1920, 2880), (1333, 2000)),
+        ((600, 800), (600, 800)),
+    ],
+)
+def test_bounds_downloads_without_upscaling(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    downloaded_size: tuple[int, int],
+    expected_size: tuple[int, int],
+) -> None:
+    _contact(monkeypatch)
+    directory, path = tmp_path / "discovery", tmp_path / "review.json"
+    dwarf = _dwarf("Q2")
+    _discovery(directory, (dwarf,))
+    _review(path, _decision(dwarf))
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.host == "commons.wikimedia.org":
+            return httpx.Response(200, json=_payload([_page(1, width=4000, height=3000)]))
+        return httpx.Response(200, content=_image(size=downloaded_size))
+
+    with _client(handler) as client:
+        result = fetch_images(
+            directory,
+            path,
+            tmp_path / "images",
+            load_config().data,
+            client=client,
+        )
+
+    assert result.operational_failures == 0
+    assert result.downloaded_images == 1
+    assert (result.images[0].width, result.images[0].height) == expected_size
+    with Image.open(result.images[0].local_path) as image:
+        assert image.size == expected_size
+
+
 def test_deduplicates_same_and_cross_label_content(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

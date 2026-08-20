@@ -1,12 +1,12 @@
 {
   "records": [
     {
-      "corrected_category": null,
+      "corrected_category": "Papa Krasnal",
       "discovered_category": "Olaf Brzeski",
       "discovery_warning": false,
       "display_name": "Pomnik Pomarańczowej Alternatywy",
       "dwarf_id": "Q11823412",
-      "notes": null,
+      "notes": "Corrected after live Wikidata/Commons review: the discovered P373 value points to unrelated artwork; Category:Papa Krasnal is the category linked by the Commons sitelink.",
       "status": "approved"
     },
     {
@@ -15,7 +15,7 @@
       "discovery_warning": false,
       "display_name": "Kowal",
       "dwarf_id": "Q65742089",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -24,7 +24,7 @@
       "discovery_warning": false,
       "display_name": "Ołbiniusz",
       "dwarf_id": "Q65742728",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -33,8 +33,8 @@
       "discovery_warning": true,
       "display_name": "Krasnale Filharmonii Wrocławskiej",
       "dwarf_id": "Q130986871",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after live Commons review: this umbrella category mixes 21 distinct orchestra statues and is not one visually coherent retrieval class.",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -42,7 +42,7 @@
       "discovery_warning": false,
       "display_name": "Q136001294",
       "dwarf_id": "Q136001294",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -51,7 +51,7 @@
       "discovery_warning": false,
       "display_name": "Q136001318",
       "dwarf_id": "Q136001318",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -60,7 +60,7 @@
       "discovery_warning": false,
       "display_name": "Q136001344",
       "dwarf_id": "Q136001344",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -69,7 +69,7 @@
       "discovery_warning": true,
       "display_name": "Syzyfki",
       "dwarf_id": "Q136001355",
-      "notes": null,
+      "notes": "Approved as one fixed two-dwarf Syzyfki installation; direct members consistently depict that installation.",
       "status": "approved"
     },
     {
@@ -78,7 +78,7 @@
       "discovery_warning": false,
       "display_name": "100matolog",
       "dwarf_id": "Q136001369",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -87,7 +87,7 @@
       "discovery_warning": false,
       "display_name": "Kusy",
       "dwarf_id": "Q136001407",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -96,7 +96,7 @@
       "discovery_warning": false,
       "display_name": "Adwokatka",
       "dwarf_id": "Q136001446",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -105,7 +105,7 @@
       "discovery_warning": false,
       "display_name": "Agorek",
       "dwarf_id": "Q136001464",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -114,7 +114,7 @@
       "discovery_warning": true,
       "display_name": "Ogrodnik i Kierownik",
       "dwarf_id": "Q136006129",
-      "notes": null,
+      "notes": "Approved as one fixed two-dwarf Ogrodnik i Kierownik installation; direct members consistently depict that installation.",
       "status": "approved"
     },
     {
@@ -123,7 +123,7 @@
       "discovery_warning": false,
       "display_name": "Szpitalnik",
       "dwarf_id": "Q136276277",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -132,7 +132,7 @@
       "discovery_warning": false,
       "display_name": "Troszka",
       "dwarf_id": "Q136276590",
-      "notes": null,
+      "notes": "Approved as the Troszka component category; files shared with Adoratorek are quarantined by cross-label checksum deduplication.",
       "status": "approved"
     },
     {
@@ -141,7 +141,7 @@
       "discovery_warning": false,
       "display_name": "Adoratorek",
       "dwarf_id": "Q136276606",
-      "notes": null,
+      "notes": "Approved as the Adoratorek component category; files shared with Troszka are quarantined by cross-label checksum deduplication.",
       "status": "approved"
     },
     {
@@ -150,7 +150,7 @@
       "discovery_warning": false,
       "display_name": "Aktor",
       "dwarf_id": "Q136276711",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -159,7 +159,7 @@
       "discovery_warning": false,
       "display_name": "Karmiący Ptaki",
       "dwarf_id": "Q136276947",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -168,7 +168,7 @@
       "discovery_warning": false,
       "display_name": "Ogrodnik",
       "dwarf_id": "Q136277457",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -177,7 +177,7 @@
       "discovery_warning": false,
       "display_name": "Parasolnik",
       "dwarf_id": "Q136278769",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -186,7 +186,7 @@
       "discovery_warning": false,
       "display_name": "Puszczający Stateczki",
       "dwarf_id": "Q136290068",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -195,7 +195,7 @@
       "discovery_warning": false,
       "display_name": "Wierzbownik",
       "dwarf_id": "Q136290183",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -204,7 +204,7 @@
       "discovery_warning": false,
       "display_name": "Zbierający Wodę",
       "dwarf_id": "Q136290218",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -213,7 +213,7 @@
       "discovery_warning": true,
       "display_name": "Komisia i Euruś",
       "dwarf_id": "Q136290260",
-      "notes": null,
+      "notes": "Approved as one fixed Komisia i Euruś installation; the category has one matching direct member and will remain below the manifest threshold unless more photos are added.",
       "status": "approved"
     },
     {
@@ -222,7 +222,7 @@
       "discovery_warning": false,
       "display_name": "Zikusia",
       "dwarf_id": "Q136297592",
-      "notes": null,
+      "notes": "Approved: the live Commons category identifies Zikusia; several legacy filenames use the name Zikoslaw for the same categorized statue.",
       "status": "approved"
     },
     {
@@ -231,7 +231,7 @@
       "discovery_warning": false,
       "display_name": "Tancerka Balerina",
       "dwarf_id": "Q136312185",
-      "notes": null,
+      "notes": "Approved as the Tancerka Balerina component category; exact files shared with Śpiewak Operowy are quarantined by cross-label checksum deduplication.",
       "status": "approved"
     },
     {
@@ -240,7 +240,7 @@
       "discovery_warning": false,
       "display_name": "Śpiewak Operowy",
       "dwarf_id": "Q136312211",
-      "notes": null,
+      "notes": "Approved as the Śpiewak Operowy component category; exact files shared with Tancerka Balerina are quarantined by cross-label checksum deduplication.",
       "status": "approved"
     },
     {
@@ -249,7 +249,7 @@
       "discovery_warning": false,
       "display_name": "Bankierek",
       "dwarf_id": "Q136327390",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -258,7 +258,7 @@
       "discovery_warning": false,
       "display_name": "Ditek",
       "dwarf_id": "Q136332868",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -267,7 +267,7 @@
       "discovery_warning": false,
       "display_name": "Dziarus",
       "dwarf_id": "Q136338281",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -276,7 +276,7 @@
       "discovery_warning": false,
       "display_name": "Glamour",
       "dwarf_id": "Q136338350",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -285,7 +285,7 @@
       "discovery_warning": false,
       "display_name": "Pralinka",
       "dwarf_id": "Q136338464",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -294,7 +294,7 @@
       "discovery_warning": false,
       "display_name": "Gryfosław",
       "dwarf_id": "Q136341058",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -303,7 +303,7 @@
       "discovery_warning": false,
       "display_name": "Capgeminiusz Programista",
       "dwarf_id": "Q136341125",
-      "notes": null,
+      "notes": "Approved: live Commons metadata confirms Capgeminiusz Programista belongs to the Korpokrasnal category.",
       "status": "approved"
     },
     {
@@ -312,7 +312,7 @@
       "discovery_warning": false,
       "display_name": "Polisludek",
       "dwarf_id": "Q136341163",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -321,7 +321,7 @@
       "discovery_warning": false,
       "display_name": "Rowerzysta",
       "dwarf_id": "Q136341766",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -330,7 +330,7 @@
       "discovery_warning": false,
       "display_name": "Solidariusz Walczący",
       "dwarf_id": "Q136343315",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -339,7 +339,7 @@
       "discovery_warning": false,
       "display_name": "Unicefuś",
       "dwarf_id": "Q136343442",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -348,7 +348,7 @@
       "discovery_warning": false,
       "display_name": "Binio",
       "dwarf_id": "Q136343586",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -357,7 +357,7 @@
       "discovery_warning": false,
       "display_name": "Iasek",
       "dwarf_id": "Q136462711",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     },
     {
@@ -366,7 +366,7 @@
       "discovery_warning": false,
       "display_name": "Czajczyński",
       "dwarf_id": "Q136474992",
-      "notes": null,
+      "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
     }
   ],

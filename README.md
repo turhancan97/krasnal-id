@@ -77,8 +77,9 @@ uv run krasnal-id data fetch --refresh
 The fetcher reads exactly the current `dwarfs.json`, visits only direct category files,
 accepts known Public Domain/CC0/CC BY/CC BY-SA static rasters, verifies attribution and image
 content, requires a 400-pixel minimum short side, and stores at most 2,000-pixel research copies
-under `data/images/<QID>/`. It caches
-complete paginated API responses and reuses verified local files when their Commons revision
+under `data/images/<QID>/`. Oversized Commons derivatives are downscaled locally without
+upscaling smaller images. It caches complete paginated API responses and reuses verified local
+files when their Commons revision
 has not changed. Generated image records and a detailed audit are written atomically below
 `data/discovery/`.
 
