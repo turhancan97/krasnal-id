@@ -45,7 +45,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Fixed
 
-- Made CLI help tests set a deterministic `COLUMNS` value so Rich output is stable in GitHub Actions and other non-interactive environments.
+- Made CLI help tests inspect generated command metadata instead of environment-dependent Rich-rendered text.
 - Fixed Commons response parsing to accept scalar-valued extension metadata returned by the
   live API while continuing to require string-valued attribution and license fields.
 - Fixed Commons downloads whose responsive derivative exceeds the requested bound by locally

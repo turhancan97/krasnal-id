@@ -10,6 +10,7 @@ from typing import Any
 import httpx
 import pytest
 from PIL import Image
+from typer.main import get_command
 from typer.testing import CliRunner
 
 import krasnal_id.cli as cli_module
@@ -611,10 +612,11 @@ def test_user_agent_rejected_but_rejected_categories_need_no_network(
 
 
 def test_fetch_cli_workflow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    help_result = runner.invoke(app, ["data", "fetch", "--help"], env={"COLUMNS": "120"})
+    help_result = runner.invoke(app, ["data", "fetch", "--help"])
     assert help_result.exit_code == 0
-    assert "--prepare-review" in help_result.stdout
-    assert "--max-images-per-dwarf" in help_result.stdout
+    fetch_command = get_command(app).commands["data"].commands["fetch"]
+    parameter_names = {parameter.name for parameter in fetch_command.params}
+    assert {"prepare_review", "max_images_per_dwarf"} <= parameter_names
 
     directory, path = tmp_path / "discovery", tmp_path / "review.json"
     dwarf = _dwarf("Q2")
