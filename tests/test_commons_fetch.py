@@ -611,7 +611,7 @@ def test_user_agent_rejected_but_rejected_categories_need_no_network(
 
 
 def test_fetch_cli_workflow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    help_result = runner.invoke(app, ["data", "fetch", "--help"])
+    help_result = runner.invoke(app, ["data", "fetch", "--help"], env={"COLUMNS": "120"})
     assert help_result.exit_code == 0
     assert "--prepare-review" in help_result.stdout
     assert "--max-images-per-dwarf" in help_result.stdout

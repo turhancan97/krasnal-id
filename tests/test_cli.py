@@ -9,7 +9,7 @@ runner = CliRunner()
 
 
 def test_root_help_lists_pipeline_groups() -> None:
-    result = runner.invoke(app, ["--help"])
+    result = runner.invoke(app, ["--help"], env={"COLUMNS": "120"})
 
     assert result.exit_code == 0
     for command in ["data", "embeddings", "retrieve", "experiment", "visualize", "demo"]:
