@@ -30,6 +30,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added the project identity under `docs/brand/`: a mark and horizontal and stacked lockups, each
+  in light and dark variants, with the wordmark converted to outlines so the files render without
+  a font installed, plus the generator that produces them and the usage rules.
 - Added a published findings summary linked from the README: an illustrated short read of the
   headline results, with `RESULTS.md` remaining the complete written record.
 - Added `RESULTS.md`, the written research record: dataset construction, the four experiments,

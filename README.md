@@ -1,4 +1,8 @@
-# Krasnal-ID
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/krasnal-lockup-horizontal-dark.svg">
+  <img src="docs/brand/krasnal-lockup-horizontal-light.svg" alt="Krasnal-ID" width="260">
+</picture>
+
 
 Krasnal-ID is a research prototype for fine-grained visual instance retrieval of
 Wrocław's bronze dwarf statues. Its central experiment asks how identification accuracy
