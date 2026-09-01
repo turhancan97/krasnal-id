@@ -44,6 +44,9 @@ analysis = [
 demo = [
     "gradio==6.24.0",
 ]
+web = [
+    "onnxruntime==1.24.1",
+]
 
 [project.scripts]
 krasnal-id = "krasnal_id.cli:app"

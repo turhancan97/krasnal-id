@@ -1,0 +1,1586 @@
+{
+ "co_located_groups": [
+  [
+   "Q136276711",
+   "Q136276947",
+   "Q136277457",
+   "Q136278769",
+   "Q136290068",
+   "Q136290183",
+   "Q136290218"
+  ],
+  [
+   "Q136338281",
+   "Q136341163"
+  ]
+ ],
+ "dwarfs": [
+  {
+   "id": "Q11823412",
+   "name": "Pomnik Pomarańczowej Alternatywy"
+  },
+  {
+   "id": "Q136001318",
+   "name": "Ossolinek"
+  },
+  {
+   "id": "Q136001344",
+   "name": "Demokracja"
+  },
+  {
+   "id": "Q136001355",
+   "name": "Syzyfki"
+  },
+  {
+   "id": "Q136001369",
+   "name": "100matolog"
+  },
+  {
+   "id": "Q136001407",
+   "name": "Kusy"
+  },
+  {
+   "id": "Q136001464",
+   "name": "Agorek"
+  },
+  {
+   "id": "Q136006129",
+   "name": "Ogrodnik i Kierownik"
+  },
+  {
+   "id": "Q136276711",
+   "name": "Aktor"
+  },
+  {
+   "id": "Q136276947",
+   "name": "Karmiący Ptaki"
+  },
+  {
+   "id": "Q136277457",
+   "name": "Ogrodnik"
+  },
+  {
+   "id": "Q136278769",
+   "name": "Parasolnik"
+  },
+  {
+   "id": "Q136290068",
+   "name": "Puszczający Stateczki"
+  },
+  {
+   "id": "Q136290183",
+   "name": "Wierzbownik"
+  },
+  {
+   "id": "Q136290218",
+   "name": "Zbierający Wodę"
+  },
+  {
+   "id": "Q136297592",
+   "name": "Zikusia"
+  },
+  {
+   "id": "Q136338281",
+   "name": "Dziarus"
+  },
+  {
+   "id": "Q136338464",
+   "name": "Pralinka"
+  },
+  {
+   "id": "Q136341125",
+   "name": "Capgeminiusz Programista"
+  },
+  {
+   "id": "Q136341163",
+   "name": "Polisludek"
+  },
+  {
+   "id": "Q136462711",
+   "name": "Iasek"
+  },
+  {
+   "id": "Q136474992",
+   "name": "Czajczyński"
+  },
+  {
+   "id": "Q65742089",
+   "name": "Kowal"
+  }
+ ],
+ "generated_at": "2026-09-01T20:21:15.911331+00:00",
+ "images": [
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136462711",
+   "id": "commons-108210073",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Iasek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Iasek_(Iaser)_Wroclaw_dwarf_2020_P03.jpg",
+   "thumb": "commons-108210073.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136462711",
+   "id": "commons-108210074",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Iasek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Iasek_(Iaser)_Wroclaw_dwarf_2020_P01.jpg",
+   "thumb": "commons-108210074.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136462711",
+   "id": "commons-108210076",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Iasek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Iasek_(Iaser)_Wroclaw_dwarf_2020_P02.jpg",
+   "thumb": "commons-108210076.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-108316141",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_2020_P04.jpg",
+   "thumb": "commons-108316141.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-108316142",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_2020_P05.jpg",
+   "thumb": "commons-108316142.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-108316143",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_2020_P06.jpg",
+   "thumb": "commons-108316143.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001369",
+   "id": "commons-128412244",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "100matolog",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_%22100matolog%22_autorstwa_Beaty_Zwola%C5%84skiej%E2%80%93Ho%C5%82od_(01.02.2023.).jpg",
+   "thumb": "commons-128412244.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001369",
+   "id": "commons-128412248",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "100matolog",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_%22100matolog%22_autorstwa_Beaty_Zwola%C5%84skiej%E2%80%93Ho%C5%82od_(2023.02.01.).jpg",
+   "thumb": "commons-128412248.webp"
+  },
+  {
+   "author": "Marcin Łuczkowski",
+   "dwarf": "Q136006129",
+   "id": "commons-132949154",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_Ogr%C3%B3d_Botaniczny_UWr_2009-07-11_02.jpg",
+   "thumb": "commons-132949154.webp"
+  },
+  {
+   "author": "Marcin Łuczkowski",
+   "dwarf": "Q136006129",
+   "id": "commons-132949155",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_Ogr%C3%B3d_Botaniczny_UWr_2009-07-11_01.jpg",
+   "thumb": "commons-132949155.webp"
+  },
+  {
+   "author": "Stanislav Kozlovskiy",
+   "dwarf": "Q136001355",
+   "id": "commons-14741475",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_Dwarves_Sphere.JPG",
+   "thumb": "commons-14741475.webp"
+  },
+  {
+   "author": "Matti Blume",
+   "dwarf": "Q136001344",
+   "id": "commons-152341265",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dwarf,_Wroclaw_(P1180438).jpg",
+   "thumb": "commons-152341265.webp"
+  },
+  {
+   "author": "Lestat (Jan Mehlich)",
+   "dwarf": "Q65742089",
+   "id": "commons-15801529",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_-_Krasnale_-_Kowal_(Ku%C5%BAnik)_01.JPG",
+   "thumb": "commons-15801529.webp"
+  },
+  {
+   "author": "Lestat (Jan Mehlich)",
+   "dwarf": "Q136001318",
+   "id": "commons-15801595",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_-_Krasnale_-_Ossolineusz_01.JPG",
+   "thumb": "commons-15801595.webp"
+  },
+  {
+   "author": "Lestat (Jan Mehlich)",
+   "dwarf": "Q11823412",
+   "id": "commons-15801679",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_-_Krasnale_-_Papa_Krasnal_01.jpg",
+   "thumb": "commons-15801679.webp"
+  },
+  {
+   "author": "Julo",
+   "dwarf": "Q11823412",
+   "id": "commons-166491",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnal-Wroclaw-ulSwidnicka.jpg",
+   "thumb": "commons-166491.webp"
+  },
+  {
+   "author": "Tomasz Rozkosz",
+   "dwarf": "Q136001355",
+   "id": "commons-16665991",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Syzyfki.jpg",
+   "thumb": "commons-16665991.webp"
+  },
+  {
+   "author": "Agnieszka Kwiecień, Nova",
+   "dwarf": "Q136341125",
+   "id": "commons-174089158",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_2017-09-03_Wroc%C5%82aw_02.jpg",
+   "thumb": "commons-174089158.webp"
+  },
+  {
+   "author": "Agnieszka Kwiecień, Nova",
+   "dwarf": "Q136341125",
+   "id": "commons-174089159",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_2017-09-03_Wroc%C5%82aw_01.jpg",
+   "thumb": "commons-174089159.webp"
+  },
+  {
+   "author": "Marcin Łuczkowski",
+   "dwarf": "Q136001464",
+   "id": "commons-174827859",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Agorek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Agorek_2023-05-25_Wroc%C5%82aw_01.jpg",
+   "thumb": "commons-174827859.webp"
+  },
+  {
+   "author": "Marcin Łuczkowski",
+   "dwarf": "Q136006129",
+   "id": "commons-174965911",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_2021-10-01_Wroc%C5%82aw_02.jpg",
+   "thumb": "commons-174965911.webp"
+  },
+  {
+   "author": "Marcin Łuczkowski",
+   "dwarf": "Q136006129",
+   "id": "commons-174965912",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_2021-10-01_Wroc%C5%82aw_01.jpg",
+   "thumb": "commons-174965912.webp"
+  },
+  {
+   "author": "Juandev or Jarka",
+   "dwarf": "Q136006129",
+   "id": "commons-18617016",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_(Gardener_and_Manager)_Wroclaw_dwarf_03.jpg",
+   "thumb": "commons-18617016.webp"
+  },
+  {
+   "author": "User: (WT-shared) Krasnoludek at wts wikivoyage",
+   "dwarf": "Q65742089",
+   "id": "commons-23727139",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnal_kowal_01.jpg",
+   "thumb": "commons-23727139.webp"
+  },
+  {
+   "author": "User: (WT-shared) Krasnoludek at wts wikivoyage",
+   "dwarf": "Q136001355",
+   "id": "commons-23727233",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_syzyfki_01.jpg",
+   "thumb": "commons-23727233.webp"
+  },
+  {
+   "author": "User: (WT-shared) Krasnoludek at wts wikivoyage",
+   "dwarf": "Q11823412",
+   "id": "commons-23727242",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_krasnal_01.jpg",
+   "thumb": "commons-23727242.webp"
+  },
+  {
+   "author": "Klearchos Kapoutsis from Santorini, Greece",
+   "dwarf": "Q136001355",
+   "id": "commons-25289502",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sisyphi_(3722077274).jpg",
+   "thumb": "commons-25289502.webp"
+  },
+  {
+   "author": "Klearchos Kapoutsis from Santorini, Greece",
+   "dwarf": "Q136001355",
+   "id": "commons-25289511",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki,_the_forever_working_dwarfs..._(3732394133).jpg",
+   "thumb": "commons-25289511.webp"
+  },
+  {
+   "author": "Klearchos Kapoutsis from Santorini, Greece",
+   "dwarf": "Q65742089",
+   "id": "commons-25289512",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal,_the_Blacksmith..._(3732397409).jpg",
+   "thumb": "commons-25289512.webp"
+  },
+  {
+   "author": "Klearchos Kapoutsis from Santorini, Greece derivative work: Begoon",
+   "dwarf": "Q136001355",
+   "id": "commons-27021888",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sisyphi_(3722077274)_retouched.jpg",
+   "thumb": "commons-27021888.webp"
+  },
+  {
+   "author": "Ewa Rozkosz",
+   "dwarf": "Q136001318",
+   "id": "commons-29007579",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82awski_krasnal_Ossolinek.jpg",
+   "thumb": "commons-29007579.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136006129",
+   "id": "commons-29187776",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_(Gardener_and_Manager)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29187776.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136006129",
+   "id": "commons-29187777",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ogrodnik i Kierownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ogrodnik_i_Kierownik_(Gardener_and_Manager)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29187777.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001369",
+   "id": "commons-29303699",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "100matolog",
+   "source_url": "https://commons.wikimedia.org/wiki/File:100matolog_(Tooth-dwarf)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29303699.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001369",
+   "id": "commons-29303700",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "100matolog",
+   "source_url": "https://commons.wikimedia.org/wiki/File:100matolog_(Tooth-dwarf)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29303700.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-29667596",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-29667596.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-29667597",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667597.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-29667598",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667598.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290183",
+   "id": "commons-29667601",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Wierzbownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Wierzbownik_(Willow)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-29667601.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290183",
+   "id": "commons-29667602",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Wierzbownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Wierzbownik_(Willow)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667602.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290183",
+   "id": "commons-29667603",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Wierzbownik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Wierzbownik_(Willow)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667603.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136278769",
+   "id": "commons-29667610",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Parasolnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Parasolnik_(Umbreller)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667610.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276947",
+   "id": "commons-29667611",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Karmiący Ptaki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Karmi%C4%85cy_Ptaki_(Bird-feeder)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667611.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136278769",
+   "id": "commons-29667612",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Parasolnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Parasolnik_(Umbreller)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667612.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276947",
+   "id": "commons-29667617",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Karmiący Ptaki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Karmi%C4%85cy_Ptaki_(Bird-feeder)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667617.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290068",
+   "id": "commons-29667620",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Puszczający Stateczki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Puszczaj%C4%85cy_Stateczki_(Paper-shi-maker)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667620.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290068",
+   "id": "commons-29667621",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Puszczający Stateczki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Puszczaj%C4%85cy_Stateczki_(Paper-shi-maker)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667621.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290218",
+   "id": "commons-29667624",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Zbierający Wodę",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Zbieraj%C4%85cy_Wod%C4%99_(Water-collector)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667624.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136290218",
+   "id": "commons-29667625",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Zbierający Wodę",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Zbieraj%C4%85cy_Wod%C4%99_(Water-collector)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667625.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136277457",
+   "id": "commons-29667626",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ogrodnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Ogrodnik_(Gardener)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29667626.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136277457",
+   "id": "commons-29667634",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ogrodnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Ogrodnik_(Gardener)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29667634.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q11823412",
+   "id": "commons-29671511",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal_(Papa_Dwarf)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-29671511.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q11823412",
+   "id": "commons-29671512",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal_(Papa_Dwarf)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29671512.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q11823412",
+   "id": "commons-29671513",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal_(Papa_Dwarf)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29671513.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q11823412",
+   "id": "commons-29671514",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal_(Papa_Dwarf)_Wroclaw_dwarf_04.JPG",
+   "thumb": "commons-29671514.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671833",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-29671833.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671834",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29671834.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671835",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29671835.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671838",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_04.JPG",
+   "thumb": "commons-29671838.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671839",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_06.JPG",
+   "thumb": "commons-29671839.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001355",
+   "id": "commons-29671840",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_05.JPG",
+   "thumb": "commons-29671840.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q65742089",
+   "id": "commons-29684685",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-29684685.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q65742089",
+   "id": "commons-29684686",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-29684686.webp"
+  },
+  {
+   "author": "DavidConFran",
+   "dwarf": "Q136001355",
+   "id": "commons-29693157",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_07.jpg",
+   "thumb": "commons-29693157.webp"
+  },
+  {
+   "author": "Sculpture: Marta Mirynowska and Piotr Makała, photo: Pnapora",
+   "dwarf": "Q136001407",
+   "id": "commons-30035607",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kusy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kusy_(Kusy)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-30035607.webp"
+  },
+  {
+   "author": "Sculpture: Marta Mirynowska and Piotr Makała, photo: Pnapora",
+   "dwarf": "Q136001407",
+   "id": "commons-30035608",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kusy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kusy_(Kusy)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-30035608.webp"
+  },
+  {
+   "author": "Sculpture: Marta Mirynowska and Piotr Makała, photo: Pnapora",
+   "dwarf": "Q136001407",
+   "id": "commons-30035609",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kusy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kusy_(Kusy)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-30035609.webp"
+  },
+  {
+   "author": "Sculpture: Marta Mirynowska and Piotr Makała, photo: Pnapora",
+   "dwarf": "Q136001407",
+   "id": "commons-30035610",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Kusy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kusy_(Kusy)_Wroclaw_dwarf_04.JPG",
+   "thumb": "commons-30035610.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001464",
+   "id": "commons-30049919",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Agorek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Agorek_(Agora)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-30049919.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001464",
+   "id": "commons-30049920",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Agorek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Agorek_(Agora)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-30049920.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001318",
+   "id": "commons-30170400",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ossolinek_(Ossolineo)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-30170400.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001318",
+   "id": "commons-30170401",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ossolinek_(Ossolineo)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-30170401.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136297592",
+   "id": "commons-31670194",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Zikusia",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Zikoslaw_(Zikoslaw)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-31670194.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136297592",
+   "id": "commons-31670195",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Zikusia",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Zikoslaw_(Zikoslaw)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-31670195.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136297592",
+   "id": "commons-31670196",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Zikusia",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Zikoslaw_(Zikoslaw)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-31670196.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136474992",
+   "id": "commons-31976816",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Czajczyński",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Czajczynski_(Czajczynski)_Wroclaw_dwarf_03.JPG",
+   "thumb": "commons-31976816.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136474992",
+   "id": "commons-31976817",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Czajczyński",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Czajczynski_(Czajczynski)_Wroclaw_dwarf_01.JPG",
+   "thumb": "commons-31976817.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136474992",
+   "id": "commons-31976818",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Czajczyński",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Czajczynski_(Czajczynski)_Wroclaw_dwarf_02.JPG",
+   "thumb": "commons-31976818.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-37135626",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_z_ul._%C5%9Awidnickiej_-_Syzyfek_Pchaj%C4%85cy.JPG",
+   "thumb": "commons-37135626.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-37135627",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_z_ulicy_%C5%9Awidnickiej_-_Syzyfek_Podnosz%C4%85cy.JPG",
+   "thumb": "commons-37135627.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q11823412",
+   "id": "commons-37135628",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_ul._%C5%9Awidnicka,_Papa_Krasnal.JPG",
+   "thumb": "commons-37135628.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-37135630",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnale_na_ulicy_%C5%9Awidnickiej_-_Syzyfki.JPG",
+   "thumb": "commons-37135630.webp"
+  },
+  {
+   "author": "Jaroslaw Komar",
+   "dwarf": "Q136001355",
+   "id": "commons-38287437",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_-_panoramio.jpg",
+   "thumb": "commons-38287437.webp"
+  },
+  {
+   "author": "Julo",
+   "dwarf": "Q136001355",
+   "id": "commons-401381",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Syzyfek.jpg",
+   "thumb": "commons-401381.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136290218",
+   "id": "commons-4071704",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Zbierający Wodę",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Wodnik.JPG",
+   "thumb": "commons-4071704.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136276947",
+   "id": "commons-4071728",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Karmiący Ptaki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Karmiacy_Ptaki.JPG",
+   "thumb": "commons-4071728.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136277457",
+   "id": "commons-4071744",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ogrodnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Ogrodnik.JPG",
+   "thumb": "commons-4071744.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136276711",
+   "id": "commons-4071752",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Aktor.JPG",
+   "thumb": "commons-4071752.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136278769",
+   "id": "commons-4071765",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Parasolnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Parasolnik.JPG",
+   "thumb": "commons-4071765.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q136290068",
+   "id": "commons-4071777",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Puszczający Stateczki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Puszczajacy_Stateczki.JPG",
+   "thumb": "commons-4071777.webp"
+  },
+  {
+   "author": "Adalbertus",
+   "dwarf": "Q65742089",
+   "id": "commons-4072179",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Kuznik.JPG",
+   "thumb": "commons-4072179.webp"
+  },
+  {
+   "author": "Bonio",
+   "dwarf": "Q136001318",
+   "id": "commons-4077806",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnal_Ossolineusz.JPG",
+   "thumb": "commons-4077806.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-46984221",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_Syzyfek_z_ul._%C5%9Awidnickiej_DSC00345.JPG",
+   "thumb": "commons-46984221.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-46984222",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnale_Syzyfki_z_ul._%C5%9Awidnickiej_DSC03969.JPG",
+   "thumb": "commons-46984222.webp"
+  },
+  {
+   "author": "Andrzej Otrębski",
+   "dwarf": "Q136001355",
+   "id": "commons-47588369",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnale_Syzyfki.jpg",
+   "thumb": "commons-47588369.webp"
+  },
+  {
+   "author": "Andrzej Otrębski",
+   "dwarf": "Q136341125",
+   "id": "commons-47588371",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Programista.jpg",
+   "thumb": "commons-47588371.webp"
+  },
+  {
+   "author": "WiseWoman",
+   "dwarf": "Q136341125",
+   "id": "commons-50755648",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Breslau-Dwarf-laptop.jpg",
+   "thumb": "commons-50755648.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001318",
+   "id": "commons-52805676",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ossolinek_(Ossolineo)_Wroclaw_dwarf_dressed_2016_P03.jpg",
+   "thumb": "commons-52805676.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001318",
+   "id": "commons-52805677",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ossolinek_(Ossolineo)_Wroclaw_dwarf_dressed_2016_P02.jpg",
+   "thumb": "commons-52805677.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136001318",
+   "id": "commons-52805678",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Ossolinek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ossolinek_(Ossolineo)_Wroclaw_dwarf_dressed_2016_P01.jpg",
+   "thumb": "commons-52805678.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q65742089",
+   "id": "commons-52829729",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_dressed_2016_P02.jpg",
+   "thumb": "commons-52829729.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q65742089",
+   "id": "commons-52829730",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_dressed_2016_P01.jpg",
+   "thumb": "commons-52829730.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-52888489",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_dressed_2016_P03.jpg",
+   "thumb": "commons-52888489.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-52888490",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_dressed_2016_P01.jpg",
+   "thumb": "commons-52888490.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-52888491",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_dressed_2016_P02.jpg",
+   "thumb": "commons-52888491.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136276711",
+   "id": "commons-52888494",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Aktor",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnale_Wodne_(Water_dwarves)_Aktor_(Actor)_Wroclaw_dwarf_dressed_2016_P04.jpg",
+   "thumb": "commons-52888494.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136338464",
+   "id": "commons-52890639",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pralinka",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pralinka_(Pralinka)_Wroclaw_dwarf_01.jpg",
+   "thumb": "commons-52890639.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136338464",
+   "id": "commons-52890640",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pralinka",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pralinka_(Pralinka)_Wroclaw_dwarf_03.jpg",
+   "thumb": "commons-52890640.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136338464",
+   "id": "commons-52890642",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pralinka",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pralinka_(Pralinka)_Wroclaw_dwarf_02.jpg",
+   "thumb": "commons-52890642.webp"
+  },
+  {
+   "author": "Pnapora",
+   "dwarf": "Q136338464",
+   "id": "commons-52890646",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pralinka",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pralinka_(Pralinka)_Wroclaw_dwarf_04.jpg",
+   "thumb": "commons-52890646.webp"
+  },
+  {
+   "author": "aldonis",
+   "dwarf": "Q136001355",
+   "id": "commons-53491713",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_-_panoramio_(2).jpg",
+   "thumb": "commons-53491713.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q136001355",
+   "id": "commons-53989670",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnale_Syzyfki_z_ulicy_%C5%9Awidnickiej.jpg",
+   "thumb": "commons-53989670.webp"
+  },
+  {
+   "author": "Aw58",
+   "dwarf": "Q65742089",
+   "id": "commons-53990240",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw,_krasnal_Kowal_(Ku%C5%BAnik).jpg",
+   "thumb": "commons-53990240.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341125",
+   "id": "commons-58024691",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_(Company_dwarf)_Wroclaw_dwarf_02.jpg",
+   "thumb": "commons-58024691.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341125",
+   "id": "commons-58024692",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_(Company_dwarf)_Wroclaw_dwarf_01.jpg",
+   "thumb": "commons-58024692.webp"
+  },
+  {
+   "author": "Bobby Bothmann, photographer",
+   "dwarf": "Q136341125",
+   "id": "commons-61960234",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Capgeminiusz_Programista.jpg",
+   "thumb": "commons-61960234.webp"
+  },
+  {
+   "author": "Skelanard",
+   "dwarf": "Q136297592",
+   "id": "commons-62643205",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Zikusia",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Gnome_Zikusia_20170918_135937_HDR.jpg",
+   "thumb": "commons-62643205.webp"
+  },
+  {
+   "author": "Photographed by Bobby Bothmann.",
+   "dwarf": "Q65742089",
+   "id": "commons-63693028",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal.jpg",
+   "thumb": "commons-63693028.webp"
+  },
+  {
+   "author": "Photographed by Bobby Bothmann.",
+   "dwarf": "Q11823412",
+   "id": "commons-63693217",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal.jpg",
+   "thumb": "commons-63693217.webp"
+  },
+  {
+   "author": "Photographed by Bobby Bothmann.",
+   "dwarf": "Q136001355",
+   "id": "commons-63693447",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki.jpg",
+   "thumb": "commons-63693447.webp"
+  },
+  {
+   "author": "林高志",
+   "dwarf": "Q136001355",
+   "id": "commons-66809844",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:%E6%B3%A2%E8%98%AD%E5%A5%A7%E6%96%AF%E5%A8%81%E8%BE%9B%E9%9B%86%E4%B8%AD%E7%87%9F%E5%8D%9A%E7%89%A9%E9%A4%A8(%E4%B8%96%E7%95%8C%E9%81%BA%E7%94%A2)138.jpg",
+   "thumb": "commons-66809844.webp"
+  },
+  {
+   "author": "Aniax",
+   "dwarf": "Q11823412",
+   "id": "commons-7227571",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pomnik_krasnoludka_we_Wroc%C5%82awiu.jpg",
+   "thumb": "commons-7227571.webp"
+  },
+  {
+   "author": "Klaudiax",
+   "dwarf": "Q11823412",
+   "id": "commons-7227877",
+   "license": "Public domain",
+   "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Papa_Krasnal_(Papa_Dwarf)_Wroclaw_dwarf_05.jpg",
+   "thumb": "commons-7227877.webp"
+  },
+  {
+   "author": "Hrs Poland",
+   "dwarf": "Q136341125",
+   "id": "commons-73722147",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Krasnal_We_Wroclawiu_(152991771).jpeg",
+   "thumb": "commons-73722147.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001355",
+   "id": "commons-73872471",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_2016_P03.jpg",
+   "thumb": "commons-73872471.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001355",
+   "id": "commons-73872472",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_2016_P01.jpg",
+   "thumb": "commons-73872472.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001355",
+   "id": "commons-73872473",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_2016_P02.jpg",
+   "thumb": "commons-73872473.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001355",
+   "id": "commons-73872474",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Syzyfki_(Sisyphers)_Wroclaw_dwarf_2016_P04.jpg",
+   "thumb": "commons-73872474.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-73921979",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_03.jpg",
+   "thumb": "commons-73921979.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-73921980",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_02.jpg",
+   "thumb": "commons-73921980.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136001344",
+   "id": "commons-73921981",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Demokracja",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Demokracja_(Democrat)_Wroclaw_dwarf_01.jpg",
+   "thumb": "commons-73921981.webp"
+  },
+  {
+   "author": "Fred Romero from Paris, France",
+   "dwarf": "Q136278769",
+   "id": "commons-76887634",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "name": "Parasolnik",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_-_Fontanna_krasnali.jpg",
+   "thumb": "commons-76887634.webp"
+  },
+  {
+   "author": "PantheraLeo1359531",
+   "dwarf": "Q136341125",
+   "id": "commons-80848801",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Fotoserie_Breslau_20190721_015.jpg",
+   "thumb": "commons-80848801.webp"
+  },
+  {
+   "author": "PantheraLeo1359531",
+   "dwarf": "Q136001355",
+   "id": "commons-80848804",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Fotoserie_Breslau_20190721_014.jpg",
+   "thumb": "commons-80848804.webp"
+  },
+  {
+   "author": "PantheraLeo1359531",
+   "dwarf": "Q136338281",
+   "id": "commons-80848812",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Dziarus",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Fotoserie_Breslau_20190721_016.jpg",
+   "thumb": "commons-80848812.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341125",
+   "id": "commons-89270587",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_(Company_dwarf)_Wroclaw_dwarf_03_masked_2020.jpg",
+   "thumb": "commons-89270587.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341125",
+   "id": "commons-89270588",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_(Company_dwarf)_Wroclaw_dwarf_04_masked_2020.jpg",
+   "thumb": "commons-89270588.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q65742089",
+   "id": "commons-89270975",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_masked_2020_P01.jpg",
+   "thumb": "commons-89270975.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q65742089",
+   "id": "commons-89270976",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Kowal",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kowal_(Smithie)_Wroclaw_dwarf_masked_2020_P02.jpg",
+   "thumb": "commons-89270976.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341163",
+   "id": "commons-89278057",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Polisludek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Polisludek_(Poliser)_Wroclaw_dwarf_2020_P02.jpg",
+   "thumb": "commons-89278057.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341163",
+   "id": "commons-89278058",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Polisludek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Polisludek_(Poliser)_Wroclaw_dwarf_2020_P03.jpg",
+   "thumb": "commons-89278058.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136341163",
+   "id": "commons-89278059",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Polisludek",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Polisludek_(Poliser)_Wroclaw_dwarf_2020_P01.jpg",
+   "thumb": "commons-89278059.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136338281",
+   "id": "commons-89278155",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Dziarus",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dziarus_(Tattooman)_Wroclaw_dwarf_masked_2020_P01.jpg",
+   "thumb": "commons-89278155.webp"
+  },
+  {
+   "author": "Fallaner",
+   "dwarf": "Q136338281",
+   "id": "commons-89278156",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Dziarus",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dziarus_(Tattooman)_Wroclaw_dwarf_masked_2020_P02.jpg",
+   "thumb": "commons-89278156.webp"
+  },
+  {
+   "author": "Fallaner (crop by Manfred_Werner_(WMAT) )",
+   "dwarf": "Q136341125",
+   "id": "commons-92299768",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Capgeminiusz Programista",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korpokrasnal_(Company_dwarf)_Wroclaw_dwarf_02_crop.jpg",
+   "thumb": "commons-92299768.webp"
+  },
+  {
+   "author": "Nickispeaki",
+   "dwarf": "Q136001355",
+   "id": "commons-95257222",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "name": "Syzyfki",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_20190119_05.jpg",
+   "thumb": "commons-95257222.webp"
+  }
+ ],
+ "manifest_sha256": "b34fa623d0e4832e2459a7e88fcf620496be90bf50e0a20f2863800f8129b238",
+ "measured": {
+  "folds": 146,
+  "mrr": 0.954555338116982,
+  "top_1": 0.9315068493150684,
+  "top_5": 0.9863013698630136
+ },
+ "model": {
+  "dimensions": 512,
+  "file": "vision_model_q4.onnx",
+  "repo": "Xenova/clip-vit-base-patch32"
+ }
+}
