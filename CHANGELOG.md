@@ -50,9 +50,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   statue and identify it entirely on-device, with attribution beside every match and a note when
   the top match belongs to a co-located installation.
 - Added the demo's build at `docs/demo/build.mjs`, producing the reference vectors, thumbnails and
-  attribution metadata. It runs the same library, model, dtype and antialiased pre-downscale the
-  browser uses, re-scores the leave-one-out protocol on the vectors it ships, and records
-  self-test probes so the page can verify its own pipeline in a real browser.
+  attribution metadata. It runs the same library, model and dtype the browser uses, re-scores the
+  leave-one-out protocol on the vectors it ships, and records self-test probes so the page can
+  verify its own pipeline in a real browser.
+- Added `docs/resize.mjs`, one Lanczos-3 resampler imported by both the browser and the build, so
+  a query and a reference are preprocessed by identical arithmetic rather than by two platforms'
+  differing built-in resamplers.
 - Added the geographic ablation as `krasnal-id experiment geo-ablation`: candidate pools built
   from real Wikidata coordinates by nearest-neighbour proximity, scored against randomly sampled
   pools of matched size, with the median and maximum radius each pool spans.

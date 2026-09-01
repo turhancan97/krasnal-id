@@ -17,6 +17,7 @@ import {
   RawImage,
   env,
 } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
+import { resizeToShortestEdge } from "./resize.mjs";
 
 const MODEL_ID = "Xenova/clip-vit-base-patch32";
 const DTYPE = "q4"; // 64 MB, and indistinguishable from full precision here.
@@ -96,47 +97,33 @@ async function loadModel() {
 }
 
 /**
- * Decode and pre-downscale to a 224 shortest edge before the model sees it.
+ * Decode, then downscale with the same resampler the build used.
  *
- * Halving in steps keeps the result antialiased: a single large drawImage still
- * aliases in some browsers even with high smoothing requested, and aliasing at
- * this scale of reduction measurably costs accuracy.
+ * The canvas is only a decoder here. Its own scaling is browser-dependent and
+ * measurably disagreed with the build (0.98 cosine, where 1.00 is wanted), so
+ * the pixels go through resize.mjs instead and both sides match by construction.
  */
 async function readScaled(source) {
   const blob = typeof source === "string" ? await (await fetch(source)).blob() : source;
-  let bitmap = await createImageBitmap(blob);
-  const target = SHORTEST_EDGE;
-
-  const drawTo = (image, width, height) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d", { willReadFrequently: true });
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
-    context.drawImage(image, 0, 0, width, height);
-    return canvas;
-  };
-
-  let width = bitmap.width;
-  let height = bitmap.height;
-  while (Math.min(width, height) >= target * 2) {
-    width = Math.max(target, Math.round(width / 2));
-    height = Math.max(target, Math.round(height / 2));
-    const canvas = drawTo(bitmap, width, height);
-    bitmap.close?.();
-    bitmap = await createImageBitmap(canvas);
-  }
-  const scale = target / Math.min(width, height);
-  const finalWidth = Math.max(target, Math.round(width * scale));
-  const finalHeight = Math.max(target, Math.round(height * scale));
-  const canvas = drawTo(bitmap, finalWidth, finalHeight);
+  const bitmap = await createImageBitmap(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  context.imageSmoothingEnabled = false;
+  context.drawImage(bitmap, 0, 0);
   bitmap.close?.();
 
-  const pixels = canvas
-    .getContext("2d", { willReadFrequently: true })
-    .getImageData(0, 0, finalWidth, finalHeight);
-  return new RawImage(new Uint8ClampedArray(pixels.data), finalWidth, finalHeight, 4);
+  const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = 0;
+  canvas.height = 0;
+  const scaled = resizeToShortestEdge(
+    new Uint8ClampedArray(pixels.data),
+    pixels.width,
+    pixels.height,
+    SHORTEST_EDGE,
+  );
+  return new RawImage(scaled.data, scaled.width, scaled.height, 4);
 }
 
 function normalise(values) {

@@ -20,6 +20,7 @@ import { AutoProcessor, CLIPVisionModelWithProjection, RawImage, env } from "@hu
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
+import { resizeToShortestEdge } from "../resize.mjs";
 
 env.allowLocalModels = false;
 
@@ -41,20 +42,24 @@ const names = new Map(dwarfs.map((d) => [d.dwarf_id, d.display_name]));
 
 console.log(`${images.length} reference photographs, ${dwarfs.length} dwarves`);
 
-/** Decode and pre-downscale, so the model's processor has almost nothing to do. */
+/**
+ * Decode, then downscale with the resampler the browser also uses.
+ *
+ * sharp only decodes here. Its own resize is deliberately not used: it does not
+ * match a browser's, and the query and the reference have to agree.
+ */
 async function readScaled(file) {
   const { data, info } = await sharp(file)
-    .resize({
-      width: EMBED_SHORTEST_EDGE,
-      height: EMBED_SHORTEST_EDGE,
-      fit: "outside",
-      withoutEnlargement: false,
-      kernel: "lanczos3",
-    })
-    .removeAlpha()
+    .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  return new RawImage(new Uint8ClampedArray(data), info.width, info.height, info.channels);
+  const scaled = resizeToShortestEdge(
+    new Uint8ClampedArray(data),
+    info.width,
+    info.height,
+    EMBED_SHORTEST_EDGE,
+  );
+  return new RawImage(scaled.data, scaled.width, scaled.height, 4);
 }
 
 const unit = (values) => {
