@@ -16,10 +16,14 @@ and the interactive demonstration. The v0.1-v0.3 build order is complete.
 
 ## Findings
 
-[**RESULTS.md**](RESULTS.md) is the written record of what the experiments found: DINOv2 reaches
-95.9% top-1 across the full 23-dwarf pool, accuracy decays by about one point per doubling of the
-candidate pool against CLIP's 1.8, a trained classifier does not beat raw retrieval, and the
-errors concentrate on one explainable cluster of water-themed statues.
+DINOv2 reaches 95.9% top-1 across the full 23-dwarf pool, accuracy decays by about one point per
+doubling of the candidate pool against CLIP's 1.8, a trained classifier does not beat raw
+retrieval, and the errors concentrate on one explainable cluster of water-themed statues.
+
+- [**Findings summary**](https://claude.ai/code/artifact/f3133eff-da11-4b36-b3e2-2be0ea379f7b) —
+  an illustrated two-minute read with the headline curve.
+- [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all four
+  experiments, limitations, and how to reproduce them.
 
 ## Setup
 

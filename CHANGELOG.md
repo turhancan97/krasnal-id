@@ -30,6 +30,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added a published findings summary linked from the README: an illustrated short read of the
+  headline results, with `RESULTS.md` remaining the complete written record.
 - Added `RESULTS.md`, the written research record: dataset construction, the four experiments,
   what the numbers mean, limitations, and a reproduction script.
 - Added the accuracy-versus-pool-size figure as `krasnal-id visualize ablation`, drawing every
