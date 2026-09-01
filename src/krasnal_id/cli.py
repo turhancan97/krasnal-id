@@ -43,6 +43,7 @@ from krasnal_id.experiments.confusion_analysis import (
     ConfusionAnalysisError,
     run_confusion_analysis,
 )
+from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
 from krasnal_id.logging import configure_logging
@@ -346,6 +347,39 @@ def pool_ablation_experiment(override: OverrideOption = None) -> None:
     for metric in result.metrics:
         if metric.lower_bound is None or metric.upper_bound is None:
             typer.echo(f"  {metric.name}: {metric.value:.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[seeds {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("geo-ablation")
+def geo_ablation_experiment(override: OverrideOption = None) -> None:
+    """Compare real proximity-based candidate pools against randomly sampled ones."""
+    config = load_config(["experiment=geo_ablation", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_geo_ablation(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        GeoAblationError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Geographic ablation error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Geographic ablation complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.name.startswith("geo_radius_metres"):
+            typer.echo(
+                f"  {metric.name}: {metric.value:.0f} m median"
+                + (f", {metric.upper_bound:.0f} m max" if metric.upper_bound else "")
+            )
+        elif metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
         else:
             typer.echo(
                 f"  {metric.name}: {metric.value:.4f} "

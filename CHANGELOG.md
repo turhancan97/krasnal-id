@@ -46,6 +46,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Added the Gradio demonstration as `krasnal-id demo [--top-k N] [--port P] [--share]`: upload a
   photograph to see ranked candidate dwarves with similarity scores and their closest reference
   photographs, with the reference set loaded once per session.
+- Added the geographic ablation as `krasnal-id experiment geo-ablation`: candidate pools built
+  from real Wikidata coordinates by nearest-neighbour proximity, scored against randomly sampled
+  pools of matched size, with the median and maximum radius each pool spans.
+- Added a `geo_ablation` Hydra experiment group and its validated `GeoAblationConfig`.
 - Added the trained-classifier comparison as `krasnal-id experiment probe`: per-class prototype
   and per-fold linear-probe classifiers scored against a retrieval arm on the same folds, with
   Wilson intervals, mean reciprocal rank, and an explicit top-1 gain over retrieval.
@@ -139,6 +143,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   6 of 146 queries against CLIP's 11, and both backbones agree that the Puszczajacy Stateczki,
   Zbierajacy Wode, and Karmiacy Ptaki water-themed dwarves are the systematically confused
   cluster, which the projections show as a single tight neighborhood.
+- The geographic ablation is implemented and run, answering the question `AGENTS.md` section 5.2
+  left open. Real proximity pools are consistently harder than random pools of the same size
+  (DINOv2 -1.6 points at a pool of five, CLIP -2.5), because six of the 23 dwarves stand within
+  one metre of each other as one themed installation and are the same statues the confusion
+  analysis flags.
 - Single-image retrieval is implemented and reproduces the confusion finding interactively: a
   Puszczajacy Stateczki query ranks Zbierajacy Wode first under both backbones, with the water-
   themed cluster filling the top three candidates.

@@ -10,7 +10,7 @@ from pydantic import HttpUrl
 from krasnal_id.config import BackboneConfig
 from krasnal_id.embeddings.cache import EmbeddingCache
 from krasnal_id.embeddings.store import cache_key_for
-from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
+from krasnal_id.models import Coordinates, DatasetManifest, DwarfRecord, ImageRecord
 
 FAKE_BACKBONE = BackboneConfig(
     name="dinov2",
@@ -38,14 +38,24 @@ def image_record(image_id: str, dwarf_id: str, digest_seed: str) -> ImageRecord:
     )
 
 
-def synthetic_manifest(dwarf_count: int = 3, per_dwarf: int = 3) -> DatasetManifest:
-    """Build a manifest with evenly sized classes."""
+def synthetic_manifest(
+    dwarf_count: int = 3,
+    per_dwarf: int = 3,
+    coordinates: dict[str, tuple[float, float]] | None = None,
+) -> DatasetManifest:
+    """Build a manifest with evenly sized classes, optionally placing the dwarves."""
+    placed = coordinates or {}
     dwarfs = tuple(
         DwarfRecord(
             dwarf_id=f"Q{index}",
             display_name=f"Dwarf {index}",
             wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/Q{index}"),
             commons_category=f"Dwarf {index}",
+            coordinates=(
+                Coordinates(latitude=placed[f"Q{index}"][0], longitude=placed[f"Q{index}"][1])
+                if f"Q{index}" in placed
+                else None
+            ),
         )
         for index in range(dwarf_count)
     )

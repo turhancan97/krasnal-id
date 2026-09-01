@@ -95,6 +95,11 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   count are skipped with a warning rather than clamped, and the full pool is always measured as a
   comparable right-hand anchor.
 - Per-pool error bars are the observed spread across seeds, not a distributional assumption.
+- The geographic ablation pools each query with its **N-1 nearest** dwarves rather than by a fixed
+  radius, so pool size is matched to the random arm and only the selection rule varies. The median
+  and maximum radius each pool spans are reported alongside, which keeps the result interpretable
+  in metres. Nothing samples there, so a geographic measurement is exact and carries no seed
+  spread; the random comparison arm supplies the error bars.
 - Confusion analysis records the strongest wrong dwarf for **every** query, not only for failures.
   On a dataset with few outright errors the near-misses are where the signal is. Pairs stay
   directed, so an asymmetric confusion does not average away against its reverse.
@@ -159,6 +164,12 @@ identification becomes unreliable. Measured evidence behind that choice:
 - Any extrapolation past N=23 must be labeled as such and called optimistic: distractors are
   drawn from a small class population, while a real 1,000-plus dwarf pool holds far more
   genuinely confusable statues, so the true curve should fall faster than a log-linear fit.
+- The 2026-09-01 geographic ablation measured what §5.2 left open. Real proximity pools are
+  *harder* than random pools of the same size, because six of the 23 dwarves stand within one
+  metre of each other as one themed installation and are exactly the statues the confusion
+  analysis flags. Random subsampling scatters them across pools and therefore overstates what
+  location narrowing buys. Do not describe the simulated curve as a lower bound on a
+  location-aware system.
 3. **Error analysis**: confusion matrix for most-confused pairs — which dwarves get mixed up, and why (visually similar poses/props is the expected story).
 4. **Embedding-space visualization**: t-SNE or UMAP plot of the reference set, colored by class, to make the "why confusion happens" argument visually.
 

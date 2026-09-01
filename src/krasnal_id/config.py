@@ -107,6 +107,23 @@ class PoolSizeAblationConfig(BaseModel):
     seeds: tuple[int, ...] = Field(min_length=1)
 
 
+class GeoAblationConfig(BaseModel):
+    """Real coordinate-based candidate-pool settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["geo_ablation"]
+    pool_sizes: tuple[int, ...] = Field(min_length=1)
+    seeds: tuple[int, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_pool_sizes(self) -> "GeoAblationConfig":
+        """Require pool sizes a candidate set can actually take."""
+        if any(size < 2 for size in self.pool_sizes):
+            raise ValueError("pool sizes must be at least two")
+        return self
+
+
 class ProbeExperimentConfig(BaseModel):
     """Trained-classifier comparison settings."""
 
@@ -152,6 +169,7 @@ class VisualizationExperimentConfig(BaseModel):
 ExperimentConfig = Annotated[
     BaselineExperimentConfig
     | PoolSizeAblationConfig
+    | GeoAblationConfig
     | ProbeExperimentConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,

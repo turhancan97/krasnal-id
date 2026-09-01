@@ -19,11 +19,14 @@ This repository answers that with a measured curve rather than a single accuracy
 2. **Accuracy decays slowly, and the backbones diverge.** DINOv2 loses 0.96 accuracy points per
    doubling of the candidate pool; CLIP loses 1.76. The gap between them *widens* with pool size,
    so backbone choice matters more the harder the problem gets.
-3. **Training a classifier does not help.** A per-fold linear probe gains 0.7 top-1 points over
+3. **Narrowing by location helps less than the simulation suggests.** Real proximity-based pools
+   are consistently *harder* than random pools of the same size, because the statues that are
+   hardest to tell apart were installed together as a themed group.
+4. **Training a classifier does not help.** A per-fold linear probe gains 0.7 top-1 points over
    raw retrieval and per-class prototypes lose 2 to 3, with every difference inside the
    confidence intervals. At this data scale, nearest-neighbour retrieval is already the right
    tool.
-4. **The errors are explainable, not random.** Both backbones concentrate their mistakes on the
+5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on the
    same small cluster of water-themed dwarves, which the embedding projections show as a single
    tight neighbourhood.
 
@@ -110,7 +113,47 @@ pool contains far more genuinely confusable statues — shared poses, shared pro
 — so the true curve should fall faster than a log-linear fit. The honest claim this data supports
 is about the *rate* of decay in the measured range, not about where the line crosses a threshold.
 
-## 3. Does a trained classifier beat retrieval?
+## 3. Does narrowing by location actually help?
+
+The pools above are sampled at random. The real proposal is to narrow by *location*, and every
+dwarf in this dataset carries Wikidata coordinates, so that can be measured rather than assumed.
+Each query is pooled with its **N−1 nearest** dwarves instead of N−1 random ones — same pool size,
+only the selection rule changes.
+
+| pool size | DINOv2 random | DINOv2 geographic | difference | median radius |
+|---|---|---|---|---|
+| 3 | 98.8% | 98.6% | −0.1 | 190 m |
+| 5 | 98.9% | 97.3% | **−1.6** | 260 m |
+| 8 | 97.3% | 96.6% | −0.7 | 390 m |
+| 10 | 96.7% | 96.6% | −0.1 | 398 m |
+| 15 | 96.4% | 96.6% | +0.1 | 571 m |
+| 23 (full) | 95.9% | 95.9% | 0.0 | — |
+
+**Geographic pools are harder than random pools of the same size.** CLIP shows it more strongly:
+−2.5 points at a pool of 5, −2.1 at 8, −1.9 at 10. The effect is small in absolute terms but it
+runs the wrong way at almost every size, and it has a clear cause.
+
+### Why: the statues you can't separate are standing together
+
+Six of the 23 dwarves sit **within one metre of each other** — 15 of the 253 pairs in this dataset
+are effectively co-located. They are the group installation that includes *Puszczający Stateczki*,
+*Zbierający Wodę* and *Karmiący Ptaki*.
+
+Those are the same statues the confusion analysis flags, and the same tight neighbourhood the
+embedding projection shows. Three of DINOv2's five confused pairs are at zero metres apart.
+
+That is the finding: **the dwarves that are hardest to tell apart were installed as a themed
+group, so they share a sculptor, a pose vocabulary and a location.** Location narrowing cannot
+separate them — it guarantees they land in the same pool. A random-subsampling simulation, which
+scatters the confusable statues across different pools, therefore *overstates* how much
+location narrowing buys.
+
+The practical reading for a location-aware tool: a 400 m radius around a visitor covers about ten
+candidates, and identification within that pool runs at 96.6% top-1 for DINOv2. Useful — but no
+better than picking ten dwarves at random, and for exactly the reason that makes the problem
+interesting.
+
+## 4. Does a trained classifier beat retrieval?
 
 All three methods scored on the same folds, with one classifier fitted per fold so no query is
 ever in its own training data.
@@ -131,7 +174,7 @@ and is really just underfitting: the embeddings are L2-normalised, so per-dimens
 near `1/√d` and that penalty crushes the weights. At `C=100` it scores 96.6%. A badly-regularised
 baseline is worse than no baseline, because it flatters whatever it is compared against.
 
-## 4. Where the errors are
+## 5. Where the errors are
 
 DINOv2 misidentifies 6 of 146 queries; CLIP misidentifies 11. Because outright errors are rare,
 the analysis records the strongest *wrong* candidate for every query, not only for the failures —
@@ -173,9 +216,10 @@ compressed space:
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good
   light, considered framing. Real query photos would be worse, and this design cannot say by how
   much.
-- **The location narrowing is simulated.** Pools are sampled uniformly at random. Real
-  geographic pools are spatially clustered, and nearby dwarves may be more or less confusable
-  than average.
+- **The geographic result rests on 23 statues.** The co-located group that drives it is one
+  installation; whether the pattern holds city-wide is untested. Wikidata may also assign group
+  members one shared point rather than individual positions, so "within one metre" may reflect
+  the record as much as the pavement — either way those statues are co-located.
 - **A query outside the reference set still returns neighbours.** There is no open-set rejection;
   the system cannot say "I don't know this one."
 
@@ -192,8 +236,9 @@ uv run krasnal-id data build-split                            # leave-one-out fo
 uv run krasnal-id embeddings extract --override backbone=dinov2
 uv run krasnal-id experiment baseline                         # section 1
 uv run krasnal-id experiment pool-ablation                    # section 2
-uv run krasnal-id experiment probe                            # section 3
-uv run krasnal-id experiment confusion                        # section 4
+uv run krasnal-id experiment geo-ablation                     # section 3
+uv run krasnal-id experiment probe                            # section 4
+uv run krasnal-id experiment confusion                        # section 5
 uv run krasnal-id visualize ablation
 uv run krasnal-id visualize embeddings
 ```

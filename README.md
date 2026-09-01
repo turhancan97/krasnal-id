@@ -21,8 +21,10 @@ and the interactive demonstration. The v0.1-v0.3 build order is complete.
 ## Findings
 
 DINOv2 reaches 95.9% top-1 across the full 23-dwarf pool, accuracy decays by about one point per
-doubling of the candidate pool against CLIP's 1.8, a trained classifier does not beat raw
-retrieval, and the errors concentrate on one explainable cluster of water-themed statues.
+doubling of the candidate pool against CLIP's 1.8, narrowing by real location helps *less* than
+random subsampling suggests, a trained classifier does not beat raw retrieval, and the errors
+concentrate on one explainable cluster of water-themed statues that turns out to be a single
+co-located installation.
 
 - [**Findings summary**](https://claude.ai/code/artifact/f3133eff-da11-4b36-b3e2-2be0ea379f7b) —
   an illustrated two-minute read with the headline curve.
@@ -259,6 +261,21 @@ reference copies and says so, so it cannot simply match itself.
 The demo serves locally and reports nothing to any external service. It writes its scratch files
 to a per-user directory rather than the shared `/tmp/gradio`, which fails on a multi-user machine
 where another account created that path first; set `GRADIO_TEMP_DIR` to override.
+
+## Does location narrowing help?
+
+Build candidate pools from the real Wikidata coordinates instead of sampling them:
+
+    uv run krasnal-id experiment geo-ablation
+    uv run krasnal-id experiment geo-ablation --override backbone=clip
+
+Each query is pooled with its N-1 nearest dwarves, so pool size matches the random ablation and
+only the selection rule changes. Both arms are reported side by side with the advantage proximity
+buys at each size, along with the median and maximum radius each pool spans so the result reads in
+metres. Geographic pools are exact rather than sampled, so they carry no seed spread; the random
+arm supplies the error bars. Results are written to `results/geo_ablation-<backbone>.json`.
+
+Every dwarf must have coordinates, and the command says which ones are missing if any are.
 
 ## Development checks
 
