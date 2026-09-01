@@ -30,6 +30,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added cosine-similarity k-NN retrieval that rescales inputs to unit length, breaks equal
+  similarities by ascending image ID for reproducible rankings, clamps similarities into the
+  validated range, truncates to `top_k`, and returns a whole small pool rather than failing.
 - Added deterministic leave-one-out split generation, validated split contracts, atomic split output,
   lazy DINOv2 and CLIP adapters, normalized resumable embedding caches, strict manifest-image
   validation, and offline fake-backbone extraction coverage.
@@ -69,5 +72,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Deterministic evaluation split generation and resumable DINOv2/CLIP embedding extraction are
   implemented and have been run end to end on the local dataset, caching 146 normalized
   768-dimensional DINOv2 vectors and 146 normalized 512-dimensional CLIP vectors.
-- Retrieval algorithms, baseline metrics, pool-size ablation, plotting, and the Gradio interface
-  remain intentionally unimplemented.
+- Cosine k-NN retrieval is implemented and exercised over the real cached vectors.
+- Baseline metrics, pool-size ablation, plotting, and the Gradio interface remain
+  intentionally unimplemented.

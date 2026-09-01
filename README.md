@@ -9,8 +9,8 @@ would help.
 
 The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
-deterministic evaluation splits, and resumable DINOv2/CLIP embedding extraction. Retrieval
-algorithms and experiments remain the next implementation stage.
+deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, and cosine
+k-NN retrieval. Experiments remain the next implementation stage.
 
 ## Setup
 

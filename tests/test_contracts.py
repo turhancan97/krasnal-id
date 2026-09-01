@@ -61,7 +61,6 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
     now = datetime.now(UTC)
     cache = EmbeddingCache(tmp_path)
     key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
-    vector = np.zeros(2, dtype=np.float32)
 
     manifest = build_dataset_manifest(
         (),
@@ -79,8 +78,15 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
     loaded = cache.load(key)
     assert loaded is not None
     np.testing.assert_allclose(loaded, valid_vector)
-    with pytest.raises(NotImplementedError):
-        cosine_knn(vector, np.zeros((1, 2), dtype=np.float32), ("i",), ("d",), 1)
+    ranked = cosine_knn(
+        "query-1",
+        np.asarray([1.0, 0.0], dtype=np.float32),
+        np.asarray([[1.0, 0.0]], dtype=np.float32),
+        ("i",),
+        ("d",),
+        1,
+    )
+    assert ranked.matches[0].image_id == "i"
     with pytest.raises(NotImplementedError):
         run_baseline(config)
 
