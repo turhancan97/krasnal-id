@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krasnal-ID — identify a Wrocław dwarf statue</title>
+<meta name="description" content="Upload a photo of a Wrocław dwarf statue and identify it in your browser. Research prototype for fine-grained visual instance recognition.">
+<link rel="icon" href="brand/krasnal-mark-light.svg">
+<meta property="og:title" content="Krasnal-ID">
+<meta property="og:description" content="Identify a Wrocław dwarf statue from a photograph, entirely in your browser.">
+<meta property="og:image" content="brand/social-preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ground:#F1F3F4; --surface:#FFFFFF; --raised:#FFFFFF; --plate:#FFFFFF;
+    --ink:#182126; --ink-2:#47535A; --ink-3:#76838A;
+    --rule:#DDE1E3; --rule-soft:#E9ECEE;
+    --red:#cf4832; --blue:#2578AF; --logo-red:#cf4832; --logo-blue:#3a7eab;
+    --good:#1F7A5C;
+    --shadow:0 1px 2px rgba(24,33,38,.05),0 10px 26px -14px rgba(24,33,38,.2);
+    --measure:38rem; --wide:56rem;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
+    --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
+    --rule:#262E33; --rule-soft:#1E252A;
+    --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+    --good:#4FBF97;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
+  }}
+  :root[data-theme="dark"]{
+    --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
+    --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
+    --rule:#262E33; --rule-soft:#1E252A;
+    --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+    --good:#4FBF97;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--ground); color:var(--ink);
+    font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased}
+  .page{max-width:var(--measure); margin:0 auto;
+        padding:clamp(2rem,6vw,4rem) 1.5rem 4rem; display:flex; flex-direction:column; gap:3rem}
+  h1,h2{margin:0; text-wrap:balance; font-weight:600; letter-spacing:-.022em}
+  h1{font-size:clamp(1.95rem,6vw,2.75rem); line-height:1.08}
+  h2{font-size:1.4rem; line-height:1.22}
+  h3{margin:0; font-size:1rem; font-weight:600}
+  p{margin:0}
+  a{color:var(--blue); text-underline-offset:3px}
+  a:focus-visible,button:focus-visible,summary:focus-visible,label:focus-within{
+    outline:2px solid var(--blue); outline-offset:3px; border-radius:3px}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.17em;
+           text-transform:uppercase; color:var(--ink-3)}
+  .lede{font-size:1.12rem; color:var(--ink-2); line-height:1.56}
+  section{display:flex; flex-direction:column; gap:1.05rem}
+  .prose{display:flex; flex-direction:column; gap:.95rem; color:var(--ink-2)}
+  .prose strong{color:var(--ink); font-weight:600}
+  code{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--rule-soft);
+       padding:.1em .34em; border-radius:3px; color:var(--ink)}
+  .bleed{width:min(100vw - 2rem,var(--wide)); margin-inline:calc(50% - min(50vw - 1rem,var(--wide)/2))}
+
+  header{display:flex; flex-direction:column; gap:1.1rem}
+  .brandrow{display:flex; align-items:center; gap:.7rem}
+  .brandrow svg{width:34px; height:34px; flex:none; display:block}
+  .facts{display:flex; flex-wrap:wrap; gap:.4rem 1.1rem;
+         font-family:"IBM Plex Mono",monospace; font-size:.75rem; color:var(--ink-3)}
+
+  /* ---------- demo ---------- */
+  .demo{background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+        box-shadow:var(--shadow); padding:1.35rem 1.25rem; display:flex; flex-direction:column;
+        gap:1.1rem}
+  .drop{border:1.5px dashed var(--rule); border-radius:8px; padding:1.6rem 1rem;
+        display:flex; flex-direction:column; align-items:center; gap:.85rem; text-align:center;
+        transition:border-color .15s, background .15s; background:var(--ground)}
+  .drop.over{border-color:var(--blue); background:color-mix(in srgb, var(--blue) 7%, var(--ground))}
+  .drop p{color:var(--ink-3); font-size:.9rem}
+  .actions{display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center}
+  button{font:inherit; font-size:.92rem; font-weight:500; border-radius:7px; cursor:pointer;
+         padding:.58rem 1.05rem; border:1px solid var(--rule); background:var(--raised);
+         color:var(--ink); transition:border-color .15s, transform .05s}
+  button:hover:not(:disabled){border-color:var(--blue)}
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.5; cursor:default}
+  button.primary{background:var(--blue); border-color:var(--blue); color:#fff}
+  button.primary:hover:not(:disabled){filter:brightness(1.08)}
+  input[type=file]{display:none}
+
+  .status{display:flex; align-items:center; gap:.6rem; font-family:"IBM Plex Mono",monospace;
+          font-size:.78rem; color:var(--ink-3); min-height:1.3rem}
+  .status .bar{flex:1; height:4px; border-radius:2px; background:var(--rule-soft);
+               overflow:hidden; max-width:14rem}
+  .status .bar i{display:block; height:100%; width:0; background:var(--blue);
+                 transition:width .2s linear}
+  .status.err{color:var(--red)}
+
+  .examples{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; justify-content:center}
+  .examples span{font-size:.78rem; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+  .examples img{width:46px; height:46px; object-fit:cover; border-radius:6px; cursor:pointer;
+                border:1px solid var(--rule); display:block}
+  .examples img:hover{border-color:var(--blue)}
+
+  .query{display:flex; gap:1rem; align-items:flex-start}
+  .query img{width:104px; height:104px; object-fit:cover; border-radius:8px;
+             border:1px solid var(--rule); flex:none}
+  .query .meta{display:flex; flex-direction:column; gap:.3rem; min-width:0}
+  .query .meta .t{font-weight:600}
+  .query .meta .s{font-size:.85rem; color:var(--ink-3)}
+
+  ol.results{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem}
+  .hit{display:grid; grid-template-columns:auto 56px 1fr auto; gap:.75rem; align-items:center;
+       padding:.55rem .65rem; border:1px solid var(--rule); border-radius:8px;
+       background:var(--ground)}
+  .hit.top{border-color:var(--blue); background:color-mix(in srgb, var(--blue) 6%, var(--ground))}
+  .hit .rank{font-family:"IBM Plex Mono",monospace; font-size:.8rem; color:var(--ink-3);
+             width:1.2rem; text-align:right}
+  .hit img{width:56px; height:56px; object-fit:cover; border-radius:6px; display:block;
+           border:1px solid var(--rule)}
+  .hit .who{min-width:0; display:flex; flex-direction:column; gap:.12rem}
+  .hit .name{font-weight:600; font-size:.96rem; line-height:1.25}
+  .hit .credit{font-size:.72rem; color:var(--ink-3); overflow:hidden; text-overflow:ellipsis;
+               white-space:nowrap}
+  .hit .credit a{color:var(--ink-3)}
+  .hit .score{font-family:"IBM Plex Mono",monospace; font-size:.86rem;
+              font-variant-numeric:tabular-nums; color:var(--ink-2)}
+  .hit.top .score{color:var(--blue); font-weight:500}
+  @media (max-width:30rem){
+    .hit{grid-template-columns:auto 46px 1fr auto; gap:.55rem}
+    .hit img{width:46px; height:46px}
+  }
+
+  .note{display:flex; gap:.65rem; align-items:flex-start; padding:.8rem .9rem; border-radius:8px;
+        background:color-mix(in srgb, var(--red) 8%, var(--surface));
+        border:1px solid color-mix(in srgb, var(--red) 28%, var(--rule)); font-size:.88rem;
+        color:var(--ink-2); line-height:1.5}
+  .note b{color:var(--ink)}
+  .note svg{flex:none; margin-top:.15rem}
+  .privacy{font-size:.78rem; color:var(--ink-3); text-align:center;
+           font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- findings ---------- */
+  .findings{display:flex; flex-direction:column; border-top:1px solid var(--rule)}
+  .finding{display:grid; grid-template-columns:7.4rem 1fr; gap:.3rem 1.3rem; padding:1.05rem 0;
+           border-bottom:1px solid var(--rule-soft); align-items:baseline}
+  .finding .n{font-family:"IBM Plex Mono",monospace; font-size:1.35rem; font-weight:500;
+              font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1.15}
+  .finding .n.blue{color:var(--blue)} .finding .n.red{color:var(--red)}
+  .finding .u{grid-column:1; font-family:"IBM Plex Mono",monospace; font-size:.65rem;
+              letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+  .finding .body{grid-column:2; grid-row:1 / span 2; color:var(--ink-2); font-size:.95rem;
+                 line-height:1.55}
+  .finding .body b{color:var(--ink); font-weight:600}
+  @media (max-width:36rem){
+    .finding{grid-template-columns:1fr; gap:.1rem}
+    .finding .u{grid-column:1} .finding .body{grid-column:1; grid-row:auto; margin-top:.35rem}
+  }
+
+  figure{margin:0; display:flex; flex-direction:column; gap:.8rem}
+  .card{background:var(--surface); border:1px solid var(--rule); border-radius:8px;
+        padding:1.25rem 1.15rem .9rem; box-shadow:var(--shadow)}
+  figcaption{font-size:.85rem; color:var(--ink-3); line-height:1.5}
+  figcaption b{color:var(--ink-2); font-weight:600}
+  .plate{background:var(--plate); border:1px solid var(--rule); border-radius:8px; padding:.5rem}
+  .plate img{display:block; width:100%; height:auto; border-radius:4px}
+
+  .legend{display:flex; flex-wrap:wrap; gap:1rem; align-items:center;
+          font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--ink-2)}
+  .legend .k{display:inline-flex; align-items:center; gap:.4rem}
+  .legend .sw{width:16px; height:3px; border-radius:2px; flex:none}
+  .legend .slope{color:var(--ink-3)}
+  .chart{width:100%; height:auto; display:block; overflow:visible}
+  .chart text{font-family:"IBM Plex Mono",ui-monospace,monospace; fill:var(--ink-3);
+              font-size:11px; font-variant-numeric:tabular-nums}
+  .chart .axis-title{fill:var(--ink-3); font-size:10.5px; letter-spacing:.09em;
+                     text-transform:uppercase}
+  .chart .grid{stroke:var(--rule-soft); stroke-width:1}
+  .chart .axis{stroke:var(--rule); stroke-width:1}
+  .chart .line{fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+  .chart .dot{stroke:var(--surface); stroke-width:2}
+  .chart .dlabel{font-size:11px; font-weight:500}
+  .chart .crosshair{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:3 3; opacity:0}
+  .chart .hit-area{fill:transparent; cursor:crosshair}
+  .chartwrap{position:relative}
+  .tip{position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-118%);
+       background:var(--surface); border:1px solid var(--rule); border-radius:5px;
+       padding:.46rem .56rem; box-shadow:var(--shadow); font-family:"IBM Plex Mono",monospace;
+       font-size:.71rem; color:var(--ink); white-space:nowrap; transition:opacity .1s linear; z-index:5}
+  .tip .row{display:flex; align-items:center; gap:.36rem; font-variant-numeric:tabular-nums}
+  .tip .row .sw{width:9px; height:9px; border-radius:2px; flex:none}
+  .tip .hd{color:var(--ink-3); margin-bottom:.24rem}
+
+  .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:.86rem}
+  caption{text-align:left; font-size:.85rem; color:var(--ink-3); padding-bottom:.5rem}
+  th,td{text-align:right; padding:.46rem .55rem; border-bottom:1px solid var(--rule-soft);
+        font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace}
+  th:first-child,td:first-child{text-align:left; font-family:"IBM Plex Sans",sans-serif}
+  thead th{color:var(--ink-3); font-weight:500; font-size:.71rem; letter-spacing:.08em;
+           text-transform:uppercase; border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:none}
+  td.worse{color:var(--red); font-weight:500}
+  td.win{color:var(--blue)}
+  details{border-top:1px solid var(--rule-soft); padding-top:.7rem}
+  summary{cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:.73rem;
+          letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
+  details[open] summary{margin-bottom:.75rem}
+
+  .callout{background:var(--surface); border:1px solid var(--rule);
+           border-left:3px solid var(--red); border-radius:6px; padding:1rem 1.05rem;
+           display:flex; flex-direction:column; gap:.55rem}
+  .callout p{color:var(--ink-2); font-size:.94rem}
+  .pairs{display:flex; flex-direction:column; font-size:.9rem}
+  .pair{display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+        padding:.52rem 0; border-bottom:1px solid var(--rule-soft)}
+  .pair:last-child{border-bottom:none}
+  .pair .names{color:var(--ink-2)} .pair .names b{color:var(--ink); font-weight:600}
+  .pair .arrow{color:var(--ink-3); padding:0 .26rem}
+  .pair .val{font-family:"IBM Plex Mono",monospace; font-size:.77rem; color:var(--ink-3);
+             font-variant-numeric:tabular-nums; white-space:nowrap}
+  .limits{display:flex; flex-direction:column; gap:.7rem; font-size:.93rem; color:var(--ink-2)}
+  .limit{display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:start}
+  .limit::before{content:""; width:5px; height:5px; border-radius:50%; background:var(--red);
+                 margin-top:.6rem}
+  .limit b{color:var(--ink); font-weight:600}
+  footer{border-top:1px solid var(--rule); padding-top:1.35rem; display:flex;
+         flex-direction:column; gap:.6rem; font-size:.87rem; color:var(--ink-3)}
+  footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
+  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
+                   white-space:nowrap}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="brandrow">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14.5 27C16.5 18 20 11 24 6C28 11 31.5 18 33.5 27Z" fill="var(--logo-red)"/>
+        <rect x="8" y="26" width="32" height="6.6" rx="3.3" fill="var(--logo-red)"/>
+        <circle cx="24" cy="38.6" r="5.2" fill="var(--logo-blue)"/>
+      </svg>
+      <span class="eyebrow">Krasnal-ID · fine-grained visual instance recognition</span>
+    </div>
+    <h1>Which Wrocław dwarf is this?</h1>
+    <p class="lede">Wrocław is scattered with several hundred small bronze dwarf statues,
+    individually sculpted but sharing a vocabulary — the same scale, the same material, the same
+    crouching poses and props. Upload a photograph and this page will tell you which one it is,
+    running the model in your own browser.</p>
+    <div class="facts">
+      <span>23 dwarves</span><span>146 reference photographs</span><span>CLIP</span>
+      <span id="fact-acc">91.8% top-1</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="demo">
+      <div class="drop" id="drop">
+        <div class="actions">
+          <label for="file"><button class="primary" type="button" id="pick">Choose a photo</button></label>
+          <input type="file" id="file" accept="image/*">
+          <label for="camera" id="camera-label" hidden><button type="button" id="shoot">Take a photo</button></label>
+          <input type="file" id="camera" accept="image/*" capture="environment">
+        </div>
+        <p>or drop one here</p>
+        <div class="examples" id="examples"><span>try one:</span></div>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite">
+        <span id="status-text">The model downloads once, on your first identification.</span>
+        <span class="bar" id="bar" hidden><i id="bar-fill"></i></span>
+      </div>
+
+      <div id="result" hidden>
+        <div class="query">
+          <img id="query-img" alt="The photograph you chose">
+          <div class="meta">
+            <span class="t" id="query-title">Closest matches</span>
+            <span class="s" id="query-sub"></span>
+          </div>
+        </div>
+        <ol class="results" id="hits"></ol>
+        <div class="note" id="colocated" hidden>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="8" cy="8" r="7" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+            <path d="M8 4.6v4.2M8 11.1v.2" stroke="var(--red)" stroke-width="1.6"
+                  stroke-linecap="round"/>
+          </svg>
+          <span id="colocated-text"></span>
+        </div>
+      </div>
+
+      <p class="privacy">Your photograph never leaves this device. Everything runs locally.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the experiments found</h2>
+    <div class="findings">
+      <div class="finding">
+        <div class="n blue">95.9%</div><div class="u">top-1, full pool</div>
+        <p class="body"><b>Frozen embeddings are enough.</b> DINOv2 identifies the right dwarf first
+        time in 95.9% of queries and within five candidates 99.3% of the time — with no training of
+        any kind. CLIP, which is what runs above, reaches 92.5%.</p>
+      </div>
+      <div class="finding">
+        <div class="n red">−0.96</div><div class="u">points / doubling</div>
+        <p class="body"><b>The decay is shallow, and the backbones diverge.</b> Each doubling of the
+        candidate pool costs DINOv2 about one accuracy point and CLIP 1.8. They are identical at two
+        candidates and six points apart at 23.</p>
+      </div>
+      <div class="finding">
+        <div class="n red">−1.6</div><div class="u">points from location</div>
+        <p class="body"><b>Narrowing by location helps less than the simulation says.</b> Real
+        proximity-based pools are <em>harder</em> than random pools of the same size, because the
+        statues that are hardest to tell apart were installed together.</p>
+      </div>
+      <div class="finding">
+        <div class="n">+0.7</div><div class="u">points from training</div>
+        <p class="body"><b>A trained classifier does not help.</b> A linear probe beats
+        nearest-neighbour retrieval by one query in 146; class prototypes lose two to three points.
+        At this scale, retrieval is already the right tool.</p>
+      </div>
+      <div class="finding">
+        <div class="n">6 / 146</div><div class="u">errors, dinov2</div>
+        <p class="body"><b>The mistakes are explainable.</b> Both backbones concentrate their errors
+        on the same small cluster of water-themed dwarves — which the projection, the confusion
+        analysis and the map all independently pick out.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Accuracy against candidate-pool size</h2>
+    <div class="prose">
+      <p>The experiment the project was built around. Each photograph is queried against its own
+      dwarf plus a random draw of others, repeated over five seeds at every pool size. The shaded
+      band is the spread across those seeds.</p>
+    </div>
+    <figure class="bleed">
+      <div class="card">
+        <div class="legend" id="legend"></div>
+        <div class="chartwrap">
+          <svg class="chart" id="chart" viewBox="0 0 720 400" role="img"
+               aria-label="Top-1 accuracy against candidate pool size. DINOv2 falls from 98.9 percent at a pool of two to 95.9 percent at 23. CLIP falls from 98.9 to 92.5 percent."></svg>
+          <div class="tip" id="tip"></div>
+        </div>
+      </div>
+      <figcaption><b>Narrowing the pool buys less than you would think.</b> Cutting the candidate
+      list from 23 dwarves to 5 gains DINOv2 only three points. The useful signal is the gap that
+      opens between the two backbones as the problem gets harder.</figcaption>
+    </figure>
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="scroll">
+        <table>
+          <caption>Top-1 accuracy by candidate-pool size, mean of five seeds.</caption>
+          <thead><tr><th>Pool size</th><th>DINOv2</th><th>CLIP</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Does narrowing by location actually help?</h2>
+    <div class="prose">
+      <p>Those pools are sampled at random. The real proposal is to narrow by <em>location</em>, and
+      every dwarf here carries Wikidata coordinates — so it can be measured rather than assumed.
+      Each query is pooled with its <strong>nearest</strong> dwarves instead of random ones. Same
+      pool size, only the selection rule changes.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Pool</th><th>Random</th><th>Geographic</th><th>Diff</th><th>Radius</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>98.8%</td><td>98.6%</td><td>−0.1</td><td>190 m</td></tr>
+          <tr><td>5</td><td>98.9%</td><td>97.3%</td><td class="worse">−1.6</td><td>260 m</td></tr>
+          <tr><td>8</td><td>97.3%</td><td>96.6%</td><td class="worse">−0.7</td><td>390 m</td></tr>
+          <tr><td>10</td><td>96.7%</td><td>96.6%</td><td>−0.1</td><td>398 m</td></tr>
+          <tr><td>15</td><td>96.4%</td><td>96.6%</td><td>+0.1</td><td>571 m</td></tr>
+          <tr><td>23 (full)</td><td>95.9%</td><td>95.9%</td><td>0.0</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><strong>Geographic pools are harder than random pools of the same size.</strong> CLIP shows
+      it more strongly: −2.5 points at a pool of five, −2.1 at eight, −1.9 at ten. Small in absolute
+      terms, but it runs the wrong way at almost every size — and it has a clear cause.</p>
+    </div>
+    <div class="callout">
+      <h3>The statues you can't separate are standing together</h3>
+      <p>Seven of the 23 dwarves stand at <strong>one spot</strong> — a single themed installation
+      that includes Puszczający Stateczki, Zbierający Wodę and Karmiący Ptaki.</p>
+      <p>Those are the same statues the confusion analysis flags, and the same tight neighbourhood
+      the embedding projection shows. Three of DINOv2's five confused pairs are zero metres apart.</p>
+      <p>The dwarves that are hardest to tell apart were installed as a group — so they share a
+      sculptor, a pose vocabulary <em>and</em> a location. Location narrowing cannot separate them;
+      it guarantees they land in the same pool. Random subsampling scatters them across different
+      pools, and so overstates what narrowing buys.</p>
+    </div>
+    <div class="prose">
+      <p>For a location-aware tool: a 400 m radius around a visitor covers about ten candidates, and
+      identification within that pool runs at 96.6% top-1 for DINOv2 — useful, but no better than
+      ten dwarves picked at random, for exactly the reason that makes the problem interesting.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Does training beat retrieval?</h2>
+    <div class="prose">
+      <p>All three methods scored on the same leave-one-out folds, with one classifier fitted per
+      fold so no query ever sits in its own training data.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Method</th><th>DINOv2</th><th>CLIP</th><th>vs. retrieval</th></tr></thead>
+        <tbody>
+          <tr><td>Cosine retrieval</td><td>95.9%</td><td>92.5%</td><td>—</td></tr>
+          <tr><td>Linear probe</td><td class="win">96.6%</td><td class="win">93.2%</td><td>+0.7</td></tr>
+          <tr><td>Class prototypes</td><td>93.2%</td><td>90.4%</td><td>−2.7 / −2.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p>The probe's win is a single extra correct query, well inside the confidence intervals.
+      Prototypes actively hurt: averaging a class into one vector throws away the pose and viewpoint
+      variation that makes a particular photograph matchable.</p>
+      <p>One detail worth keeping, because it nearly became a wrong conclusion. At scikit-learn's
+      default <code>C=1.0</code> the probe scored <strong>66%</strong> — which reads as a decisive
+      result and is really just underfitting, since L2-normalised embeddings put per-dimension
+      magnitudes near <code>1/√d</code> and that penalty crushes the weights. At <code>C=100</code>
+      it scores 96.6%. A badly regularised baseline is worse than no baseline.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where the errors are</h2>
+    <div class="prose">
+      <p>Outright errors are rare, so every query contributes its strongest <em>wrong</em> candidate,
+      not just the failures. That is where the signal is on a dataset this size.</p>
+    </div>
+    <div class="pairs">
+      <div class="pair">
+        <span class="names"><b>Puszczający Stateczki</b><span class="arrow">→</span>Zbierający Wodę</span>
+        <span class="val">2 of 3 · 0 m apart</span>
+      </div>
+      <div class="pair">
+        <span class="names"><b>Zbierający Wodę</b><span class="arrow">→</span>Puszczający Stateczki</span>
+        <span class="val">1 of 2 · 0 m apart</span>
+      </div>
+      <div class="pair">
+        <span class="names"><b>Karmiący Ptaki</b><span class="arrow">→</span>Zbierający Wodę</span>
+        <span class="val">2 of 3 · CLIP</span>
+      </div>
+    </div>
+    <figure class="bleed">
+      <div class="plate">
+        <img src="figures/embeddings-umap-dinov2.png" loading="lazy"
+             alt="UMAP projection of 146 DINOv2 embeddings coloured by dwarf. Most dwarves form separated islands; the water-themed dwarves sit together in one tight cluster at the upper right.">
+      </div>
+      <figcaption><b>Three analyses, one answer.</b> Most dwarves form clean, separated islands —
+      which is why accuracy is high. The confused water-themed dwarves are the crowded neighbourhood
+      at the upper right: the same group the confusion table names and the map places at one spot.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What this does not show</h2>
+    <div class="limits">
+      <div class="limit"><span><b>23 classes is a small pool.</b> The full pool already sits near the
+      accuracy ceiling, so the curve is shallow and extrapolating past it is unreliable. Extrapolated
+      to the city's ~1,400 dwarves the fit gives 88.5%, but that is an optimistic bound, not a
+      prediction.</span></div>
+      <div class="limit"><span><b>The demo above is not the pipeline that produced these numbers.</b>
+      It runs CLIP, which is small enough for a browser, where the results report DINOv2 as three
+      points better. Its own leave-one-out score, measured on exactly the vectors it ships, is
+      91.8% top-1 against 92.5% for the research CLIP pipeline — a difference of one query in 146,
+      caused by the browser resizing images slightly differently. Append
+      <code>?selftest=1</code> to this page's URL to make it check that for itself.</span></div>
+      <div class="limit"><span><b>The reference photos are not phone photos.</b> Wikimedia Commons
+      uploads mean good light and considered framing, so a casual snapshot is a harder query than
+      anything measured here.</span></div>
+      <div class="limit"><span><b>There is no “I don't know”.</b> A statue outside the 23 — or a
+      photograph of something else entirely — still returns its nearest neighbours. There is no
+      open-set rejection.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Every number here traces to a committed command and a structured result artifact. Full
+    method, dataset construction, licensing and attribution handling, and the reproduction script
+    are in the repository.</p>
+    <p class="repo"><a href="https://github.com/turhancan97/krasnal-id">github.com/turhancan97/krasnal-id</a></p>
+    <p>Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
+    licences; each result names its photographer and licence. Model weights from
+    <a href="https://huggingface.co/Xenova/clip-vit-base-patch32">Xenova/clip-vit-base-patch32</a>.</p>
+  </footer>
+</div>
+<script type="module" src="app.js"></script>
+<script src="chart.js"></script>
+</body>
+</html>

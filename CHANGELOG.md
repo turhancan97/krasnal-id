@@ -46,10 +46,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Added the Gradio demonstration as `krasnal-id demo [--top-k N] [--port P] [--share]`: upload a
   photograph to see ranked candidate dwarves with similarity scores and their closest reference
   photographs, with the reference set loaded once per session.
-- Added the static demo's data build under `docs/demo/generate.py`, writing the reference
-  embeddings, thumbnails and attribution metadata the browser demo loads. The references are
-  computed with the same quantised ONNX CLIP export the browser runs, and the script re-scores the
-  leave-one-out protocol on the vectors it ships so the site reports its own measured accuracy.
+- Added a static browser demo under `docs/`, deployable to GitHub Pages: upload or photograph a
+  statue and identify it entirely on-device, with attribution beside every match and a note when
+  the top match belongs to a co-located installation.
+- Added the demo's build at `docs/demo/build.mjs`, producing the reference vectors, thumbnails and
+  attribution metadata. It runs the same library, model, dtype and antialiased pre-downscale the
+  browser uses, re-scores the leave-one-out protocol on the vectors it ships, and records
+  self-test probes so the page can verify its own pipeline in a real browser.
 - Added the geographic ablation as `krasnal-id experiment geo-ablation`: candidate pools built
   from real Wikidata coordinates by nearest-neighbour proximity, scored against randomly sampled
   pools of matched size, with the median and maximum radius each pool spans.

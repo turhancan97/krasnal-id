@@ -38,3 +38,6 @@ multirun/
 *.npz
 *.pt
 *.pth
+
+# Build-time dependencies for the static demo.
+docs/demo/node_modules/
