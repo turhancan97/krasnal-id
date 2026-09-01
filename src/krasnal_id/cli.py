@@ -37,6 +37,10 @@ from krasnal_id.experiments.artifacts import (
     write_experiment_result,
 )
 from krasnal_id.experiments.baseline_accuracy import BaselineExperimentError, run_baseline
+from krasnal_id.experiments.confusion_analysis import (
+    ConfusionAnalysisError,
+    run_confusion_analysis,
+)
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
@@ -44,6 +48,7 @@ from krasnal_id.models import (
     CategoryReviewStatus,
     FetchAuditDisposition,
 )
+from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 
 OverrideOption = Annotated[
     list[str] | None,
@@ -326,13 +331,44 @@ def pool_ablation_experiment(override: OverrideOption = None) -> None:
 @experiment_app.command("confusion")
 def confusion_experiment(override: OverrideOption = None) -> None:
     """Find and summarize the most-confused dwarf pairs."""
-    _run_placeholder("experiment confusion", override, ["experiment=confusion"])
+    config = load_config(["experiment=confusion", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_confusion_analysis(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        ConfusionAnalysisError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Confusion analysis error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Confusion analysis complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        typer.echo(f"  {metric.name}: {metric.value:.4f}")
+    typer.echo(f"  most-confused pairs (of {len(result.pairs)} reported):")
+    for pair in result.pairs[:10]:
+        typer.echo(
+            f"    {pair.true_display_name} -> {pair.confused_display_name}: "
+            f"{pair.misidentifications} of {pair.queries} queries misidentified, "
+            f"mean margin {pair.mean_margin:+.4f}"
+        )
 
 
 @visualize_app.command("embeddings")
 def visualize_embeddings(override: OverrideOption = None) -> None:
     """Project cached embeddings into a saved two-dimensional figure."""
-    _run_placeholder("visualize embeddings", override, ["experiment=visualization"])
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path = create_embedding_plot(config)
+    except (VisualizationError, EmbeddingStoreError) as error:
+        typer.echo(f"Embedding visualization error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Embedding visualization complete: figure={path}")
 
 
 @app.command("demo")

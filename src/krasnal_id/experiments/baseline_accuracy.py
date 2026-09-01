@@ -34,7 +34,7 @@ class FoldOutcome:
     candidate_dwarfs: int
 
 
-def _wilson_interval(successes: int, total: int) -> tuple[float, float]:
+def wilson_interval(successes: int, total: int) -> tuple[float, float]:
     """Return the 95% Wilson score interval for an observed proportion."""
     if total <= 0:
         raise BaselineExperimentError("cannot summarize an accuracy over zero folds")
@@ -50,9 +50,9 @@ def _wilson_interval(successes: int, total: int) -> tuple[float, float]:
     return (max(0.0, center - margin), min(1.0, center + margin))
 
 
-def _accuracy_metric(name: str, successes: int, total: int) -> MetricSummary:
+def accuracy_metric(name: str, successes: int, total: int) -> MetricSummary:
     """Summarize a proportion with its Wilson interval as error bars."""
-    lower, upper = _wilson_interval(successes, total)
+    lower, upper = wilson_interval(successes, total)
     return MetricSummary(
         name=name,
         value=successes / total,
@@ -127,7 +127,7 @@ def evaluate_baseline(
     metrics: list[MetricSummary] = []
     for k in sorted(set(top_k)):
         hits = sum(1 for outcome in outcomes if outcome.dwarf_rank <= k)
-        metrics.append(_accuracy_metric(f"top_{k}", hits, total))
+        metrics.append(accuracy_metric(f"top_{k}", hits, total))
     metrics.append(
         MetricSummary(
             name="mrr",
@@ -136,7 +136,7 @@ def evaluate_baseline(
     )
     for k in sorted(set(top_k)):
         hits = sum(1 for outcome in outcomes if outcome.image_rank <= k)
-        metrics.append(_accuracy_metric(f"image_top_{k}", hits, total))
+        metrics.append(accuracy_metric(f"image_top_{k}", hits, total))
     metrics.append(
         MetricSummary(
             name="image_mrr",

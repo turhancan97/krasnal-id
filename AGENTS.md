@@ -95,6 +95,11 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   count are skipped with a warning rather than clamped, and the full pool is always measured as a
   comparable right-hand anchor.
 - Per-pool error bars are the observed spread across seeds, not a distributional assumption.
+- Confusion analysis records the strongest wrong dwarf for **every** query, not only for failures.
+  On a dataset with few outright errors the near-misses are where the signal is. Pairs stay
+  directed, so an asymmetric confusion does not average away against its reverse.
+- Analysis dependencies load lazily behind `import_optional_analysis`, mirroring the ML
+  backbones, so the package imports without the `analysis` extra installed.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
 
 ## 7. Experiments

@@ -30,6 +30,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added confusion analysis reporting directed most-confused dwarf pairs with query counts,
+  misidentification counts, and mean cosine margins, plus a `ConfusionPair` contract, summary
+  margin metrics, and a wired `krasnal-id experiment confusion` command.
+- Added UMAP and t-SNE embedding visualization with lazy analysis-dependency loading, a
+  headless backend, deterministic seeding, per-class colors and markers beyond a twenty-color
+  palette, decluttered centroid labels with leader lines, and a wired
+  `krasnal-id visualize embeddings` command.
 - Added the candidate-pool-size ablation: per-pool top-1 and MRR across seeds with the observed
   seed spread as error bars, a fitted accuracy-points-per-doubling slope, dataset-aware pool-size
   resolution, atomic result artifacts, and a wired `krasnal-id experiment pool-ablation` command.
@@ -47,6 +54,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Changed
 
+- Made the baseline's Wilson interval helpers public so confusion analysis reuses them.
+- Installed the analysis extra in CI so the visualization code is exercised there.
 - Recorded the dataset-scale decision in `AGENTS.md` §7.1: keep the >=3-image threshold and
   report degradation per doubling, with the measured evidence for rejecting a lower threshold
   and for treating the excluded duplicates as unrecoverable.
@@ -93,4 +102,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - The candidate-pool-size ablation is implemented and run. Top-1 falls from 98.9% at a pool of
   two to 95.9% at the full pool of 23 for DINOv2, and from 98.9% to 92.5% for CLIP, giving fitted
   slopes of -0.96 and -1.76 accuracy points per doubling.
-- Confusion analysis, plotting, and the Gradio interface remain intentionally unimplemented.
+- Confusion analysis and embedding visualization are implemented and run. DINOv2 misidentifies
+  6 of 146 queries against CLIP's 11, and both backbones agree that the Puszczajacy Stateczki,
+  Zbierajacy Wode, and Karmiacy Ptaki water-themed dwarves are the systematically confused
+  cluster, which the projections show as a single tight neighborhood.
+- Only the optional Gradio demo remains intentionally unimplemented.

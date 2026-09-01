@@ -20,8 +20,6 @@ def test_root_help_lists_pipeline_groups() -> None:
     "arguments",
     [
         ["retrieve"],
-        ["experiment", "confusion"],
-        ["visualize", "embeddings"],
         ["demo"],
     ],
 )

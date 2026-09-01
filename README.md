@@ -10,8 +10,8 @@ would help.
 The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
-retrieval, the full-pool accuracy baseline, and the candidate-pool-size ablation. Confusion
-analysis, embedding visualization, and the optional demo are the next implementation stage.
+retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
+analysis, and embedding visualization. Only the optional Gradio demo remains unimplemented.
 
 ## Setup
 
@@ -167,6 +167,31 @@ log2 pool size over every measured size. Small pools sit near the accuracy ceili
 a conservative estimate of degradation in the larger-pool regime. See `AGENTS.md` §7.1 for the
 dataset-scale decision this result is framed by, including why extrapolating past the current
 class count is optimistic.
+
+## Confusion analysis and embedding visualization
+
+Find the dwarf pairs that systematically compete for the same queries:
+
+    uv run krasnal-id experiment confusion
+    uv run krasnal-id experiment confusion --override backbone=clip
+
+Every query contributes its strongest wrong candidate, not only the queries that were
+misidentified, because near-misses carry most of the signal on a dataset with few outright
+errors. Pairs are directed: a mutual confusion appears once per direction rather than being
+averaged into one entry. The margin is the correct dwarf's best similarity minus the
+competitor's, so it is negative exactly when the query was misidentified. Results are written
+to `results/confusion-<backbone>.json`.
+
+Project the cached vectors into a labeled two-dimensional figure:
+
+    uv sync --extra analysis
+    uv run krasnal-id visualize embeddings
+    uv run krasnal-id visualize embeddings --override experiment.method=tsne
+
+The figure is written to `results/embeddings-<method>-<backbone>.png`. Classes are separated by
+color and, beyond the twenty-color palette, by marker shape, and each class is named at its own
+centroid with overlapping labels nudged apart and connected by leader lines. Projections are
+seeded and reproducible.
 
 ## Development checks
 

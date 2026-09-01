@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class MetricSummary(BaseModel):
@@ -26,3 +26,37 @@ class ExperimentResult(BaseModel):
     created_at: datetime
     seed: int
     metrics: tuple[MetricSummary, ...]
+
+
+class ConfusionPair(BaseModel):
+    """One directed dwarf pair that competes for the same queries.
+
+    Directed: `true_dwarf_id` is the dwarf being queried and `confused_dwarf_id` is
+    the strongest wrong candidate for it. A genuinely symmetric confusion appears as
+    two entries, which keeps the asymmetric cases visible instead of averaging them.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    true_dwarf_id: str = Field(min_length=1)
+    true_display_name: str = Field(min_length=1)
+    confused_dwarf_id: str = Field(min_length=1)
+    confused_display_name: str = Field(min_length=1)
+    queries: int = Field(gt=0)
+    misidentifications: int = Field(ge=0)
+    mean_margin: float
+
+    @model_validator(mode="after")
+    def validate_counts(self) -> "ConfusionPair":
+        """Require the pair to describe a subset of its own queries."""
+        if self.misidentifications > self.queries:
+            raise ValueError("misidentifications cannot exceed the queries they came from")
+        if self.true_dwarf_id == self.confused_dwarf_id:
+            raise ValueError("a dwarf cannot be confused with itself")
+        return self
+
+
+class ConfusionAnalysisResult(ExperimentResult):
+    """Experiment result carrying the ranked confusion pairs behind its metrics."""
+
+    pairs: tuple[ConfusionPair, ...]
