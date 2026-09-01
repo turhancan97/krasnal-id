@@ -881,6 +881,7 @@ analysis = [
     { name = "pandas" },
     { name = "scikit-learn" },
     { name = "seaborn" },
+    { name = "threadpoolctl" },
     { name = "umap-learn" },
 ]
 demo = [
@@ -912,6 +913,7 @@ requires-dist = [
     { name = "pydantic", specifier = "==2.13.4" },
     { name = "scikit-learn", marker = "extra == 'analysis'", specifier = "==1.9.0" },
     { name = "seaborn", marker = "extra == 'analysis'", specifier = "==0.13.2" },
+    { name = "threadpoolctl", marker = "extra == 'analysis'", specifier = "==3.6.0" },
     { name = "torch", marker = "extra == 'ml'", specifier = "==2.13.0" },
     { name = "torchvision", marker = "extra == 'ml'", specifier = "==0.28.0" },
     { name = "transformers", marker = "extra == 'ml'", specifier = "==5.15.1" },

@@ -107,6 +107,28 @@ class PoolSizeAblationConfig(BaseModel):
     seeds: tuple[int, ...] = Field(min_length=1)
 
 
+class ProbeExperimentConfig(BaseModel):
+    """Trained-classifier comparison settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["probe"]
+    seed: int
+    methods: tuple[Literal["retrieval", "prototype", "linear_probe"], ...] = Field(min_length=1)
+    top_k: tuple[int, ...] = Field(min_length=1)
+    max_iterations: int = Field(gt=0)
+    regularization: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_methods(self) -> "ProbeExperimentConfig":
+        """Require distinct methods and positive cut-offs."""
+        if len(self.methods) != len(set(self.methods)):
+            raise ValueError("methods cannot contain duplicates")
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -130,6 +152,7 @@ class VisualizationExperimentConfig(BaseModel):
 ExperimentConfig = Annotated[
     BaselineExperimentConfig
     | PoolSizeAblationConfig
+    | ProbeExperimentConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

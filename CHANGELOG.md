@@ -30,6 +30,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added the trained-classifier comparison as `krasnal-id experiment probe`: per-class prototype
+  and per-fold linear-probe classifiers scored against a retrieval arm on the same folds, with
+  Wilson intervals, mean reciprocal rank, and an explicit top-1 gain over retrieval.
+- Added a `probe` Hydra experiment group and its validated `ProbeExperimentConfig`.
 - Added single-image retrieval as `krasnal-id retrieve <image> [--top-k N]`, reporting ranked
   candidate dwarves with similarity scores and the reference image each matched, reusing a cached
   vector for identical file content and withholding every byte-identical copy of the query.
@@ -57,6 +61,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Changed
 
+- Set the default linear-probe regularization to `C=100`. At the conventional `C=1.0` the probe
+  underfits L2-normalized embeddings badly, scoring 66% top-1 against 96%.
+- Declared `threadpoolctl` in the `analysis` extra and hold BLAS to one thread while fitting
+  per-fold classifiers, which took the probe sweep from over six minutes to twelve seconds.
 - Made the baseline's Wilson interval helpers public so confusion analysis reuses them.
 - Installed the analysis extra in CI so the visualization code is exercised there.
 - Recorded the dataset-scale decision in `AGENTS.md` §7.1: keep the >=3-image threshold and
@@ -112,4 +120,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Single-image retrieval is implemented and reproduces the confusion finding interactively: a
   Puszczajacy Stateczki query ranks Zbierajacy Wode first under both backbones, with the water-
   themed cluster filling the top three candidates.
+- The trained-classifier comparison is implemented and run. Neither trained method meaningfully
+  beats retrieval: the linear probe gains 0.7 top-1 points over retrieval for both backbones
+  (DINOv2 96.6% against 95.9%, CLIP 93.2% against 92.5%) while class prototypes lose 2.7 and 2.1
+  points, and every difference sits inside the confidence intervals.
 - Only the optional Gradio demo remains intentionally unimplemented.

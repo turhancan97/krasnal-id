@@ -11,8 +11,8 @@ The repository contains the complete typed scaffold for versions 0.1-0.3 plus im
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
-analysis, embedding visualization, and single-image retrieval. Only the optional Gradio demo
-remains unimplemented.
+analysis, embedding visualization, single-image retrieval, and the trained-classifier
+comparison. Only the optional Gradio demo remains unimplemented.
 
 ## Setup
 
@@ -209,6 +209,24 @@ withheld, so a dataset image cannot simply match itself.
 
 Exit code 2 indicates a missing or undecodable image, missing embeddings, or an unreadable
 manifest.
+
+## Does a trained classifier beat retrieval?
+
+Compare per-class prototypes and a per-fold linear probe against raw cosine retrieval:
+
+    uv sync --extra analysis
+    uv run krasnal-id experiment probe
+    uv run krasnal-id experiment probe --override backbone=clip
+
+All three methods are scored on the same leave-one-out folds, so the comparison is readable from
+one artifact at `results/probe-<backbone>.json`, including each trained method's explicit top-1
+gain over retrieval. One classifier is fitted per fold, so a query is never part of the data its
+own classifier was trained on.
+
+The linear probe is regularized weakly by default (`C=100`). Embeddings are L2-normalized, so a
+conventional `C=1.0` underfits badly: it scored 66% top-1 on this dataset against 96% at the
+default. BLAS is held to one thread while fitting, because each per-fold classifier is small
+enough that thread oversubscription dominates the runtime.
 
 ## Development checks
 

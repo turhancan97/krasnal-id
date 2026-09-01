@@ -43,6 +43,7 @@ from krasnal_id.experiments.confusion_analysis import (
     run_confusion_analysis,
 )
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
+from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
@@ -361,6 +362,34 @@ def pool_ablation_experiment(override: OverrideOption = None) -> None:
             typer.echo(
                 f"  {metric.name}: {metric.value:.4f} "
                 f"[seeds {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("probe")
+def probe_experiment(override: OverrideOption = None) -> None:
+    """Compare trained prototype and linear-probe classifiers against retrieval."""
+    config = load_config(["experiment=probe", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_probe_comparison(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        ProbeExperimentError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Probe comparison error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Probe comparison complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
             )
 
 

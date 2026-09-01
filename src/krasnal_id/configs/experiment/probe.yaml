@@ -1,0 +1,6 @@
+kind: probe
+seed: ${seeds.primary}
+methods: [retrieval, prototype, linear_probe]
+top_k: [1, 5]
+max_iterations: 1000
+regularization: 100.0

@@ -105,6 +105,15 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   read there; populating it stays the job of `embeddings extract`.
 - A query is compared against references by content hash, and every byte-identical copy of it is
   withheld. Otherwise a dataset image would match itself at similarity 1.0 and report nothing.
+- The probe comparison always evaluates a `retrieval` arm on the same folds as the trained
+  methods, so the answer to "does training beat retrieval" is readable from one artifact rather
+  than assembled across two.
+- Regularize the linear probe **weakly**. Embeddings are L2-normalized, so per-dimension
+  magnitudes are near `1/sqrt(d)` and a conventional `C=1.0` underfits badly: on the current
+  dataset it scored 66% top-1 against 96% at `C=100`. The default is 100.
+- Hold BLAS to one thread while fitting per-fold classifiers. Each fit is tiny, so thread
+  oversubscription dominates: the leave-one-out sweep went from over six minutes to twelve
+  seconds. `threadpoolctl` is declared in the `analysis` extra but its absence is not an error.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
 
 ## 7. Experiments
