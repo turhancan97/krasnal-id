@@ -270,6 +270,10 @@ uv run mypy
 uv run pytest
 ```
 
+`mypy` runs in strict mode over `src/krasnal_id` and `tests`, so `uv run mypy src tests` is clean
+too. The asset generator under `docs/brand/` is deliberately outside that scope: it is a one-off
+script whose only errors come from untyped plotting dependencies.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and
 [AGENTS.md](AGENTS.md) for the research scope, architecture, and build order.
 

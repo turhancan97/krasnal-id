@@ -3,6 +3,7 @@
 import io
 import json
 import os
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -10,11 +11,11 @@ from typing import Any
 import httpx
 import pytest
 from PIL import Image
+from pydantic import HttpUrl
 from typer.main import get_command
 from typer.testing import CliRunner
 
 import krasnal_id.cli as cli_module
-import krasnal_id.data_pipeline.commons_fetch as fetch_module
 from krasnal_id.cli import app
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.commons_fetch import (
@@ -53,7 +54,7 @@ def _dwarf(qid: str, category: str | None = None) -> DwarfRecord:
     return DwarfRecord(
         dwarf_id=qid,
         display_name=f"Dwarf {qid}",
-        wikidata_url=f"https://www.wikidata.org/wiki/{qid}",
+        wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/{qid}"),
         commons_category=category or f"Category {qid}",
     )
 
@@ -510,7 +511,7 @@ def test_retries_and_continues_after_failures(
 ) -> None:
     _contact(monkeypatch)
     delays: list[float] = []
-    monkeypatch.setattr(fetch_module.time, "sleep", delays.append)
+    monkeypatch.setattr(time, "sleep", delays.append)
     directory, path = tmp_path / "discovery", tmp_path / "review.json"
     q2, q10 = _dwarf("Q2"), _dwarf("Q10")
     _discovery(directory, (q2, q10))
@@ -552,7 +553,7 @@ def test_retries_transport_and_audits_malformed_json(
 ) -> None:
     _contact(monkeypatch)
     delays: list[float] = []
-    monkeypatch.setattr(fetch_module.time, "sleep", delays.append)
+    monkeypatch.setattr(time, "sleep", delays.append)
     directory, path = tmp_path / "discovery", tmp_path / "review.json"
     q2, q10 = _dwarf("Q2"), _dwarf("Q10")
     _discovery(directory, (q2, q10))
@@ -611,10 +612,22 @@ def test_user_agent_rejected_but_rejected_categories_need_no_network(
     assert result.audit[0].reason is FetchAuditReason.REJECTED_CATEGORY
 
 
+def _subcommand(*path: str) -> Any:
+    """Walk the generated command tree down to one leaf command.
+
+    Typed loosely because typer returns its own vendored click Command class,
+    which is not the one `import click` provides.
+    """
+    node: Any = get_command(app)
+    for name in path:
+        node = node.commands[name]
+    return node
+
+
 def test_fetch_cli_workflow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     help_result = runner.invoke(app, ["data", "fetch", "--help"])
     assert help_result.exit_code == 0
-    fetch_command = get_command(app).commands["data"].commands["fetch"]
+    fetch_command = _subcommand("data", "fetch")
     parameter_names = {parameter.name for parameter in fetch_command.params}
     assert {"prepare_review", "max_images_per_dwarf"} <= parameter_names
 

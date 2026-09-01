@@ -75,7 +75,7 @@ def test_empty_manifest_and_mixed_dimensions_are_rejected(tmp_path: Path) -> Non
         source_query_sha256="a" * 64,
         staging_sha256="b" * 64,
         image_review_sha256="c" * 64,
-        generated_at="2026-08-23T12:00:00Z",
+        generated_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
         minimum_images_per_dwarf=3,
         dwarfs=(),
         images=(),

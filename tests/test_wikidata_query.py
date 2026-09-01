@@ -2,6 +2,7 @@
 
 import json
 import os
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -10,7 +11,6 @@ import httpx
 import pytest
 from typer.testing import CliRunner
 
-import krasnal_id.data_pipeline.wikidata_query as query_module
 from krasnal_id.cli import app
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.wikidata_query import (
@@ -261,7 +261,7 @@ def test_retries_retryable_status_and_caps_retry_after(
 ) -> None:
     _contact(monkeypatch)
     delays: list[float] = []
-    monkeypatch.setattr(query_module.time, "sleep", delays.append)
+    monkeypatch.setattr(time, "sleep", delays.append)
     responses = iter(
         [
             _json_response({}, status_code=503, **{"Retry-After": "999"}),
@@ -284,7 +284,7 @@ def test_retries_transport_error_with_configured_backoff(
     _contact(monkeypatch)
     delays: list[float] = []
     attempts = 0
-    monkeypatch.setattr(query_module.time, "sleep", delays.append)
+    monkeypatch.setattr(time, "sleep", delays.append)
 
     def handler(request: httpx.Request) -> httpx.Response:
         nonlocal attempts

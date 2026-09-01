@@ -83,6 +83,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   underfits L2-normalized embeddings badly, scoring 66% top-1 against 96%.
 - Declared `threadpoolctl` in the `analysis` extra and hold BLAS to one thread while fitting
   per-fold classifiers, which took the probe sweep from over six minutes to twelve seconds.
+- Extended strict `mypy` coverage to `tests`, and fixed the 35 errors that surfaced: fixtures now
+  build `HttpUrl`, `datetime` and `Path` values explicitly instead of relying on Pydantic
+  coercion, the CLIP output-shape test uses typed fakes rather than stacked ignores, retry tests
+  patch the `time` module directly, and the CLI command tree is walked through a typed helper.
 - Made the baseline's Wilson interval helpers public so confusion analysis reuses them.
 - Installed the analysis extra in CI so the visualization code is exercised there.
 - Recorded the dataset-scale decision in `AGENTS.md` §7.1: keep the >=3-image threshold and

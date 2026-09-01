@@ -12,7 +12,7 @@ from helpers import FAKE_BACKBONE, seed_embedding_cache, synthetic_manifest
 from krasnal_id.cli import app
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_split import build_evaluation_split, write_evaluation_split
-from krasnal_id.embeddings.store import load_embedding_matrix
+from krasnal_id.embeddings.store import EmbeddingMatrix, load_embedding_matrix
 from krasnal_id.experiments.contracts import ExperimentResult
 from krasnal_id.experiments.pool_size_ablation import (
     PoolAblationError,
@@ -23,11 +23,14 @@ from krasnal_id.experiments.pool_size_ablation import (
     run_pool_size_ablation,
     summarize_measurements,
 )
+from krasnal_id.models import DatasetManifest, EvaluationSplit
 
 SEEDS = (11, 23, 37)
 
 
-def _setup(tmp_path: Path, dwarf_count: int = 6):
+def _setup(
+    tmp_path: Path, dwarf_count: int = 6
+) -> tuple[DatasetManifest, EvaluationSplit, EmbeddingMatrix, tuple[str, ...]]:
     manifest = synthetic_manifest(dwarf_count=dwarf_count)
     seed_embedding_cache(tmp_path, manifest)
     matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)

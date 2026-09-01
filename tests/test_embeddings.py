@@ -1,11 +1,14 @@
 """Tests for embedding cache and manifest-driven extraction."""
 
 import hashlib
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 from PIL import Image
+from pydantic import HttpUrl
 from typer.testing import CliRunner
 
 from krasnal_id.cli import app
@@ -39,7 +42,7 @@ class FakeBackbone:
         return vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
 
     def get_embedding(self, image: Image.Image) -> np.ndarray:
-        return self.get_embeddings((image,))[0]
+        return np.asarray(self.get_embeddings((image,))[0])
 
 
 def _image_record(
@@ -52,14 +55,14 @@ def _image_record(
         image_id=image_id,
         dwarf_id=dwarf_id,
         local_path=path,
-        source_url="https://commons.wikimedia.org/wiki/File:Example.png",
+        source_url=HttpUrl("https://commons.wikimedia.org/wiki/File:Example.png"),
         author="Author",
         license="CC BY-SA 4.0",
-        license_url="https://creativecommons.org/licenses/by-sa/4.0/",
+        license_url=HttpUrl("https://creativecommons.org/licenses/by-sa/4.0/"),
         sha256=digest,
         width=4,
         height=4,
-        acquired_at="2026-08-23T12:00:00Z",
+        acquired_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
     )
 
 
@@ -68,7 +71,7 @@ def _manifest(tmp_path: Path) -> DatasetManifest:
         DwarfRecord(
             dwarf_id=f"Q{index}",
             display_name=f"Dwarf {index}",
-            wikidata_url=f"https://www.wikidata.org/wiki/Q{index}",
+            wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/Q{index}"),
             commons_category=f"Dwarf {index}",
         )
         for index in range(2)
@@ -83,7 +86,7 @@ def _manifest(tmp_path: Path) -> DatasetManifest:
         source_query_sha256="a" * 64,
         staging_sha256="b" * 64,
         image_review_sha256="c" * 64,
-        generated_at="2026-08-23T12:00:00Z",
+        generated_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
         minimum_images_per_dwarf=3,
         dwarfs=dwarfs,
         images=images,
@@ -97,7 +100,9 @@ def test_cache_round_trip_and_invalid_cache_is_a_miss(tmp_path: Path) -> None:
 
     path = cache.store(key, vector)
     assert path == cache.path_for(key)
-    np.testing.assert_allclose(cache.load(key), vector)
+    stored = cache.load(key)
+    assert stored is not None
+    np.testing.assert_allclose(stored, vector)
 
     np.save(path, np.asarray([0.0, 0.0], dtype=np.float32))
     assert cache.load(key) is None
@@ -184,25 +189,43 @@ class _FakeVisionOutput:
         self.pooler_output = pooler_output
 
 
+class _FakeClipModel:
+    """Stands in for CLIPModel, yielding whatever get_image_features should return."""
+
+    def __init__(self, features: Any) -> None:
+        self._features = features
+
+    def get_image_features(self, pixel_values: Any) -> Any:
+        return self._features
+
+
+class _FakeProcessor:
+    """Stands in for AutoProcessor, returning a fixed pixel batch."""
+
+    def __init__(self, torch: Any) -> None:
+        self._torch = torch
+
+    def __call__(self, images: Any, return_tensors: str) -> dict[str, Any]:
+        return {"pixel_values": self._torch.zeros(1, 3, 2, 2)}
+
+
 def test_clip_accepts_tensor_or_output_object() -> None:
     torch = pytest.importorskip("torch")
     config = load_config(["backbone=clip"]).backbone
     backbone = ClipBackbone(config)
     tensor = torch.tensor([[3.0, 4.0]])
 
+    backbone._processor = _FakeProcessor(torch)
+    backbone._torch = torch
+    backbone._device = "cpu"
+
+    # transformers 5 returns the vision output object; older shapes returned a
+    # bare tensor. Both must normalize to the same unit vector.
     for features in (tensor, _FakeVisionOutput(tensor)):
-        backbone._processor = lambda images, return_tensors: {  # type: ignore[assignment]
-            "pixel_values": torch.zeros(1, 3, 2, 2)
-        }
-        backbone._model = _FakeVisionOutput(None)  # type: ignore[assignment]
-        backbone._model.get_image_features = (  # type: ignore[union-attr]
-            lambda pixel_values, result=features: result
-        )
-        backbone._torch = torch  # type: ignore[assignment]
-        backbone._device = "cpu"
+        backbone._model = _FakeClipModel(features)
         vectors = backbone.get_embeddings((Image.new("RGB", (2, 2)),))
         np.testing.assert_allclose(vectors, np.array([[0.6, 0.8]], dtype=np.float32), atol=1e-6)
 
-    backbone._model.get_image_features = lambda pixel_values: _FakeVisionOutput(None)  # type: ignore[union-attr]
+    backbone._model = _FakeClipModel(_FakeVisionOutput(None))
     with pytest.raises(ValueError, match="unsupported image features"):
         backbone.get_embeddings((Image.new("RGB", (2, 2)),))

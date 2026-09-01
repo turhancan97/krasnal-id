@@ -98,6 +98,9 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Confusion analysis records the strongest wrong dwarf for **every** query, not only for failures.
   On a dataset with few outright errors the near-misses are where the signal is. Pairs stay
   directed, so an asymmetric confusion does not average away against its reverse.
+- Strict `mypy` covers `src/krasnal_id` and `tests`. Test fixtures construct validated models with
+  real `HttpUrl`, `datetime` and `Path` values rather than leaning on Pydantic's runtime coercion,
+  so a fixture that drifts from a contract fails type checking rather than silently coercing.
 - Analysis dependencies load lazily behind `import_optional_analysis`, mirroring the ML
   backbones, so the package imports without the `analysis` extra installed.
 - Single-image retrieval reuses a cached vector whenever the query file's content hash already

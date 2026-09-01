@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from pydantic import HttpUrl
 
 from krasnal_id.data_pipeline.build_split import (
     SplitConfigurationError,
@@ -11,33 +12,32 @@ from krasnal_id.data_pipeline.build_split import (
     build_split_from_artifact,
     write_evaluation_split,
 )
-from krasnal_id.models import DatasetManifest, DwarfRecord, EvaluationSplit
+from krasnal_id.models import DatasetManifest, DwarfRecord, EvaluationSplit, ImageRecord
 
 
 def _manifest() -> DatasetManifest:
     dwarf = DwarfRecord(
         dwarf_id="Q1",
         display_name="One",
-        wikidata_url="https://www.wikidata.org/wiki/Q1",
+        wikidata_url=HttpUrl("https://www.wikidata.org/wiki/Q1"),
         commons_category="One",
     )
-    records = []
-    for index in range(3):
-        records.append(
-            {
-                "image_id": f"image-{index}",
-                "dwarf_id": "Q1",
-                "local_path": f"data/images/image-{index}.jpg",
-                "source_url": "https://commons.wikimedia.org/wiki/File:One.jpg",
-                "author": "Author",
-                "license": "CC BY-SA 4.0",
-                "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
-                "sha256": f"{index + 1:064x}",
-                "width": 4,
-                "height": 4,
-                "acquired_at": "2026-08-23T12:00:00Z",
-            }
+    records = [
+        ImageRecord(
+            image_id=f"image-{index}",
+            dwarf_id="Q1",
+            local_path=Path(f"data/images/image-{index}.jpg"),
+            source_url=HttpUrl("https://commons.wikimedia.org/wiki/File:One.jpg"),
+            author="Author",
+            license="CC BY-SA 4.0",
+            license_url=HttpUrl("https://creativecommons.org/licenses/by-sa/4.0/"),
+            sha256=f"{index + 1:064x}",
+            width=4,
+            height=4,
+            acquired_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
         )
+        for index in range(3)
+    ]
     return DatasetManifest(
         schema_version="1.0",
         source_query_sha256="a" * 64,

@@ -76,7 +76,7 @@ select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src/krasnal_id"]
+files = ["src/krasnal_id", "tests"]
 warn_unreachable = true
 
 [tool.pytest.ini_options]

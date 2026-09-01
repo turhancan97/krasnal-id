@@ -98,7 +98,7 @@ def test_category_review_uses_display_name_overrides() -> None:
 
 
 def test_image_review_file_has_unique_dwarf_page_keys() -> None:
-    data = {
+    data: dict[str, Any] = {
         "schema_version": "1.0",
         "source_query_sha256": "a" * 64,
         "staging_sha256": "b" * 64,

@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from pydantic import HttpUrl
 from typer.testing import CliRunner
 
 from krasnal_id.cli import app
@@ -21,6 +22,7 @@ from krasnal_id.models import (
     CategoryReviewFile,
     CategoryReviewRecord,
     CategoryReviewStatus,
+    DatasetManifest,
     DwarfDiscoveryFile,
     DwarfRecord,
     FetchedImagesFile,
@@ -44,7 +46,7 @@ def _dwarf(qid: str, name: str, category: str) -> DwarfRecord:
     return DwarfRecord(
         dwarf_id=qid,
         display_name=name,
-        wikidata_url=f"https://www.wikidata.org/wiki/{qid}",
+        wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/{qid}"),
         commons_category=category,
     )
 
@@ -53,11 +55,11 @@ def _image(qid: str, page_id: int) -> ImageRecord:
     return ImageRecord(
         image_id=f"commons-{page_id}",
         dwarf_id=qid,
-        local_path=f"data/images/{qid}/commons-{page_id}.jpg",
-        source_url=f"https://commons.wikimedia.org/wiki/File:{page_id}.jpg",
+        local_path=Path(f"data/images/{qid}/commons-{page_id}.jpg"),
+        source_url=HttpUrl(f"https://commons.wikimedia.org/wiki/File:{page_id}.jpg"),
         author="Example Photographer",
         license="Public domain",
-        license_url="https://creativecommons.org/publicdomain/mark/1.0/",
+        license_url=HttpUrl("https://creativecommons.org/publicdomain/mark/1.0/"),
         sha256=f"{page_id:064x}",
         width=900,
         height=700,
@@ -145,7 +147,7 @@ def _write_artifacts(root: Path, *, stale_review_hash: bool = False) -> dict[str
     }
 
 
-def _build(paths: dict[str, Path]):
+def _build(paths: dict[str, Path]) -> DatasetManifest:
     return build_manifest_from_artifacts(
         paths["discovery"],
         paths["fetched"],

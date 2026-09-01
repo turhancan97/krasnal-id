@@ -1,9 +1,11 @@
 """Shared synthetic dataset builders for evaluation tests."""
 
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
 import numpy.typing as npt
+from pydantic import HttpUrl
 
 from krasnal_id.config import BackboneConfig
 from krasnal_id.embeddings.cache import EmbeddingCache
@@ -25,14 +27,14 @@ def image_record(image_id: str, dwarf_id: str, digest_seed: str) -> ImageRecord:
         image_id=image_id,
         dwarf_id=dwarf_id,
         local_path=Path(f"data/images/{dwarf_id}/{image_id}.jpg"),
-        source_url="https://commons.wikimedia.org/wiki/File:Example.jpg",
+        source_url=HttpUrl("https://commons.wikimedia.org/wiki/File:Example.jpg"),
         author="Author",
         license="CC BY-SA 4.0",
-        license_url="https://creativecommons.org/licenses/by-sa/4.0/",
+        license_url=HttpUrl("https://creativecommons.org/licenses/by-sa/4.0/"),
         sha256=(digest_seed * 64)[:64],
         width=800,
         height=600,
-        acquired_at="2026-08-23T12:00:00Z",
+        acquired_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
     )
 
 
@@ -42,7 +44,7 @@ def synthetic_manifest(dwarf_count: int = 3, per_dwarf: int = 3) -> DatasetManif
         DwarfRecord(
             dwarf_id=f"Q{index}",
             display_name=f"Dwarf {index}",
-            wikidata_url=f"https://www.wikidata.org/wiki/Q{index}",
+            wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/Q{index}"),
             commons_category=f"Dwarf {index}",
         )
         for index in range(dwarf_count)
@@ -57,7 +59,7 @@ def synthetic_manifest(dwarf_count: int = 3, per_dwarf: int = 3) -> DatasetManif
         source_query_sha256="a" * 64,
         staging_sha256="b" * 64,
         image_review_sha256="c" * 64,
-        generated_at="2026-08-23T12:00:00Z",
+        generated_at=datetime(2026, 8, 23, 12, 0, tzinfo=UTC),
         minimum_images_per_dwarf=3,
         dwarfs=dwarfs,
         images=images,
