@@ -11,7 +11,8 @@ The repository contains the complete typed scaffold for versions 0.1-0.3 plus im
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
-analysis, and embedding visualization. Only the optional Gradio demo remains unimplemented.
+analysis, embedding visualization, and single-image retrieval. Only the optional Gradio demo
+remains unimplemented.
 
 ## Setup
 
@@ -192,6 +193,22 @@ The figure is written to `results/embeddings-<method>-<backbone>.png`. Classes a
 color and, beyond the twenty-color palette, by marker shape, and each class is named at its own
 centroid with overlapping labels nudged apart and connected by leader lines. Projections are
 seeded and reproducible.
+
+## Identify a single photograph
+
+Rank the most likely dwarves for one image:
+
+    uv run krasnal-id retrieve path/to/photo.jpg
+    uv run krasnal-id retrieve path/to/photo.jpg --top-k 3 --override backbone=clip
+
+The command reports each candidate dwarf with the cosine similarity and the reference image it
+matched. A query whose file content already has a cached vector reuses it, so querying a dataset
+image needs neither a model load nor the `ml` extra; any other image is embedded with the
+configured backbone, which does require it. Every reference sharing the query's content hash is
+withheld, so a dataset image cannot simply match itself.
+
+Exit code 2 indicates a missing or undecodable image, missing embeddings, or an unreadable
+manifest.
 
 ## Development checks
 

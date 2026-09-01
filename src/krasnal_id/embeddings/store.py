@@ -41,14 +41,19 @@ class BackboneIdentity(Protocol):
         ...
 
 
-def cache_key_for(record: ImageRecord, identity: BackboneIdentity) -> EmbeddingCacheKey:
-    """Build the single cache identity shared by extraction and evaluation."""
+def cache_key_for_digest(image_sha256: str, identity: BackboneIdentity) -> EmbeddingCacheKey:
+    """Build the single cache identity used everywhere a vector is read or written."""
     return EmbeddingCacheKey(
-        image_sha256=record.sha256,
+        image_sha256=image_sha256,
         model_id=identity.model_id,
         revision=identity.revision,
         preprocessing_id=identity.preprocessing_id,
     )
+
+
+def cache_key_for(record: ImageRecord, identity: BackboneIdentity) -> EmbeddingCacheKey:
+    """Build the cache identity for one manifest image."""
+    return cache_key_for_digest(record.sha256, identity)
 
 
 @dataclass(frozen=True, slots=True)

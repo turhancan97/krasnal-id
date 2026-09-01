@@ -30,6 +30,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added single-image retrieval as `krasnal-id retrieve <image> [--top-k N]`, reporting ranked
+  candidate dwarves with similarity scores and the reference image each matched, reusing a cached
+  vector for identical file content and withholding every byte-identical copy of the query.
 - Added confusion analysis reporting directed most-confused dwarf pairs with query counts,
   misidentification counts, and mean cosine margins, plus a `ConfusionPair` contract, summary
   margin metrics, and a wired `krasnal-id experiment confusion` command.
@@ -106,4 +109,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   6 of 146 queries against CLIP's 11, and both backbones agree that the Puszczajacy Stateczki,
   Zbierajacy Wode, and Karmiacy Ptaki water-themed dwarves are the systematically confused
   cluster, which the projections show as a single tight neighborhood.
+- Single-image retrieval is implemented and reproduces the confusion finding interactively: a
+  Puszczajacy Stateczki query ranks Zbierajacy Wode first under both backbones, with the water-
+  themed cluster filling the top three candidates.
 - Only the optional Gradio demo remains intentionally unimplemented.

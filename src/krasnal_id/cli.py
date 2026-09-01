@@ -1,6 +1,7 @@
 """Unified command-line interface for all Krasnal-ID pipeline stages."""
 
 import logging
+from pathlib import Path
 from typing import Annotated
 
 import typer
@@ -48,11 +49,16 @@ from krasnal_id.models import (
     CategoryReviewStatus,
     FetchAuditDisposition,
 )
+from krasnal_id.retrieval.query import QueryError, retrieve_image
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 
 OverrideOption = Annotated[
     list[str] | None,
     typer.Option("--override", "-o", help="Hydra override; repeat for multiple values."),
+]
+TopKOption = Annotated[
+    int,
+    typer.Option("--top-k", min=1, help="Number of candidate dwarves to report."),
 ]
 LimitOption = Annotated[
     int | None,
@@ -267,9 +273,39 @@ def extract_embeddings(override: OverrideOption = None) -> None:
 
 
 @app.command("retrieve")
-def retrieve(override: OverrideOption = None) -> None:
+def retrieve(
+    image: Annotated[
+        Path,
+        typer.Argument(help="Path to the query photograph.", show_default=False),
+    ],
+    top_k: TopKOption = 5,
+    override: OverrideOption = None,
+) -> None:
     """Retrieve the nearest dwarf candidates for a query image."""
-    _run_placeholder("retrieve", override)
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        outcome = retrieve_image(image, config, top_k)
+    except (QueryError, EmbeddingStoreError) as error:
+        typer.echo(f"Retrieval error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    source = "cached vector" if outcome.reused_cached_vector else "freshly embedded"
+    typer.echo(
+        f"Top {len(outcome.candidates)} candidates for {image} "
+        f"(backbone={config.backbone.name}, {source})"
+    )
+    if outcome.excluded_reference_image_ids:
+        typer.echo(
+            "  withheld the query's own reference copies: "
+            f"{', '.join(outcome.excluded_reference_image_ids)}"
+        )
+    for candidate in outcome.candidates:
+        typer.echo(
+            f"  {candidate.rank}. {candidate.display_name} ({candidate.dwarf_id}) "
+            f"similarity {candidate.cosine_similarity:.4f} "
+            f"via {candidate.matched_image_id}"
+        )
 
 
 @experiment_app.command("baseline")

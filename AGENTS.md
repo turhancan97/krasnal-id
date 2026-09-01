@@ -100,6 +100,11 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   directed, so an asymmetric confusion does not average away against its reverse.
 - Analysis dependencies load lazily behind `import_optional_analysis`, mirroring the ML
   backbones, so the package imports without the `analysis` extra installed.
+- Single-image retrieval reuses a cached vector whenever the query file's content hash already
+  has one, so querying a dataset image needs no model load and no `ml` extra. The cache is only
+  read there; populating it stays the job of `embeddings extract`.
+- A query is compared against references by content hash, and every byte-identical copy of it is
+  withheld. Otherwise a dataset image would match itself at similarity 1.0 and report nothing.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
 
 ## 7. Experiments
