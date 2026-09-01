@@ -4,7 +4,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_manifest import build_dataset_manifest
@@ -85,6 +84,6 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
     # run_baseline now has real behavior; tests/test_baseline.py covers it.
 
 
-def test_later_version_placeholders_are_explicit() -> None:
-    with pytest.raises(NotImplementedError):
-        launch()
+def test_every_scaffolded_stage_is_implemented() -> None:
+    # Nothing in the v0.1-v0.3 build order raises NotImplementedError any more.
+    assert callable(launch)

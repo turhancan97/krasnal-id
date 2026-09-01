@@ -111,6 +111,13 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Regularize the linear probe **weakly**. Embeddings are L2-normalized, so per-dimension
   magnitudes are near `1/sqrt(d)` and a conventional `C=1.0` underfits badly: on the current
   dataset it scored 66% top-1 against 96% at `C=100`. The default is 100.
+- The demo loads the manifest and cached vectors once per session, not per query, and its
+  callback returns an explanatory status string instead of raising, because a Gradio callback
+  that raises shows the visitor a stack trace.
+- Point Gradio at a per-user temporary directory unless `GRADIO_TEMP_DIR` is already set. Its
+  default `/tmp/gradio` fails outright on a multi-user machine where another account created it
+  first. Gradio analytics are disabled: launching a local research demo must not report to an
+  external service.
 - Hold BLAS to one thread while fitting per-fold classifiers. Each fit is tiny, so thread
   oversubscription dominates: the leave-one-out sweep went from over six minutes to twelve
   seconds. `threadpoolctl` is declared in the `analysis` extra but its absence is not an error.

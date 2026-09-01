@@ -11,8 +11,8 @@ The repository contains the complete typed scaffold for versions 0.1-0.3 plus im
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
-analysis, embedding visualization, single-image retrieval, and the trained-classifier
-comparison. Only the optional Gradio demo remains unimplemented.
+analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
+and the interactive demonstration. The v0.1-v0.3 build order is complete.
 
 ## Setup
 
@@ -227,6 +227,23 @@ The linear probe is regularized weakly by default (`C=100`). Embeddings are L2-n
 conventional `C=1.0` underfits badly: it scored 66% top-1 on this dataset against 96% at the
 default. BLAS is held to one thread while fitting, because each per-fold classifier is small
 enough that thread oversubscription dominates the runtime.
+
+## Interactive demonstration
+
+Launch the browser demonstration once embeddings are cached:
+
+    uv sync --extra demo
+    uv run krasnal-id demo
+    uv run krasnal-id demo --top-k 3 --port 7860 --override backbone=clip
+
+Upload a photograph to see the ranked candidate dwarves, their similarity scores, and the
+reference photographs each one matched. The manifest and cached vectors load once per session
+rather than per query. Uploading a photograph that is already in the dataset withholds its own
+reference copies and says so, so it cannot simply match itself.
+
+The demo serves locally and reports nothing to any external service. It writes its scratch files
+to a per-user directory rather than the shared `/tmp/gradio`, which fails on a multi-user machine
+where another account created that path first; set `GRADIO_TEMP_DIR` to override.
 
 ## Development checks
 

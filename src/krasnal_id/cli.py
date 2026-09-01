@@ -1,6 +1,5 @@
 """Unified command-line interface for all Krasnal-ID pipeline stages."""
 
-import logging
 from pathlib import Path
 from typing import Annotated
 
@@ -29,6 +28,8 @@ from krasnal_id.data_pipeline.wikidata_query import (
     discovery_paths,
     query_dwarfs,
 )
+from krasnal_id.demo.app import DemoError
+from krasnal_id.demo.app import launch as launch_demo
 from krasnal_id.embeddings.backbone import EmbeddingConfigurationError
 from krasnal_id.embeddings.extract import EmbeddingExtractionError, extract_from_artifact
 from krasnal_id.embeddings.store import EmbeddingStoreError
@@ -92,20 +93,6 @@ app.add_typer(data_app, name="data")
 app.add_typer(embeddings_app, name="embeddings")
 app.add_typer(experiment_app, name="experiment")
 app.add_typer(visualize_app, name="visualize")
-
-
-def _run_placeholder(
-    stage: str,
-    overrides: list[str] | None,
-    required_overrides: list[str] | None = None,
-) -> None:
-    """Validate configuration, initialize logging, and report an unimplemented stage."""
-    merged_overrides = [*(required_overrides or []), *(overrides or [])]
-    config = load_config(merged_overrides)
-    configure_logging(config.logging)
-    logging.getLogger(__name__).info("validated placeholder stage: %s", stage)
-    typer.echo(f"{stage} is not implemented yet.", err=True)
-    raise typer.Exit(code=2)
 
 
 @data_app.command("query")
@@ -437,9 +424,26 @@ def visualize_embeddings(override: OverrideOption = None) -> None:
 
 
 @app.command("demo")
-def demo(override: OverrideOption = None) -> None:
+def demo(
+    top_k: TopKOption = 5,
+    share: Annotated[
+        bool,
+        typer.Option("--share", help="Expose a temporary public Gradio link."),
+    ] = False,
+    port: Annotated[
+        int | None,
+        typer.Option("--port", min=1, max=65535, help="Port to serve the interface on."),
+    ] = None,
+    override: OverrideOption = None,
+) -> None:
     """Launch the optional Gradio retrieval demonstration."""
-    _run_placeholder("demo", override)
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        launch_demo(config, top_k=top_k, share=share, server_port=port)
+    except (DemoError, EmbeddingStoreError) as error:
+        typer.echo(f"Demo error: {error}", err=True)
+        raise typer.Exit(code=2) from error
 
 
 if __name__ == "__main__":

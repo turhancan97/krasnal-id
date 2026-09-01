@@ -30,6 +30,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added the Gradio demonstration as `krasnal-id demo [--top-k N] [--port P] [--share]`: upload a
+  photograph to see ranked candidate dwarves with similarity scores and their closest reference
+  photographs, with the reference set loaded once per session.
 - Added the trained-classifier comparison as `krasnal-id experiment probe`: per-class prototype
   and per-fold linear-probe classifiers scored against a retrieval arm on the same folds, with
   Wilson intervals, mean reciprocal rank, and an explicit top-1 gain over retrieval.
@@ -61,6 +64,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Changed
 
+- Removed the CLI placeholder helper, which no command referenced once every stage was
+  implemented.
 - Set the default linear-probe regularization to `C=100`. At the conventional `C=1.0` the probe
   underfits L2-normalized embeddings badly, scoring 66% top-1 against 96%.
 - Declared `threadpoolctl` in the `analysis` extra and hold BLAS to one thread while fitting
@@ -124,4 +129,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   beats retrieval: the linear probe gains 0.7 top-1 points over retrieval for both backbones
   (DINOv2 96.6% against 95.9%, CLIP 93.2% against 92.5%) while class prototypes lose 2.7 and 2.1
   points, and every difference sits inside the confidence intervals.
-- Only the optional Gradio demo remains intentionally unimplemented.
+- The Gradio demonstration is implemented, completing the v0.1-v0.3 build order. Every
+  scaffolded stage now has real behavior and no module raises `NotImplementedError`.
