@@ -22,6 +22,7 @@ htmlcov/
 # Downloaded and generated research artifacts
 data/images/
 data/embeddings/
+data/splits/
 data/discovery/
 data/manifest*.json
 results/*

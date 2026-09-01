@@ -82,6 +82,45 @@ class DatasetManifest(BaseModel):
         return self
 
 
+class EvaluationSplitFold(BaseModel):
+    """One deterministic leave-one-out query/reference fold."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    query_image_id: str = Field(min_length=1)
+    query_dwarf_id: str = Field(min_length=1)
+    reference_image_ids: tuple[str, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_query_is_not_a_reference(self) -> "EvaluationSplitFold":
+        """Require a unique, non-leaking reference set for the query."""
+        if self.query_image_id in self.reference_image_ids:
+            raise ValueError("query image cannot appear in its reference set")
+        if len(self.reference_image_ids) != len(set(self.reference_image_ids)):
+            raise ValueError("reference image IDs must be unique")
+        return self
+
+
+class EvaluationSplit(BaseModel):
+    """Versioned deterministic evaluation split shared by all backbones."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: str = Field(pattern=r"^\d+\.\d+$")
+    strategy: Literal["leave_one_out"]
+    manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    generated_at: datetime
+    folds: tuple[EvaluationSplitFold, ...]
+
+    @model_validator(mode="after")
+    def validate_unique_queries(self) -> "EvaluationSplit":
+        """Require exactly one fold for every query image."""
+        query_ids = [fold.query_image_id for fold in self.folds]
+        if len(query_ids) != len(set(query_ids)):
+            raise ValueError("split query image IDs must be unique")
+        return self
+
+
 class AuditDisposition(StrEnum):
     """Whether a discovery audit entry blocks inclusion."""
 

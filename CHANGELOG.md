@@ -30,6 +30,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added deterministic leave-one-out split generation, validated split contracts, atomic split output,
+  lazy DINOv2 and CLIP adapters, normalized resumable embedding caches, strict manifest-image
+  validation, and offline fake-backbone extraction coverage.
+
 ### Changed
 
 - Changed the default Commons research-image bounds to a 400-pixel minimum short side and a
@@ -57,5 +61,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   complete, with automated checks passing.
 - Audited manifest construction is implemented and produces 23 classes and 146 images from
   the current local artifacts.
-- Model inference, embedding persistence, retrieval algorithms, experiment computation, plotting,
-  and the Gradio interface remain intentionally unimplemented.
+- Deterministic evaluation split generation and resumable DINOv2/CLIP embedding extraction are
+  implemented. Retrieval algorithms, baseline metrics, pool-size ablation, plotting, and the
+  Gradio interface remain intentionally unimplemented.

@@ -11,6 +11,11 @@ from krasnal_id.data_pipeline.build_manifest import (
     build_manifest_from_artifacts,
     write_dataset_manifest,
 )
+from krasnal_id.data_pipeline.build_split import (
+    SplitConfigurationError,
+    build_split_from_artifact,
+    write_evaluation_split,
+)
 from krasnal_id.data_pipeline.commons_fetch import (
     CommonsConfigurationError,
     fetch_images,
@@ -23,6 +28,8 @@ from krasnal_id.data_pipeline.wikidata_query import (
     discovery_paths,
     query_dwarfs,
 )
+from krasnal_id.embeddings.backbone import EmbeddingConfigurationError
+from krasnal_id.embeddings.extract import EmbeddingExtractionError, extract_from_artifact
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
@@ -204,10 +211,46 @@ def build_manifest(override: OverrideOption = None) -> None:
     )
 
 
+@data_app.command("build-split")
+def build_split(override: OverrideOption = None) -> None:
+    """Build the deterministic leave-one-out evaluation split."""
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        split = build_split_from_artifact(config.paths.manifest_path)
+        write_evaluation_split(config.paths.evaluation_split_path, split)
+    except SplitConfigurationError as error:
+        typer.echo(f"Split configuration error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(
+        "Evaluation split complete: "
+        f"strategy={split.strategy} folds={len(split.folds)} "
+        f"output={config.paths.evaluation_split_path}"
+    )
+
+
 @embeddings_app.command("extract")
 def extract_embeddings(override: OverrideOption = None) -> None:
     """Extract and cache embeddings for every admitted image."""
-    _run_placeholder("embeddings extract", override)
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        summary = extract_from_artifact(
+            config.paths.manifest_path,
+            config.backbone,
+            config.paths.embeddings_dir,
+        )
+    except (EmbeddingConfigurationError, EmbeddingExtractionError) as error:
+        typer.echo(f"Embedding extraction error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(
+        "Embedding extraction complete: "
+        f"backbone={config.backbone.name} total={summary.total} "
+        f"reused={summary.reused} computed={summary.computed} "
+        f"cache={config.paths.embeddings_dir}"
+    )
 
 
 @app.command("retrieve")

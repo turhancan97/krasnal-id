@@ -189,3 +189,12 @@ krasnal-id/
   review files, applies the three-image threshold, records discovery/staging/review provenance
   hashes, and writes the manifest atomically. It never scans the filesystem; the current
   audited artifacts produce 23 classes and 146 images.
+- data build-split is implemented. It consumes only the validated manifest, creates one
+  deterministic leave-one-out fold per admitted image, records the canonical manifest hash, and
+  writes the ignored split artifact atomically.
+- embeddings extract is implemented for the pinned DINOv2 and CLIP configurations. It validates
+  manifest image checksums and dimensions, supports CPU/automatic CUDA selection and configured
+  batching, reuses valid normalized .npy vectors, and keeps model loading lazy so CI remains
+  offline. CI uses deterministic fake backbones; real weights are downloaded only on local ML runs.
+- Retrieval, baseline metrics, candidate-pool ablation, confusion analysis, visualization, and
+  the Gradio demo remain the next implementation stage.

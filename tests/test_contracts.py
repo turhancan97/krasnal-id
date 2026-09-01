@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from PIL import Image
 
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_manifest import build_dataset_manifest
@@ -41,12 +40,6 @@ def test_backbone_adapters_satisfy_protocol_without_optional_ml_imports() -> Non
     assert dinov2.revision == "f9e44c814b77203eaa57a6bdbbd535f21ede1415"
     assert clip.preprocessing_id == "transformers-auto-processor"
 
-    image = Image.new("RGB", (1, 1))
-    with pytest.raises(NotImplementedError):
-        dinov2.get_embedding(image)
-    with pytest.raises(NotImplementedError):
-        clip.get_embedding(image)
-
 
 def test_result_contracts() -> None:
     match = RetrievalMatch(rank=1, image_id="image-1", dwarf_id="Q1", cosine_similarity=0.95)
@@ -81,10 +74,11 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
     )
     assert manifest.dwarfs == ()
     assert manifest.images == ()
-    with pytest.raises(NotImplementedError):
-        cache.load(key)
-    with pytest.raises(NotImplementedError):
-        cache.store(key, vector)
+    valid_vector = np.asarray([1.0, 0.0], dtype=np.float32)
+    cache.store(key, valid_vector)
+    loaded = cache.load(key)
+    assert loaded is not None
+    np.testing.assert_allclose(loaded, valid_vector)
     with pytest.raises(NotImplementedError):
         cosine_knn(vector, np.zeros((1, 2), dtype=np.float32), ("i",), ("d",), 1)
     with pytest.raises(NotImplementedError):

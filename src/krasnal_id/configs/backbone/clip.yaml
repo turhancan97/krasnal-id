@@ -2,3 +2,5 @@ name: clip
 model_id: openai/clip-vit-base-patch32
 revision: 3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268
 preprocessing_id: transformers-auto-processor
+device: auto
+batch_size: 16

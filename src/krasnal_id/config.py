@@ -16,6 +16,7 @@ class PathsConfig(BaseModel):
     data_dir: Path
     images_dir: Path
     embeddings_dir: Path
+    evaluation_split_path: Path
     discovery_dir: Path
     category_review_path: Path
     image_review_path: Path
@@ -82,6 +83,8 @@ class BackboneConfig(BaseModel):
     model_id: str = Field(min_length=1)
     revision: str = Field(min_length=1)
     preprocessing_id: str = Field(min_length=1)
+    device: Literal["auto", "cpu", "cuda"] = "auto"
+    batch_size: int = Field(gt=0)
 
 
 class BaselineExperimentConfig(BaseModel):

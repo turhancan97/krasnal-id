@@ -7,9 +7,10 @@ would help.
 
 ## Project status
 
-The repository contains the complete typed scaffold for versions 0.1–0.3 plus implemented,
-cached Wikidata discovery and reviewed Wikimedia Commons image acquisition. Manifest building,
-model inference, retrieval algorithms, and experiments remain explicit placeholders.
+The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
+cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
+deterministic evaluation splits, and resumable DINOv2/CLIP embedding extraction. Retrieval
+algorithms and experiments remain the next implementation stage.
 
 ## Setup
 
@@ -101,6 +102,29 @@ uv run krasnal-id data build-manifest
 The command applies both review files, rejects stale or inconsistent staging inputs, filters
 classes below the configured threshold, records discovery/staging/review provenance hashes,
 and writes `data/manifest.json` atomically.
+
+## Evaluation split and embeddings
+
+Create the shared deterministic leave-one-out split from the generated manifest:
+
+    uv run krasnal-id data build-split
+
+The split creates one query fold per admitted image and is written to the ignored
+data/splits/leave-one-out.json artifact. It is invalidated when the manifest changes.
+
+Install the optional ML dependencies before extracting embeddings:
+
+    uv sync --extra ml
+    uv run krasnal-id embeddings extract backbone=dinov2
+    uv run krasnal-id embeddings extract backbone=clip
+
+Use Hydra overrides for runtime settings:
+
+    uv run krasnal-id embeddings extract backbone.device=cuda backbone.batch_size=8
+
+Extraction validates every manifest image, reuses valid vectors, and stores normalized .npy
+vectors under the ignored data/embeddings/ directory. CI uses deterministic fake backbones and
+does not download model weights.
 
 ## Development checks
 

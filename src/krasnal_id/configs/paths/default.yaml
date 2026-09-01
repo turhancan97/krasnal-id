@@ -1,6 +1,7 @@
 data_dir: data
 images_dir: data/images
 embeddings_dir: data/embeddings
+evaluation_split_path: data/splits/leave-one-out.json
 discovery_dir: data/discovery
 category_review_path: data/category-review.json
 image_review_path: data/image-review.json
