@@ -27,6 +27,11 @@ OUT = Path("docs/brand")
 # IBM Plex Sans SemiBold. Override with KRASNAL_BRAND_FONT; see the module docstring.
 FONT_FILE = os.environ.get("KRASNAL_BRAND_FONT", "plex600.ttf")
 
+# The tagline is set in the regular weight; without it the plate simply omits it.
+TAGLINE_FONT = os.environ.get("KRASNAL_BRAND_FONT_REGULAR", "plex400.ttf")
+TAGLINE = "Fine-grained visual instance recognition"
+TAGLINE_INK = "#8A9499"
+
 if not Path(FONT_FILE).is_file():
     raise SystemExit(
         f"font file not found: {FONT_FILE}\n"
@@ -95,11 +100,21 @@ _SIZE = 100.0
 _fp = FontProperties(fname=FONT_FILE)
 
 
-def _advance(text: str) -> float:
-    font = FT2Font(FONT_FILE)
+def _advance(text: str, font_file: str = FONT_FILE) -> float:
+    font = FT2Font(font_file)
     font.set_size(_SIZE, 72)
     font.set_text(text)
     return font.get_width_height()[0] / 64.0
+
+
+def outlined(
+    text: str, size: float, x: float, baseline: float, fill: str, font_file: str = FONT_FILE
+) -> tuple[str, float]:
+    """Return outlined path data for one run of text, and its advance width."""
+    scale = size / _SIZE
+    path = TextPath((0, 0), text, size=_SIZE, prop=FontProperties(fname=font_file))
+    body = f'<path d="{_to_svg_path(path, x, baseline, scale)}" fill="{fill}"/>'
+    return body, _advance(text, font_file) * scale
 
 
 def wordmark(x: float, baseline: float, size: float, ink: str, blue: str) -> tuple[str, float]:
@@ -148,7 +163,13 @@ for theme, red, blue, ink in (("light", RED, BLUE, INK), ("dark", RED_D, BLUE_D,
 
 
 def render_plate(
-    source: str, width: float, height: float, art_width: float, name: str, scale: int = 1
+    source: str,
+    width: float,
+    height: float,
+    art_width: float,
+    name: str,
+    scale: int = 1,
+    tagline: str | None = None,
 ) -> None:
     """Render one lockup centred on a dark plate, for places that need a raster."""
     try:
@@ -163,12 +184,29 @@ def render_plate(
     aw, ah = float(box[2]), float(box[3])
 
     factor = art_width / aw
-    x, y = (width - aw * factor) / 2, (height - ah * factor) / 2
+    caption = ""
+    caption_size = width * 0.0215
+    # The tagline sits below the lockup, so the pair is centred as one block.
+    block = ah * factor + (caption_size * 2.9 if tagline else 0)
+    x, y = (width - aw * factor) / 2, (height - block) / 2
+    if tagline:
+        if not Path(TAGLINE_FONT).is_file():
+            print(f"  {name}.png  tagline skipped (no {TAGLINE_FONT})")
+        else:
+            _, run = outlined(tagline, caption_size, 0, 0, TAGLINE_INK, TAGLINE_FONT)
+            caption, _ = outlined(
+                tagline,
+                caption_size,
+                (width - run) / 2,
+                y + ah * factor + caption_size * 2.0,
+                TAGLINE_INK,
+                TAGLINE_FONT,
+            )
     plate = (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width:g} {height:g}" '
         f'width="{width:g}" height="{height:g}">'
         f'<rect width="{width:g}" height="{height:g}" fill="#12181C"/>'
-        f'<g transform="translate({x:.2f},{y:.2f}) scale({factor:.4f})">{art}</g></svg>'
+        f'<g transform="translate({x:.2f},{y:.2f}) scale({factor:.4f})">{art}</g>{caption}</svg>'
     )
     cairosvg.svg2png(
         bytestring=plate.encode("utf-8"),
@@ -181,5 +219,6 @@ def render_plate(
 
 
 # GitHub renders the social preview at 1280x640.
-render_plate("krasnal-lockup-stacked-dark", 1280, 640, 430, "social-preview")
+render_plate("krasnal-lockup-stacked-dark", 1280, 640, 400, "social-preview", tagline=TAGLINE)
+render_plate("krasnal-lockup-stacked-dark", 1280, 640, 430, "social-preview-plain")
 render_plate("krasnal-lockup-stacked-dark", 720, 420, 300, "krasnal-lockup-stacked-dark", scale=2)

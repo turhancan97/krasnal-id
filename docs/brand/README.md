@@ -8,7 +8,8 @@ enough to hold at 16 pixels.
 | `krasnal-mark-light.svg` / `krasnal-mark-dark.svg` | The mark alone — favicons, avatars, tight spaces. |
 | `krasnal-lockup-horizontal-light.svg` / `-dark.svg` | Name to the right of the mark — headers, README, slides. |
 | `krasnal-lockup-stacked-light.svg` / `-dark.svg` | Name below the mark — square spaces, title cards. |
-| `social-preview.png` | 1280×640 card on a dark ground, for the GitHub social preview (Settings → Social preview). |
+| `social-preview.png` | 1280×640 card on a dark ground with the tagline, for the GitHub social preview (Settings → Social preview). |
+| `social-preview-plain.png` | The same card without the tagline. |
 | `krasnal-lockup-stacked-dark.png` | The stacked lockup on a dark plate, 2×, for slides and anywhere SVG is not accepted. |
 
 ## Palette
@@ -36,5 +37,6 @@ regenerate instead.
     KRASNAL_BRAND_FONT=/path/to/IBMPlexSans-SemiBold.ttf \
       uv run --with matplotlib --with cairosvg python docs/brand/generate.py
 
-The font is not vendored here. `cairosvg` is optional — without it the SVGs are still written and
+The tagline is set in IBM Plex Sans Regular, so a second file is needed for it; without it the
+plates render and the tagline is skipped. Neither font is vendored here. `cairosvg` is optional — without it the SVGs are still written and
 the PNG plates are skipped.
