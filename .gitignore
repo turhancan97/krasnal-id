@@ -28,6 +28,8 @@ data/manifest*.json
 results/*
 !results/README.md
 
+# Figures selected for publication are tracked under docs/figures/.
+
 # Model and experiment caches
 .cache/
 outputs/

@@ -52,6 +52,7 @@ from krasnal_id.models import (
     FetchAuditDisposition,
 )
 from krasnal_id.retrieval.query import QueryError, retrieve_image
+from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 
 OverrideOption = Annotated[
@@ -421,6 +422,20 @@ def visualize_embeddings(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Embedding visualization complete: figure={path}")
+
+
+@visualize_app.command("ablation")
+def visualize_ablation(override: OverrideOption = None) -> None:
+    """Draw the accuracy-versus-pool-size curve from saved ablation results."""
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path = create_ablation_plot(config)
+    except VisualizationError as error:
+        typer.echo(f"Ablation visualization error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Ablation visualization complete: figure={path}")
 
 
 @app.command("demo")

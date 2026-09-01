@@ -111,6 +111,16 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Regularize the linear probe **weakly**. Embeddings are L2-normalized, so per-dimension
   magnitudes are near `1/sqrt(d)` and a conventional `C=1.0` underfits badly: on the current
   dataset it scored 66% top-1 against 96% at `C=100`. The default is 100.
+### 6.3 Result publication policy (2026-09-01)
+
+- `results/` stays ignored: it is regenerated output. Figures selected for publication are copied
+  to tracked `docs/figures/` and referenced from `RESULTS.md`, which is the written record of what
+  the experiments found. Regenerate a published figure with its `visualize` command and copy it
+  across rather than editing it by hand.
+- Every number in `RESULTS.md` must be traceable to a committed command and a `results/` artifact.
+  Extrapolations beyond the measured range are labeled as such, together with why they are
+  optimistic.
+
 - The demo loads the manifest and cached vectors once per session, not per query, and its
   callback returns an explanatory status string instead of raising, because a Gradio callback
   that raises shows the visitor a stack trace.

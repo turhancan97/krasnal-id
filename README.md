@@ -14,6 +14,13 @@ retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, co
 analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
 and the interactive demonstration. The v0.1-v0.3 build order is complete.
 
+## Findings
+
+[**RESULTS.md**](RESULTS.md) is the written record of what the experiments found: DINOv2 reaches
+95.9% top-1 across the full 23-dwarf pool, accuracy decays by about one point per doubling of the
+candidate pool against CLIP's 1.8, a trained classifier does not beat raw retrieval, and the
+errors concentrate on one explainable cluster of water-themed statues.
+
 ## Setup
 
 Python 3.12 or newer and [`uv`](https://docs.astral.sh/uv/) are required.
