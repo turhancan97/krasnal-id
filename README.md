@@ -9,8 +9,9 @@ would help.
 
 The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
-deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, and cosine
-k-NN retrieval. Experiments remain the next implementation stage.
+deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
+retrieval, and the full-pool accuracy baseline. The candidate-pool-size ablation and the
+remaining analyses are the next implementation stage.
 
 ## Setup
 
@@ -131,6 +132,22 @@ DINOv2 and 512-dimensional CLIP vectors. Each backbone is pinned to a revision t
 safetensors directly, because `transformers` otherwise falls back to a mutable conversion
 reference and the revision recorded in the cache key would no longer describe the loaded
 weights.
+
+## Baseline evaluation
+
+Measure full-pool retrieval quality once embeddings are cached:
+
+    uv run krasnal-id experiment baseline
+    uv run krasnal-id experiment baseline --override backbone=clip
+
+Each run writes `results/baseline-<backbone>.json` atomically and prints every metric. Headline
+`top_k` and `mrr` rank distinct dwarves by their best-matching image, which is the candidate list
+an identification tool would present; `image_top_k` and `image_mrr` rank individual reference
+images for comparison. Accuracy proportions carry 95% Wilson score intervals. The baseline is
+exhaustive, so its seed is recorded for provenance rather than used to sample. A split whose
+recorded manifest hash no longer matches the manifest is refused rather than scored.
+
+Exit code 2 indicates missing embeddings, a stale split, or an unreadable artifact.
 
 ## Development checks
 

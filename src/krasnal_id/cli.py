@@ -30,6 +30,13 @@ from krasnal_id.data_pipeline.wikidata_query import (
 )
 from krasnal_id.embeddings.backbone import EmbeddingConfigurationError
 from krasnal_id.embeddings.extract import EmbeddingExtractionError, extract_from_artifact
+from krasnal_id.embeddings.store import EmbeddingStoreError
+from krasnal_id.experiments.artifacts import (
+    ExperimentArtifactError,
+    experiment_result_path,
+    write_experiment_result,
+)
+from krasnal_id.experiments.baseline_accuracy import BaselineExperimentError, run_baseline
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
@@ -262,7 +269,29 @@ def retrieve(override: OverrideOption = None) -> None:
 @experiment_app.command("baseline")
 def baseline_experiment(override: OverrideOption = None) -> None:
     """Measure full-pool top-k accuracy and mean reciprocal rank."""
-    _run_placeholder("experiment baseline", override, ["experiment=baseline"])
+    config = load_config(["experiment=baseline", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_baseline(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        BaselineExperimentError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Baseline experiment error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Baseline experiment complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
 
 
 @experiment_app.command("pool-ablation")

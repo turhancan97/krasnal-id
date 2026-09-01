@@ -13,7 +13,6 @@ from krasnal_id.embeddings.backbone import EmbeddingBackbone
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
-from krasnal_id.experiments.baseline_accuracy import run_baseline
 from krasnal_id.experiments.confusion_analysis import run_confusion_analysis
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.experiments.pool_size_ablation import run_pool_size_ablation
@@ -57,7 +56,6 @@ def test_result_contracts() -> None:
 
 
 def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -> None:
-    config = load_config()
     now = datetime.now(UTC)
     cache = EmbeddingCache(tmp_path)
     key = EmbeddingCacheKey("a" * 64, "model", "revision", "processor")
@@ -87,8 +85,7 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
         1,
     )
     assert ranked.matches[0].image_id == "i"
-    with pytest.raises(NotImplementedError):
-        run_baseline(config)
+    # run_baseline now has real behavior; tests/test_baseline.py covers it.
 
 
 def test_later_version_placeholders_are_explicit() -> None:

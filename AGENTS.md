@@ -81,6 +81,15 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 
 ### 6.2 Retrieval
 - Cosine similarity k-NN over cached reference embeddings is the primary method.
+- Report headline `top_k`/`mrr` over distinct **dwarves**, ranked by their best-matching image,
+  because that is the candidate list an identification tool presents. Image-level `image_top_k`
+  and `image_mrr` are reported alongside for comparison, never as the headline.
+- Every evaluation must refuse a split whose recorded manifest hash does not match the manifest
+  it is run against, rather than silently scoring a stale protocol.
+- Accuracy proportions carry 95% Wilson score intervals as error bars. Rank averages such as MRR
+  are not proportions and carry no interval.
+- The baseline is exhaustive and deterministic, so its configured seed is recorded for provenance
+  only. Nothing in it samples.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
 
 ## 7. Experiments

@@ -18,6 +18,7 @@ from krasnal_id.embeddings.backbone import (
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
+from krasnal_id.embeddings.store import cache_key_for
 from krasnal_id.models import DatasetManifest, ImageRecord
 
 
@@ -93,12 +94,7 @@ def extract_manifest_embeddings(
     ordered_records = tuple(sorted(manifest.images, key=lambda image: image.image_id))
     for record in ordered_records:
         image = _load_and_validate_image(record)
-        key = EmbeddingCacheKey(
-            image_sha256=record.sha256,
-            model_id=backbone.model_id,
-            revision=backbone.revision,
-            preprocessing_id=backbone.preprocessing_id,
-        )
+        key = cache_key_for(record, backbone)
         if cache.load(key) is not None:
             reused += 1
         else:

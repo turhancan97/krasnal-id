@@ -30,6 +30,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added the full-pool retrieval baseline: dwarf-level and image-level top-k accuracy with 95%
+  Wilson intervals, mean reciprocal rank, split/manifest hash verification, atomic result
+  artifacts under `results/`, and a wired `krasnal-id experiment baseline` command.
+- Added a shared embedding store that loads manifest-ordered cached vectors and holds the single
+  definition of the embedding cache key used by both extraction and evaluation.
 - Added cosine-similarity k-NN retrieval that rescales inputs to unit length, breaks equal
   similarities by ascending image ID for reproducible rankings, clamps similarities into the
   validated range, truncates to `top_k`, and returns a whole small pool rather than failing.
@@ -72,6 +77,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Deterministic evaluation split generation and resumable DINOv2/CLIP embedding extraction are
   implemented and have been run end to end on the local dataset, caching 146 normalized
   768-dimensional DINOv2 vectors and 146 normalized 512-dimensional CLIP vectors.
-- Cosine k-NN retrieval is implemented and exercised over the real cached vectors.
-- Baseline metrics, pool-size ablation, plotting, and the Gradio interface remain
+- Cosine k-NN retrieval and the full-pool baseline are implemented. On the current 23-class,
+  146-image dataset the baseline reports dwarf-level top-1 of 95.9% for DINOv2 and 92.5% for
+  CLIP, with top-5 at 99.3% and 98.6% and MRR at 0.9714 and 0.9506.
+- Pool-size ablation, confusion analysis, plotting, and the Gradio interface remain
   intentionally unimplemented.
