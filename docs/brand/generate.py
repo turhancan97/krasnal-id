@@ -9,9 +9,13 @@ Requires IBM Plex Sans SemiBold as a TTF. Fetch the URL that Google Fonts serves
 for `https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600` and point
 FONT_FILE at it:
 
-    uv run --with matplotlib python docs/brand/generate.py
+    uv run --with matplotlib --with cairosvg python docs/brand/generate.py
+
+cairosvg is optional: without it the SVGs are still written and the raster plates
+are skipped.
 """
 
+import os
 from pathlib import Path
 
 from matplotlib.font_manager import FontProperties
@@ -20,7 +24,16 @@ from matplotlib.path import Path as MPath
 from matplotlib.textpath import TextPath
 
 OUT = Path("docs/brand")
-FONT_FILE = "plex600.ttf"  # IBM Plex Sans SemiBold; see the module docstring
+# IBM Plex Sans SemiBold. Override with KRASNAL_BRAND_FONT; see the module docstring.
+FONT_FILE = os.environ.get("KRASNAL_BRAND_FONT", "plex600.ttf")
+
+if not Path(FONT_FILE).is_file():
+    raise SystemExit(
+        f"font file not found: {FONT_FILE}\n"
+        "The wordmark is outlined from IBM Plex Sans SemiBold. Download the TTF that "
+        "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600 points to, then either "
+        "place it beside this script as plex600.ttf or set KRASNAL_BRAND_FONT to its path."
+    )
 
 # Brand palette, as supplied.
 RED = "#cf4832"
@@ -132,3 +145,41 @@ for theme, red, blue, ink in (("light", RED, BLUE, INK), ("dark", RED_D, BLUE_D,
     text, _ = wordmark((total - width) / 2, 80, size, ink, blue)
     body = f'<g transform="translate({(total - 48) / 2:.2f},0)">{mark(red, blue)}</g>{text}'
     write(f"krasnal-lockup-stacked-{theme}.svg", svg(total, 90, body, "Krasnal-ID"))
+
+
+def render_plate(
+    source: str, width: float, height: float, art_width: float, name: str, scale: int = 1
+) -> None:
+    """Render one lockup centred on a dark plate, for places that need a raster."""
+    try:
+        import cairosvg
+    except ImportError:
+        print(f"  {name}.png  skipped (install cairosvg to render plates)")
+        return
+
+    svg_text = (OUT / f"{source}.svg").read_text(encoding="utf-8")
+    art = svg_text.split("</title>")[1].replace("</svg>\n", "").replace("</svg>", "")
+    box = svg_text.split('viewBox="')[1].split('"')[0].split()
+    aw, ah = float(box[2]), float(box[3])
+
+    factor = art_width / aw
+    x, y = (width - aw * factor) / 2, (height - ah * factor) / 2
+    plate = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width:g} {height:g}" '
+        f'width="{width:g}" height="{height:g}">'
+        f'<rect width="{width:g}" height="{height:g}" fill="#12181C"/>'
+        f'<g transform="translate({x:.2f},{y:.2f}) scale({factor:.4f})">{art}</g></svg>'
+    )
+    cairosvg.svg2png(
+        bytestring=plate.encode("utf-8"),
+        write_to=str(OUT / f"{name}.png"),
+        output_width=int(width * scale),
+        output_height=int(height * scale),
+    )
+    size = (OUT / f"{name}.png").stat().st_size / 1024
+    print(f"  {name}.png  {int(width * scale)}x{int(height * scale)}  {size:.0f} KB")
+
+
+# GitHub renders the social preview at 1280x640.
+render_plate("krasnal-lockup-stacked-dark", 1280, 640, 430, "social-preview")
+render_plate("krasnal-lockup-stacked-dark", 720, 420, 300, "krasnal-lockup-stacked-dark", scale=2)

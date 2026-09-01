@@ -8,6 +8,8 @@ enough to hold at 16 pixels.
 | `krasnal-mark-light.svg` / `krasnal-mark-dark.svg` | The mark alone — favicons, avatars, tight spaces. |
 | `krasnal-lockup-horizontal-light.svg` / `-dark.svg` | Name to the right of the mark — headers, README, slides. |
 | `krasnal-lockup-stacked-light.svg` / `-dark.svg` | Name below the mark — square spaces, title cards. |
+| `social-preview.png` | 1280×640 card on a dark ground, for the GitHub social preview (Settings → Social preview). |
+| `krasnal-lockup-stacked-dark.png` | The stacked lockup on a dark plate, 2×, for slides and anywhere SVG is not accepted. |
 
 ## Palette
 
@@ -31,4 +33,8 @@ The wordmark is outlined, not live text, so the files render identically everywh
 installed. That also means the path data cannot be edited by hand — change `generate.py` and
 regenerate instead.
 
-    uv run --with matplotlib python docs/brand/generate.py
+    KRASNAL_BRAND_FONT=/path/to/IBMPlexSans-SemiBold.ttf \
+      uv run --with matplotlib --with cairosvg python docs/brand/generate.py
+
+The font is not vendored here. `cairosvg` is optional — without it the SVGs are still written and
+the PNG plates are skipped.

@@ -30,6 +30,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added dark-ground raster plates to `docs/brand/`: a 1280x640 `social-preview.png` sized for the
+  GitHub social preview, and a 2x stacked lockup for slides.
 - Added the project identity under `docs/brand/`: a mark and horizontal and stacked lockups, each
   in light and dark variants, with the wordmark converted to outlines so the files render without
   a font installed, plus the generator that produces them and the usage rules.
