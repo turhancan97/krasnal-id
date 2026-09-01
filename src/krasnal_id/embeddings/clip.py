@@ -10,6 +10,7 @@ from krasnal_id.config import BackboneConfig
 from krasnal_id.embeddings.backbone import (
     import_optional_ml,
     normalize_embedding_batch,
+    resolve_device,
     single_embedding,
 )
 
@@ -47,8 +48,6 @@ class ClipBackbone:
             return
         transformers = import_optional_ml("transformers")
         self._torch = import_optional_ml("torch")
-        from krasnal_id.embeddings.backbone import resolve_device
-
         self._device = resolve_device(self._config)
         self._processor = transformers.AutoProcessor.from_pretrained(
             self.model_id,
@@ -77,7 +76,12 @@ class ClipBackbone:
         inputs = self._processor(images=rgb_images, return_tensors="pt")
         pixel_values = inputs["pixel_values"].to(self._device)
         with self._torch.inference_mode():
-            vectors = self._model.get_image_features(pixel_values=pixel_values)
+            features = self._model.get_image_features(pixel_values=pixel_values)
+        vectors = getattr(features, "pooler_output", features)
+        if not hasattr(vectors, "detach"):
+            raise ValueError(
+                f"CLIP returned unsupported image features of type {type(features).__name__}"
+            )
         return normalize_embedding_batch(vectors.detach().cpu().numpy())
 
     def get_embedding(self, image: Image.Image) -> npt.NDArray[np.float32]:

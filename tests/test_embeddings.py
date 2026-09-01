@@ -12,6 +12,7 @@ from krasnal_id.cli import app
 from krasnal_id.config import load_config
 from krasnal_id.embeddings.backbone import EmbeddingBackbone
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
+from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.extract import (
     EmbeddingExtractionError,
     extract_manifest_embeddings,
@@ -174,3 +175,34 @@ def test_cli_build_split_and_invalid_extraction_configuration(tmp_path: Path) ->
 def test_backbone_adapters_are_lazy() -> None:
     assert isinstance(FakeBackbone(), EmbeddingBackbone)
     assert load_config().backbone.batch_size == 16
+
+
+class _FakeVisionOutput:
+    """Stand-in for the transformers output object returned by get_image_features."""
+
+    def __init__(self, pooler_output: object) -> None:
+        self.pooler_output = pooler_output
+
+
+def test_clip_accepts_tensor_or_output_object() -> None:
+    torch = pytest.importorskip("torch")
+    config = load_config(["backbone=clip"]).backbone
+    backbone = ClipBackbone(config)
+    tensor = torch.tensor([[3.0, 4.0]])
+
+    for features in (tensor, _FakeVisionOutput(tensor)):
+        backbone._processor = lambda images, return_tensors: {  # type: ignore[assignment]
+            "pixel_values": torch.zeros(1, 3, 2, 2)
+        }
+        backbone._model = _FakeVisionOutput(None)  # type: ignore[assignment]
+        backbone._model.get_image_features = (  # type: ignore[union-attr]
+            lambda pixel_values, result=features: result
+        )
+        backbone._torch = torch  # type: ignore[assignment]
+        backbone._device = "cpu"
+        vectors = backbone.get_embeddings((Image.new("RGB", (2, 2)),))
+        np.testing.assert_allclose(vectors, np.array([[0.6, 0.8]], dtype=np.float32), atol=1e-6)
+
+    backbone._model.get_image_features = lambda pixel_values: _FakeVisionOutput(None)  # type: ignore[union-attr]
+    with pytest.raises(ValueError, match="unsupported image features"):
+        backbone.get_embeddings((Image.new("RGB", (2, 2)),))

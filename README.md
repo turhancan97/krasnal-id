@@ -115,16 +115,22 @@ data/splits/leave-one-out.json artifact. It is invalidated when the manifest cha
 Install the optional ML dependencies before extracting embeddings:
 
     uv sync --extra ml
-    uv run krasnal-id embeddings extract backbone=dinov2
-    uv run krasnal-id embeddings extract backbone=clip
+    uv run krasnal-id embeddings extract --override backbone=dinov2
+    uv run krasnal-id embeddings extract --override backbone=clip
 
-Use Hydra overrides for runtime settings:
+Every Hydra override is passed with `--override` (`-o`), repeated per value:
 
-    uv run krasnal-id embeddings extract backbone.device=cuda backbone.batch_size=8
+    uv run krasnal-id embeddings extract -o backbone.device=cuda -o backbone.batch_size=8
 
 Extraction validates every manifest image, reuses valid vectors, and stores normalized .npy
 vectors under the ignored data/embeddings/ directory. CI uses deterministic fake backbones and
 does not download model weights.
+
+Both backbones have been run over the current 146-image manifest, caching 768-dimensional
+DINOv2 and 512-dimensional CLIP vectors. Each backbone is pinned to a revision that serves
+safetensors directly, because `transformers` otherwise falls back to a mutable conversion
+reference and the revision recorded in the cache key would no longer describe the loaded
+weights.
 
 ## Development checks
 

@@ -70,6 +70,14 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 
 - **Design for a swappable backbone interface** (`get_embedding(image) -> vector`) rather than hard-coding a single library call. This keeps the option open to plug in a shared embedding-extraction module later without this repo depending on it existing or being finished first. Until then, load DINOv2/CLIP directly (e.g. via `transformers`).
 - Cache embeddings to disk — never recompute per experiment run.
+- Pin every backbone to an immutable revision that actually serves `model.safetensors` at that
+  revision. `transformers` 5 refuses `pytorch_model.bin` and silently falls back to a mutable
+  community safetensors-conversion ref, which would make the revision recorded in the embedding
+  cache key untrue. CLIP is therefore pinned to the conversion commit
+  `c237dc49a33fc61debc9276459120b7eac67e7ef` rather than to `main`.
+- Treat backbone output shape as version-specific: `CLIPModel.get_image_features` returns a
+  vision-output object whose `pooler_output` holds the projected features, not a bare tensor.
+- `torchvision` belongs in the `ml` extra; `AutoImageProcessor` requires it.
 
 ### 6.2 Retrieval
 - Cosine similarity k-NN over cached reference embeddings is the primary method.

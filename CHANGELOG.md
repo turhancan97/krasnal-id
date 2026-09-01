@@ -36,6 +36,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Changed
 
+- Pinned CLIP to the immutable `c237dc49a33fc61debc9276459120b7eac67e7ef` safetensors-conversion
+  revision so the loaded weights match the revision recorded in the embedding cache key.
+- Added `torchvision` to the `ml` extra, which `transformers` requires for image processing.
 - Changed the default Commons research-image bounds to a 400-pixel minimum short side and a
   2,000-pixel maximum long side.
 - Re-reviewed all 41 tracked category mappings, corrected the stale `Q11823412` mapping to
@@ -49,6 +52,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Fixed
 
+- Fixed CLIP feature extraction to read `pooler_output` from the vision-output object that
+  `transformers` 5 returns from `get_image_features`, with regression coverage for both shapes.
 - Made CLI help tests inspect generated command metadata instead of environment-dependent Rich-rendered text.
 - Fixed Commons response parsing to accept scalar-valued extension metadata returned by the
   live API while continuing to require string-valued attribution and license fields.
@@ -62,5 +67,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Audited manifest construction is implemented and produces 23 classes and 146 images from
   the current local artifacts.
 - Deterministic evaluation split generation and resumable DINOv2/CLIP embedding extraction are
-  implemented. Retrieval algorithms, baseline metrics, pool-size ablation, plotting, and the
-  Gradio interface remain intentionally unimplemented.
+  implemented and have been run end to end on the local dataset, caching 146 normalized
+  768-dimensional DINOv2 vectors and 146 normalized 512-dimensional CLIP vectors.
+- Retrieval algorithms, baseline metrics, pool-size ablation, plotting, and the Gradio interface
+  remain intentionally unimplemented.
