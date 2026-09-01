@@ -30,6 +30,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   threshold filtering, provenance fields, atomic output, CLI summaries, and offline integration
   coverage.
 
+- Added the candidate-pool-size ablation: per-pool top-1 and MRR across seeds with the observed
+  seed spread as error bars, a fitted accuracy-points-per-doubling slope, dataset-aware pool-size
+  resolution, atomic result artifacts, and a wired `krasnal-id experiment pool-ablation` command.
 - Added the full-pool retrieval baseline: dwarf-level and image-level top-k accuracy with 95%
   Wilson intervals, mean reciprocal rank, split/manifest hash verification, atomic result
   artifacts under `results/`, and a wired `krasnal-id experiment baseline` command.
@@ -44,6 +47,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 
 ### Changed
 
+- Recorded the dataset-scale decision in `AGENTS.md` §7.1: keep the >=3-image threshold and
+  report degradation per doubling, with the measured evidence for rejecting a lower threshold
+  and for treating the excluded duplicates as unrecoverable.
+- Widened the default ablation pool sizes to `[2, 3, 5, 8, 10, 15, 20, 50, 100]`; sizes above the
+  available class count are skipped with a warning.
+- Indexed `EmbeddingMatrix` image IDs, which the ablation resolves hundreds of thousands of times.
+- Moved the shared synthetic dataset builders used by evaluation tests into `tests/helpers.py`.
 - Pinned CLIP to the immutable `c237dc49a33fc61debc9276459120b7eac67e7ef` safetensors-conversion
   revision so the loaded weights match the revision recorded in the embedding cache key.
 - Added `torchvision` to the `ml` extra, which `transformers` requires for image processing.
@@ -80,5 +90,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Cosine k-NN retrieval and the full-pool baseline are implemented. On the current 23-class,
   146-image dataset the baseline reports dwarf-level top-1 of 95.9% for DINOv2 and 92.5% for
   CLIP, with top-5 at 99.3% and 98.6% and MRR at 0.9714 and 0.9506.
-- Pool-size ablation, confusion analysis, plotting, and the Gradio interface remain
-  intentionally unimplemented.
+- The candidate-pool-size ablation is implemented and run. Top-1 falls from 98.9% at a pool of
+  two to 95.9% at the full pool of 23 for DINOv2, and from 98.9% to 92.5% for CLIP, giving fitted
+  slopes of -0.96 and -1.76 accuracy points per doubling.
+- Confusion analysis, plotting, and the Gradio interface remain intentionally unimplemented.

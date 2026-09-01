@@ -15,7 +15,6 @@ from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.experiments.confusion_analysis import run_confusion_analysis
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
-from krasnal_id.experiments.pool_size_ablation import run_pool_size_ablation
 from krasnal_id.retrieval.knn import RetrievalMatch, RetrievalResult, cosine_knn
 from krasnal_id.viz.embedding_plot import create_embedding_plot
 
@@ -91,8 +90,6 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
 def test_later_version_placeholders_are_explicit() -> None:
     config = load_config()
 
-    with pytest.raises(NotImplementedError):
-        run_pool_size_ablation(config)
     with pytest.raises(NotImplementedError):
         run_confusion_analysis(config)
     with pytest.raises(NotImplementedError):

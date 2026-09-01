@@ -8,8 +8,14 @@ import numpy as np
 import pytest
 from typer.testing import CliRunner
 
+from helpers import (
+    FAKE_BACKBONE,
+    seed_embedding_cache,
+    synthetic_manifest,
+    tight_cluster_vector,
+)
 from krasnal_id.cli import app
-from krasnal_id.config import BackboneConfig, load_config
+from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_manifest import canonical_json_sha256
 from krasnal_id.data_pipeline.build_split import build_evaluation_split, write_evaluation_split
 from krasnal_id.embeddings.cache import EmbeddingCache
@@ -28,91 +34,14 @@ from krasnal_id.experiments.baseline_accuracy import (
     run_baseline,
 )
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
-from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
-
-_BACKBONE = BackboneConfig(
-    name="dinov2",
-    model_id="fake/model",
-    revision="fake-revision",
-    preprocessing_id="fake-processor",
-    batch_size=4,
-)
-
-
-def _image_record(image_id: str, dwarf_id: str, digest_seed: str) -> ImageRecord:
-    return ImageRecord(
-        image_id=image_id,
-        dwarf_id=dwarf_id,
-        local_path=Path(f"data/images/{dwarf_id}/{image_id}.jpg"),
-        source_url="https://commons.wikimedia.org/wiki/File:Example.jpg",
-        author="Author",
-        license="CC BY-SA 4.0",
-        license_url="https://creativecommons.org/licenses/by-sa/4.0/",
-        sha256=(digest_seed * 64)[:64],
-        width=800,
-        height=600,
-        acquired_at="2026-08-23T12:00:00Z",
-    )
-
-
-def _manifest(dwarf_count: int = 3, per_dwarf: int = 3) -> DatasetManifest:
-    dwarfs = tuple(
-        DwarfRecord(
-            dwarf_id=f"Q{index}",
-            display_name=f"Dwarf {index}",
-            wikidata_url=f"https://www.wikidata.org/wiki/Q{index}",
-            commons_category=f"Dwarf {index}",
-        )
-        for index in range(dwarf_count)
-    )
-    images = tuple(
-        _image_record(f"image-{dwarf}-{position}", f"Q{dwarf}", f"{dwarf}{position}")
-        for dwarf in range(dwarf_count)
-        for position in range(per_dwarf)
-    )
-    return DatasetManifest(
-        schema_version="1.0",
-        source_query_sha256="a" * 64,
-        staging_sha256="b" * 64,
-        image_review_sha256="c" * 64,
-        generated_at="2026-08-23T12:00:00Z",
-        minimum_images_per_dwarf=3,
-        dwarfs=dwarfs,
-        images=images,
-    )
-
-
-def _tight_cluster_vector(dwarf_index: int, position: int, dwarf_count: int) -> np.ndarray:
-    """Place each dwarf on its own axis, with a small per-image perturbation."""
-    vector = np.zeros(dwarf_count + 1, dtype=np.float32)
-    vector[dwarf_index] = 1.0
-    vector[dwarf_count] = 0.01 * (position + 1)
-    return vector / np.linalg.norm(vector)
-
-
-def _seed_cache(
-    cache_root: Path,
-    manifest: DatasetManifest,
-    vector_for: object,
-    skip: tuple[str, ...] = (),
-) -> None:
-    cache = EmbeddingCache(cache_root)
-    dwarf_ids = sorted({image.dwarf_id for image in manifest.images})
-    for record in manifest.images:
-        if record.image_id in skip:
-            continue
-        position = [
-            image.image_id for image in manifest.images if image.dwarf_id == record.dwarf_id
-        ].index(record.image_id)
-        vector = vector_for(dwarf_ids.index(record.dwarf_id), position, len(dwarf_ids))  # type: ignore[operator]
-        cache.store(cache_key_for(record, _BACKBONE), np.asarray(vector, dtype=np.float32))
+from krasnal_id.models import DatasetManifest
 
 
 def test_embedding_matrix_is_ordered_and_addressable(tmp_path: Path) -> None:
-    manifest = _manifest()
-    _seed_cache(tmp_path, manifest, _tight_cluster_vector)
+    manifest = synthetic_manifest()
+    seed_embedding_cache(tmp_path, manifest, tight_cluster_vector)
 
-    matrix = load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
 
     assert matrix.image_ids == tuple(sorted(matrix.image_ids))
     assert len(matrix.image_ids) == len(matrix.dwarf_ids) == matrix.vectors.shape[0] == 9
@@ -129,11 +58,11 @@ def test_embedding_matrix_is_ordered_and_addressable(tmp_path: Path) -> None:
 
 
 def test_missing_vectors_name_the_extraction_command(tmp_path: Path) -> None:
-    manifest = _manifest()
-    _seed_cache(tmp_path, manifest, _tight_cluster_vector, skip=("image-1-1",))
+    manifest = synthetic_manifest()
+    seed_embedding_cache(tmp_path, manifest, tight_cluster_vector, skip=("image-1-1",))
 
     with pytest.raises(EmbeddingStoreError) as error:
-        load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+        load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
 
     assert "1 of 9 images have no cached dinov2 vector" in str(error.value)
     assert "image-1-1" in str(error.value)
@@ -152,18 +81,18 @@ def test_empty_manifest_and_mixed_dimensions_are_rejected(tmp_path: Path) -> Non
         images=(),
     )
     with pytest.raises(EmbeddingStoreError, match="no images"):
-        load_embedding_matrix(empty, _BACKBONE, tmp_path)
+        load_embedding_matrix(empty, FAKE_BACKBONE, tmp_path)
 
-    manifest = _manifest()
+    manifest = synthetic_manifest()
     cache = EmbeddingCache(tmp_path)
     for index, record in enumerate(manifest.images):
         size = 4 if index else 3
         vector = np.zeros(size, dtype=np.float32)
         vector[0] = 1.0
-        cache.store(cache_key_for(record, _BACKBONE), vector)
+        cache.store(cache_key_for(record, FAKE_BACKBONE), vector)
 
     with pytest.raises(EmbeddingStoreError, match="mixed dimensions"):
-        load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+        load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
 
 
 def test_fold_separates_dwarf_rank_from_image_rank() -> None:
@@ -197,9 +126,9 @@ def test_fold_rejects_a_dwarf_with_no_reference_image() -> None:
 
 
 def test_perfectly_separated_embeddings_score_a_flawless_baseline(tmp_path: Path) -> None:
-    manifest = _manifest()
-    _seed_cache(tmp_path, manifest, _tight_cluster_vector)
-    matrix = load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+    manifest = synthetic_manifest()
+    seed_embedding_cache(tmp_path, manifest, tight_cluster_vector)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
     split = build_evaluation_split(manifest, datetime.now(UTC))
 
     metrics = {metric.name: metric for metric in evaluate_baseline(split, matrix, (1, 5))}
@@ -217,9 +146,9 @@ def test_perfectly_separated_embeddings_score_a_flawless_baseline(tmp_path: Path
 
 
 def test_indistinguishable_embeddings_score_by_deterministic_tie_break(tmp_path: Path) -> None:
-    manifest = _manifest()
-    _seed_cache(tmp_path, manifest, lambda *_: np.asarray([1.0, 0.0], dtype=np.float32))
-    matrix = load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+    manifest = synthetic_manifest()
+    seed_embedding_cache(tmp_path, manifest, lambda *_: np.asarray([1.0, 0.0], dtype=np.float32))
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
     split = build_evaluation_split(manifest, datetime.now(UTC))
 
     first = evaluate_baseline(split, matrix, (1,))
@@ -234,9 +163,9 @@ def test_indistinguishable_embeddings_score_by_deterministic_tie_break(tmp_path:
 
 
 def test_baseline_rejects_invalid_top_k_and_an_empty_split(tmp_path: Path) -> None:
-    manifest = _manifest()
-    _seed_cache(tmp_path, manifest, _tight_cluster_vector)
-    matrix = load_embedding_matrix(manifest, _BACKBONE, tmp_path)
+    manifest = synthetic_manifest()
+    seed_embedding_cache(tmp_path, manifest, tight_cluster_vector)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
     split = build_evaluation_split(manifest, datetime.now(UTC))
 
     with pytest.raises(BaselineExperimentError, match="must be positive"):
@@ -246,7 +175,7 @@ def test_baseline_rejects_invalid_top_k_and_an_empty_split(tmp_path: Path) -> No
 
 
 def test_a_split_built_for_another_manifest_is_refused(tmp_path: Path) -> None:
-    manifest = _manifest()
+    manifest = synthetic_manifest()
     manifest_path = tmp_path / "manifest.json"
     split_path = tmp_path / "split.json"
     manifest_path.write_text(json.dumps(manifest.model_dump(mode="json")), encoding="utf-8")
@@ -302,7 +231,7 @@ def test_result_artifact_is_named_by_experiment_and_backbone(tmp_path: Path) -> 
 
 
 def test_cli_baseline_reports_metrics_and_fails_without_embeddings(tmp_path: Path) -> None:
-    manifest = _manifest()
+    manifest = synthetic_manifest()
     manifest_path = tmp_path / "manifest.json"
     split_path = tmp_path / "splits" / "leave-one-out.json"
     manifest_path.write_text(json.dumps(manifest.model_dump(mode="json")), encoding="utf-8")
@@ -312,9 +241,9 @@ def test_cli_baseline_reports_metrics_and_fails_without_embeddings(tmp_path: Pat
         f"paths.evaluation_split_path={split_path}",
         f"paths.embeddings_dir={tmp_path / 'embeddings'}",
         f"paths.results_dir={tmp_path / 'results'}",
-        f"backbone.model_id={_BACKBONE.model_id}",
-        f"backbone.revision={_BACKBONE.revision}",
-        f"backbone.preprocessing_id={_BACKBONE.preprocessing_id}",
+        f"backbone.model_id={FAKE_BACKBONE.model_id}",
+        f"backbone.revision={FAKE_BACKBONE.revision}",
+        f"backbone.preprocessing_id={FAKE_BACKBONE.preprocessing_id}",
     ]
     runner = CliRunner()
 
@@ -322,7 +251,7 @@ def test_cli_baseline_reports_metrics_and_fails_without_embeddings(tmp_path: Pat
     assert missing.exit_code == 2
     assert "Baseline experiment error" in missing.output
 
-    _seed_cache(tmp_path / "embeddings", manifest, _tight_cluster_vector)
+    seed_embedding_cache(tmp_path / "embeddings", manifest, tight_cluster_vector)
     result = runner.invoke(app, ["experiment", "baseline", *[f"-o{value}" for value in overrides]])
     assert result.exit_code == 0, result.output
     assert "top_1: 1.0000" in result.output

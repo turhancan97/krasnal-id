@@ -90,11 +90,36 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   are not proportions and carry no interval.
 - The baseline is exhaustive and deterministic, so its configured seed is recorded for provenance
   only. Nothing in it samples.
+- The ablation samples a pool per query from one generator per (pool size, seed), so a run is
+  reproducible no matter which pool sizes were requested. Configured pool sizes above the class
+  count are skipped with a warning rather than clamped, and the full pool is always measured as a
+  comparable right-hand anchor.
+- Per-pool error bars are the observed spread across seeds, not a distributional assumption.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
 2. **Headline experiment**: accuracy vs. candidate-pool size N (synthetic random subsampling, repeated with multiple seeds per N for error bars; real geo-based pools as a secondary comparison if coordinate coverage allows).
+
+### 7.1 Dataset-scale decision (2026-09-01)
+
+The dataset stays at its ≥3-image threshold, and the headline result is reported as the
+**rate of degradation per doubling of pool size** rather than as a pool size at which
+identification becomes unreliable. Measured evidence behind that choice:
+
+- The current 23-class pool already sits near ceiling (DINOv2 top-1 95.9%, CLIP 92.5%), but the
+  curve is not flat: DINOv2 loses about 1 accuracy point per doubling and CLIP about 1.8, with a
+  seed spread near one point. The backbone gap widening with N is itself a reportable result.
+- Lowering the threshold to 2 was measured, not estimated: it adds 4 classes and 8 images and
+  leaves the curve unchanged (DINOv2 full-pool top-1 96.1% against 95.9%). Not worth the weaker
+  per-class reference sets.
+- Recovering the excluded images is not available locally. Of 23 fetch-audit exclusions, 20 are
+  `cross_label_duplicate` files on 4 single-image classes, and admitting them would create the
+  evaluation leakage §5.5 forbids. Growing the class count needs new Commons acquisition with
+  unknown yield.
+- Any extrapolation past N=23 must be labeled as such and called optimistic: distractors are
+  drawn from a small class population, while a real 1,000-plus dwarf pool holds far more
+  genuinely confusable statues, so the true curve should fall faster than a log-linear fit.
 3. **Error analysis**: confusion matrix for most-confused pairs — which dwarves get mixed up, and why (visually similar poses/props is the expected story).
 4. **Embedding-space visualization**: t-SNE or UMAP plot of the reference set, colored by class, to make the "why confusion happens" argument visually.
 

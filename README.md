@@ -10,8 +10,8 @@ would help.
 The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
 cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
-retrieval, and the full-pool accuracy baseline. The candidate-pool-size ablation and the
-remaining analyses are the next implementation stage.
+retrieval, the full-pool accuracy baseline, and the candidate-pool-size ablation. Confusion
+analysis, embedding visualization, and the optional demo are the next implementation stage.
 
 ## Setup
 
@@ -148,6 +148,25 @@ exhaustive, so its seed is recorded for provenance rather than used to sample. A
 recorded manifest hash no longer matches the manifest is refused rather than scored.
 
 Exit code 2 indicates missing embeddings, a stale split, or an unreadable artifact.
+
+## Candidate-pool-size ablation
+
+Measure the headline curve, accuracy against candidate-pool size:
+
+    uv run krasnal-id experiment pool-ablation
+    uv run krasnal-id experiment pool-ablation --override backbone=clip
+
+Each query is scored against its own dwarf plus a sampled set of others, which simulates the
+candidate narrowing a location-aware tool would perform. Every pool size is measured once per
+configured seed and reported with the observed spread across seeds as its error bars. Configured
+pool sizes larger than the available class count are skipped with a warning, and the full pool is
+always measured. Results are written to `results/pool_size_ablation-<backbone>.json`.
+
+The reported `top_1_points_per_doubling` is a least-squares fit of top-1 accuracy against
+log2 pool size over every measured size. Small pools sit near the accuracy ceiling, so the fit is
+a conservative estimate of degradation in the larger-pool regime. See `AGENTS.md` §7.1 for the
+dataset-scale decision this result is framed by, including why extrapolating past the current
+class count is optimistic.
 
 ## Development checks
 

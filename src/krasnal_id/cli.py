@@ -37,6 +37,7 @@ from krasnal_id.experiments.artifacts import (
     write_experiment_result,
 )
 from krasnal_id.experiments.baseline_accuracy import BaselineExperimentError, run_baseline
+from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
@@ -297,7 +298,29 @@ def baseline_experiment(override: OverrideOption = None) -> None:
 @experiment_app.command("pool-ablation")
 def pool_ablation_experiment(override: OverrideOption = None) -> None:
     """Measure accuracy across synthetic candidate-pool sizes."""
-    _run_placeholder("experiment pool-ablation", override, ["experiment=pool_size_ablation"])
+    config = load_config(["experiment=pool_size_ablation", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_pool_size_ablation(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        PoolAblationError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Pool-size ablation error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Pool-size ablation complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[seeds {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
 
 
 @experiment_app.command("confusion")

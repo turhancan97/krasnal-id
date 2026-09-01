@@ -20,7 +20,6 @@ def test_root_help_lists_pipeline_groups() -> None:
     "arguments",
     [
         ["retrieve"],
-        ["experiment", "pool-ablation"],
         ["experiment", "confusion"],
         ["visualize", "embeddings"],
         ["demo"],

@@ -1,7 +1,7 @@
 """Manifest-ordered access to cached embeddings for evaluation code."""
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
@@ -58,12 +58,26 @@ class EmbeddingMatrix:
     image_ids: tuple[str, ...]
     dwarf_ids: tuple[str, ...]
     vectors: npt.NDArray[np.float32]
+    # Built once, because the ablation resolves rows hundreds of thousands of times.
+    _row_by_image_id: dict[str, int] = field(init=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        """Validate the row alignment and index the image IDs for O(1) lookup."""
+        if not (len(self.image_ids) == len(self.dwarf_ids) == self.vectors.shape[0]):
+            raise EmbeddingStoreError(
+                f"misaligned matrix: {len(self.image_ids)} image IDs, "
+                f"{len(self.dwarf_ids)} dwarf IDs, {self.vectors.shape[0]} rows"
+            )
+        rows = {image_id: row for row, image_id in enumerate(self.image_ids)}
+        if len(rows) != len(self.image_ids):
+            raise EmbeddingStoreError("image IDs must be unique")
+        object.__setattr__(self, "_row_by_image_id", rows)
 
     def index_of(self, image_id: str) -> int:
         """Return the row index of one image."""
         try:
-            return self.image_ids.index(image_id)
-        except ValueError as error:
+            return self._row_by_image_id[image_id]
+        except KeyError as error:
             raise EmbeddingStoreError(f"image {image_id} has no cached vector") from error
 
     def rows_for(
