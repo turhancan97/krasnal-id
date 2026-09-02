@@ -10,7 +10,9 @@ asking properly:
 > location, say — how much does accuracy actually improve, and at what pool size does this
 > become a reliable way to identify a statue?
 
-This repository answers that with a measured curve rather than a single accuracy number.
+This repository answers that with a measured curve rather than a single accuracy number. You can
+also [try it on a photograph](https://turhancan97.github.io/krasnal-id/), which runs the model in
+your own browser.
 
 ## Summary of findings
 

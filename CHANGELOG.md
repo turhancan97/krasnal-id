@@ -42,10 +42,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Added the accuracy-versus-pool-size figure as `krasnal-id visualize ablation`, drawing every
   saved ablation curve on one log-scaled axis with seed-spread error bars and the fitted slope.
 - Added tracked `docs/figures/` holding the figures published in `RESULTS.md`, under the result
-  publication policy now recorded in `AGENTS.md` section 6.3.
+  publication policy now recorded in `AGENTS.md` section 6.4.
 - Added the Gradio demonstration as `krasnal-id demo [--top-k N] [--port P] [--share]`: upload a
   photograph to see ranked candidate dwarves with similarity scores and their closest reference
   photographs, with the reference set loaded once per session.
+- Published the demo at <https://turhancan97.github.io/krasnal-id/> from `docs/` on `main`, and
+  linked it from the README in place of the retired findings artifact.
 - Added a static browser demo under `docs/`, deployable to GitHub Pages: upload or photograph a
   statue and identify it entirely on-device, with attribution beside every match and a note when
   the top match belongs to a co-located installation.

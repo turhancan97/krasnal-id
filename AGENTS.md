@@ -119,7 +119,31 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
 - Regularize the linear probe **weakly**. Embeddings are L2-normalized, so per-dimension
   magnitudes are near `1/sqrt(d)` and a conventional `C=1.0` underfits badly: on the current
   dataset it scored 66% top-1 against 96% at `C=100`. The default is 100.
-### 6.3 Result publication policy (2026-09-01)
+### 6.3 Browser demo decisions (2026-09-02)
+
+The published demo at `turhancan97.github.io/krasnal-id` is static: GitHub Pages cannot run the
+Gradio app, so the model runs in the visitor's browser instead. Four decisions there were measured
+rather than assumed, and each cost accuracy when guessed wrong.
+
+- **Anything that embeds a query must embed the references.** Reference vectors built by the Python
+  pipeline scored 89.7% top-1 against browser-built queries, where the build reported 93.2%.
+  `docs/demo/build.mjs` therefore runs the same library, model and dtype the browser runs.
+- **Never ship `vision_model_quantized.onnx`.** Of the exports offered it is the only one that
+  degrades: 87.7% top-1 against 93.2% for `q4`, `uint8` and full precision, which are
+  indistinguishable from each other here. `q4` is used, at 64 MB.
+- **Resize through `docs/resize.mjs`, which both sides import.** sharp's lanczos3 and a browser
+  canvas disagree by enough to matter, and canvas quality varies between browsers, so neither
+  platform's built-in resampler can provide the guarantee. Letting transformers.js do the
+  downscale itself is worse still: it resizes a 2000-pixel photograph in one aliasing step and
+  loses about two points outright.
+- **Decode drift is not eliminable and does not matter.** References are decoded by sharp and a
+  visitor's photograph by their browser; measured cosine agreement is 0.986. Scored in a real
+  browser over all 146 references, that costs nothing: 91.8% top-1 either way.
+- The site reports the accuracy of the vectors it actually ships, re-scored at build time, and
+  `?selftest=full` lets any visitor reproduce it in their own browser. Never quote the research
+  numbers as the demo's.
+
+### 6.4 Result publication policy (2026-09-01)
 
 - `results/` stays ignored: it is regenerated output. Figures selected for publication are copied
   to tracked `docs/figures/` and referenced from `RESULTS.md`, which is the written record of what

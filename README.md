@@ -26,8 +26,8 @@ random subsampling suggests, a trained classifier does not beat raw retrieval, a
 concentrate on one explainable cluster of water-themed statues that turns out to be a single
 co-located installation.
 
-- [**Findings summary**](https://claude.ai/code/artifact/f3133eff-da11-4b36-b3e2-2be0ea379f7b) —
-  an illustrated two-minute read with the headline curve.
+- [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
+  working identifier that runs the model in your browser. Nothing is uploaded.
 - [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all four
   experiments, limitations, and how to reproduce them.
 
@@ -247,7 +247,19 @@ enough that thread oversubscription dominates the runtime.
 
 ## Interactive demonstration
 
-Launch the browser demonstration once embeddings are cached:
+The published demo at <https://turhancan97.github.io/krasnal-id/> is a static page: it embeds an
+uploaded photograph with a quantised ONNX CLIP in the visitor's own browser and ranks it against
+reference vectors built by the same pipeline, so nothing is uploaded and there is no backend.
+Rebuild its data after the manifest changes:
+
+    cd docs/demo && npm install && node build.mjs
+
+The build re-scores the leave-one-out protocol on the vectors it ships (91.8% top-1, 98.6% top-5)
+and records probes so the page can verify itself: `?selftest=1` reports cosine agreement with the
+build, and `?selftest=full` re-embeds all 146 reference photographs in the browser and scores the
+protocol there.
+
+There is also a local Gradio version, which uses the research pipeline rather than the browser one:
 
     uv sync --extra demo
     uv run krasnal-id demo
