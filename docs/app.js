@@ -105,16 +105,28 @@ async function loadModel() {
  */
 async function readScaled(source) {
   const blob = typeof source === "string" ? await (await fetch(source)).blob() : source;
-  const bitmap = await createImageBitmap(blob);
+  // Decode verbatim. Left to its defaults a browser may apply the display colour
+  // profile and premultiply alpha, both of which shift pixel values away from
+  // what the build saw and cost cosine agreement against the shipped vectors.
+  const bitmap = await createImageBitmap(blob, {
+    colorSpaceConversion: "none",
+    premultiplyAlpha: "none",
+  });
   const canvas = document.createElement("canvas");
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d", {
+    willReadFrequently: true,
+    colorSpace: "srgb",
+    alpha: true,
+  });
   context.imageSmoothingEnabled = false;
   context.drawImage(bitmap, 0, 0);
   bitmap.close?.();
 
-  const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+  const pixels = context.getImageData(0, 0, canvas.width, canvas.height, {
+    colorSpace: "srgb",
+  });
   canvas.width = 0;
   canvas.height = 0;
   const scaled = resizeToShortestEdge(
@@ -231,6 +243,51 @@ async function runSelfTest() {
   );
 }
 
+/**
+ * Embed every reference thumbnail here and score the leave-one-out protocol.
+ *
+ * Slow, and deliberately available: cosine agreement says how far this browser
+ * drifts from the build, but only this says what that drift costs. Reachable at
+ * ?selftest=full.
+ */
+async function runFullSelfTest() {
+  const started = performance.now();
+  const local = [];
+  for (const [index, image] of meta.images.entries()) {
+    if (index % 10 === 0) {
+      say(`Full self-test: embedding ${index + 1}/${meta.images.length}…`);
+      progress(index / meta.images.length);
+    }
+    local.push(await embedSource(`assets/thumbs/${image.thumb}`));
+  }
+  progress(null);
+
+  let top1 = 0;
+  let top5 = 0;
+  for (let q = 0; q < local.length; q += 1) {
+    const best = new Map();
+    for (let r = 0; r < vectors.length; r += 1) {
+      if (r === q) continue;
+      let dot = 0;
+      for (let d = 0; d < vectors[r].length; d += 1) dot += local[q][d] * vectors[r][d];
+      const dwarf = meta.images[r].dwarf;
+      if (!best.has(dwarf) || dot > best.get(dwarf)) best.set(dwarf, dot);
+    }
+    const ranked = [...best.entries()].sort((a, b) => b[1] - a[1]).map(([dwarf]) => dwarf);
+    const at = ranked.indexOf(meta.images[q].dwarf);
+    if (at === 0) top1 += 1;
+    if (at < 5) top5 += 1;
+  }
+  const n = local.length;
+  const seconds = ((performance.now() - started) / 1000).toFixed(0);
+  say(
+    `Full self-test in this browser: top-1 ${((100 * top1) / n).toFixed(1)}%, ` +
+      `top-5 ${((100 * top5) / n).toFixed(1)}% over ${n} thumbnails in ${seconds}s. ` +
+      `The build measured ${(meta.measured.top_1 * 100).toFixed(1)}% and ` +
+      `${(meta.measured.top_5 * 100).toFixed(1)}%.`,
+  );
+}
+
 async function identify(source, label) {
   try {
     el("result").hidden = true;
@@ -308,7 +365,9 @@ loadReferences()
   .then(() => {
     wireInputs();
     renderExamples();
-    if (new URLSearchParams(location.search).has("selftest")) runSelfTest();
+    const mode = new URLSearchParams(location.search).get("selftest");
+    if (mode === "full") runFullSelfTest();
+    else if (mode !== null) runSelfTest();
   })
   .catch((error) => {
     console.error(error);
