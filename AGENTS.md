@@ -249,9 +249,16 @@ Measured on 2026-09-03, recorded here because two of these constrain future work
   observed score so that any threshold's cost is readable, and `visualize open-set` draws it with
   the calibrated leave-one-class-out points marked on top. Do not quote a point off the curve as
   an achievable operating point; quote the metrics.
-- The published demo deliberately does **not** threshold. Section 6.3's browser build ships no
-  rejection, and adding one would need the operating point chosen for a visitor rather than for a
-  research artifact. That is a product decision, not a measured one, so it stays open.
+- The published demo ships no rejection, and **it cannot simply be given one**: section 6.3's
+  browser build runs CLIP, which is the backbone with no usable operating point. Giving the demo
+  an "I don't know" answer means porting DINOv2 to the browser — a section 6.3-scale change of
+  model, reference vectors, self-test baselines and download size — not adding a threshold to
+  what is there.
+- A DINOv2 port would still have to re-measure its own threshold on the vectors it ships. Section
+  6.3 measured `q4` quantization as indistinguishable from full precision, but it measured that
+  for *ranking*, and rejection depends on absolute similarity rather than on order. That
+  equivalence therefore does not transfer, and section 6.3's rule that the site reports the
+  accuracy of the vectors it actually ships applies to any threshold it might adopt.
 
 3. **Error analysis**: confusion matrix for most-confused pairs — which dwarves get mixed up, and why (visually similar poses/props is the expected story).
 4. **Embedding-space visualization**: t-SNE or UMAP plot of the reference set, colored by class, to make the "why confusion happens" argument visually.

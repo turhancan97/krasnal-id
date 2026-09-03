@@ -317,13 +317,14 @@ operating point at all.
   queries by removing a dwarf from the 23, so every "unknown" statue is still a Wrocław bronze
   dwarf photographed like the rest. A real unknown query — a different one of the ~1,300, or a
   statue photographed in worse conditions — is a harder and an untested case. The published demo
-  does not threshold at all; it always shows its ranking.
+  does not threshold at all; it always shows its ranking, and it cannot readily be changed to,
+  because it runs the backbone that has no usable operating point.
 
 ## Reproducing this
 
 ```bash
 uv sync --extra ml --extra analysis
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.3.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.4.0 (mailto:you@example.com)'
 
 uv run krasnal-id data query                                  # Wikidata discovery
 uv run krasnal-id data fetch                                  # Commons acquisition

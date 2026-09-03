@@ -5,8 +5,12 @@ This file records material changes that are actually present in the repository s
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Version numbers track the build
 order recorded in `AGENTS.md` section 8, so `0.3.0` is the release that completes v0.1-v0.3.
+Releases after it mark a completed research direction from that section's open-questions list
+rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-09-03
 
 ### Added
 
@@ -208,8 +212,8 @@ sections above so that a new contributor or agent can read one place to orient t
 - Everything above is released as `0.3.0`. The planned build order is finished, so further
   work is a new research direction rather than a remaining stage; the limitations listed in
   `RESULTS.md` name the open questions.
-- Open-set rejection is implemented and run, as the first of those directions. DINOv2 supports a
-  usable threshold and CLIP does not, and the demo deliberately still shows its ranking
-  unconditionally, because choosing an operating point for a visitor is a product decision rather
-  than a measured one. The remaining open questions are real query photographs and a larger pool,
-  both of which need new data.
+- Open-set rejection is implemented and run, as the first of those directions, and is released as
+  `0.4.0`. DINOv2 supports a usable threshold and CLIP does not, which is why the published demo
+  still shows its ranking unconditionally: it runs CLIP, so it cannot be given an "I don't know"
+  answer without first porting DINOv2 to the browser. The remaining open questions are real query
+  photographs and a larger pool, both of which need new data.
