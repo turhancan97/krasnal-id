@@ -91,7 +91,24 @@ class DwarfRejection(BaseModel):
         return self
 
 
+class RejectionOperatingPoint(BaseModel):
+    """What one threshold would accept, on both populations at once.
+
+    Descriptive rather than calibrated: the whole curve is swept over the observed
+    scores, so it says what any threshold *would* do on this data. The calibrated
+    operating points live in the metrics, where they are named by their target and
+    fitted leave-one-class-out.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    threshold: float
+    known_acceptance: float = Field(ge=0.0, le=1.0)
+    false_acceptance: float = Field(ge=0.0, le=1.0)
+
+
 class OpenSetRejectionResult(ExperimentResult):
-    """Experiment result carrying the per-dwarf rejection rows behind its metrics."""
+    """Experiment result carrying the rejection tradeoff behind its metrics."""
 
     rejections: tuple[DwarfRejection, ...]
+    curve: tuple[RejectionOperatingPoint, ...] = ()

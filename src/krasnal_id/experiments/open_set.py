@@ -27,7 +27,12 @@ from krasnal_id.experiments.baseline_accuracy import (
     accuracy_metric,
     load_evaluation_inputs,
 )
-from krasnal_id.experiments.contracts import DwarfRejection, MetricSummary, OpenSetRejectionResult
+from krasnal_id.experiments.contracts import (
+    DwarfRejection,
+    MetricSummary,
+    OpenSetRejectionResult,
+    RejectionOperatingPoint,
+)
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.retrieval.knn import cosine_knn
 
@@ -236,6 +241,42 @@ def best_balanced_accuracy(
     return best_score, best_threshold
 
 
+def rejection_curve(
+    known: npt.NDArray[np.float64],
+    unknown: npt.NDArray[np.float64],
+) -> tuple[RejectionOperatingPoint, ...]:
+    """Sweep every observed score to record the whole acceptance tradeoff.
+
+    This is the descriptive object behind the AUROC: what any threshold would
+    accept on both populations. It is deliberately not calibrated, so it must not
+    be read as a set of achievable operating points — those are in the metrics,
+    fitted leave-one-class-out. The endpoints accept everything and reject
+    everything, so the curve spans the full range rather than only the observed one.
+    """
+    if known.shape[0] == 0 or unknown.shape[0] == 0:
+        raise OpenSetExperimentError("a rejection curve needs both populations")
+
+    observed = np.unique(np.concatenate([known, unknown]))
+    # Finite endpoints on both ends: an infinity would not survive a JSON round
+    # trip, and one step past the extreme observed score accepts or rejects
+    # everything just as well.
+    thresholds = np.concatenate(
+        [
+            [np.nextafter(observed[0], -np.inf)],
+            observed,
+            [np.nextafter(observed[-1], np.inf)],
+        ]
+    )
+    return tuple(
+        RejectionOperatingPoint(
+            threshold=float(threshold),
+            known_acceptance=float((known >= threshold).mean()),
+            false_acceptance=float((unknown >= threshold).mean()),
+        )
+        for threshold in thresholds
+    )
+
+
 def _operating_point_metrics(
     known: tuple[ScoredQuery, ...],
     unknown: tuple[ScoredQuery, ...],
@@ -390,4 +431,8 @@ def run_open_set_rejection(config: AppConfig) -> OpenSetRejectionResult:
         seed=config.experiment.seed,
         metrics=summarize_open_set(known, unknown, config.experiment),
         rejections=rank_rejections(known, unknown, manifest, config.experiment),
+        curve=rejection_curve(
+            np.asarray([query.top_similarity for query in known], dtype=np.float64),
+            np.asarray([query.top_similarity for query in unknown], dtype=np.float64),
+        ),
     )

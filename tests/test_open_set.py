@@ -2,6 +2,7 @@
 
 import json
 from datetime import UTC, datetime
+from itertools import pairwise
 from pathlib import Path
 
 import numpy as np
@@ -21,6 +22,7 @@ from krasnal_id.experiments.open_set import (
     best_balanced_accuracy,
     calibrate_leave_one_class_out,
     rank_rejections,
+    rejection_curve,
     run_open_set_rejection,
     score_known_queries,
     score_unknown_queries,
@@ -363,3 +365,26 @@ def test_cli_open_set_reports_rejections_and_fails_without_embeddings(tmp_path: 
         "in_sample_best_balanced_accuracy",
         "known_queries",
     }
+
+
+def test_the_rejection_curve_spans_both_extremes() -> None:
+    known = np.asarray([0.8, 0.9], dtype=np.float64)
+    unknown = np.asarray([0.1, 0.85], dtype=np.float64)
+
+    curve = rejection_curve(known, unknown)
+
+    # The endpoints accept everything and reject everything.
+    assert curve[0].known_acceptance == pytest.approx(1.0)
+    assert curve[0].false_acceptance == pytest.approx(1.0)
+    assert curve[-1].known_acceptance == pytest.approx(0.0)
+    assert curve[-1].false_acceptance == pytest.approx(0.0)
+    # Both rates fall as the threshold rises, and every value stays finite so the
+    # curve survives a JSON round trip.
+    for earlier, later in pairwise(curve):
+        assert earlier.threshold < later.threshold
+        assert earlier.known_acceptance >= later.known_acceptance
+        assert earlier.false_acceptance >= later.false_acceptance
+    assert all(np.isfinite(point.threshold) for point in curve)
+
+    with pytest.raises(OpenSetExperimentError, match="needs both populations"):
+        rejection_curve(known, np.asarray([], dtype=np.float64))

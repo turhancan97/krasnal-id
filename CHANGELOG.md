@@ -21,6 +21,12 @@ order recorded in `AGENTS.md` section 8, so `0.3.0` is the release that complete
 - Added `OpenSetRejectionResult` and `DwarfRejection` to the experiment contracts, the
   `experiment=open_set` Hydra group with configurable acceptance targets, and the
   `thresholds.open_set_top_rejections` cap on reported per-dwarf rows.
+- Added the rejection tradeoff figure as `krasnal-id visualize open-set`, drawing every saved
+  backbone's curve on one axis with its calibrated operating points marked on it. The open-set
+  artifact now carries that curve as `RejectionOperatingPoint` rows, swept over every observed
+  score, so any threshold's cost is readable from the artifact rather than only the three
+  configured targets. The curve is descriptive and the metrics stay the calibrated source of
+  truth. Published to `docs/figures/open-set-rejection.png` under the section 6.4 policy.
 - Added `RESULTS.md` section 6 with the measured outcome: DINOv2 separates present from absent
   statues at 0.969 AUROC and rejects 95.9% of unknown queries while still identifying 89.0% of
   known ones, costing about 3.4 points against its closed-set top-1 of 95.9%. CLIP reaches 0.898

@@ -56,6 +56,7 @@ from krasnal_id.models import (
 from krasnal_id.retrieval.query import QueryError, retrieve_image
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
+from krasnal_id.viz.open_set_plot import create_open_set_plot
 
 OverrideOption = Annotated[
     list[str] | None,
@@ -516,6 +517,20 @@ def visualize_ablation(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Ablation visualization complete: figure={path}")
+
+
+@visualize_app.command("open-set")
+def visualize_open_set(override: OverrideOption = None) -> None:
+    """Draw the rejection tradeoff curve from saved open-set results."""
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path = create_open_set_plot(config)
+    except VisualizationError as error:
+        typer.echo(f"Open-set visualization error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Open-set visualization complete: figure={path}")
 
 
 @app.command("demo")

@@ -251,6 +251,13 @@ from a quantile of the *other* dwarves' known scores, so no query helps set the 
 | 95% | 0.705 | 24.0% | 0.844 | 61.6% |
 | 99% | 0.520 | 74.0% | 0.812 | 83.6% |
 
+![Open-set rejection tradeoff](docs/figures/open-set-rejection.png)
+
+The whole tradeoff, with the calibrated points marked. The curve itself is descriptive — it says
+what *any* threshold would do on this data — while the marked dots are the leave-one-class-out
+operating points that are actually achievable. DINOv2 turns the corner almost immediately; CLIP
+climbs the left edge much more slowly and never reaches a usable corner at all.
+
 **Rejection works, at a specific and modest price, and only for DINOv2.** At the 90% operating
 point DINOv2 correctly identifies 89.0% of known queries and correctly rejects 95.9% of unknown
 ones, for 92.5% over both populations against a closed-set top-1 of 95.9%. Adding the ability to
@@ -330,6 +337,7 @@ uv run krasnal-id experiment probe                            # section 4
 uv run krasnal-id experiment confusion                        # section 5
 uv run krasnal-id experiment open-set                         # section 6
 uv run krasnal-id visualize ablation
+uv run krasnal-id visualize open-set
 uv run krasnal-id visualize embeddings
 ```
 

@@ -318,6 +318,13 @@ Change the operating points, or how many per-dwarf rows are kept:
 
 The first configured target is the one the per-dwarf rows describe.
 
+Draw the tradeoff from the saved artifacts:
+
+    uv run krasnal-id visualize open-set
+
+Every saved backbone is drawn on one axis, with its calibrated operating points marked on the
+descriptive curve they sit on. The figure lands at `results/open-set-rejection.png`.
+
 ## Development checks
 
 ```bash

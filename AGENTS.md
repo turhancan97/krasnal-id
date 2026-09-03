@@ -245,6 +245,10 @@ Measured on 2026-09-03, recorded here because two of these constrain future work
   analysis cannot surface this, so neither analysis substitutes for the other.
 - The water-themed installation does reappear as predicted, and under CLIP it is absolute: all
   three statues are falsely accepted 3 of 3.
+- The artifact's `curve` is **descriptive, not calibrated**: it is swept in-sample over every
+  observed score so that any threshold's cost is readable, and `visualize open-set` draws it with
+  the calibrated leave-one-class-out points marked on top. Do not quote a point off the curve as
+  an achievable operating point; quote the metrics.
 - The published demo deliberately does **not** threshold. Section 6.3's browser build ships no
   rejection, and adding one would need the operating point chosen for a visitor rather than for a
   research artifact. That is a product decision, not a measured one, so it stays open.
