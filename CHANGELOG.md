@@ -2,9 +2,13 @@
 
 This file records material changes that are actually present in the repository so that human contributors and future AI agents can quickly establish the current implementation state.
 
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project does not yet use semantic version releases.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). Version numbers track the build
+order recorded in `AGENTS.md` section 8, so `0.3.0` is the release that completes v0.1-v0.3.
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-09-03
 
 ### Added
 
@@ -136,7 +140,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
 - Fixed Commons downloads whose responsive derivative exceeds the requested bound by locally
   downscaling static images to the configured maximum while preserving their aspect ratio.
 
-### Current state
+## Current state
+
+This section is a rolling summary of what the repository does today, kept outside the version
+sections above so that a new contributor or agent can read one place to orient themselves.
 
 - Repository scaffolding, Wikidata discovery, and reviewed Commons image acquisition are
   complete, with automated checks passing.
@@ -169,3 +176,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The
   points, and every difference sits inside the confidence intervals.
 - The Gradio demonstration is implemented, completing the v0.1-v0.3 build order. Every
   scaffolded stage now has real behavior and no module raises `NotImplementedError`.
+- A static browser demo is published at <https://turhancan97.github.io/krasnal-id/> from
+  `docs/` on `main`, embedding a query with a quantised ONNX CLIP on the visitor's own device
+  and scoring 91.8% top-1 and 98.6% top-5 on the vectors it ships.
+- Everything above is released as `0.3.0`. The planned build order is finished, so further
+  work is a new research direction rather than a remaining stage; the limitations listed in
+  `RESULTS.md` name the open questions, of which open-set rejection is the nearest.

@@ -204,6 +204,22 @@ identification becomes unreliable. Measured evidence behind that choice:
 
 Agent should scaffold the full directory structure with stubs and docstrings before writing any real logic, in build order.
 
+**Status: this build order is finished and released as `0.3.0` (2026-09-03).** Every stage above
+has real behavior, plus two additions not in the original plan: the geographic ablation of section
+5.2 and a static in-browser demo published from `docs/`. There is therefore no "next stage" to
+pick up. Further work is a new research direction, and the limitations recorded in `RESULTS.md`
+are the open questions:
+
+- **Open-set rejection** — the system cannot say "I don't know this one." Calibrating a similarity
+  threshold on held-out folds is self-contained and needs no new data; this is the nearest one.
+- **Real query photographs** — the reference set is Commons uploads, so the domain gap to a phone
+  camera is unmeasured. Needs fieldwork in Wroclaw.
+- **A larger pool** — 16 represented classes sit below the three-image threshold, and the full
+  23-class pool is close to the accuracy ceiling, which is why the ablation curve is shallow and
+  why extrapolating past it is unreliable.
+
+Any of these is a scope change. Record the decision here before implementing it.
+
 ## 9. Repository structure
 
 ```
@@ -272,7 +288,10 @@ krasnal-id/
 - When cutting a version, move the relevant `Unreleased` entries into a dated version section and recreate an empty `Unreleased` section.
 - Before completing an implementation task, verify whether both this file and `CHANGELOG.md` need corresponding updates. Documentation-only wording fixes do not require a new architectural decision, but should still be logged when material.
 
-### 12.1 Current dataset-audit handoff (2026-08-20)
+### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-03)
+
+The dataset facts below come from the 2026-08-20 audit and still hold: the manifest is
+unchanged at 23 classes and 146 images.
 
 - The latest canonical staging output contains 173 images across 40 represented classes; 24
   classes meet the current three-image threshold. All staged files decode, match their recorded
@@ -312,5 +331,7 @@ krasnal-id/
   manifest image checksums and dimensions, supports CPU/automatic CUDA selection and configured
   batching, reuses valid normalized .npy vectors, and keeps model loading lazy so CI remains
   offline. CI uses deterministic fake backbones; real weights are downloaded only on local ML runs.
-- Retrieval, baseline metrics, candidate-pool ablation, confusion analysis, visualization, and
-  the Gradio demo remain the next implementation stage.
+- Retrieval, baseline metrics, the candidate-pool and geographic ablations, confusion analysis,
+  visualization, the trained-classifier comparison, and both demos are implemented and have been
+  run end to end on this dataset. No module raises `NotImplementedError`. See section 8 for what
+  is open beyond this point, and `CHANGELOG.md` for the per-stage record.

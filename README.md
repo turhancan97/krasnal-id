@@ -16,7 +16,8 @@ cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manif
 deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
 analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
-and the interactive demonstration. The v0.1-v0.3 build order is complete.
+and the interactive demonstration. The v0.1-v0.3 build order is complete and released as
+`0.3.0`; `AGENTS.md` section 8 records the research questions that remain open.
 
 ## Findings
 
@@ -53,7 +54,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.0.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.3.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -83,7 +84,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.0.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.3.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 
