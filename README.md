@@ -17,7 +17,8 @@ deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cos
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
 analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
 and the interactive demonstration. The v0.1-v0.3 build order is complete and released as
-`0.3.0`; `AGENTS.md` section 8 records the research questions that remain open.
+`0.3.0`. Open-set rejection has been added since, and `AGENTS.md` section 8 records the
+research questions that remain open.
 
 ## Findings
 
@@ -25,7 +26,8 @@ DINOv2 reaches 95.9% top-1 across the full 23-dwarf pool, accuracy decays by abo
 doubling of the candidate pool against CLIP's 1.8, narrowing by real location helps *less* than
 random subsampling suggests, a trained classifier does not beat raw retrieval, and the errors
 concentrate on one explainable cluster of water-themed statues that turns out to be a single
-co-located installation.
+co-located installation. Thresholding similarity does let it answer "I don't know this one",
+for about three points of accuracy on the statues it does know.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
@@ -289,6 +291,32 @@ metres. Geographic pools are exact rather than sampled, so they carry no seed sp
 arm supplies the error bars. Results are written to `results/geo_ablation-<backbone>.json`.
 
 Every dwarf must have coordinates, and the command says which ones are missing if any are.
+
+## Can it reject a dwarf it has never seen?
+
+Measure whether a similarity threshold can answer "unknown" instead of always naming a nearest
+neighbour:
+
+    uv run krasnal-id experiment open-set
+    uv run krasnal-id experiment open-set --override backbone=clip
+
+Two populations of equal size are scored. The known arm is the leave-one-out split. The unknown
+arm removes every image of a query's own dwarf, so that dwarf is genuinely absent and the correct
+answer is rejection. Results are written to `results/open_set-<backbone>.json`.
+
+The headline is AUROC, which is threshold-free and so cannot be tuned. Operating points are named
+by the fraction of known queries they accept, and each one's threshold is calibrated
+leave-one-class-out: the bar a dwarf's queries must clear comes from the other dwarves' scores
+alone. A threshold fitted on everything is reported too, labelled `in_sample`, as an optimistic
+reference. Per-dwarf rows record which statues slip through when removed and which statue covered
+for them.
+
+Change the operating points, or how many per-dwarf rows are kept:
+
+    uv run krasnal-id experiment open-set --override experiment.target_known_acceptance=[0.8,0.9]
+    uv run krasnal-id experiment open-set --override thresholds.open_set_top_rejections=5
+
+The first configured target is the one the per-dwarf rows describe.
 
 ## Development checks
 

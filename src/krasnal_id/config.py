@@ -63,6 +63,7 @@ class ThresholdsConfig(BaseModel):
 
     minimum_images_per_dwarf: int = Field(ge=3)
     confusion_top_pairs: int = Field(gt=0)
+    open_set_top_rejections: int = Field(gt=0)
 
 
 class SeedsConfig(BaseModel):
@@ -146,6 +147,31 @@ class ProbeExperimentConfig(BaseModel):
         return self
 
 
+class OpenSetExperimentConfig(BaseModel):
+    """Unknown-query rejection settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["open_set"]
+    seed: int
+    target_known_acceptance: tuple[float, ...] = Field(min_length=1)
+    top_rejections: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_targets(self) -> "OpenSetExperimentConfig":
+        """Require distinct acceptance targets a quantile can actually take."""
+        if any(not 0.0 < target < 1.0 for target in self.target_known_acceptance):
+            raise ValueError("target_known_acceptance values must lie strictly between 0 and 1")
+        if len(self.target_known_acceptance) != len(set(self.target_known_acceptance)):
+            raise ValueError("target_known_acceptance cannot contain duplicates")
+        return self
+
+    @property
+    def primary_target(self) -> float:
+        """Return the target whose operating point the per-dwarf rows describe."""
+        return self.target_known_acceptance[0]
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -171,6 +197,7 @@ ExperimentConfig = Annotated[
     | PoolSizeAblationConfig
     | GeoAblationConfig
     | ProbeExperimentConfig
+    | OpenSetExperimentConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

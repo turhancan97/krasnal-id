@@ -1,2 +1,3 @@
 minimum_images_per_dwarf: 3
 confusion_top_pairs: 20
+open_set_top_rejections: 20

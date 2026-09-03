@@ -8,6 +8,26 @@ order recorded in `AGENTS.md` section 8, so `0.3.0` is the release that complete
 
 ## [Unreleased]
 
+### Added
+
+- Added open-set rejection as `krasnal-id experiment open-set`, answering the limitation
+  `RESULTS.md` recorded: a query of a statue outside the reference set no longer has to be given a
+  nearest neighbour. It scores two equal populations built from the manifest without sampling —
+  the leave-one-out folds, and the same images queried against a gallery holding none of their own
+  dwarf — and reports threshold-free AUROC alongside operating points whose thresholds are
+  calibrated leave-one-class-out, so no query helps set the bar it must clear. A threshold fitted
+  on all the data is reported too, labeled `in_sample`, as an optimistic reference. Per-dwarf rows
+  record which statues slip through when removed and which statue covered for them.
+- Added `OpenSetRejectionResult` and `DwarfRejection` to the experiment contracts, the
+  `experiment=open_set` Hydra group with configurable acceptance targets, and the
+  `thresholds.open_set_top_rejections` cap on reported per-dwarf rows.
+- Added `RESULTS.md` section 6 with the measured outcome: DINOv2 separates present from absent
+  statues at 0.969 AUROC and rejects 95.9% of unknown queries while still identifying 89.0% of
+  known ones, costing about 3.4 points against its closed-set top-1 of 95.9%. CLIP reaches 0.898
+  AUROC and has no useful operating point. Being reliably identifiable turns out not to imply
+  being reliably rejectable: *Kowal* is never misidentified while present but is the worst dwarf
+  to reject once removed.
+
 ## [0.3.0] - 2026-09-03
 
 ### Added
@@ -181,4 +201,9 @@ sections above so that a new contributor or agent can read one place to orient t
   and scoring 91.8% top-1 and 98.6% top-5 on the vectors it ships.
 - Everything above is released as `0.3.0`. The planned build order is finished, so further
   work is a new research direction rather than a remaining stage; the limitations listed in
-  `RESULTS.md` name the open questions, of which open-set rejection is the nearest.
+  `RESULTS.md` name the open questions.
+- Open-set rejection is implemented and run, as the first of those directions. DINOv2 supports a
+  usable threshold and CLIP does not, and the demo deliberately still shows its ranking
+  unconditionally, because choosing an operating point for a visitor is a product decision rather
+  than a measured one. The remaining open questions are real query photographs and a larger pool,
+  both of which need new data.

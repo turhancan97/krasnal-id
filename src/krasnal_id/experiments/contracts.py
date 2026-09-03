@@ -60,3 +60,38 @@ class ConfusionAnalysisResult(ExperimentResult):
     """Experiment result carrying the ranked confusion pairs behind its metrics."""
 
     pairs: tuple[ConfusionPair, ...]
+
+
+class DwarfRejection(BaseModel):
+    """How one dwarf's queries behave once that dwarf is removed from the gallery.
+
+    Every image of `dwarf_id` is queried against a gallery holding none of them, so
+    the correct answer for all `unknown_queries` is rejection. `false_accepts` counts
+    the ones a threshold let through anyway, and `nearest_dwarf_id` names the dwarf
+    they fell through to most often — the statue that can pass for a missing one.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    dwarf_id: str = Field(min_length=1)
+    display_name: str = Field(min_length=1)
+    unknown_queries: int = Field(gt=0)
+    false_accepts: int = Field(ge=0)
+    mean_top_similarity: float = Field(ge=-1.0, le=1.0)
+    nearest_dwarf_id: str = Field(min_length=1)
+    nearest_display_name: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_counts(self) -> "DwarfRejection":
+        """Require the accepted queries to be a subset of the dwarf's own queries."""
+        if self.false_accepts > self.unknown_queries:
+            raise ValueError("false accepts cannot exceed the queries they came from")
+        if self.nearest_dwarf_id == self.dwarf_id:
+            raise ValueError("a removed dwarf cannot be its own nearest neighbour")
+        return self
+
+
+class OpenSetRejectionResult(ExperimentResult):
+    """Experiment result carrying the per-dwarf rejection rows behind its metrics."""
+
+    rejections: tuple[DwarfRejection, ...]

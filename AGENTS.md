@@ -194,8 +194,64 @@ identification becomes unreliable. Measured evidence behind that choice:
   analysis flags. Random subsampling scatters them across pools and therefore overstates what
   location narrowing buys. Do not describe the simulated curve as a lower bound on a
   location-aware system.
+### 7.2 Open-set rejection decision (2026-09-03)
+
+Accepted as the first post-0.3.0 scope change, under the option §8 records as the nearest one.
+`RESULTS.md` lists it as a limitation: a query of a statue outside the reference set still
+returns neighbours, because the system cannot say "I don't know this one." Closing it needs no
+new data, so it is measured on the existing 23-class manifest and cached vectors.
+
+The mechanism under test is the cheapest one that could work: threshold the top-1 cosine
+similarity. Accept the ranking when the best match scores at or above a threshold, reject the
+query as unknown below it. No new model, no training.
+
+Protocol — two query populations of 146 each, both derived from the manifest with no sampling
+and therefore no seed:
+
+- **Known queries** are the existing leave-one-out folds. The correct dwarf is in the gallery, so
+  the right behavior is to accept *and* rank that dwarf first. Accepting a query but naming the
+  wrong dwarf is not counted as a success; that is what makes the metric mean what it says.
+- **Unknown queries** remove every image of the query's own dwarf from the gallery, which makes
+  that dwarf genuinely absent. The right behavior is to reject.
+
+Reporting rules, so the result cannot be read as better than it is:
+
+- **AUROC over the two populations is the headline**, because it is threshold-free and cannot be
+  tuned. The operating points are secondary.
+- **A threshold calibrated on all the data is in-sample and is labeled `in_sample`.** It is
+  reported as an optimistic reference only. Every headline operating point instead calibrates
+  leave-one-class-out: the threshold for a held-out dwarf is a quantile of the known-query scores
+  of the *other* dwarves, so no query helps set the threshold that judges it.
+- Operating points are named by their target known-acceptance rate, and the achieved rate is
+  recorded next to the target rather than assumed to equal it. A quantile of 146 discrete scores
+  does not land exactly on a requested rate.
+- Per-dwarf rejection rows record which dwarves survive removal, and which dwarf their orphaned
+  queries fall through to. A cluster of visually similar statues should be able to cover for a
+  removed member, so this is where the §7.1 water-themed installation is expected to reappear.
+
+Measured on 2026-09-03, recorded here because two of these constrain future work:
+
+- Rejection works for DINOv2 and not for CLIP, and the gap is far wider than closed-set accuracy
+  implies: 0.969 against 0.898 AUROC, where top-1 differs by only 3.4 points. At a 90% known
+  acceptance target DINOv2 falsely accepts 4.1% of unknown queries and CLIP 28.1%. **Do not offer
+  a rejection threshold on CLIP embeddings**; on this dataset there is no useful operating point.
+- The in-sample and leave-one-class-out false-acceptance rates agree (DINOv2 4.1% both, CLIP 30.1%
+  against 28.1%), so the threshold is a property of the embedding space rather than of this
+  sample. Leave-one-class-out calibration stays the reported default regardless, because that
+  agreement is a finding about this dataset and not a licence to fit on the answers.
+- Identifiable does not imply rejectable, and this is the result that generalizes. *Kowal* is
+  never confused for anything while present (§5 confusion: 0 of 10) yet is the worst dwarf to
+  reject once removed, with *100matolog* covering for it 3 times in 12. Closed-set confusion
+  analysis cannot surface this, so neither analysis substitutes for the other.
+- The water-themed installation does reappear as predicted, and under CLIP it is absolute: all
+  three statues are falsely accepted 3 of 3.
+- The published demo deliberately does **not** threshold. Section 6.3's browser build ships no
+  rejection, and adding one would need the operating point chosen for a visitor rather than for a
+  research artifact. That is a product decision, not a measured one, so it stays open.
+
 3. **Error analysis**: confusion matrix for most-confused pairs — which dwarves get mixed up, and why (visually similar poses/props is the expected story).
 4. **Embedding-space visualization**: t-SNE or UMAP plot of the reference set, colored by class, to make the "why confusion happens" argument visually.
+5. **Open-set rejection**: can a top-1 similarity threshold answer "unknown" for a statue outside the reference set, and what does that cost on the statues inside it (see §7.2).
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
@@ -210,8 +266,10 @@ has real behavior, plus two additions not in the original plan: the geographic a
 pick up. Further work is a new research direction, and the limitations recorded in `RESULTS.md`
 are the open questions:
 
-- **Open-set rejection** — the system cannot say "I don't know this one." Calibrating a similarity
-  threshold on held-out folds is self-contained and needs no new data; this is the nearest one.
+- ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
+  protocol and what it measured. What it leaves open is a *product* question rather than a
+  research one: the published demo still shows a ranking unconditionally, and giving it a
+  threshold means choosing an operating point on a visitor's behalf.
 - **Real query photographs** — the reference set is Commons uploads, so the domain gap to a phone
   camera is unmeasured. Needs fieldwork in Wroclaw.
 - **A larger pool** — 16 represented classes sit below the three-image threshold, and the full
@@ -255,7 +313,8 @@ krasnal-id/
 │   ├── experiments/
 │   │   ├── baseline_accuracy.py
 │   │   ├── pool_size_ablation.py
-│   │   └── confusion_analysis.py
+│   │   ├── confusion_analysis.py
+│   │   └── open_set.py         # unknown-query rejection
 │   └── viz/
 │       └── embedding_plot.py
 ├── results/                   # ignored generated results
@@ -332,6 +391,6 @@ unchanged at 23 classes and 146 images.
   batching, reuses valid normalized .npy vectors, and keeps model loading lazy so CI remains
   offline. CI uses deterministic fake backbones; real weights are downloaded only on local ML runs.
 - Retrieval, baseline metrics, the candidate-pool and geographic ablations, confusion analysis,
-  visualization, the trained-classifier comparison, and both demos are implemented and have been
-  run end to end on this dataset. No module raises `NotImplementedError`. See section 8 for what
+  visualization, the trained-classifier comparison, open-set rejection, and both demos are
+  implemented and have been run end to end on this dataset. No module raises `NotImplementedError`. See section 8 for what
   is open beyond this point, and `CHANGELOG.md` for the per-stage record.

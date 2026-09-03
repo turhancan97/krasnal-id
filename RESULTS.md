@@ -31,6 +31,11 @@ your own browser.
 5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on the
    same small cluster of water-themed dwarves, which the embedding projections show as a single
    tight neighbourhood.
+6. **It can be made to say "I don't know", for about 3 points.** Thresholding the top-1
+   similarity separates present from absent statues at 0.969 AUROC for DINOv2, rejecting 95.9% of
+   unknown statues while still identifying 89.0% of known ones. CLIP cannot do this at any useful
+   operating point, and being reliably *identifiable* turns out not to imply being reliably
+   *rejectable*.
 
 ## Dataset
 
@@ -210,6 +215,85 @@ compressed space:
 
 ![CLIP embedding projection](docs/figures/embeddings-umap-clip.png)
 
+## 6. Can it say "I don't know this one"?
+
+Everything above assumes the photographed statue is one of the 23. Retrieval always returns a
+nearest neighbour, so a photograph of any of Wrocław's other ~1,300 dwarves would still produce a
+confident-looking ranking. The cheapest possible fix is a threshold on the top-1 cosine
+similarity: accept the ranking above it, answer "unknown" below it.
+
+Testing that needs queries whose dwarf is genuinely absent, so the protocol runs two populations
+of 146 queries each. The **known** arm is the same leave-one-out split used everywhere else. The
+**unknown** arm removes *every* image of a query's own dwarf from the gallery, which makes that
+dwarf truly missing — leaving a sibling image in place would keep the right answer reachable and
+the query would not be open-set at all.
+
+**Threshold-free first**, because an operating point can be tuned and a ranking statistic cannot.
+AUROC here is the probability that a known query outscores an unknown one:
+
+| | DINOv2 | CLIP |
+|---|---|---|
+| AUROC (known vs. unknown) | **0.969** | 0.898 |
+| mean top-1 similarity, dwarf present | 0.851 | 0.914 |
+| mean top-1 similarity, dwarf absent | 0.600 | 0.848 |
+
+So the signal is real: how similar the best match is does carry information about whether the
+statue is in the dataset at all. And the backbone gap is much wider than closed-set accuracy
+suggests — 3.4 points apart on top-1, 7 points apart on AUROC.
+
+**Then the price.** Each operating point is named by the fraction of known queries it accepts, and
+its threshold is calibrated **leave-one-class-out**: the threshold judging a dwarf's queries comes
+from a quantile of the *other* dwarves' known scores, so no query helps set the bar it must clear.
+
+| target known acceptance | DINOv2 threshold | DINOv2 false accepts | CLIP threshold | CLIP false accepts |
+|---|---|---|---|---|
+| 90% | 0.771 | **4.1%** | 0.869 | 28.1% |
+| 95% | 0.705 | 24.0% | 0.844 | 61.6% |
+| 99% | 0.520 | 74.0% | 0.812 | 83.6% |
+
+**Rejection works, at a specific and modest price, and only for DINOv2.** At the 90% operating
+point DINOv2 correctly identifies 89.0% of known queries and correctly rejects 95.9% of unknown
+ones, for 92.5% over both populations against a closed-set top-1 of 95.9%. Adding the ability to
+say "I don't know" costs about 3.4 points of accuracy on statues that *are* in the dataset.
+
+The 99% row is the more instructive one. Insisting on almost never rejecting a known statue drags
+the threshold into the tail of the known distribution, and three quarters of unknown statues then
+pass. There is no threshold that is simultaneously generous to known queries and safe against
+unknown ones, which is the honest shape of this result rather than a tuning failure.
+
+One check on the method: a threshold fitted on *all* the data — the leaky version — gives DINOv2
+the same 4.1% false-acceptance rate and CLIP a slightly worse 30.1%. The in-sample optimism is
+negligible at this size, which means the threshold is a property of the embedding space and not
+of this particular sample of it. The best in-sample balanced accuracy, sweeping every observed
+score with the answers in view, is 93.8% for DINOv2 and 85.6% for CLIP — an upper bound, and not
+far above what out-of-sample calibration already reaches.
+
+### Which statues can pass for a missing one
+
+Only four dwarves are ever falsely accepted by DINOv2 at the 90% point, and they form two pairs:
+
+| removed dwarf | falsely accepted | usually matched to |
+|---|---|---|
+| Kowal | 3 / 12 | 100matolog |
+| 100matolog | 1 / 4 | Kowal |
+| Zbierający Wodę | 1 / 3 | Puszczający Stateczki |
+| Puszczający Stateczki | 1 / 3 | Zbierający Wodę |
+
+The water-themed pair is the cluster section 5 already identified, now seen from a different
+angle: those statues are close enough that one can stand in for another that isn't there.
+
+*Kowal* is the more interesting entry, because it is the direction section 5 recorded as
+**harmless**. Closed-set, *Kowal → 100matolog* misidentifies 0 of 10 queries — with both statues
+present, Kowal is never mistaken for anything. Remove Kowal, and 100matolog covers for it three
+times out of twelve, making it the single worst dwarf to reject. Being reliably identifiable when
+present says nothing about being reliably rejectable when absent; these are different questions,
+and closed-set confusion analysis cannot see the second one.
+
+CLIP fails this test broadly rather than in a few places: 16 of 23 dwarves are falsely accepted at
+least once, and all three water-themed statues are accepted **3 of 3** — with any one of them
+removed, another always passes for it. On this dataset CLIP cannot support rejection at a useful
+operating point at all.
+
 ## Limitations
 
 - **23 classes is a small pool.** The full pool is close to the accuracy ceiling, which is why
@@ -222,8 +306,11 @@ compressed space:
   installation; whether the pattern holds city-wide is untested. Wikidata may also assign group
   members one shared point rather than individual positions, so "within one metre" may reflect
   the record as much as the pavement — either way those statues are co-located.
-- **A query outside the reference set still returns neighbours.** There is no open-set rejection;
-  the system cannot say "I don't know this one."
+- **Rejection is measured, but only against statues in this dataset.** Section 6 builds unknown
+  queries by removing a dwarf from the 23, so every "unknown" statue is still a Wrocław bronze
+  dwarf photographed like the rest. A real unknown query — a different one of the ~1,300, or a
+  statue photographed in worse conditions — is a harder and an untested case. The published demo
+  does not threshold at all; it always shows its ranking.
 
 ## Reproducing this
 
@@ -241,6 +328,7 @@ uv run krasnal-id experiment pool-ablation                    # section 2
 uv run krasnal-id experiment geo-ablation                     # section 3
 uv run krasnal-id experiment probe                            # section 4
 uv run krasnal-id experiment confusion                        # section 5
+uv run krasnal-id experiment open-set                         # section 6
 uv run krasnal-id visualize ablation
 uv run krasnal-id visualize embeddings
 ```

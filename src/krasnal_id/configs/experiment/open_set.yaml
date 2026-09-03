@@ -1,0 +1,4 @@
+kind: open_set
+seed: ${seeds.primary}
+target_known_acceptance: [0.9, 0.95, 0.99]
+top_rejections: ${thresholds.open_set_top_rejections}

@@ -44,6 +44,7 @@ from krasnal_id.experiments.confusion_analysis import (
     run_confusion_analysis,
 )
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
+from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
 from krasnal_id.logging import configure_logging
@@ -413,6 +414,51 @@ def probe_experiment(override: OverrideOption = None) -> None:
                 f"  {metric.name}: {metric.value:.4f} "
                 f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
             )
+
+
+@experiment_app.command("open-set")
+def open_set_experiment(override: OverrideOption = None) -> None:
+    """Measure whether a similarity threshold can reject dwarves outside the dataset."""
+    config = load_config(["experiment=open_set", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_open_set_rejection(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        OpenSetExperimentError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Open-set rejection error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Open-set rejection complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.name.endswith("_threshold") or metric.name == "mean_similarity_gap":
+            typer.echo(
+                f"  {metric.name}: {metric.value:+.4f}"
+                + (
+                    f" [{metric.lower_bound:+.4f}-{metric.upper_bound:+.4f}]"
+                    if metric.lower_bound is not None and metric.upper_bound is not None
+                    else ""
+                )
+            )
+        elif metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+    typer.echo(f"  hardest dwarves to reject (of {len(result.rejections)} reported):")
+    for rejection in result.rejections[:10]:
+        typer.echo(
+            f"    {rejection.display_name}: {rejection.false_accepts} of "
+            f"{rejection.unknown_queries} unknown queries accepted, mean top similarity "
+            f"{rejection.mean_top_similarity:+.4f}, usually matched "
+            f"{rejection.nearest_display_name}"
+        )
 
 
 @experiment_app.command("confusion")
