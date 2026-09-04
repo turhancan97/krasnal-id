@@ -77,10 +77,8 @@ def measure_pool_size(
     drawn without replacement, which simulates the candidate narrowing a
     location-aware tool would perform.
     """
-    images_by_dwarf: dict[str, list[str]] = {dwarf_id: [] for dwarf_id in dwarf_ids}
-    for image_id, dwarf_id in zip(matrix.image_ids, matrix.dwarf_ids, strict=True):
-        images_by_dwarf[dwarf_id].append(image_id)
-
+    # `dwarf_ids` is the universe the distractors are drawn from, and it need not
+    # cover the whole matrix: the geographic arm passes only the located subset.
     top_1_per_seed: list[float] = []
     mrr_per_seed: list[float] = []
     for seed in seeds:

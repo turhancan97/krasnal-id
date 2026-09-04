@@ -45,17 +45,53 @@ def test_haversine_matches_known_distances() -> None:
     assert haversine_metres((51.0, 17.0), (52.0, 17.0)) == pytest.approx(111195.0, rel=0.001)
 
 
-def test_locations_require_the_whole_set(tmp_path: Path) -> None:
+def test_locations_cover_whichever_dwarves_are_placed(tmp_path: Path) -> None:
     located = synthetic_manifest(dwarf_count=3, coordinates=_line(3))
     assert set(dwarf_locations(located)) == {"Q1", "Q2", "Q3"}
 
+    # A Commons-only class never carries P625 coordinates, so a partly placed
+    # manifest is the normal case rather than an error; the arm scopes to the
+    # located subset and reports what fraction it covers.
     partial = synthetic_manifest(dwarf_count=3, coordinates=_line(2))
-    with pytest.raises(GeoAblationError, match="1 of 3 dwarves have no coordinates"):
-        dwarf_locations(partial)
+    assert set(dwarf_locations(partial)) == {"Q1", "Q2"}
 
     empty = synthetic_manifest(dwarf_count=3).model_copy(update={"dwarfs": ()})
     with pytest.raises(GeoAblationError, match="no dwarves"):
         dwarf_locations(empty)
+
+    with pytest.raises(GeoAblationError, match="none of the 3 dwarves carry coordinates"):
+        dwarf_locations(synthetic_manifest(dwarf_count=3))
+
+
+def test_the_geographic_arm_reports_what_fraction_it_covers(tmp_path: Path) -> None:
+    # Three of five placed: the result must say so rather than implying it measured
+    # the whole pool.
+    manifest = synthetic_manifest(dwarf_count=5, coordinates=_line(3))
+    seed_embedding_cache(tmp_path, manifest)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    locations = dwarf_locations(manifest)
+    located_split = split.model_copy(
+        update={"folds": tuple(f for f in split.folds if f.query_dwarf_id in locations)}
+    )
+
+    geo = (measure_geographic_pool(located_split, matrix, 2, locations),)
+    metrics = {
+        m.name: m.value
+        for m in summarize_geo(
+            geo, {2: (0.5, 0.4, 0.6)}, len(located_split.folds), 3, coverage=(3, 5)
+        )
+    }
+
+    assert metrics["located_dwarfs"] == pytest.approx(3.0)
+    assert metrics["manifest_dwarfs"] == pytest.approx(5.0)
+    assert metrics["located_fraction"] == pytest.approx(0.6)
+    # Only the placed dwarves' folds were scored.
+    assert metrics["evaluated_folds"] == pytest.approx(float(len(located_split.folds)))
+    assert len(located_split.folds) < len(split.folds)
+
+    with pytest.raises(GeoAblationError, match="cannot outnumber"):
+        summarize_geo(geo, {2: (0.5, 0.4, 0.6)}, 1, 3, coverage=(9, 5))
 
 
 def test_a_pool_holds_the_query_and_its_nearest_neighbours() -> None:
@@ -215,6 +251,7 @@ def test_cli_geo_ablation_reports_both_arms_and_needs_coordinates(tmp_path: Path
     assert "geo_top_1_pool_2" in result.output
     assert "random_top_1_pool_2" in result.output
     assert "geo_advantage_pool_2" in result.output
+    assert "located_fraction" in result.output
     assert " m median" in result.output
 
     written = ExperimentResult.model_validate(
@@ -222,10 +259,10 @@ def test_cli_geo_ablation_reports_both_arms_and_needs_coordinates(tmp_path: Path
     )
     assert written.experiment == "geo_ablation"
 
-    # A manifest without coordinates cannot be pooled by proximity.
+    # A manifest where nothing is placed cannot be pooled by proximity at all.
     unplaced = synthetic_manifest(dwarf_count=4)
     manifest_path.write_text(json.dumps(unplaced.model_dump(mode="json")), encoding="utf-8")
     write_evaluation_split(split_path, build_evaluation_split(unplaced, datetime.now(UTC)))
     failed = runner.invoke(app, arguments)
     assert failed.exit_code == 2
-    assert "no coordinates" in failed.output
+    assert "none of the 4 dwarves carry coordinates" in failed.output

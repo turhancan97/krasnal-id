@@ -283,8 +283,16 @@ def test_current_local_artifacts_produce_expected_manifest() -> None:
         3,
     )
 
-    assert len(manifest.dwarfs) == 23
-    assert len(manifest.images) == 146
+    assert len(manifest.dwarfs) == 306
+    assert len(manifest.images) == 1691
     names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
+    # Tracked display-name overrides survive a Commons-first rebuild.
     assert names["Q136001318"] == "Ossolinek"
     assert names["Q136001344"] == "Demokracja"
+    # Both identity kinds coexist, and only the Wikidata ones carry coordinates.
+    wikidata = [d for d in manifest.dwarfs if d.wikidata_url is not None]
+    commons_only = [d for d in manifest.dwarfs if d.wikidata_url is None]
+    assert len(wikidata) == 23
+    assert len(commons_only) == 283
+    assert all(d.coordinates is not None for d in wikidata)
+    assert all(d.coordinates is None for d in commons_only)

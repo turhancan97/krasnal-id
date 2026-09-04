@@ -55,24 +55,29 @@ def haversine_metres(
 
 
 def dwarf_locations(manifest: DatasetManifest) -> dict[str, tuple[float, float]]:
-    """Collect every dwarf's coordinates, requiring the whole set to have them."""
+    """Collect the coordinates of every dwarf that has them.
+
+    Coordinates come from Wikidata's `P625`, so a Commons-only class never carries
+    them (`AGENTS.md` section 5.6). Demanding the whole manifest be placed would
+    make this experiment unrunnable on any Commons-first dataset, so the arm is
+    scoped to the located subset instead — and every caller must report what
+    fraction of the pool that subset is, rather than implying it covers all of it.
+    """
     locations: dict[str, tuple[float, float]] = {}
-    missing: list[str] = []
     for dwarf in manifest.dwarfs:
         if dwarf.coordinates is None:
-            missing.append(dwarf.dwarf_id)
             continue
         locations[dwarf.dwarf_id] = (
             dwarf.coordinates.latitude,
             dwarf.coordinates.longitude,
         )
-    if missing:
-        raise GeoAblationError(
-            f"{len(missing)} of {len(manifest.dwarfs)} dwarves have no coordinates "
-            f"(first: {missing[0]}); a geographic pool cannot be built for them"
-        )
-    if not locations:
+    if not manifest.dwarfs:
         raise GeoAblationError("manifest contains no dwarves")
+    if not locations:
+        raise GeoAblationError(
+            f"none of the {len(manifest.dwarfs)} dwarves carry coordinates; "
+            "a geographic pool cannot be built"
+        )
     return locations
 
 
@@ -156,10 +161,18 @@ def summarize_geo(
     random_arm: dict[int, tuple[float, float, float]],
     folds: int,
     dwarf_count: int,
+    coverage: tuple[int, int] | None = None,
 ) -> tuple[MetricSummary, ...]:
-    """Report both arms and the advantage that proximity buys at each pool size."""
+    """Report both arms, the advantage proximity buys, and what fraction it covers.
+
+    `coverage` is (located dwarves, dwarves in the manifest). It is recorded so a
+    reader cannot mistake a result measured over the placed subset for one measured
+    over the whole pool, which on a Commons-first dataset is a small minority of it.
+    """
     if not geo:
         raise GeoAblationError("no pool sizes were measured")
+    if coverage is not None and coverage[0] > coverage[1]:
+        raise GeoAblationError("located dwarves cannot outnumber the manifest")
 
     metrics: list[MetricSummary] = []
     for measurement in geo:
@@ -198,6 +211,13 @@ def summarize_geo(
         )
     metrics.append(MetricSummary(name="evaluated_folds", value=float(folds)))
     metrics.append(MetricSummary(name="candidate_dwarfs", value=float(dwarf_count)))
+    if coverage is not None:
+        located, total = coverage
+        metrics.append(MetricSummary(name="located_dwarfs", value=float(located)))
+        metrics.append(MetricSummary(name="manifest_dwarfs", value=float(total)))
+        metrics.append(
+            MetricSummary(name="located_fraction", value=located / total if total else 0.0)
+        )
     return tuple(metrics)
 
 
@@ -219,13 +239,16 @@ def run_geo_ablation(config: AppConfig) -> ExperimentResult:
 
     matrix = load_embedding_matrix(manifest, config.backbone, config.paths.embeddings_dir)
     locations = dwarf_locations(manifest)
-    dwarf_ids = tuple(sorted(set(matrix.dwarf_ids)))
-    unlocated = set(dwarf_ids) - set(locations)
-    if unlocated:
-        raise GeoAblationError(
-            f"{len(unlocated)} dwarves in the embedding set have no coordinates: "
-            f"{', '.join(sorted(unlocated))}"
-        )
+    all_dwarf_ids = tuple(sorted(set(matrix.dwarf_ids)))
+    dwarf_ids = tuple(dwarf_id for dwarf_id in all_dwarf_ids if dwarf_id in locations)
+
+    # Both arms are restricted to the located subset so they compare like with like:
+    # a random pool drawn from the whole manifest would be a different experiment.
+    located_split = split.model_copy(
+        update={"folds": tuple(fold for fold in split.folds if fold.query_dwarf_id in locations)}
+    )
+    if not located_split.folds:
+        raise GeoAblationError("no evaluation fold belongs to a dwarf with coordinates")
 
     try:
         pool_sizes = resolve_pool_sizes(config.experiment.pool_sizes, len(dwarf_ids))
@@ -233,11 +256,14 @@ def run_geo_ablation(config: AppConfig) -> ExperimentResult:
         raise GeoAblationError(str(error)) from error
 
     geo = tuple(
-        measure_geographic_pool(split, matrix, pool_size, locations) for pool_size in pool_sizes
+        measure_geographic_pool(located_split, matrix, pool_size, locations)
+        for pool_size in pool_sizes
     )
     random_arm: dict[int, tuple[float, float, float]] = {}
     for pool_size in pool_sizes:
-        sampled = measure_pool_size(split, matrix, pool_size, config.experiment.seeds, dwarf_ids)
+        sampled = measure_pool_size(
+            located_split, matrix, pool_size, config.experiment.seeds, dwarf_ids
+        )
         random_arm[pool_size] = (
             sampled.top_1,
             min(sampled.top_1_per_seed),
@@ -250,5 +276,11 @@ def run_geo_ablation(config: AppConfig) -> ExperimentResult:
         created_at=datetime.now(UTC),
         # Only the random comparison arm samples; the geographic pools are exact.
         seed=config.experiment.seeds[0],
-        metrics=summarize_geo(geo, random_arm, len(split.folds), len(dwarf_ids)),
+        metrics=summarize_geo(
+            geo,
+            random_arm,
+            len(located_split.folds),
+            len(dwarf_ids),
+            coverage=(len(dwarf_ids), len(all_dwarf_ids)),
+        ),
     )
