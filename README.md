@@ -17,17 +17,18 @@ deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cos
 retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
 analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
 and the interactive demonstration. The v0.1-v0.3 build order is complete and released as
-`0.3.0`. Open-set rejection was added and released as `0.4.0`, and `AGENTS.md` section 8 records
-the research questions that remain open.
+`0.3.0` and open-set rejection as `0.4.0`. The dataset has since been rebuilt Commons-first at
+306 classes and 1,691 images, which revised three published conclusions; `RESULTS.md` section 7
+records which ones and why, and `AGENTS.md` section 8 the questions that remain open.
 
 ## Findings
 
-DINOv2 reaches 95.9% top-1 across the full 23-dwarf pool, accuracy decays by about one point per
-doubling of the candidate pool against CLIP's 1.8, narrowing by real location helps *less* than
-random subsampling suggests, a trained classifier does not beat raw retrieval, and the errors
-concentrate on one explainable cluster of water-themed statues that turns out to be a single
-co-located installation. Thresholding similarity does let it answer "I don't know this one",
-for about three points of accuracy on the statues it does know.
+DINOv2 reaches 93.1% top-1 across a 306-dwarf pool with no fine-tuning, losing 0.79 accuracy
+points per doubling of the candidate pool where CLIP loses 2.06 and accelerates. Narrowing by real
+location helps *less* than random subsampling suggests, a trained classifier helps only the weaker
+backbone, and the errors concentrate on families of near-identical statues. Thresholding
+similarity to answer "I don't know this one" worked at 23 classes and **does not** at 306 — one of
+three conclusions the larger dataset overturned.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.

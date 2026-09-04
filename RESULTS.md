@@ -16,51 +16,59 @@ your own browser.
 
 ## Summary of findings
 
-1. **Off-the-shelf embeddings identify these statues well.** DINOv2 reaches 95.9% top-1 and
-   99.3% top-5 across the full 23-dwarf pool, with no fine-tuning at all.
-2. **Accuracy decays slowly, and the backbones diverge.** DINOv2 loses 0.96 accuracy points per
-   doubling of the candidate pool; CLIP loses 1.76. The gap between them *widens* with pool size,
-   so backbone choice matters more the harder the problem gets.
+1. **Off-the-shelf embeddings identify these statues well, at real scale.** DINOv2 reaches 93.1%
+   top-1 across 306 dwarves with no fine-tuning at all. CLIP reaches 82.9%.
+2. **The decay is shallow for DINOv2 and accelerating for CLIP.** DINOv2 loses 0.79 accuracy
+   points per doubling of the candidate pool and holds that rate across the whole measured range;
+   CLIP loses 2.06 and gets steadily worse as the pool grows. The gap between them widens from
+   under a point at a pool of two to **ten points** at 306.
 3. **Narrowing by location helps less than the simulation suggests.** Real proximity-based pools
    are consistently *harder* than random pools of the same size, because the statues that are
    hardest to tell apart were installed together as a themed group.
-4. **Training a classifier does not help.** A per-fold linear probe gains 0.7 top-1 points over
-   raw retrieval and per-class prototypes lose 2 to 3, with every difference inside the
-   confidence intervals. At this data scale, nearest-neighbour retrieval is already the right
-   tool.
-5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on the
-   same small cluster of water-themed dwarves, which the embedding projections show as a single
-   tight neighbourhood.
-6. **It can be made to say "I don't know", for about 3 points.** Thresholding the top-1
-   similarity separates present from absent statues at 0.969 AUROC for DINOv2, rejecting 95.9% of
-   unknown statues while still identifying 89.0% of known ones. CLIP cannot do this at any useful
-   operating point, and being reliably *identifiable* turns out not to imply being reliably
-   *rejectable*.
+4. **Training a classifier helps only the weaker backbone.** A per-fold linear probe is worth
+   nothing to DINOv2 (−0.1 points) but gains CLIP 3.1. Class prototypes cost both about 8 points.
+   Where retrieval is already strong, it is already the right tool.
+5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on
+   near-identical statues installed as families — above all the three *Słupniki* pillar dwarves —
+   and the embedding projection picks the same clusters out unprompted.
+6. **Open-set rejection does not survive the larger pool.** Thresholding similarity looked usable
+   at 23 classes and does not work at 306: DINOv2's false-acceptance rate rises from 4% to 38% at
+   the same operating point. The earlier positive result was an artefact of a small pool.
+
+Findings 2, 4 and 6 all revise conclusions this project previously published from a 23-class
+dataset. Section 7 is about which of them the small pool got wrong, and why.
 
 ## Dataset
 
 | | |
 |---|---|
-| Dwarves (classes) | 23 |
-| Reference photographs | 146 |
+| Dwarves (classes) | 306 |
+| Reference photographs | 1,691 |
 | Images per dwarf | 3 to 31 (median 4) |
-| Source | Wikimedia Commons, via Wikidata class `Q136276280` |
+| Source | Wikimedia Commons, via Wikidata and the Commons category tree |
 | Licences | Public Domain, CC0, CC BY, CC BY-SA only |
 
 Coverage is bounded by data quality, not geography: a dwarf is included only if it has at least
-three usable Creative Commons photographs. 40 Wikidata-to-Commons category mappings were reviewed
-by hand; 23 survived the image threshold.
+three usable Creative Commons photographs. 482 category mappings were reviewed, 478 approved, and
+306 classes survived the image threshold.
+
+**Wikidata is not the limit — Commons is the source.** Only 44 Wikidata items exist for the 481
+per-dwarf categories Commons holds, and the same 44 are the only ones linked to any of them. So
+283 of these 306 classes have no Wikidata item at all and are identified by their Commons
+category. That has one consequence worth carrying into section 3: coordinates come from Wikidata's
+`P625`, so **only 23 of 306 classes are geolocated**.
 
 Three details matter more than the headline count:
 
 - **Attribution is a first-class field.** Every stored image carries its source URL, author,
   licence and licence URL. Nothing enters the manifest without them.
-- **Cross-label duplicates are excluded.** Twenty Commons files turned out to be byte-identical
-  across *different* dwarf labels. Admitting them would have leaked the answer into the reference
-  set, so they were dropped even though four classes lost their only images as a result.
-- **Evaluation is leave-one-out.** Each of the 146 images is queried once against the other 145.
-  The split is hash-pinned to the manifest, and any experiment run against a stale split fails
-  loudly instead of quietly producing plausible numbers.
+- **Cross-label duplicates are excluded.** 131 Commons files were byte-identical across
+  *different* dwarf labels, mostly where a group category and its member categories hold the same
+  photographs. Admitting them would leak the answer into the reference set, so they are dropped —
+  even where that empties a class, as it does for three robbers photographed in a single scene.
+- **Evaluation is leave-one-out.** Each of the 1,691 images is queried once against the other
+  1,690. The split is hash-pinned to the manifest, and any experiment run against a stale split
+  fails loudly instead of quietly producing plausible numbers.
 
 ## Method
 
@@ -75,18 +83,19 @@ scores.
 
 ## 1. Baseline: the full candidate pool
 
-All 23 dwarves are candidates for every query. Intervals are 95% Wilson score intervals over 146
-queries.
+All 306 dwarves are candidates for every query. Intervals are 95% Wilson score intervals over
+1,691 queries.
 
 | | DINOv2 | CLIP |
 |---|---|---|
-| top-1 | **95.9%** [91.3, 98.1] | **92.5%** [87.0, 95.7] |
-| top-5 | 99.3% [96.2, 99.9] | 98.6% [95.1, 99.6] |
-| MRR | 0.971 | 0.951 |
+| top-1 | **93.1%** [91.8, 94.3] | **82.9%** [81.0, 84.6] |
+| top-5 | 95.7% [94.6, 96.6] | 90.7% [89.2, 92.0] |
+| MRR | 0.943 | 0.866 |
 
 DINOv2 leads, which is the expected ordering: it is trained with a self-supervised objective that
 preserves instance-level detail, while CLIP's language-alignment objective pushes toward semantic
-categories — and every one of these statues *is* the same semantic category.
+categories — and every one of these statues *is* the same semantic category. The gap is now ten
+points, where a 23-class pool put it at three.
 
 ## 2. The headline result: accuracy against candidate-pool size
 
@@ -97,35 +106,42 @@ seeds per pool size. Error bars are the observed spread across seeds.
 
 | pool size | DINOv2 | CLIP |
 |---|---|---|
-| 2 | 98.9% | 98.9% |
-| 5 | 98.9% | 97.7% |
-| 10 | 96.7% | 95.8% |
-| 15 | 96.4% | 94.0% |
-| 20 | 96.2% | 93.2% |
-| 23 (full) | 95.9% | 92.5% |
-| **points lost per doubling** | **−0.96** | **−1.76** |
+| 2 | 98.9% | 98.0% |
+| 5 | 97.7% | 95.6% |
+| 10 | 97.1% | 94.0% |
+| 20 | 96.2% | 92.0% |
+| 50 | 95.2% | 89.5% |
+| 100 | 94.4% | 87.2% |
+| 200 | 93.6% | 84.5% |
+| 306 (full) | 93.1% | 82.9% |
+| **points lost per doubling** | **−0.79** | **−2.06** |
 
-Two things stand out. The decay is **shallow** — narrowing the pool from 23 candidates to 5 buys
-DINOv2 only three accuracy points, so location-based narrowing is worth far less than intuition
-suggests at this scale. And the two backbones **diverge**: they are indistinguishable at a pool of
-2 and six points apart at 23. A backbone comparison run only at one pool size would have missed
-that entirely, which is the argument for measuring the curve rather than a point.
+The two curves have different *shapes*, which is the result that a single fitted slope hides.
+Measured from a pool of 2 to 20, and then from 50 to 306, DINOv2 loses 0.82 points per
+doubling early and 0.77 late — its decay is log-linear across the whole range, and if anything
+eases. CLIP loses 1.79 early and **2.53** late: its decay accelerates.
 
-### What this implies at city scale, and why to distrust it
+So narrowing the pool is worth much more to a weak backbone than a strong one. Going from 306
+candidates to 10 buys DINOv2 3.9 points and CLIP 11.1. If you cannot narrow the pool, the
+backbone choice is most of the battle; if you can, it matters much less.
 
-Extrapolating the fit to the full set of roughly 1,400 dwarves gives 88.5% top-1 for DINOv2 and
-78.9% for CLIP. **Treat those as an optimistic bound, not a prediction.** It is a six-doubling
-extrapolation, and the distractors here are drawn from a 23-class population; a real city-scale
-pool contains far more genuinely confusable statues — shared poses, shared props, shared castings
-— so the true curve should fall faster than a log-linear fit. The honest claim this data supports
-is about the *rate* of decay in the measured range, not about where the line crosses a threshold.
+### What this implies at city scale
+
+Extrapolating to the roughly 1,400 dwarves in the city gives 91.4% top-1 for DINOv2 and 78.4% for
+CLIP. The DINOv2 figure is now a reasonably supported extrapolation rather than a guess: it is
+two doublings past measured data, over a range where the rate has been constant for seven
+doublings. **The CLIP figure remains an optimistic bound**, because its rate is still worsening at
+the edge of the measured range, so a log-linear fit understates the loss.
 
 ## 3. Does narrowing by location actually help?
 
-The pools above are sampled at random. The real proposal is to narrow by *location*, and every
-dwarf in this dataset carries Wikidata coordinates, so that can be measured rather than assumed.
-Each query is pooled with its **N−1 nearest** dwarves instead of N−1 random ones — same pool size,
-only the selection rule changes.
+The pools above are sampled at random. The real proposal is to narrow by *location*. Each query is
+pooled with its **N−1 nearest** dwarves instead of N−1 random ones — same pool size, only the
+selection rule changes.
+
+**This section covers 23 of the 306 classes (7.5%)**, because coordinates come from Wikidata and
+283 classes have no Wikidata item. Both arms are restricted to that subset so they compare like
+with like, and the result artifact records the coverage so it cannot be read as covering the pool.
 
 | pool size | DINOv2 random | DINOv2 geographic | difference | median radius |
 |---|---|---|---|---|
@@ -142,183 +158,147 @@ runs the wrong way at almost every size, and it has a clear cause.
 
 ### Why: the statues you can't separate are standing together
 
-Six of the 23 dwarves sit **within one metre of each other** — 15 of the 253 pairs in this dataset
-are effectively co-located. They are the group installation that includes *Puszczający Stateczki*,
-*Zbierający Wodę* and *Karmiący Ptaki*.
-
-Those are the same statues the confusion analysis flags, and the same tight neighbourhood the
-embedding projection shows. Three of DINOv2's five confused pairs are at zero metres apart.
+Six of these 23 dwarves sit **within one metre of each other**. They are the group installation
+that includes *Puszczający Stateczki*, *Zbierający Wodę* and *Karmiący Ptaki* — the same statues
+the confusion analysis flags and the same tight neighbourhood the embedding projection shows.
 
 That is the finding: **the dwarves that are hardest to tell apart were installed as a themed
 group, so they share a sculptor, a pose vocabulary and a location.** Location narrowing cannot
 separate them — it guarantees they land in the same pool. A random-subsampling simulation, which
-scatters the confusable statues across different pools, therefore *overstates* how much
-location narrowing buys.
-
-The practical reading for a location-aware tool: a 400 m radius around a visitor covers about ten
-candidates, and identification within that pool runs at 96.6% top-1 for DINOv2. Useful — but no
-better than picking ten dwarves at random, and for exactly the reason that makes the problem
-interesting.
+scatters the confusable statues across different pools, therefore *overstates* how much location
+narrowing buys.
 
 ## 4. Does a trained classifier beat retrieval?
 
 All three methods scored on the same folds, with one classifier fitted per fold so no query is
-ever in its own training data.
+ever in its own training data — 1,691 classifiers per backbone.
 
-| method | DINOv2 top-1 | CLIP top-1 | gain over retrieval |
-|---|---|---|---|
-| cosine retrieval | 95.9% | 92.5% | — |
-| linear probe | 96.6% | 93.2% | +0.7 pts (both) |
-| class prototypes | 93.2% | 90.4% | −2.7 / −2.1 pts |
+| method | DINOv2 top-1 | CLIP top-1 |
+|---|---|---|
+| cosine retrieval | **93.1%** | 82.9% |
+| linear probe | 93.0% (−0.1) | **86.0%** (+3.1) |
+| class prototypes | 85.1% (−8.0) | 74.6% (−8.3) |
 
-**No.** The probe's gain is one extra correct query out of 146, well inside the confidence
-intervals. Prototypes actively hurt: averaging a class into one vector discards the pose and
-viewpoint variation that makes a specific photograph matchable.
+**For DINOv2, no; for CLIP, yes — and that asymmetry is the finding.** The probe changes nothing
+for DINOv2, two queries out of 1,691. For CLIP it gains 3.1 points, and while the confidence
+intervals still overlap slightly ([84.3, 87.6] against [81.0, 84.6]) the direction is consistent
+and the size is not trivial. A supervised layer can partly repair an embedding space that is not
+laid out for instance-level discrimination; it has nothing to add to one that already is.
 
-A caveat about how this number was reached, because it nearly became a wrong conclusion. At
-scikit-learn's conventional `C=1.0` the probe scored **66%**, which looks like a decisive result
-and is really just underfitting: the embeddings are L2-normalised, so per-dimension magnitudes sit
-near `1/√d` and that penalty crushes the weights. At `C=100` it scores 96.6%. A badly-regularised
-baseline is worse than no baseline, because it flatters whatever it is compared against.
+At 23 classes both backbones showed the same +0.7 non-effect. The larger pool separates them.
+
+Prototypes are now clearly harmful — about 8 points for both, against 2 to 3 at 23 classes.
+Averaging a class into one vector discards the pose and viewpoint variation that makes a specific
+photograph matchable, and the more classes there are, the more that costs.
+
+A caveat about how these numbers were reached, because it nearly became a wrong conclusion. At
+scikit-learn's conventional `C=1.0` the probe scored **66%** on the small dataset, which looks
+decisive and is really just underfitting: the embeddings are L2-normalised, so per-dimension
+magnitudes sit near `1/√d` and that penalty crushes the weights. At `C=100` it scores as above. A
+badly-regularised baseline is worse than no baseline, because it flatters whatever it is compared
+against.
 
 ## 5. Where the errors are
 
-DINOv2 misidentifies 6 of 146 queries; CLIP misidentifies 11. Because outright errors are rare,
-the analysis records the strongest *wrong* candidate for every query, not only for the failures —
-that is where the signal is on a dataset this size.
+DINOv2 misidentifies 116 of 1,691 queries (6.9%); CLIP misidentifies 289 (17.1%). Because outright
+errors are still relatively rare, the analysis records the strongest *wrong* candidate for every
+query, not only for the failures.
 
 | | DINOv2 | CLIP |
 |---|---|---|
-| top-1 errors | 6 / 146 (4.1%) | 11 / 146 (7.5%) |
-| mean margin over the best wrong dwarf | 0.248 | 0.064 |
+| top-1 errors | 116 / 1691 (6.9%) | 289 / 1691 (17.1%) |
+| mean margin over the best wrong dwarf | 0.174 | 0.040 |
 
 The mean margin is the more revealing number. CLIP's embedding space is roughly four times
 tighter, which is the same finding as its steeper decay curve seen from another angle: less
 headroom per comparison means each added candidate costs more.
 
-The errors are systematic. The most-confused pairs are dominated by the water-themed dwarves —
-*Puszczający Stateczki* (releasing little boats), *Zbierający Wodę* (collecting water) and
-*Karmiący Ptaki* (feeding birds) — crouching figures with similar props, frequently photographed
-from the same angle. *Puszczający Stateczki → Zbierający Wodę* appears in **both directions** for
-DINOv2 at a negative margin, and CLIP produces the same cluster with *Karmiący Ptaki* substituted.
-
-Confusion is also **asymmetric**, which is why the analysis keeps pair direction rather than
-averaging it away: *100matolog → Kowal* misidentifies 1 of 4 queries, while *Kowal → 100matolog*
-misidentifies 0 of 10.
+The errors are systematic, and the dominant cluster has changed with the larger dataset. It is now
+the **Słupniki** family — *Słupniki Solne*, *Słupniki Oławskie* and *Słupniki Świdnickie*, near
+identical pillar dwarves installed on different streets. They are the top confusion for both
+backbones, in both directions. The water-themed trio that dominated at 23 classes is still there
+(*Puszczający Stateczki → Zbierający Wodę*, 2 of 3 queries) but is no longer the largest effect.
 
 ![DINOv2 embedding projection](docs/figures/embeddings-umap-dinov2.png)
 
-The projection corroborates it independently. Most dwarves form clean, well-separated islands —
-which is why accuracy is high — while the confused water-themed dwarves sit together in one tight
-neighbourhood in the upper right. The CLIP projection shows the same cluster in a visibly more
-compressed space:
-
-![CLIP embedding projection](docs/figures/embeddings-umap-clip.png)
+The projection corroborates it independently. With 306 classes it names only the 24 sitting
+closest to another class and greys the rest — and that automatic selection, which uses nothing but
+centroid distances, picks out the Słupniki pair, the water trio and *Ślepak*/*Głuchak* (the blind
+and deaf dwarves, a sculpted pair). The clusters the error analysis finds are the clusters the
+geometry shows.
 
 ## 6. Can it say "I don't know this one"?
 
-Everything above assumes the photographed statue is one of the 23. Retrieval always returns a
-nearest neighbour, so a photograph of any of Wrocław's other ~1,300 dwarves would still produce a
-confident-looking ranking. The cheapest possible fix is a threshold on the top-1 cosine
-similarity: accept the ranking above it, answer "unknown" below it.
+Retrieval always returns a nearest neighbour, so a photograph of a statue outside the reference set
+still produces a confident-looking ranking. The test: threshold the top-1 cosine similarity, and
+measure it on two populations of 1,691 — the known arm is the leave-one-out split, and the unknown
+arm removes *every* image of a query's own dwarf so that dwarf is genuinely absent. Operating
+points are calibrated leave-one-class-out, so no query helps set the bar it must clear.
 
-Testing that needs queries whose dwarf is genuinely absent, so the protocol runs two populations
-of 146 queries each. The **known** arm is the same leave-one-out split used everywhere else. The
-**unknown** arm removes *every* image of a query's own dwarf from the gallery, which makes that
-dwarf truly missing — leaving a sibling image in place would keep the right answer reachable and
-the query would not be open-set at all.
-
-**Threshold-free first**, because an operating point can be tuned and a ranking statistic cannot.
-AUROC here is the probability that a known query outscores an unknown one:
-
-| | DINOv2 | CLIP |
+| | 23 classes | **306 classes** |
 |---|---|---|
-| AUROC (known vs. unknown) | **0.969** | 0.898 |
-| mean top-1 similarity, dwarf present | 0.851 | 0.914 |
-| mean top-1 similarity, dwarf absent | 0.600 | 0.848 |
+| DINOv2 AUROC | 0.969 | **0.896** |
+| DINOv2 false accepts @ 90% known acceptance | 4.1% | **38.3%** |
+| CLIP AUROC | 0.898 | **0.806** |
+| CLIP false accepts @ 90% known acceptance | 28.1% | **67.4%** |
 
-So the signal is real: how similar the best match is does carry information about whether the
-statue is in the dataset at all. And the backbone gap is much wider than closed-set accuracy
-suggests — 3.4 points apart on top-1, 7 points apart on AUROC.
+**Rejection does not survive the larger pool.** At 23 classes DINOv2 rejected 96% of unknown
+statues while identifying 89% of known ones, and that looked like a working feature. At 306 the
+same operating point lets 38% of unknown statues through. Overall open-set accuracy is 75.1%
+against a closed-set 93.1%.
 
-**Then the price.** Each operating point is named by the fraction of known queries it accepts, and
-its threshold is calibrated **leave-one-class-out**: the threshold judging a dwarf's queries comes
-from a quantile of the *other* dwarves' known scores, so no query helps set the bar it must clear.
+The mechanism is not subtle. An absent statue's nearest neighbour is drawn from 305 candidates
+instead of 22, so the chance that *something* in the gallery resembles it closely is far higher.
+Mean top-1 similarity for an absent dwarf rises from 0.60 to 0.66 while the present case barely
+moves. The two distributions slide together.
 
-| target known acceptance | DINOv2 threshold | DINOv2 false accepts | CLIP threshold | CLIP false accepts |
-|---|---|---|---|---|
-| 90% | 0.771 | **4.1%** | 0.869 | 28.1% |
-| 95% | 0.705 | 24.0% | 0.844 | 61.6% |
-| 99% | 0.520 | 74.0% | 0.812 | 83.6% |
+This is a **correction to a previously published result of this project**, not a new caveat on it.
+The 0.4.0 release reported open-set rejection as working at a modest cost. It worked on 23 classes
+and does not work on 306, and there is no reason to expect it to improve at 1,400.
 
-![Open-set rejection tradeoff](docs/figures/open-set-rejection.png)
+## 7. What the small pool got wrong
 
-The whole tradeoff, with the calibrated points marked. The curve itself is descriptive — it says
-what *any* threshold would do on this data — while the marked dots are the leave-one-class-out
-operating points that are actually achievable. DINOv2 turns the corner almost immediately; CLIP
-climbs the left edge much more slowly and never reaches a usable corner at all.
+Three conclusions changed when the dataset grew 13×, and the pattern in which ones changed is
+itself the lesson.
 
-**Rejection works, at a specific and modest price, and only for DINOv2.** At the 90% operating
-point DINOv2 correctly identifies 89.0% of known queries and correctly rejects 95.9% of unknown
-ones, for 92.5% over both populations against a closed-set top-1 of 95.9%. Adding the ability to
-say "I don't know" costs about 3.4 points of accuracy on statues that *are* in the dataset.
+| conclusion at 23 classes | at 306 classes |
+|---|---|
+| DINOv2 loses 0.96 pts/doubling | 0.79 — the small pool was **pessimistic** |
+| CLIP loses 1.76 pts/doubling | 2.06 and accelerating — the small pool was **optimistic** |
+| A trained classifier does not help either backbone | True for DINOv2, false for CLIP (+3.1) |
+| Similarity thresholding gives usable rejection | It does not; 4% false accepts became 38% |
+| Errors concentrate on the water-themed trio | They concentrate on the Słupniki family |
+| Geographic pools are harder than random ones | Unchanged |
 
-The 99% row is the more instructive one. Insisting on almost never rejecting a known statue drags
-the threshold into the tail of the known distribution, and three quarters of unknown statues then
-pass. There is no threshold that is simultaneously generous to known queries and safe against
-unknown ones, which is the honest shape of this result rather than a tuning failure.
+The previous writeup warned that extrapolating past 23 classes would be optimistic, because a
+small pool holds too few genuinely confusable distractors. That warning was **half right**: true
+for CLIP, wrong for DINOv2, which did better than its own small-pool curve predicted. A blanket
+"small datasets are optimistic" heuristic would have mispredicted one of the two backbones.
 
-One check on the method: a threshold fitted on *all* the data — the leaky version — gives DINOv2
-the same 4.1% false-acceptance rate and CLIP a slightly worse 30.1%. The in-sample optimism is
-negligible at this size, which means the threshold is a property of the embedding space and not
-of this particular sample of it. The best in-sample balanced accuracy, sweeping every observed
-score with the answers in view, is 93.8% for DINOv2 and 85.6% for CLIP — an upper bound, and not
-far above what out-of-sample calibration already reaches.
-
-### Which statues can pass for a missing one
-
-Only four dwarves are ever falsely accepted by DINOv2 at the 90% point, and they form two pairs:
-
-| removed dwarf | falsely accepted | usually matched to |
-|---|---|---|
-| Kowal | 3 / 12 | 100matolog |
-| 100matolog | 1 / 4 | Kowal |
-| Zbierający Wodę | 1 / 3 | Puszczający Stateczki |
-| Puszczający Stateczki | 1 / 3 | Zbierający Wodę |
-
-The water-themed pair is the cluster section 5 already identified, now seen from a different
-angle: those statues are close enough that one can stand in for another that isn't there.
-
-*Kowal* is the more interesting entry, because it is the direction section 5 recorded as
-**harmless**. Closed-set, *Kowal → 100matolog* misidentifies 0 of 10 queries — with both statues
-present, Kowal is never mistaken for anything. Remove Kowal, and 100matolog covers for it three
-times out of twelve, making it the single worst dwarf to reject. Being reliably identifiable when
-present says nothing about being reliably rejectable when absent; these are different questions,
-and closed-set confusion analysis cannot see the second one.
-
-CLIP fails this test broadly rather than in a few places: 16 of 23 dwarves are falsely accepted at
-least once, and all three water-themed statues are accepted **3 of 3** — with any one of them
-removed, another always passes for it. On this dataset CLIP cannot support rejection at a useful
-operating point at all.
+What actually distinguishes them is that the small pool could not measure *variance in
+confusability*. Adding 283 classes added a few near-identical families — the Słupniki pillars,
+Ślepak and Głuchak — and a long tail of statues that are easy to tell apart. A strong backbone
+absorbs the tail and only pays for the families; a weak one pays for both. That is invisible until
+the tail exists.
 
 ## Limitations
 
-- **23 classes is a small pool.** The full pool is close to the accuracy ceiling, which is why
-  the curve is shallow and why extrapolation past it is unreliable. Lowering the image threshold
-  to two was measured rather than assumed: it adds four classes and does not change the curve.
-- **Reference photographs are not a phone camera.** These are Commons uploads — mostly good
-  light, considered framing. Real query photos would be worse, and this design cannot say by how
-  much.
-- **The geographic result rests on 23 statues.** The co-located group that drives it is one
-  installation; whether the pattern holds city-wide is untested. Wikidata may also assign group
-  members one shared point rather than individual positions, so "within one metre" may reflect
-  the record as much as the pavement — either way those statues are co-located.
-- **Rejection is measured, but only against statues in this dataset.** Section 6 builds unknown
-  queries by removing a dwarf from the 23, so every "unknown" statue is still a Wrocław bronze
-  dwarf photographed like the rest. A real unknown query — a different one of the ~1,300, or a
-  statue photographed in worse conditions — is a harder and an untested case. The published demo
-  does not threshold at all; it always shows its ranking, and it cannot readily be changed to,
-  because it runs the backbone that has no usable operating point.
+- **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
+  considered framing. Real query photos would be worse, and this design cannot say by how much.
+  This is now the largest untested gap in the work.
+- **The geographic result rests on 23 of 306 statues.** Wikidata has no item for the rest, so they
+  carry no coordinates. Whether the co-location effect holds city-wide is still untested, and the
+  arm cannot grow without coordinates from another source.
+- **Two classes overlap with a group class.** *Grajek i Meloman* is a class, and so are *Grajek*
+  and *Meloman*; likewise *Ogrodnik i Kierownik* and *Ogrodnik*. Their photographs are not
+  byte-identical, so the duplicate guard does not catch them, and they duly appear in the confusion
+  pairs. Two of 306 is a small effect, but it is a real one and it is not the model's fault.
+- **Class sizes are uneven.** The median class has 4 images and the largest 31, so a handful of
+  well-photographed statues carry disproportionate weight in the query set.
+- **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is
+  still a Wrocław bronze dwarf photographed like the rest. A genuinely out-of-distribution query is
+  a harder and untested case. The published demo does not threshold at all, and could not usefully:
+  it runs CLIP, which has the weaker rejection of the two.
 
 ## Reproducing this
 
@@ -326,7 +306,8 @@ operating point at all.
 uv sync --extra ml --extra analysis
 export KRASNAL_ID_USER_AGENT='krasnal-id/0.4.0 (mailto:you@example.com)'
 
-uv run krasnal-id data query                                  # Wikidata discovery
+uv run krasnal-id data query --include-commons                # Wikidata + Commons discovery
+uv run krasnal-id data fetch --prepare-review                 # then review the mappings
 uv run krasnal-id data fetch                                  # Commons acquisition
 uv run krasnal-id data build-manifest                         # validated manifest
 uv run krasnal-id data build-split                            # leave-one-out folds
@@ -338,11 +319,12 @@ uv run krasnal-id experiment probe                            # section 4
 uv run krasnal-id experiment confusion                        # section 5
 uv run krasnal-id experiment open-set                         # section 6
 uv run krasnal-id visualize ablation
-uv run krasnal-id visualize open-set
 uv run krasnal-id visualize embeddings
+uv run krasnal-id visualize open-set
 ```
 
 Every experiment writes a structured JSON artifact to `results/`. Embeddings are cached by image
-content hash and backbone revision, so nothing is recomputed between runs. See the
+content hash and backbone revision, so nothing is recomputed between runs. The probe fits 1,691
+classifiers per backbone and takes about 1.5 hours; everything else runs in minutes. See the
 [README](README.md) for the full command reference and [AGENTS.md](AGENTS.md) for the recorded
 design decisions behind each of these choices.

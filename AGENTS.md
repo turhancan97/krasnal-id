@@ -342,6 +342,41 @@ Measured on 2026-09-03, recorded here because two of these constrain future work
 4. **Embedding-space visualization**: t-SNE or UMAP plot of the reference set, colored by class, to make the "why confusion happens" argument visually.
 5. **Open-set rejection**: can a top-1 similarity threshold answer "unknown" for a statue outside the reference set, and what does that cost on the statues inside it (see §7.2).
 
+### 7.3 Dataset-scale result (2026-09-04)
+
+The Commons-first rebuild of §5.6 took the dataset from 23 classes and 146 images to **306 and
+1,691**, so §7.1's extrapolation caveat is now a measured quantity rather than a warning. What it
+found, recorded here because three of these revise published conclusions:
+
+- **§7.1's warning was half right, and the half it got wrong matters.** It said extrapolating past
+  N=23 would be optimistic because a small pool holds too few genuinely confusable distractors.
+  True for CLIP, which decays 2.06 points per doubling against the 1.76 the small pool predicted
+  and is still worsening at N=306. False for DINOv2, which decays 0.79 against a predicted 0.96 —
+  the small pool was *pessimistic* about it. Do not apply "small datasets flatter the result" as a
+  blanket rule; it mispredicted one of the two backbones.
+- **The curves differ in shape, not just slope.** DINOv2 loses 0.82 points per doubling from a
+  pool of 2 to 20 and 0.77 from 50 to 306; CLIP loses 1.79 then 2.53. A single fitted slope hides
+  that, so report the early and late rates whenever the range spans more than a few doublings.
+- **Open-set rejection does not survive the larger pool**, which retires the §7.2 headline. DINOv2
+  falls from 0.969 to 0.896 AUROC, and false acceptance at the 90% target from 4.1% to 38.3%,
+  because an absent statue now has 305 chances to find a lookalike instead of 22. The mechanism
+  predicts no recovery at city scale. Do not describe rejection as a working feature.
+- **A linear probe now helps CLIP (+3.1 points) and still does nothing for DINOv2 (−0.1).** At 23
+  classes both showed the same +0.7 non-effect. A supervised layer can partly repair an embedding
+  space that is not laid out for instance discrimination and has nothing to add to one that is.
+  The confidence intervals still overlap slightly, so report the direction, not a decisive win.
+- **The dominant confusion cluster changed** from the water-themed trio to the three *Słupniki*
+  pillar dwarves, which are near-identical statues installed on different streets. The embedding
+  projection selects them without being told, using centroid distance alone.
+- **Two group classes overlap their own members** (*Grajek i Meloman* with *Grajek* and *Meloman*;
+  *Ogrodnik i Kierownik* with *Ogrodnik*). Their files are not byte-identical, so §5.5's duplicate
+  guard does not catch them and they appear in the confusion pairs. Two of 306 is tolerable, but a
+  future review pass should decide whether a group class may coexist with its members at all.
+- **One BLAS thread per fit remains right, and by more than before.** Re-measured at 1,690 samples
+  and 306 classes on the assumption the old §6.4 finding might have inverted: 1 thread is 3.1
+  s/fold, 4 threads 7.1 s, 16 threads 20.8 s. Sixteen threads is 6.7x *slower*. Parallelise the
+  probe across processes, never across BLAS threads.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -436,10 +471,24 @@ krasnal-id/
 - When cutting a version, move the relevant `Unreleased` entries into a dated version section and recreate an empty `Unreleased` section.
 - Before completing an implementation task, verify whether both this file and `CHANGELOG.md` need corresponding updates. Documentation-only wording fixes do not require a new architectural decision, but should still be logged when material.
 
-### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-03)
+### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-04)
 
-The dataset facts below come from the 2026-08-20 audit and still hold: the manifest is
-unchanged at 23 classes and 146 images.
+**The manifest is 306 classes and 1,691 images**, rebuilt Commons-first on 2026-09-04 per §5.6.
+482 category mappings carry a decision: 478 approved, 4 rejected. 1,958 images staged across 462
+categories, of which 306 clear the three-image threshold. 23 classes come from Wikidata and carry
+`P625` coordinates; the other 283 are Commons-only and carry none.
+
+Three approvals were reversed after acquisition measured what they cost, and the reason
+generalizes: a category byte-identical to another empties *both* sides through §5.5's cross-label
+quarantine. `Papa Krasnal` duplicated `Q11823412` and wiped out a class that was in the published
+results; the `Detektyw Magda i Rabusie` and `Doktor Basia i Krasnalątko` umbrellas emptied their
+own members. Rejecting the three restored `Q11823412`. Where members still collide with each other
+— three robbers photographed in one scene — the quarantine is correct and those classes stay
+absent.
+
+The paragraphs below record the 2026-08-20 audit of the *previous* 23-class dataset. They are kept
+because the image-level decisions in `data/image-review.json` are still the live ones, all seven
+still apply, and the reasoning behind each is not repeated anywhere else.
 
 - The latest canonical staging output contains 173 images across 40 represented classes; 24
   classes meet the current three-image threshold. All staged files decode, match their recorded
