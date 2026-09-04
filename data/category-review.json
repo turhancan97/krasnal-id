@@ -427,8 +427,8 @@
       "display_name": "Alpinki",
       "display_name_override": null,
       "dwarf_id": "C-alpinki-dwarfs-wroclaw",
-      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Głazek, Rutek, Zarembek",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -437,8 +437,8 @@
       "display_name": "Ambasadorzy kampanii „Wrocław bez barier”",
       "display_name_override": null,
       "dwarf_id": "C-ambasadorzy-kampanii-wroclaw-bez-barier-dwarfs-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Głuchak, Ślepak, W-Skers",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -487,8 +487,8 @@
       "display_name": "Aquaparczki",
       "display_name_override": null,
       "dwarf_id": "C-aquaparczki-dwarves-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Moczypięta",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -507,8 +507,8 @@
       "display_name": "Artgeistki",
       "display_name_override": null,
       "dwarf_id": "C-artgeistki-dwarves-wroclaw",
-      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Grafik, Malarz",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -1067,8 +1067,8 @@
       "display_name": "Detektyw Magda i Rabusie",
       "display_name_override": null,
       "dwarf_id": "C-detektyw-magda-i-rabusie-dwarves-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after acquisition: every file is shared with the member categories Detektyw Magda and Rabuś I/II/III, so approving the group emptied all five classes. AGENTS.md 5.5 keeps the components and drops the umbrella.",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -1147,8 +1147,8 @@
       "display_name": "Doktor Basia i Krasnalątko",
       "display_name_override": null,
       "dwarf_id": "C-doktor-basia-i-krasnalatko-dwarves-wroclaw",
-      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
-      "status": "approved"
+      "notes": "Rejected after acquisition: every file is shared with the member categories Doktor Basia and Krasnalątko, so approving the group emptied all three classes.",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -1327,8 +1327,8 @@
       "display_name": "Endress i Hauser",
       "display_name_override": null,
       "dwarf_id": "C-endress-i-hauser-dwarves-wroclaw",
-      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Endress, Hauser",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -2107,8 +2107,8 @@
       "display_name": "Kasyniarze",
       "display_name_override": null,
       "dwarf_id": "C-kasyniarze-dwarves-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Hazarduś, Pokerek",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -3247,8 +3247,8 @@
       "display_name": "Papa Krasnal",
       "display_name_override": null,
       "dwarf_id": "C-papa-krasnal",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after acquisition: byte-identical to Q11823412 (Pomnik Pomarańczowej Alternatywy), which is the same statue under its Wikidata identity and carries coordinates. Approving both quarantined every file on each side and left the class empty.",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -3987,8 +3987,8 @@
       "display_name": "Śpiewak Operowy i Tancerka Balerina",
       "display_name_override": null,
       "dwarf_id": "C-spiewak-operowy-i-tancerka-balerina-dwarves-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Tancerka Balerina, Śpiewak Operowy",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -4307,8 +4307,8 @@
       "display_name": "Troszka i Adoratorek",
       "display_name_override": null,
       "dwarf_id": "C-troszka-i-adoratorek-dwarves-wroclaw",
-      "notes": null,
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Troszka, Adoratorek",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
@@ -4807,8 +4807,8 @@
       "display_name": "Zośka i Jedruś",
       "display_name_override": null,
       "dwarf_id": "C-zoska-i-jedrus-dwarves-wroclaw",
-      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
-      "status": "approved"
+      "notes": "Rejected after the 2026-09-04 acquisition: its files are shared with its member categories, and cross-label deduplication removes shared content under every label, so keeping it costs the individual statues. group album overlapping its members: Jedruś, Zośka",
+      "status": "rejected"
     },
     {
       "corrected_category": null,
