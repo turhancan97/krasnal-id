@@ -4,22 +4,22 @@
  */
 (function(){
   const DATA = {
-    pools:[2,3,5,8,10,15,20,23],
+    pools:[2,3,5,8,10,15,20,50,100,200,306],
     series:[
-      {key:"dinov2", label:"DINOv2", slope:"−0.96 pts/doubling", cssvar:"--blue",
-       v:[.9890,.9877,.9890,.9726,.9671,.9644,.9616,.9589],
-       lo:[.9863,.9863,.9795,.9658,.9589,.9589,.9589,.9589],
-       hi:[.9932,.9932,1.0000,.9795,.9726,.9658,.9658,.9589]},
-      {key:"clip", label:"CLIP", slope:"−1.76 pts/doubling", cssvar:"--red",
-       v:[.9890,.9753,.9767,.9589,.9575,.9397,.9315,.9247],
-       lo:[.9795,.9726,.9658,.9452,.9452,.9315,.9247,.9247],
-       hi:[1.0000,.9863,.9863,.9726,.9726,.9521,.9384,.9247]}
+      {key:"dinov2", label:"DINOv2", slope:"−0.79 pts/doubling", cssvar:"--blue",
+       v:[.9892,.9843,.9772,.9730,.9707,.9657,.9620,.9516,.9441,.9365,.9314],
+       lo:[.9864,.9829,.9758,.9716,.9669,.9616,.9598,.9456,.9403,.9349,.9314],
+       hi:[.9911,.9888,.9805,.9752,.9740,.9698,.9651,.9539,.9486,.9391,.9314]},
+      {key:"clip", label:"CLIP", slope:"−2.06 pts/doubling", cssvar:"--red",
+       v:[.9799,.9709,.9556,.9469,.9397,.9288,.9204,.8951,.8720,.8454,.8291],
+       lo:[.9769,.9698,.9521,.9456,.9349,.9255,.9148,.8918,.8681,.8415,.8291],
+       hi:[.9834,.9716,.9568,.9497,.9432,.9308,.9279,.8989,.8752,.8504,.8291]}
     ]
   };
   const W=720,H=400,M={t:18,r:64,b:52,l:52};
   const iw=W-M.l-M.r, ih=H-M.t-M.b;
-  const yMin=92, yMax=100.4;
-  const lx=Math.log2(2), lxMax=Math.log2(23);
+  const yMin=81, yMax=100.4;
+  const lx=Math.log2(2), lxMax=Math.log2(306);
   const X=p=>M.l+(Math.log2(p)-lx)/(lxMax-lx)*iw;
   const Y=v=>M.t+(yMax-v*100)/(yMax-yMin)*ih;
   const NS="http://www.w3.org/2000/svg";
@@ -57,7 +57,9 @@
   function draw(){
     svg.textContent="";
     const colors=DATA.series.map(s=>css(s.cssvar));
-    [93,94,95,96,97,98,99,100].forEach(t=>{
+    // Spans the whole axis: CLIP now reaches 82.9, so ticks stopping at 93 would
+    // leave its entire curve in an unlabelled void.
+    [82,84,86,88,90,92,94,96,98,100].forEach(t=>{
       svg.appendChild(el("line",{class:"grid",x1:M.l,x2:M.l+iw,y1:Y(t/100),y2:Y(t/100)}));
       const tx=el("text",{x:M.l-10,y:Y(t/100)+4,"text-anchor":"end"});
       tx.textContent=t; svg.appendChild(tx);
@@ -99,7 +101,7 @@
     '<span class="k"><span class="sw" style="background:var('+s.cssvar+')"></span>'+
     s.label+' <span class="slope">'+s.slope+'</span></span>').join("");
   document.getElementById("tbody").innerHTML=DATA.pools.map((p,i)=>
-    '<tr><td>'+p+(p===23?" (full)":"")+'</td><td>'+(DATA.series[0].v[i]*100).toFixed(1)+
+    '<tr><td>'+p+(p===306?" (full)":"")+'</td><td>'+(DATA.series[0].v[i]*100).toFixed(1)+
     '%</td><td>'+(DATA.series[1].v[i]*100).toFixed(1)+'%</td></tr>').join("");
 
   draw();

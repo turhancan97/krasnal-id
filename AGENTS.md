@@ -220,6 +220,14 @@ rather than assumed, and each cost accuracy when guessed wrong.
 - The site reports the accuracy of the vectors it actually ships, re-scored at build time, and
   `?selftest=full` lets any visitor reproduce it in their own browser. Never quote the research
   numbers as the demo's.
+- Rebuilt at 306 classes on 2026-09-04: the shipped vectors score 82.4% top-1 against 82.9% for the
+  research CLIP pipeline, so the browser/pipeline drift is 0.5 points at this scale. Assets are
+  29 MB, of which 22 MB is 1,691 thumbnails; that size was accepted deliberately so every match
+  shows its own reference photograph rather than a stand-in for its class.
+- The page's chart data in `docs/chart.js` is hardcoded and must be regenerated from
+  `results/pool_size_ablation-*.json` whenever the ablation is re-run. Its gridlines and axis
+  bounds are hardcoded too: check they still span the series, or a backbone's whole curve can land
+  in an unlabelled void, as happened when CLIP's floor fell from 92.5% to 82.9%.
 
 ### 6.4 Result publication policy (2026-09-01)
 

@@ -12,6 +12,46 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- Rebuilt the dataset Commons-first: **306 classes and 1,691 images**, from 23 and 146. 482
+  category mappings carry a decision, 1,958 images staged across 462 categories, and 306 clear the
+  three-image threshold. 23 classes come from Wikidata and carry coordinates; 283 are
+  Commons-only and carry none.
+- Added `RESULTS.md` section 7, recording which conclusions the 13x larger dataset overturned
+  rather than quietly replacing the numbers, and `AGENTS.md` 7.3 with the same for contributors.
+- Extended the pool-size ablation to N=306, where it previously stopped at 23 and section 7.1 had
+  to warn against extrapolating past it.
+
+### Changed
+
+- **Open-set rejection is retired as a working feature.** It reported 4.1% false acceptance at 23
+  classes and reports 38.3% at 306, because an absent statue now has 305 chances to find a
+  lookalike rather than 22. DINOv2's AUROC falls from 0.969 to 0.896. The 0.4.0 headline was an
+  artefact of the small pool and the mechanism predicts no recovery at city scale.
+- **The decay rates are revised in opposite directions.** DINOv2 loses 0.79 points per doubling
+  against a predicted 0.96; CLIP loses 2.06 against a predicted 1.76 and is still worsening at the
+  edge of the range. Section 7.1's warning that a small pool flatters the result was half right,
+  and applying it as a blanket rule would have mispredicted DINOv2.
+- **A linear probe now helps CLIP by 3.1 top-1 points and still does nothing for DINOv2** (−0.1),
+  where at 23 classes both showed the same +0.7 non-effect. Class prototypes now cost about 8
+  points to both.
+- The dominant confusion cluster is the three *Słupniki* pillar dwarves rather than the
+  water-themed trio, and the embedding projection selects the same families using centroid
+  distance alone.
+
+### Fixed
+
+- The geographic ablation refused to run when any dwarf lacked coordinates, which made it
+  unrunnable on a Commons-first manifest where 283 of 306 do. It is now scoped to the located
+  subset and records `located_dwarfs`, `manifest_dwarfs` and `located_fraction`, so a result
+  measured over 7.5% of the pool cannot be read as covering it.
+- `measure_pool_size` built an index of images per dwarf that nothing used, and raised `KeyError`
+  as soon as the geographic arm passed a dwarf universe narrower than the embedding matrix.
+- The embedding projection named all 306 classes, overlapping into a wall of leader lines. Past a
+  24-class budget it now names only the classes nearest another class and greys the rest.
+
+
+### Added
+
 - Added Commons-first discovery as `krasnal-id data query --include-commons`, which enumerates the
   481 per-dwarf categories under `Category:Dwarves in Wrocław by name` as a second source and
   merges them with Wikidata. Measured on 2026-09-04 it discovers 482 classes against the 41

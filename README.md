@@ -274,10 +274,10 @@ Rebuild its data after the manifest changes:
 
     cd docs/demo && npm install && node build.mjs
 
-The build re-scores the leave-one-out protocol on the vectors it ships (91.8% top-1, 98.6% top-5)
-and records probes so the page can verify itself: `?selftest=1` reports cosine agreement with the
-build, and `?selftest=full` re-embeds all 146 reference photographs in the browser and scores the
-protocol there.
+The build re-scores the leave-one-out protocol on the vectors it ships (82.4% top-1, 90.4% top-5
+over 306 dwarves) and records probes so the page can verify itself: `?selftest=1` reports cosine
+agreement with the build, and `?selftest=full` re-embeds all 1,691 reference photographs in the
+browser and scores the protocol there.
 
 There is also a local Gradio version, which uses the research pipeline rather than the browser one:
 
