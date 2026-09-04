@@ -110,6 +110,19 @@ Decisions:
 - **A normalization warning about a category the merge then supersedes is dropped.** A reviewer
   reading 481 categories must not be sent to look at records that never reached the artifact.
   Exclusions survive regardless, because they explain an absence.
+- **Pattern pre-approval is a human decision applied by pattern, taken on 2026-09-04.** Of 441
+  new mappings, 367 matched a singular `<Name> dwarf, Wrocław` title with no discovery warning
+  and were approved in bulk. The reasoning is that a Commons-only class has no Wikidata mapping
+  to verify — the category *is* the identity — and every image still passes the license, size,
+  attribution, prominence and cross-label duplicate gates that §5.5 defines. A further 13 were
+  approved because Commons holds fewer than three files for them: the mapping is correct, and
+  the documented image threshold is what decides whether a class exists. Rejection stays
+  reserved for a mapping that is *wrong*, which a thin category is not.
+- **Plural and irregular titles are reviewed by hand, always.** A plural title may be one fixed
+  installation or an umbrella over many distinct statues, and only looking at the files can tell
+  them apart. Two plural categories are known to be unusable in advance: `Troszka i Adoratorek`
+  and `Śpiewak Operowy i Tancerka Balerina` are the sources of every `cross_label_duplicate`
+  quarantine in §12.1, so their files would be rejected again under a new label.
 - **Re-acquisition invalidates every published number.** Changing the discovered set changes
   `query_sha256`, which invalidates staging, the manifest, the split, the caches' relevance and
   all five experiments plus both figures. Treat a Commons-first rebuild as one deliberate

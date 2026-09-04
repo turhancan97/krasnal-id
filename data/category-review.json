@@ -5,6 +5,7 @@
       "discovered_category": "Olaf Brzeski",
       "discovery_warning": false,
       "display_name": "Pomnik Pomarańczowej Alternatywy",
+      "display_name_override": null,
       "dwarf_id": "Q11823412",
       "notes": "Corrected after live Wikidata/Commons review: the discovered P373 value points to unrelated artwork; Category:Papa Krasnal is the category linked by the Commons sitelink.",
       "status": "approved"
@@ -14,6 +15,7 @@
       "discovered_category": "Wroclaw blacksmith dwarf",
       "discovery_warning": false,
       "display_name": "Kowal",
+      "display_name_override": null,
       "dwarf_id": "Q65742089",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -23,6 +25,7 @@
       "discovered_category": "Olbiniusz",
       "discovery_warning": false,
       "display_name": "Ołbiniusz",
+      "display_name_override": null,
       "dwarf_id": "Q65742728",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -32,6 +35,7 @@
       "discovered_category": "Krasnale Filharmonii Wrocławskiej",
       "discovery_warning": true,
       "display_name": "Krasnale Filharmonii Wrocławskiej",
+      "display_name_override": null,
       "dwarf_id": "Q130986871",
       "notes": "Rejected after live Commons review: this umbrella category mixes 21 distinct orchestra statues and is not one visually coherent retrieval class.",
       "status": "rejected"
@@ -71,6 +75,7 @@
       "discovered_category": "Sisyphus dwarves, sculpture by Tomasz Moczek (Wrocław)",
       "discovery_warning": true,
       "display_name": "Syzyfki",
+      "display_name_override": null,
       "dwarf_id": "Q136001355",
       "notes": "Approved as one fixed two-dwarf Syzyfki installation; direct members consistently depict that installation.",
       "status": "approved"
@@ -80,6 +85,7 @@
       "discovered_category": "100matolog dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "100matolog",
+      "display_name_override": null,
       "dwarf_id": "Q136001369",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -89,6 +95,7 @@
       "discovered_category": "Kusy dwarf in Wrocław",
       "discovery_warning": false,
       "display_name": "Kusy",
+      "display_name_override": null,
       "dwarf_id": "Q136001407",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -98,6 +105,7 @@
       "discovered_category": "Adwokatka dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Adwokatka",
+      "display_name_override": null,
       "dwarf_id": "Q136001446",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -107,6 +115,7 @@
       "discovered_category": "Agorek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Agorek",
+      "display_name_override": null,
       "dwarf_id": "Q136001464",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -116,6 +125,7 @@
       "discovered_category": "Ogrodnik i Kierownik dwarves, Wrocław",
       "discovery_warning": true,
       "display_name": "Ogrodnik i Kierownik",
+      "display_name_override": null,
       "dwarf_id": "Q136006129",
       "notes": "Approved as one fixed two-dwarf Ogrodnik i Kierownik installation; direct members consistently depict that installation.",
       "status": "approved"
@@ -125,6 +135,7 @@
       "discovered_category": "Szpitalnik dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Szpitalnik",
+      "display_name_override": null,
       "dwarf_id": "Q136276277",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -134,6 +145,7 @@
       "discovered_category": "Troszka dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Troszka",
+      "display_name_override": null,
       "dwarf_id": "Q136276590",
       "notes": "Approved as the Troszka component category; files shared with Adoratorek are quarantined by cross-label checksum deduplication.",
       "status": "approved"
@@ -143,6 +155,7 @@
       "discovered_category": "Adoratorek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Adoratorek",
+      "display_name_override": null,
       "dwarf_id": "Q136276606",
       "notes": "Approved as the Adoratorek component category; files shared with Troszka are quarantined by cross-label checksum deduplication.",
       "status": "approved"
@@ -152,6 +165,7 @@
       "discovered_category": "Aktor dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Aktor",
+      "display_name_override": null,
       "dwarf_id": "Q136276711",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -161,6 +175,7 @@
       "discovered_category": "Karmiący Ptaki dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Karmiący Ptaki",
+      "display_name_override": null,
       "dwarf_id": "Q136276947",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -170,6 +185,7 @@
       "discovered_category": "Ogrodnik dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Ogrodnik",
+      "display_name_override": null,
       "dwarf_id": "Q136277457",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -179,6 +195,7 @@
       "discovered_category": "Parasolnik dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Parasolnik",
+      "display_name_override": null,
       "dwarf_id": "Q136278769",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -188,6 +205,7 @@
       "discovered_category": "Puszczający Stateczki dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Puszczający Stateczki",
+      "display_name_override": null,
       "dwarf_id": "Q136290068",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -197,6 +215,7 @@
       "discovered_category": "Wierzbownik dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Wierzbownik",
+      "display_name_override": null,
       "dwarf_id": "Q136290183",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -206,6 +225,7 @@
       "discovered_category": "Zbierający Wodę dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Zbierający Wodę",
+      "display_name_override": null,
       "dwarf_id": "Q136290218",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -215,6 +235,7 @@
       "discovered_category": "Komisia i Euruś dwarves, Wroclaw",
       "discovery_warning": true,
       "display_name": "Komisia i Euruś",
+      "display_name_override": null,
       "dwarf_id": "Q136290260",
       "notes": "Approved as one fixed Komisia i Euruś installation; the category has one matching direct member and will remain below the manifest threshold unless more photos are added.",
       "status": "approved"
@@ -224,6 +245,7 @@
       "discovered_category": "Zikusia dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Zikusia",
+      "display_name_override": null,
       "dwarf_id": "Q136297592",
       "notes": "Approved: the live Commons category identifies Zikusia; several legacy filenames use the name Zikoslaw for the same categorized statue.",
       "status": "approved"
@@ -233,6 +255,7 @@
       "discovered_category": "Tancerka Balerina dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Tancerka Balerina",
+      "display_name_override": null,
       "dwarf_id": "Q136312185",
       "notes": "Approved as the Tancerka Balerina component category; exact files shared with Śpiewak Operowy are quarantined by cross-label checksum deduplication.",
       "status": "approved"
@@ -242,6 +265,7 @@
       "discovered_category": "Śpiewak Operowy dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Śpiewak Operowy",
+      "display_name_override": null,
       "dwarf_id": "Q136312211",
       "notes": "Approved as the Śpiewak Operowy component category; exact files shared with Tancerka Balerina are quarantined by cross-label checksum deduplication.",
       "status": "approved"
@@ -251,6 +275,7 @@
       "discovered_category": "Bankier dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Bankierek",
+      "display_name_override": null,
       "dwarf_id": "Q136327390",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -260,6 +285,7 @@
       "discovered_category": "Ditek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Ditek",
+      "display_name_override": null,
       "dwarf_id": "Q136332868",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -269,6 +295,7 @@
       "discovered_category": "Dziarus dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Dziarus",
+      "display_name_override": null,
       "dwarf_id": "Q136338281",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -278,6 +305,7 @@
       "discovered_category": "Glamour dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Glamour",
+      "display_name_override": null,
       "dwarf_id": "Q136338350",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -287,6 +315,7 @@
       "discovered_category": "Pralinka dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Pralinka",
+      "display_name_override": null,
       "dwarf_id": "Q136338464",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -296,6 +325,7 @@
       "discovered_category": "Gryfosław dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Gryfosław",
+      "display_name_override": null,
       "dwarf_id": "Q136341058",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -305,6 +335,7 @@
       "discovered_category": "Korpokrasnal dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Capgeminiusz Programista",
+      "display_name_override": null,
       "dwarf_id": "Q136341125",
       "notes": "Approved: live Commons metadata confirms Capgeminiusz Programista belongs to the Korpokrasnal category.",
       "status": "approved"
@@ -314,6 +345,7 @@
       "discovered_category": "Polisludek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Polisludek",
+      "display_name_override": null,
       "dwarf_id": "Q136341163",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -323,6 +355,7 @@
       "discovered_category": "Rowerzysta dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Rowerzysta",
+      "display_name_override": null,
       "dwarf_id": "Q136341766",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -332,6 +365,7 @@
       "discovered_category": "Solidariusz Walczący dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Solidariusz Walczący",
+      "display_name_override": null,
       "dwarf_id": "Q136343315",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -341,6 +375,7 @@
       "discovered_category": "Unicefuś dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Unicefuś",
+      "display_name_override": null,
       "dwarf_id": "Q136343442",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -350,6 +385,7 @@
       "discovered_category": "Binio dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Binio",
+      "display_name_override": null,
       "dwarf_id": "Q136343586",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -359,6 +395,7 @@
       "discovered_category": "Iasek dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Iasek",
+      "display_name_override": null,
       "dwarf_id": "Q136462711",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
       "status": "approved"
@@ -368,8 +405,4419 @@
       "discovered_category": "Czajczynski dwarf, Wrocław",
       "discovery_warning": false,
       "display_name": "Czajczyński",
+      "display_name_override": null,
       "dwarf_id": "Q136474992",
       "notes": "Approved after reviewing the cached direct Commons members; filenames consistently match this dwarf/category. Image-count eligibility remains a manifest-stage decision.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "3TESLUŚ dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "3TESLUŚ",
+      "display_name_override": null,
+      "dwarf_id": "C-3teslus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Alpinki dwarfs, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Alpinki",
+      "display_name_override": null,
+      "dwarf_id": "C-alpinki-dwarfs-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ambasadorzy kampanii „Wrocław bez barier” dwarfs, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ambasadorzy kampanii „Wrocław bez barier”",
+      "display_name_override": null,
+      "dwarf_id": "C-ambasadorzy-kampanii-wroclaw-bez-barier-dwarfs-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Amrest dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Amrest",
+      "display_name_override": null,
+      "dwarf_id": "C-amrest-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Anka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Anka",
+      "display_name_override": null,
+      "dwarf_id": "C-anka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Antonio Okulista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Antonio Okulista",
+      "display_name_override": null,
+      "dwarf_id": "C-antonio-okulista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Antykwarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Antykwarek",
+      "display_name_override": null,
+      "dwarf_id": "C-antykwarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Aquaparczki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Aquaparczki",
+      "display_name_override": null,
+      "dwarf_id": "C-aquaparczki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Archimax dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Archimax",
+      "display_name_override": null,
+      "dwarf_id": "C-archimax-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Artgeistki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Artgeistki",
+      "display_name_override": null,
+      "dwarf_id": "C-artgeistki-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Asanek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Asanek",
+      "display_name_override": null,
+      "dwarf_id": "C-asanek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Atlasik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Atlasik",
+      "display_name_override": null,
+      "dwarf_id": "C-atlasik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Aurer dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Aurer",
+      "display_name_override": null,
+      "dwarf_id": "C-aurer-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Automatek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Automatek",
+      "display_name_override": null,
+      "dwarf_id": "C-automatek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Automatek II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Automatek II",
+      "display_name_override": null,
+      "dwarf_id": "C-automatek-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bąbelek Chlaptuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bąbelek Chlaptuś",
+      "display_name_override": null,
+      "dwarf_id": "C-babelek-chlaptus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bagażowy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bagażowy",
+      "display_name_override": null,
+      "dwarf_id": "C-bagazowy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bajgluś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bajgluś",
+      "display_name_override": null,
+      "dwarf_id": "C-bajglus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bajkusia dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bajkusia",
+      "display_name_override": null,
+      "dwarf_id": "C-bajkusia-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bamboszek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bamboszek",
+      "display_name_override": null,
+      "dwarf_id": "C-bamboszek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bankomatki dwarfs, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bankomatki",
+      "display_name_override": null,
+      "dwarf_id": "C-bankomatki-dwarfs-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bankuś Pieniążek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bankuś Pieniążek",
+      "display_name_override": null,
+      "dwarf_id": "C-bankus-pieniazek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Barduś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Barduś",
+      "display_name_override": null,
+      "dwarf_id": "C-bardus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bartek z Butolandii dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bartek z Butolandii",
+      "display_name_override": null,
+      "dwarf_id": "C-bartek-z-butolandii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bartonik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bartonik",
+      "display_name_override": null,
+      "dwarf_id": "C-bartonik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Basenowe dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Basenowe",
+      "display_name_override": null,
+      "dwarf_id": "C-basenowe-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 0 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bawarka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bawarka",
+      "display_name_override": null,
+      "dwarf_id": "C-bawarka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "BeDeusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "BeDeusz",
+      "display_name_override": null,
+      "dwarf_id": "C-bedeusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Beemicia dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Beemicia",
+      "display_name_override": null,
+      "dwarf_id": "C-beemicia-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bellboy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bellboy",
+      "display_name_override": null,
+      "dwarf_id": "C-bellboy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bernaś i Warchleś dwarfs, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bernaś i Warchleś",
+      "display_name_override": null,
+      "dwarf_id": "C-bernas-i-warchles-dwarfs-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bibliofil dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bibliofil",
+      "display_name_override": null,
+      "dwarf_id": "C-bibliofil-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Biegacz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Biegacz",
+      "display_name_override": null,
+      "dwarf_id": "C-biegacz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Biegajło dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Biegajło",
+      "display_name_override": null,
+      "dwarf_id": "C-biegajlo-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Boliząbek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Boliząbek",
+      "display_name_override": null,
+      "dwarf_id": "C-bolizabek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Botanik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Botanik",
+      "display_name_override": null,
+      "dwarf_id": "C-botanik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bracia O'Hurt dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bracia O'Hurt",
+      "display_name_override": null,
+      "dwarf_id": "C-bracia-o-hurt-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Budinpolek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Budinpolek",
+      "display_name_override": null,
+      "dwarf_id": "C-budinpolek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Budoludki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Budoludki",
+      "display_name_override": null,
+      "dwarf_id": "C-budoludki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Budowniczy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Budowniczy",
+      "display_name_override": null,
+      "dwarf_id": "C-budowniczy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bulbulek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bulbulek",
+      "display_name_override": null,
+      "dwarf_id": "C-bulbulek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bumarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bumarek",
+      "display_name_override": null,
+      "dwarf_id": "C-bumarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Bumarek i Fadromka dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Bumarek i Fadromka",
+      "display_name_override": null,
+      "dwarf_id": "C-bumarek-i-fadromka-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Cebitek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Cebitek",
+      "display_name_override": null,
+      "dwarf_id": "C-cebitek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ceneusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ceneusz",
+      "display_name_override": null,
+      "dwarf_id": "C-ceneusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Centrostaluś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Centrostaluś",
+      "display_name_override": null,
+      "dwarf_id": "C-centrostalus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chemik II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chemik II",
+      "display_name_override": null,
+      "dwarf_id": "C-chemik-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chirurg dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chirurg",
+      "display_name_override": null,
+      "dwarf_id": "C-chirurg-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chlapibrzuch dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chlapibrzuch",
+      "display_name_override": null,
+      "dwarf_id": "C-chlapibrzuch-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chodziarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chodziarz",
+      "display_name_override": null,
+      "dwarf_id": "C-chodziarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chrapek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chrapek",
+      "display_name_override": null,
+      "dwarf_id": "C-chrapek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Chuścioszka i Mały Krasnal dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Chuścioszka i Mały Krasnal",
+      "display_name_override": null,
+      "dwarf_id": "C-chuscioszka-i-maly-krasnal-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ciągnący walizkę dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ciągnący walizkę",
+      "display_name_override": null,
+      "dwarf_id": "C-ciagnacy-walizke-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ciastuś i Amorinek dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ciastuś i Amorinek",
+      "display_name_override": null,
+      "dwarf_id": "C-ciastus-i-amorinek-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Clara dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Clara",
+      "display_name_override": null,
+      "dwarf_id": "C-clara-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Concierge dwarf at the entrance of Wroclavia Shopping Center (Grzegorz Łagowski)",
+      "discovery_warning": true,
+      "display_name": "Concierge dwarf at the entrance of Wroclavia Shopping Center (Grzegorz Łagowski)",
+      "display_name_override": null,
+      "dwarf_id": "C-concierge-dwarf-at-the-entrance-of-wroclavia-shopping-center-grzegorz-lagowski",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Consulencjusz Italicus dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Consulencjusz Italicus",
+      "display_name_override": null,
+      "dwarf_id": "C-consulencjusz-italicus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Costek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Costek",
+      "display_name_override": null,
+      "dwarf_id": "C-costek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Creatorek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Creatorek",
+      "display_name_override": null,
+      "dwarf_id": "C-creatorek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Cyklonik-Be dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Cyklonik-Be",
+      "display_name_override": null,
+      "dwarf_id": "C-cyklonik-be-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Czystek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Czystek",
+      "display_name_override": null,
+      "dwarf_id": "C-czystek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dąbrek Pierwszy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dąbrek Pierwszy",
+      "display_name_override": null,
+      "dwarf_id": "C-dabrek-pierwszy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dedaliusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dedaliusz",
+      "display_name_override": null,
+      "dwarf_id": "C-dedaliusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dekoralek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dekoralek",
+      "display_name_override": null,
+      "dwarf_id": "C-dekoralek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Detektyw Magda dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Detektyw Magda",
+      "display_name_override": null,
+      "dwarf_id": "C-detektyw-magda-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Detektyw Magda i Rabusie dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Detektyw Magda i Rabusie",
+      "display_name_override": null,
+      "dwarf_id": "C-detektyw-magda-i-rabusie-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "DHL dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "DHL",
+      "display_name_override": null,
+      "dwarf_id": "C-dhl-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Diagnostek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Diagnostek",
+      "display_name_override": null,
+      "dwarf_id": "C-diagnostek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Diagnozjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Diagnozjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-diagnozjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dialogomir dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dialogomir",
+      "display_name_override": null,
+      "dwarf_id": "C-dialogomir-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Długi dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Długi",
+      "display_name_override": null,
+      "dwarf_id": "C-dlugi-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dobrotek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dobrotek",
+      "display_name_override": null,
+      "dwarf_id": "C-dobrotek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Doktor Basia dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Doktor Basia",
+      "display_name_override": null,
+      "dwarf_id": "C-doktor-basia-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Doktor Basia i Krasnalątko dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Doktor Basia i Krasnalątko",
+      "display_name_override": null,
+      "dwarf_id": "C-doktor-basia-i-krasnalatko-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Doktor Cornelius dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Doktor Cornelius",
+      "display_name_override": null,
+      "dwarf_id": "C-doktor-cornelius-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Drukarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Drukarz",
+      "display_name_override": null,
+      "dwarf_id": "C-drukarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Drukarz Kacper dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Drukarz Kacper",
+      "display_name_override": null,
+      "dwarf_id": "C-drukarz-kacper-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dryndek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dryndek",
+      "display_name_override": null,
+      "dwarf_id": "C-dryndek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dworcowe dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dworcowe",
+      "display_name_override": null,
+      "dwarf_id": "C-dworcowe-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 0 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dwudziestek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dwudziestek",
+      "display_name_override": null,
+      "dwarf_id": "C-dwudziestek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dżinn dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dżinn",
+      "display_name_override": null,
+      "dwarf_id": "C-dzinn-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Dziupelka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Dziupelka",
+      "display_name_override": null,
+      "dwarf_id": "C-dziupelka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ebi dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ebi",
+      "display_name_override": null,
+      "dwarf_id": "C-ebi-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Edukacjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Edukacjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-edukacjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ekonomek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ekonomek",
+      "display_name_override": null,
+      "dwarf_id": "C-ekonomek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ekonomik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ekonomik",
+      "display_name_override": null,
+      "dwarf_id": "C-ekonomik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Eldżiki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Eldżiki",
+      "display_name_override": null,
+      "dwarf_id": "C-eldziki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Elementek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Elementek",
+      "display_name_override": null,
+      "dwarf_id": "C-elementek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Elwruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Elwruś",
+      "display_name_override": null,
+      "dwarf_id": "C-elwrus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Elwruś Lutowniczek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Elwruś Lutowniczek",
+      "display_name_override": null,
+      "dwarf_id": "C-elwrus-lutowniczek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Endress dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Endress",
+      "display_name_override": null,
+      "dwarf_id": "C-endress-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Endress i Hauser dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Endress i Hauser",
+      "display_name_override": null,
+      "dwarf_id": "C-endress-i-hauser-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Esencjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Esencjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-esencjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Europejczyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Europejczyk",
+      "display_name_override": null,
+      "dwarf_id": "C-europejczyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Fadromka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Fadromka",
+      "display_name_override": null,
+      "dwarf_id": "C-fadromka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Faksymilka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Faksymilka",
+      "display_name_override": null,
+      "dwarf_id": "C-faksymilka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Farciarz (Beata Zwolańska-Hołod) dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Farciarz (Beata Zwolańska-Hołod)",
+      "display_name_override": null,
+      "dwarf_id": "C-farciarz-beata-zwolanska-holod-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Farciarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Farciarz",
+      "display_name_override": null,
+      "dwarf_id": "C-farciarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Farmaceuta Akademicki dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Farmaceuta Akademicki",
+      "display_name_override": null,
+      "dwarf_id": "C-farmaceuta-akademicki-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Farmacjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Farmacjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-farmacjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Fatuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Fatuś",
+      "display_name_override": null,
+      "dwarf_id": "C-fatus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Fizolek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Fizolek",
+      "display_name_override": null,
+      "dwarf_id": "C-fizolek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Flebuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Flebuś",
+      "display_name_override": null,
+      "dwarf_id": "C-flebus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Florianek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Florianek",
+      "display_name_override": null,
+      "dwarf_id": "C-florianek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Fotograf i Młoda Para dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Fotograf i Młoda Para",
+      "display_name_override": null,
+      "dwarf_id": "C-fotograf-i-mloda-para-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Franek Moczymordka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Franek Moczymordka",
+      "display_name_override": null,
+      "dwarf_id": "C-franek-moczymordka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Freudek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Freudek",
+      "display_name_override": null,
+      "dwarf_id": "C-freudek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Fuger Bankowy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Fuger Bankowy",
+      "display_name_override": null,
+      "dwarf_id": "C-fuger-bankowy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gasiorek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gasiorek",
+      "display_name_override": null,
+      "dwarf_id": "C-gasiorek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gastronomek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gastronomek",
+      "display_name_override": null,
+      "dwarf_id": "C-gastronomek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gaviusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gaviusz",
+      "display_name_override": null,
+      "dwarf_id": "C-gaviusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gazeciarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gazeciarz",
+      "display_name_override": null,
+      "dwarf_id": "C-gazeciarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gazuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gazuś",
+      "display_name_override": null,
+      "dwarf_id": "C-gazus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Geolog dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Geolog",
+      "display_name_override": null,
+      "dwarf_id": "C-geolog-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Geolożka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Geolożka",
+      "display_name_override": null,
+      "dwarf_id": "C-geolozka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Giełduś dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Giełduś",
+      "display_name_override": null,
+      "dwarf_id": "C-gieldus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Giermek Grun-Waldek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Giermek Grun-Waldek",
+      "display_name_override": null,
+      "dwarf_id": "C-giermek-grun-waldek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gilbert dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gilbert",
+      "display_name_override": null,
+      "dwarf_id": "C-gilbert-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gimnazjalista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gimnazjalista",
+      "display_name_override": null,
+      "dwarf_id": "C-gimnazjalista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gladiatorek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gladiatorek",
+      "display_name_override": null,
+      "dwarf_id": "C-gladiatorek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Głazek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Głazek",
+      "display_name_override": null,
+      "dwarf_id": "C-glazek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Głuchak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Głuchak",
+      "display_name_override": null,
+      "dwarf_id": "C-gluchak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Glukozjusz Herba Cukrzycki dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Glukozjusz Herba Cukrzycki",
+      "display_name_override": null,
+      "dwarf_id": "C-glukozjusz-herba-cukrzycki-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Golasek dwarf in Wrocław",
+      "discovery_warning": true,
+      "display_name": "Golasek dwarf in Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-golasek-dwarf-in-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Goldus dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Goldus",
+      "display_name_override": null,
+      "dwarf_id": "C-goldus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gołębnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gołębnik",
+      "display_name_override": null,
+      "dwarf_id": "C-golebnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Googlak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Googlak",
+      "display_name_override": null,
+      "dwarf_id": "C-googlak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Grabcio dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Grabcio",
+      "display_name_override": null,
+      "dwarf_id": "C-grabcio-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Grafik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Grafik",
+      "display_name_override": null,
+      "dwarf_id": "C-grafik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Grajek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Grajek",
+      "display_name_override": null,
+      "dwarf_id": "C-grajek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Grajek i Meloman dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Grajek i Meloman",
+      "display_name_override": null,
+      "dwarf_id": "C-grajek-i-meloman-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Gwaruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Gwaruś",
+      "display_name_override": null,
+      "dwarf_id": "C-gwarus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Halabardnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Halabardnik",
+      "display_name_override": null,
+      "dwarf_id": "C-halabardnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "HaPek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "HaPek",
+      "display_name_override": null,
+      "dwarf_id": "C-hapek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Harcuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Harcuś",
+      "display_name_override": null,
+      "dwarf_id": "C-harcus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Harfuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Harfuś",
+      "display_name_override": null,
+      "dwarf_id": "C-harfus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Harivansh Rai Bachchan dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Harivansh Rai Bachchan",
+      "display_name_override": null,
+      "dwarf_id": "C-harivansh-rai-bachchan-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hastuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hastuś",
+      "display_name_override": null,
+      "dwarf_id": "C-hastus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hauser dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hauser",
+      "display_name_override": null,
+      "dwarf_id": "C-hauser-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hazarduś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hazarduś",
+      "display_name_override": null,
+      "dwarf_id": "C-hazardus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Helpik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Helpik",
+      "display_name_override": null,
+      "dwarf_id": "C-helpik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hewuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hewuś",
+      "display_name_override": null,
+      "dwarf_id": "C-hewus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hipoczyściciel dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hipoczyściciel",
+      "display_name_override": null,
+      "dwarf_id": "C-hipoczysciciel-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hohelka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hohelka",
+      "display_name_override": null,
+      "dwarf_id": "C-hohelka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Honorek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Honorek",
+      "display_name_override": null,
+      "dwarf_id": "C-honorek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hortuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hortuś",
+      "display_name_override": null,
+      "dwarf_id": "C-hortus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hugonek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hugonek",
+      "display_name_override": null,
+      "dwarf_id": "C-hugonek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hulk i Ryszard dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hulk i Ryszard",
+      "display_name_override": null,
+      "dwarf_id": "C-hulk-i-ryszard-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hydrek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hydrek",
+      "display_name_override": null,
+      "dwarf_id": "C-hydrek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Hydrotechnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Hydrotechnik",
+      "display_name_override": null,
+      "dwarf_id": "C-hydrotechnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Implantolog dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Implantolog",
+      "display_name_override": null,
+      "dwarf_id": "C-implantolog-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Impluś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Impluś",
+      "display_name_override": null,
+      "dwarf_id": "C-implus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Insercik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Insercik",
+      "display_name_override": null,
+      "dwarf_id": "C-insercik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Integracjanek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Integracjanek",
+      "display_name_override": null,
+      "dwarf_id": "C-integracjanek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Inwigiluś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Inwigiluś",
+      "display_name_override": null,
+      "dwarf_id": "C-inwigilus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "IP-ek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "IP-ek",
+      "display_name_override": null,
+      "dwarf_id": "C-ip-ek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Islamek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Islamek",
+      "display_name_override": null,
+      "dwarf_id": "C-islamek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Italudek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Italudek",
+      "display_name_override": null,
+      "dwarf_id": "C-italudek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Janinek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Janinek",
+      "display_name_override": null,
+      "dwarf_id": "C-janinek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Jasek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Jasek",
+      "display_name_override": null,
+      "dwarf_id": "C-jasek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Jedruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Jedruś",
+      "display_name_override": null,
+      "dwarf_id": "C-jedrus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Julian Okulista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Julian Okulista",
+      "display_name_override": null,
+      "dwarf_id": "C-julian-okulista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kacuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kacuś",
+      "display_name_override": null,
+      "dwarf_id": "C-kacus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kaczmaruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kaczmaruś",
+      "display_name_override": null,
+      "dwarf_id": "C-kaczmarus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kanapownik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kanapownik",
+      "display_name_override": null,
+      "dwarf_id": "C-kanapownik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kandarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kandarek",
+      "display_name_override": null,
+      "dwarf_id": "C-kandarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kantorki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kantorki",
+      "display_name_override": null,
+      "dwarf_id": "C-kantorki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kapitan Jack Port dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kapitan Jack Port",
+      "display_name_override": null,
+      "dwarf_id": "C-kapitan-jack-port-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kapitańskie Bliźniaki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kapitańskie Bliźniaki",
+      "display_name_override": null,
+      "dwarf_id": "C-kapitanskie-blizniaki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kasyniarze dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kasyniarze",
+      "display_name_override": null,
+      "dwarf_id": "C-kasyniarze-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kauflandki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kauflandki",
+      "display_name_override": null,
+      "dwarf_id": "C-kauflandki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kawiarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kawiarek",
+      "display_name_override": null,
+      "dwarf_id": "C-kawiarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kazio dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kazio",
+      "display_name_override": null,
+      "dwarf_id": "C-kazio-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kibic dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kibic",
+      "display_name_override": null,
+      "dwarf_id": "C-kibic-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kika dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kika",
+      "display_name_override": null,
+      "dwarf_id": "C-kika-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kinoman Młodszy dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kinoman Młodszy",
+      "display_name_override": null,
+      "dwarf_id": "C-kinoman-mlodszy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kirklandysta dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kirklandysta",
+      "display_name_override": null,
+      "dwarf_id": "C-kirklandysta-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Klaun dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Klaun",
+      "display_name_override": null,
+      "dwarf_id": "C-klaun-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Klucznik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Klucznik",
+      "display_name_override": null,
+      "dwarf_id": "C-klucznik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolanki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolanki",
+      "display_name_override": null,
+      "dwarf_id": "C-kolanki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolejarz Brochowski I dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolejarz Brochowski I",
+      "display_name_override": null,
+      "dwarf_id": "C-kolejarz-brochowski-i-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolejarz Brochowski II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolejarz Brochowski II",
+      "display_name_override": null,
+      "dwarf_id": "C-kolejarz-brochowski-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolejarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolejarz",
+      "display_name_override": null,
+      "dwarf_id": "C-kolejarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolejarz II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolejarz II",
+      "display_name_override": null,
+      "dwarf_id": "C-kolejarz-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolejarze Brochowscy dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolejarze Brochowscy",
+      "display_name_override": null,
+      "dwarf_id": "C-kolejarze-brochowscy-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 0 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kolekcjoner dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kolekcjoner",
+      "display_name_override": null,
+      "dwarf_id": "C-kolekcjoner-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Koncertuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Koncertuś",
+      "display_name_override": null,
+      "dwarf_id": "C-koncertus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Konspirek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Konspirek",
+      "display_name_override": null,
+      "dwarf_id": "C-konspirek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Koronuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Koronuś",
+      "display_name_override": null,
+      "dwarf_id": "C-koronus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kownacek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kownacek",
+      "display_name_override": null,
+      "dwarf_id": "C-kownacek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kozanek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kozanek",
+      "display_name_override": null,
+      "dwarf_id": "C-kozanek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnal z piłką dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnal z piłką",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnal-z-pilka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnalątko dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnalątko",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnalatko-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale na Kominie dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnale na Kominie",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnale-na-kominie-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale PAN, Wrocław",
+      "discovery_warning": true,
+      "display_name": "Krasnale PAN, Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnale-pan-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale Promenad Wrocławskich",
+      "discovery_warning": true,
+      "display_name": "Krasnale Promenad Wrocławskich",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnale-promenad-wroclawskich",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale Przylądka Nadziei dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnale Przylądka Nadziei",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnale-przyladka-nadziei-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnale z Gildii Kupieckiej dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnale z Gildii Kupieckiej",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnale-z-gildii-kupieckiej-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 0 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Krasnalica dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Krasnalica",
+      "display_name_override": null,
+      "dwarf_id": "C-krasnalica-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kreacjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kreacjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-kreacjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kruszek z wróbelkiem Łakomczuszkiem dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kruszek z wróbelkiem Łakomczuszkiem",
+      "display_name_override": null,
+      "dwarf_id": "C-kruszek-z-wrobelkiem-lakomczuszkiem-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Książę Witold dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Książę Witold",
+      "display_name_override": null,
+      "dwarf_id": "C-ksiaze-witold-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Księgarka dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Księgarka",
+      "display_name_override": null,
+      "dwarf_id": "C-ksiegarka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Kupczyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Kupczyk",
+      "display_name_override": null,
+      "dwarf_id": "C-kupczyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lady Wolność dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Lady Wolność",
+      "display_name_override": null,
+      "dwarf_id": "C-lady-wolnosc-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Landuś i Defcia dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Landuś i Defcia",
+      "display_name_override": null,
+      "dwarf_id": "C-landus-i-defcia-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lappek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lappek",
+      "display_name_override": null,
+      "dwarf_id": "C-lappek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Latałek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Latałek",
+      "display_name_override": null,
+      "dwarf_id": "C-latalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Leoś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Leoś",
+      "display_name_override": null,
+      "dwarf_id": "C-leos-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lesław dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lesław",
+      "display_name_override": null,
+      "dwarf_id": "C-leslaw-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Leszko dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Leszko",
+      "display_name_override": null,
+      "dwarf_id": "C-leszko-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Leżący na trawie dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Leżący na trawie",
+      "display_name_override": null,
+      "dwarf_id": "C-lezacy-na-trawie-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lion spod znaku lwa dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lion spod znaku lwa",
+      "display_name_override": null,
+      "dwarf_id": "C-lion-spod-znaku-lwa-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Listonosz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Listonosz",
+      "display_name_override": null,
+      "dwarf_id": "C-listonosz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Literatek vel Polonicus dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Literatek vel Polonicus",
+      "display_name_override": null,
+      "dwarf_id": "C-literatek-vel-polonicus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lombardzik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lombardzik",
+      "display_name_override": null,
+      "dwarf_id": "C-lombardzik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lotnicy dwarves, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Lotnicy",
+      "display_name_override": null,
+      "dwarf_id": "C-lotnicy-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lottuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lottuś",
+      "display_name_override": null,
+      "dwarf_id": "C-lottus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Luksik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Luksik",
+      "display_name_override": null,
+      "dwarf_id": "C-luksik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Luminator dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Luminator",
+      "display_name_override": null,
+      "dwarf_id": "C-luminator-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lunatyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lunatyk",
+      "display_name_override": null,
+      "dwarf_id": "C-lunatyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Lunetyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Lunetyk",
+      "display_name_override": null,
+      "dwarf_id": "C-lunetyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ma(Ste)rche(Fek) dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ma(Ste)rche(Fek)",
+      "display_name_override": null,
+      "dwarf_id": "C-ma-ste-rche-fek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Malarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Malarz",
+      "display_name_override": null,
+      "dwarf_id": "C-malarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Malarz Piotruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Malarz Piotruś",
+      "display_name_override": null,
+      "dwarf_id": "C-malarz-piotrus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Maria i Feniks dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Maria i Feniks",
+      "display_name_override": null,
+      "dwarf_id": "C-maria-i-feniks-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Marian dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Marian",
+      "display_name_override": null,
+      "dwarf_id": "C-marian-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Marysia Pięknisia dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Marysia Pięknisia",
+      "display_name_override": null,
+      "dwarf_id": "C-marysia-pieknisia-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Marzenka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Marzenka",
+      "display_name_override": null,
+      "dwarf_id": "C-marzenka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Marzyciel dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Marzyciel",
+      "display_name_override": null,
+      "dwarf_id": "C-marzyciel-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Mastertonek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Mastertonek",
+      "display_name_override": null,
+      "dwarf_id": "C-mastertonek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Matematyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Matematyk",
+      "display_name_override": null,
+      "dwarf_id": "C-matematyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Max i Fliz dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Max i Fliz",
+      "display_name_override": null,
+      "dwarf_id": "C-max-i-fliz-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Mechanik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Mechanik",
+      "display_name_override": null,
+      "dwarf_id": "C-mechanik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Medaliści dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Medaliści",
+      "display_name_override": null,
+      "dwarf_id": "C-medalisci-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Mellonik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Mellonik",
+      "display_name_override": null,
+      "dwarf_id": "C-mellonik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Meloman dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Meloman",
+      "display_name_override": null,
+      "dwarf_id": "C-meloman-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Metrolog dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Metrolog",
+      "display_name_override": null,
+      "dwarf_id": "C-metrolog-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Mikołaj Ziółko dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Mikołaj Ziółko",
+      "display_name_override": null,
+      "dwarf_id": "C-mikolaj-ziolko-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Miłostek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Miłostek",
+      "display_name_override": null,
+      "dwarf_id": "C-milostek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Miłostróż dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Miłostróż",
+      "display_name_override": null,
+      "dwarf_id": "C-milostroz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Miś Mokrej Łapki dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Miś Mokrej Łapki",
+      "display_name_override": null,
+      "dwarf_id": "C-mis-mokrej-lapki-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Moczypięta dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Moczypięta",
+      "display_name_override": null,
+      "dwarf_id": "C-moczypieta-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Modruś i Odruś dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Modruś i Odruś",
+      "display_name_override": null,
+      "dwarf_id": "C-modrus-i-odrus-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Moteusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Moteusz",
+      "display_name_override": null,
+      "dwarf_id": "C-moteusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Motocyklista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Motocyklista",
+      "display_name_override": null,
+      "dwarf_id": "C-motocyklista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Murarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Murarz",
+      "display_name_override": null,
+      "dwarf_id": "C-murarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Myjek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Myjek",
+      "display_name_override": null,
+      "dwarf_id": "C-myjek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Myślichwilek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Myślichwilek",
+      "display_name_override": null,
+      "dwarf_id": "C-myslichwilek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Nadziejnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Nadziejnik",
+      "display_name_override": null,
+      "dwarf_id": "C-nadziejnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Narcyś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Narcyś",
+      "display_name_override": null,
+      "dwarf_id": "C-narcys-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Narzędziownik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Narzędziownik",
+      "display_name_override": null,
+      "dwarf_id": "C-narzedziownik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Nawigator dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Nawigator",
+      "display_name_override": null,
+      "dwarf_id": "C-nawigator-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Neptunek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Neptunek",
+      "display_name_override": null,
+      "dwarf_id": "C-neptunek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Niesamowitek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Niesamowitek",
+      "display_name_override": null,
+      "dwarf_id": "C-niesamowitek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Niespodzianek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Niespodzianek",
+      "display_name_override": null,
+      "dwarf_id": "C-niespodzianek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Niewypałek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Niewypałek",
+      "display_name_override": null,
+      "dwarf_id": "C-niewypalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Niewypałek i Biegajło dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Niewypałek i Biegajło",
+      "display_name_override": null,
+      "dwarf_id": "C-niewypalek-i-biegajlo-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Niezabudka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Niezabudka",
+      "display_name_override": null,
+      "dwarf_id": "C-niezabudka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Numizmatyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Numizmatyk",
+      "display_name_override": null,
+      "dwarf_id": "C-numizmatyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "O’Barek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "O’Barek",
+      "display_name_override": null,
+      "dwarf_id": "C-obarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Obieżysmak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Obieżysmak",
+      "display_name_override": null,
+      "dwarf_id": "C-obiezysmak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Obżartuch dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Obżartuch",
+      "display_name_override": null,
+      "dwarf_id": "C-obzartuch-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Oddludek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Oddludek",
+      "display_name_override": null,
+      "dwarf_id": "C-oddludek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ogorzałek i Opiłek dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ogorzałek i Opiłek",
+      "display_name_override": null,
+      "dwarf_id": "C-ogorzalek-i-opilek-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Okniarek i Pan Porada dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Okniarek i Pan Porada",
+      "display_name_override": null,
+      "dwarf_id": "C-okniarek-i-pan-porada-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Olimpijczyk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Olimpijczyk",
+      "display_name_override": null,
+      "dwarf_id": "C-olimpijczyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Onkuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Onkuś",
+      "display_name_override": null,
+      "dwarf_id": "C-onkus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Opałek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Opałek",
+      "display_name_override": null,
+      "dwarf_id": "C-opalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Opiekunek i Krasnomaleństwo dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Opiekunek i Krasnomaleństwo",
+      "display_name_override": null,
+      "dwarf_id": "C-opiekunek-i-krasnomalenstwo-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ortopeda dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ortopeda",
+      "display_name_override": null,
+      "dwarf_id": "C-ortopeda-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Orzech dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Orzech",
+      "display_name_override": null,
+      "dwarf_id": "C-orzech-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ósemek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ósemek",
+      "display_name_override": null,
+      "dwarf_id": "C-osemek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ottuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ottuś",
+      "display_name_override": null,
+      "dwarf_id": "C-ottus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pacjent i Lekarz dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pacjent i Lekarz",
+      "display_name_override": null,
+      "dwarf_id": "C-pacjent-i-lekarz-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Paczus dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Paczus",
+      "display_name_override": null,
+      "dwarf_id": "C-paczus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pan Kazimierz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pan Kazimierz",
+      "display_name_override": null,
+      "dwarf_id": "C-pan-kazimierz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pan Twardowski dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pan Twardowski",
+      "display_name_override": null,
+      "dwarf_id": "C-pan-twardowski-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pani Doktor dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pani Doktor",
+      "display_name_override": null,
+      "dwarf_id": "C-pani-doktor-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Panna Pychotka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Panna Pychotka",
+      "display_name_override": null,
+      "dwarf_id": "C-panna-pychotka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Panoramik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Panoramik",
+      "display_name_override": null,
+      "dwarf_id": "C-panoramik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Państwo Krasnalscy dwarves, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Państwo Krasnalscy",
+      "display_name_override": null,
+      "dwarf_id": "C-panstwo-krasnalscy-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Papa Het dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Papa Het",
+      "display_name_override": null,
+      "dwarf_id": "C-papa-het-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Papa Krasnal",
+      "discovery_warning": true,
+      "display_name": "Papa Krasnal",
+      "display_name_override": null,
+      "dwarf_id": "C-papa-krasnal",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Paragrafek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Paragrafek",
+      "display_name_override": null,
+      "dwarf_id": "C-paragrafek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Parasolniki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Parasolniki",
+      "display_name_override": null,
+      "dwarf_id": "C-parasolniki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "ParkM dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "ParkM",
+      "display_name_override": null,
+      "dwarf_id": "C-parkm-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Patrolek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Patrolek",
+      "display_name_override": null,
+      "dwarf_id": "C-patrolek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Phoeniksik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Phoeniksik",
+      "display_name_override": null,
+      "dwarf_id": "C-phoeniksik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Piastek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Piastek",
+      "display_name_override": null,
+      "dwarf_id": "C-piastek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Piastosław I Złocisty dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Piastosław I Złocisty",
+      "display_name_override": null,
+      "dwarf_id": "C-piastoslaw-i-zlocisty-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pierożnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pierożnik",
+      "display_name_override": null,
+      "dwarf_id": "C-pieroznik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Piotrek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Piotrek",
+      "display_name_override": null,
+      "dwarf_id": "C-piotrek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Piwowar dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Piwowar",
+      "display_name_override": null,
+      "dwarf_id": "C-piwowar-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Piwożłop z piesełem Piwoszem, Wrocław",
+      "discovery_warning": true,
+      "display_name": "Piwożłop z piesełem Piwoszem, Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-piwozlop-z-pieselem-piwoszem-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Plazuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Plazuś",
+      "display_name_override": null,
+      "dwarf_id": "C-plazus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Płucek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Płucek",
+      "display_name_override": null,
+      "dwarf_id": "C-plucek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Plumplumek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Plumplumek",
+      "display_name_override": null,
+      "dwarf_id": "C-plumplumek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pocztowiec dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pocztowiec",
+      "display_name_override": null,
+      "dwarf_id": "C-pocztowiec-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Podróżnik dwarf (Łagowski), Wrocław",
+      "discovery_warning": true,
+      "display_name": "Podróżnik dwarf (Łagowski), Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-podroznik-dwarf-lagowski-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Podróżnik dwarf (Zwolańska–Hołod), Wrocław",
+      "discovery_warning": true,
+      "display_name": "Podróżnik dwarf (Zwolańska–Hołod), Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-podroznik-dwarf-zwolanskaholod-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pokerek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pokerek",
+      "display_name_override": null,
+      "dwarf_id": "C-pokerek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Polidenciak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Polidenciak",
+      "display_name_override": null,
+      "dwarf_id": "C-polidenciak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Poliglotek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Poliglotek",
+      "display_name_override": null,
+      "dwarf_id": "C-poliglotek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Politek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Politek",
+      "display_name_override": null,
+      "dwarf_id": "C-politek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Polonek i Germanek dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Polonek i Germanek",
+      "display_name_override": null,
+      "dwarf_id": "C-polonek-i-germanek-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pomagajek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pomagajek",
+      "display_name_override": null,
+      "dwarf_id": "C-pomagajek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Popowicjusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Popowicjusz",
+      "display_name_override": null,
+      "dwarf_id": "C-popowicjusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Powerek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Powerek",
+      "display_name_override": null,
+      "dwarf_id": "C-powerek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pożarki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pożarki",
+      "display_name_override": null,
+      "dwarf_id": "C-pozarki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Pracz Odrzański dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Pracz Odrzański",
+      "display_name_override": null,
+      "dwarf_id": "C-pracz-odrzanski-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Prezentuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Prezentuś",
+      "display_name_override": null,
+      "dwarf_id": "C-prezentus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Profesor Medyk dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Profesor Medyk",
+      "display_name_override": null,
+      "dwarf_id": "C-profesor-medyk-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Profesor Miodek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Profesor Miodek",
+      "display_name_override": null,
+      "dwarf_id": "C-profesor-miodek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "ProLinka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "ProLinka",
+      "display_name_override": null,
+      "dwarf_id": "C-prolinka-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Promocjusz i Przecennik dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Promocjusz i Przecennik",
+      "display_name_override": null,
+      "dwarf_id": "C-promocjusz-i-przecennik-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Promyczek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Promyczek",
+      "display_name_override": null,
+      "dwarf_id": "C-promyczek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Prywatek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Prywatek",
+      "display_name_override": null,
+      "dwarf_id": "C-prywatek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Przedszkoludek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Przedszkoludek",
+      "display_name_override": null,
+      "dwarf_id": "C-przedszkoludek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Przemysław Parkuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Przemysław Parkuś",
+      "display_name_override": null,
+      "dwarf_id": "C-przemyslaw-parkus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Przodownik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Przodownik",
+      "display_name_override": null,
+      "dwarf_id": "C-przodownik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Przylepek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Przylepek",
+      "display_name_override": null,
+      "dwarf_id": "C-przylepek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Quadeusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Quadeusz",
+      "display_name_override": null,
+      "dwarf_id": "C-quadeusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rabuś I dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rabuś I",
+      "display_name_override": null,
+      "dwarf_id": "C-rabus-i-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rabuś II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rabuś II",
+      "display_name_override": null,
+      "dwarf_id": "C-rabus-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rabuś III dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rabuś III",
+      "display_name_override": null,
+      "dwarf_id": "C-rabus-iii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rachciach dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rachciach",
+      "display_name_override": null,
+      "dwarf_id": "C-rachciach-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Raciworek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Raciworek",
+      "display_name_override": null,
+      "dwarf_id": "C-raciworek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Radiotechnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Radiotechnik",
+      "display_name_override": null,
+      "dwarf_id": "C-radiotechnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Radiowiec dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Radiowiec",
+      "display_name_override": null,
+      "dwarf_id": "C-radiowiec-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ratuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ratuś",
+      "display_name_override": null,
+      "dwarf_id": "C-ratus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Recyklinek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Recyklinek",
+      "display_name_override": null,
+      "dwarf_id": "C-recyklinek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rejent dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rejent",
+      "display_name_override": null,
+      "dwarf_id": "C-rejent-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rejestruś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rejestruś",
+      "display_name_override": null,
+      "dwarf_id": "C-rejestrus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Renata Otolińska dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Renata Otolińska",
+      "display_name_override": null,
+      "dwarf_id": "C-renata-otolinska-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "RMFek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "RMFek",
+      "display_name_override": null,
+      "dwarf_id": "C-rmfek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rodzinka dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rodzinka",
+      "display_name_override": null,
+      "dwarf_id": "C-rodzinka-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rogalik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rogalik",
+      "display_name_override": null,
+      "dwarf_id": "C-rogalik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Roszek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Roszek",
+      "display_name_override": null,
+      "dwarf_id": "C-roszek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "RoyalDenciaki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "RoyalDenciaki",
+      "display_name_override": null,
+      "dwarf_id": "C-royaldenciaki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rozkwietnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rozkwietnik",
+      "display_name_override": null,
+      "dwarf_id": "C-rozkwietnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "RSTynek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "RSTynek",
+      "display_name_override": null,
+      "dwarf_id": "C-rstynek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rutek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rutek",
+      "display_name_override": null,
+      "dwarf_id": "C-rutek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Rycerz Jadwiżański dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Rycerz Jadwiżański",
+      "display_name_override": null,
+      "dwarf_id": "C-rycerz-jadwizanski-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Saper dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Saper",
+      "display_name_override": null,
+      "dwarf_id": "C-saper-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Serdeczniś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Serdeczniś",
+      "display_name_override": null,
+      "dwarf_id": "C-serdecznis-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Siedzący na walizce dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Siedzący na walizce",
+      "display_name_override": null,
+      "dwarf_id": "C-siedzacy-na-walizce-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Siłacz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Siłacz",
+      "display_name_override": null,
+      "dwarf_id": "C-silacz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Siłowmir dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Siłowmir",
+      "display_name_override": null,
+      "dwarf_id": "C-silowmir-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Skarbuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Skarbuś",
+      "display_name_override": null,
+      "dwarf_id": "C-skarbus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Skryba dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Skryba",
+      "display_name_override": null,
+      "dwarf_id": "C-skryba-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ślepak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ślepak",
+      "display_name_override": null,
+      "dwarf_id": "C-slepak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Słupniki Oławskie dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Słupniki Oławskie",
+      "display_name_override": null,
+      "dwarf_id": "C-slupniki-olawskie-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Słupniki Solne dwarfs, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Słupniki Solne",
+      "display_name_override": null,
+      "dwarf_id": "C-slupniki-solne-dwarfs-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Słupniki Świdnickie dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Słupniki Świdnickie",
+      "display_name_override": null,
+      "dwarf_id": "C-slupniki-swidnickie-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Solidarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Solidarek",
+      "display_name_override": null,
+      "dwarf_id": "C-solidarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Solidarek Walczący dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Solidarek Walczący",
+      "display_name_override": null,
+      "dwarf_id": "C-solidarek-walczacy-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Śpiewak Operowy i Tancerka Balerina dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Śpiewak Operowy i Tancerka Balerina",
+      "display_name_override": null,
+      "dwarf_id": "C-spiewak-operowy-i-tancerka-balerina-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Śpioch dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Śpioch",
+      "display_name_override": null,
+      "dwarf_id": "C-spioch-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Sportuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Sportuś",
+      "display_name_override": null,
+      "dwarf_id": "C-sportus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Sprawiedliwiusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Sprawiedliwiusz",
+      "display_name_override": null,
+      "dwarf_id": "C-sprawiedliwiusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Sprinkler dwarf (Wrocław)",
+      "discovery_warning": true,
+      "display_name": "Sprinkler dwarf (Wrocław)",
+      "display_name_override": null,
+      "dwarf_id": "C-sprinkler-dwarf-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Stanisław Wolski dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Stanisław Wolski",
+      "display_name_override": null,
+      "dwarf_id": "C-stanislaw-wolski-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Statysław dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Statysław",
+      "display_name_override": null,
+      "dwarf_id": "C-statyslaw-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Suvenirek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Suvenirek",
+      "display_name_override": null,
+      "dwarf_id": "C-suvenirek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Światowid dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Światowid",
+      "display_name_override": null,
+      "dwarf_id": "C-swiatowid-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Świetlik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Świetlik",
+      "display_name_override": null,
+      "dwarf_id": "C-swietlik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Szcześciarze dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Szcześciarze",
+      "display_name_override": null,
+      "dwarf_id": "C-szczesciarze-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Szermierz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Szermierz",
+      "display_name_override": null,
+      "dwarf_id": "C-szermierz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Szoł Mastgołoń dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Szoł Mastgołoń",
+      "display_name_override": null,
+      "dwarf_id": "C-szol-mastgolon-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Szomol dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Szomol",
+      "display_name_override": null,
+      "dwarf_id": "C-szomol-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Szprechuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Szprechuś",
+      "display_name_override": null,
+      "dwarf_id": "C-szprechus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Sztangista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Sztangista",
+      "display_name_override": null,
+      "dwarf_id": "C-sztangista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tatuator dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tatuator",
+      "display_name_override": null,
+      "dwarf_id": "C-tatuator-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Teatralny dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Teatralny",
+      "display_name_override": null,
+      "dwarf_id": "C-teatralny-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Telefonista dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Telefonista",
+      "display_name_override": null,
+      "dwarf_id": "C-telefonista-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Telesfor dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Telesfor",
+      "display_name_override": null,
+      "dwarf_id": "C-telesfor-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Temidek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Temidek",
+      "display_name_override": null,
+      "dwarf_id": "C-temidek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tescoma dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tescoma",
+      "display_name_override": null,
+      "dwarf_id": "C-tescoma-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tolerance dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tolerance",
+      "display_name_override": null,
+      "dwarf_id": "C-tolerance-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tomek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tomek",
+      "display_name_override": null,
+      "dwarf_id": "C-tomek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tomek Jędrzejak i dwa krasnale dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tomek Jędrzejak i dwa krasnale",
+      "display_name_override": null,
+      "dwarf_id": "C-tomek-jedrzejak-i-dwa-krasnale-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Torfik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Torfik",
+      "display_name_override": null,
+      "dwarf_id": "C-torfik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trąbibrzuch dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trąbibrzuch",
+      "display_name_override": null,
+      "dwarf_id": "C-trabibrzuch-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Tralalalek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Tralalalek",
+      "display_name_override": null,
+      "dwarf_id": "C-tralalalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trenduś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trenduś",
+      "display_name_override": null,
+      "dwarf_id": "C-trendus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trener dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trener",
+      "display_name_override": null,
+      "dwarf_id": "C-trener-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trisomek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trisomek",
+      "display_name_override": null,
+      "dwarf_id": "C-trisomek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trójkuć Wywiadek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trójkuć Wywiadek",
+      "display_name_override": null,
+      "dwarf_id": "C-trojkuc-wywiadek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Troszka i Adoratorek dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Troszka i Adoratorek",
+      "display_name_override": null,
+      "dwarf_id": "C-troszka-i-adoratorek-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Truchcia dwartf, Wrocław",
+      "discovery_warning": true,
+      "display_name": "Truchcia dwartf, Wrocław",
+      "display_name_override": null,
+      "dwarf_id": "C-truchcia-dwartf-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Trufelek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Trufelek",
+      "display_name_override": null,
+      "dwarf_id": "C-trufelek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Turysta dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Turysta",
+      "display_name_override": null,
+      "dwarf_id": "C-turysta-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "TynQuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "TynQuś",
+      "display_name_override": null,
+      "dwarf_id": "C-tynqus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Uchodźczyni dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Uchodźczyni",
+      "display_name_override": null,
+      "dwarf_id": "C-uchodzczyni-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 1 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Ursus dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Ursus",
+      "display_name_override": null,
+      "dwarf_id": "C-ursus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Uziomek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Uziomek",
+      "display_name_override": null,
+      "dwarf_id": "C-uziomek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Vertiguś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Vertiguś",
+      "display_name_override": null,
+      "dwarf_id": "C-vertigus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Volviki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Volviki",
+      "display_name_override": null,
+      "dwarf_id": "C-volviki-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Vulcaniusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Vulcaniusz",
+      "display_name_override": null,
+      "dwarf_id": "C-vulcaniusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "W-Skers dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "W-Skers",
+      "display_name_override": null,
+      "dwarf_id": "C-w-skers-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Waguś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Waguś",
+      "display_name_override": null,
+      "dwarf_id": "C-wagus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wałałałek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wałałałek",
+      "display_name_override": null,
+      "dwarf_id": "C-walalalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wedelek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wedelek",
+      "display_name_override": null,
+      "dwarf_id": "C-wedelek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Weteran dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Weteran",
+      "display_name_override": null,
+      "dwarf_id": "C-weteran-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Weterynarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Weterynarz",
+      "display_name_override": null,
+      "dwarf_id": "C-weterynarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wieniawek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wieniawek",
+      "display_name_override": null,
+      "dwarf_id": "C-wieniawek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wiesiek Partnerski dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wiesiek Partnerski",
+      "display_name_override": null,
+      "dwarf_id": "C-wiesiek-partnerski-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Więzień dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Więzień",
+      "display_name_override": null,
+      "dwarf_id": "C-wiezien-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wioślarze (dwarves of Wrocław)",
+      "discovery_warning": true,
+      "display_name": "Wioślarze (dwarves of Wrocław)",
+      "display_name_override": null,
+      "dwarf_id": "C-wioslarze-dwarves-of-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Witek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Witek",
+      "display_name_override": null,
+      "dwarf_id": "C-witek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "WIZ-ek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "WIZ-ek",
+      "display_name_override": null,
+      "dwarf_id": "C-wiz-ek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "WKS Śląsk dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "WKS Śląsk",
+      "display_name_override": null,
+      "dwarf_id": "C-wks-slask-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Włazimierz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Włazimierz",
+      "display_name_override": null,
+      "dwarf_id": "C-wlazimierz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wodne dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wodne",
+      "display_name_override": null,
+      "dwarf_id": "C-wodne-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wodziarz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wodziarz",
+      "display_name_override": null,
+      "dwarf_id": "C-wodziarz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wolontarek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wolontarek",
+      "display_name_override": null,
+      "dwarf_id": "C-wolontarek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wolontariusz dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wolontariusz",
+      "display_name_override": null,
+      "dwarf_id": "C-wolontariusz-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wrati i Slawi dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wrati i Slawi",
+      "display_name_override": null,
+      "dwarf_id": "C-wrati-i-slawi-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wroc-ek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wroc-ek",
+      "display_name_override": null,
+      "dwarf_id": "C-wroc-ek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wrocklik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wrocklik",
+      "display_name_override": null,
+      "dwarf_id": "C-wrocklik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wroclaw butcher dwarf",
+      "discovery_warning": true,
+      "display_name": "Wroclaw butcher dwarf",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclaw-butcher-dwarf",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wrocławiak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wrocławiak",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclawiak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wrocławski KrasnoLód dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wrocławski KrasnoLód",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclawski-krasnolod-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wrocławski KrasnoLód II dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wrocławski KrasnoLód II",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclawski-krasnolod-ii-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "WrocLovek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "WrocLovek",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclovek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wroclovki dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wroclovki",
+      "display_name_override": null,
+      "dwarf_id": "C-wroclovki-dwarves-wroclaw",
+      "notes": null,
+      "status": "pending"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "WspółCzesio dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "WspółCzesio",
+      "display_name_override": null,
+      "dwarf_id": "C-wspolczesio-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wyborcy dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wyborcy",
+      "display_name_override": null,
+      "dwarf_id": "C-wyborcy-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 1 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wykształciuch dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wykształciuch",
+      "display_name_override": null,
+      "dwarf_id": "C-wyksztalciuch-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wypiekuś dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wypiekuś",
+      "display_name_override": null,
+      "dwarf_id": "C-wypiekus-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wypłatnik dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wypłatnik",
+      "display_name_override": null,
+      "dwarf_id": "C-wyplatnik-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Wytrwałek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Wytrwałek",
+      "display_name_override": null,
+      "dwarf_id": "C-wytrwalek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Żaczek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Żaczek",
+      "display_name_override": null,
+      "dwarf_id": "C-zaczek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zajezdniak dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zajezdniak",
+      "display_name_override": null,
+      "dwarf_id": "C-zajezdniak-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zakupek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zakupek",
+      "display_name_override": null,
+      "dwarf_id": "C-zakupek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zarembek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zarembek",
+      "display_name_override": null,
+      "dwarf_id": "C-zarembek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zgryzek dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zgryzek",
+      "display_name_override": null,
+      "dwarf_id": "C-zgryzek-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zośka dwarf, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zośka",
+      "display_name_override": null,
+      "dwarf_id": "C-zoska-dwarf-wroclaw",
+      "notes": null,
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Zośka i Jedruś dwarves, Wrocław",
+      "discovery_warning": false,
+      "display_name": "Zośka i Jedruś",
+      "display_name_override": null,
+      "dwarf_id": "C-zoska-i-jedrus-dwarves-wroclaw",
+      "notes": "Mapping is correct; the category holds 2 file(s), so the three-image threshold decides whether it becomes a class.",
+      "status": "approved"
+    },
+    {
+      "corrected_category": null,
+      "discovered_category": "Życzliwek dwarf, Wroclaw",
+      "discovery_warning": false,
+      "display_name": "Życzliwek",
+      "display_name_override": null,
+      "dwarf_id": "C-zyczliwek-dwarf-wroclaw",
+      "notes": null,
       "status": "approved"
     }
   ],
