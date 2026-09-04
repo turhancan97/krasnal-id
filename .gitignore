@@ -19,11 +19,12 @@ htmlcov/
 .env.*
 !.env.example
 
-# Downloaded and generated research artifacts
-data/images/
-data/embeddings/
-data/splits/
-data/discovery/
+# Downloaded and generated research artifacts. No trailing slash: these paths are
+# often symlinks to bulk storage, and a directory-only pattern would not match one.
+data/images
+data/embeddings
+data/splits
+data/discovery
 data/manifest*.json
 results/*
 !results/README.md
