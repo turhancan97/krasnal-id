@@ -25,6 +25,10 @@ class VisualizationError(ValueError):
     """Raised when a projection cannot be configured or written."""
 
 
+# Past this many classes, naming every one is what makes the figure unreadable.
+_LABEL_BUDGET = 24
+
+
 def import_optional_analysis(module_name: str) -> Any:
     """Import an optional analysis dependency only when plotting is requested."""
     try:
@@ -104,14 +108,39 @@ def declutter_labels(
     return placed
 
 
+def most_entangled(centroids: npt.NDArray[np.float32], budget: int) -> list[int]:
+    """Return the classes closest to another class, nearest neighbour first.
+
+    These are the ones the figure exists to show: a class sitting on top of
+    another is where confusion comes from. Ranking by distance to the nearest
+    *other* centroid picks them out of a crowded projection without needing the
+    confusion analysis to have been run.
+    """
+    if centroids.shape[0] < 2:
+        return list(range(centroids.shape[0]))
+    deltas = centroids[:, None, :] - centroids[None, :, :]
+    distances = np.linalg.norm(deltas, axis=2)
+    np.fill_diagonal(distances, np.inf)
+    nearest = distances.min(axis=1)
+    return sorted(np.argsort(nearest)[:budget].tolist())
+
+
 def render_projection(
     projected: npt.NDArray[np.float32],
     dwarf_ids: tuple[str, ...],
     display_names: dict[str, str],
     title: str,
     path: Path,
+    label_budget: int = _LABEL_BUDGET,
 ) -> Path:
-    """Draw and save the projection, labeling each class at its centroid."""
+    """Draw and save the projection, labeling the classes worth reading.
+
+    Every class is named while the pool is small enough for that to be legible.
+    Past `label_budget` classes it is not: 306 names overlap into a wall of leader
+    lines that hides the structure it was meant to show. Beyond that the figure
+    keeps colour and names for the most entangled classes and draws the rest as
+    faint grey context, so the crowding is still visible but no longer illegible.
+    """
     matplotlib = import_optional_analysis("matplotlib")
     # Select a non-interactive backend before pyplot binds one, so the figure
     # renders on headless machines and in CI.
@@ -131,28 +160,42 @@ def render_projection(
         float(np.ptp(projected[:, 0])) or 1.0,
         float(np.ptp(projected[:, 1])) or 1.0,
     )
-    label_positions = declutter_labels(centroids, span)
+    labelled = (
+        list(range(len(classes)))
+        if len(classes) <= label_budget
+        else most_entangled(centroids, label_budget)
+    )
+    label_positions = declutter_labels(centroids[labelled], span)
 
+    # Context first, so the labelled classes are drawn on top of the crowd.
     for index, dwarf_id in enumerate(classes):
-        rows = np.flatnonzero(ids == dwarf_id)
-        points = projected[rows]
-        color = colormap(index % _PALETTE_SIZE)
+        if index in set(labelled):
+            continue
+        points = projected[np.flatnonzero(ids == dwarf_id)]
+        axes.scatter(
+            points[:, 0], points[:, 1], color="#c9ccd1", marker="o", s=12, alpha=0.55, linewidths=0
+        )
+
+    for position, index in enumerate(labelled):
+        dwarf_id = classes[index]
+        points = projected[np.flatnonzero(ids == dwarf_id)]
+        color = colormap(position % _PALETTE_SIZE)
         axes.scatter(
             points[:, 0],
             points[:, 1],
             color=color,
-            marker=_MARKERS[(index // _PALETTE_SIZE) % len(_MARKERS)],
+            marker=_MARKERS[(position // _PALETTE_SIZE) % len(_MARKERS)],
             s=42,
             alpha=0.85,
             edgecolors="white",
             linewidths=0.5,
         )
-        # A legend of twenty-plus entries is unreadable, so each class is named
-        # near its own points, with a leader line when it had to be moved.
+        # Named beside its own points rather than in a legend, with a leader line
+        # when the label had to be moved clear of a neighbour.
         axes.annotate(
             display_names.get(dwarf_id, dwarf_id),
             xy=tuple(centroids[index]),
-            xytext=tuple(label_positions[index]),
+            xytext=tuple(label_positions[position]),
             fontsize=7,
             ha="center",
             va="center",
@@ -161,8 +204,13 @@ def render_projection(
             arrowprops={"arrowstyle": "-", "color": color, "lw": 0.6, "alpha": 0.8},
         )
 
-    axes.set_title(title)
-    axes.set_xlabel("component 1")
+    if len(classes) > label_budget:
+        axes.set_title(
+            f"{title}\nnamed: the {len(labelled)} classes nearest another class; "
+            f"the remaining {len(classes) - len(labelled)} are grey"
+        )
+    else:
+        axes.set_xlabel("component 1")
     axes.set_ylabel("component 2")
     axes.spines["top"].set_visible(False)
     axes.spines["right"].set_visible(False)

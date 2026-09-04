@@ -23,7 +23,9 @@ from krasnal_id.viz.embedding_plot import (
     declutter_labels,
     figure_path,
     import_optional_analysis,
+    most_entangled,
     project_embeddings,
+    render_projection,
 )
 
 
@@ -173,3 +175,45 @@ def test_cli_visualization_writes_a_figure_and_fails_without_embeddings(tmp_path
     assert result.exit_code == 0, result.output
     assert "Embedding visualization complete" in result.output
     assert (tmp_path / "results" / "embeddings-tsne-dinov2.png").is_file()
+
+
+def test_entanglement_ranks_the_classes_sitting_on_top_of_each_other() -> None:
+    import numpy as np
+
+    # Two centroids nearly coincide; the third is far away.
+    centroids = np.asarray([[0.0, 0.0], [0.1, 0.0], [10.0, 10.0]], dtype=np.float32)
+
+    assert most_entangled(centroids, 2) == [0, 1]
+    assert most_entangled(centroids, 3) == [0, 1, 2]
+    # Degenerate inputs stay usable rather than raising.
+    assert most_entangled(np.zeros((1, 2), dtype=np.float32), 5) == [0]
+    assert most_entangled(np.zeros((0, 2), dtype=np.float32), 5) == []
+
+
+def test_a_crowded_projection_labels_only_its_budget(tmp_path: Path) -> None:
+    import numpy as np
+
+    rng = np.random.default_rng(0)
+    classes = tuple(f"Q{i + 1}" for i in range(40) for _ in range(2))
+    projected = rng.normal(size=(len(classes), 2)).astype(np.float32)
+
+    path = render_projection(
+        projected,
+        classes,
+        {c: c for c in classes},
+        "crowded",
+        tmp_path / "crowded.png",
+        label_budget=5,
+    )
+
+    assert path.is_file()
+    # Under the budget every class is still named, which keeps small pools unchanged.
+    small = tuple(f"Q{i + 1}" for i in range(3) for _ in range(2))
+    assert render_projection(
+        projected[: len(small)],
+        small,
+        {c: c for c in small},
+        "small",
+        tmp_path / "small.png",
+        label_budget=5,
+    ).is_file()
