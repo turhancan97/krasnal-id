@@ -141,6 +141,39 @@ Measured on 2026-09-04, running `data query --include-commons` against both live
   `dwarves` initially cost 76 categories their display name, which is why the title pattern
   accepts all three and why anything it cannot parse is flagged rather than guessed.
 
+### 5.7 Derived coordinates decision (2026-09-05)
+
+§5.2 took location from Wikidata's `P625` alone, which capped the geographic experiment at 23 of
+306 classes — 7.5% of the pool. Commons file metadata lifts that cap. Measured on 2026-09-05:
+
+- **1,135 of 1,545 photographs (73.5%) of otherwise-unlocated classes carry a coordinate**, almost
+  all of type `camera` — where the photographer stood, not where the statue is. That gives at least
+  one coordinate for **293 classes that had none**, for 295 of 306 in total.
+- Commons *category* pages are not a source: 1 of 283 carries a coordinate.
+- **Validated against the 21 classes that have both**: the median of a class's camera positions
+  falls a **median of 9 m** from its Wikidata point, with all 21 within 147 m and 14 within 50 m.
+  The geographic arm's smallest median pool radius is 190 m, so the noise is an order of magnitude
+  below the signal it is used to measure.
+
+Decisions:
+
+- **A derived coordinate is stored as such and never passed off as authoritative.**
+  `DwarfRecord.coordinate_source` records `wikidata` or `commons_camera`, and a record carrying
+  coordinates must name where they came from. Wikidata always wins when both exist.
+- **The per-class position is the median of its images' coordinates, not the mean.** One
+  mis-tagged photograph should not drag a class across the city, and the median of an even
+  handful of points is robust to that; the mean is not.
+- **Coordinates are image metadata and belong on `ImageRecord`**, fetched in the same Commons
+  request that already retrieves image info rather than through a separate enrichment pass. One
+  source of truth for what is known about an image, and one provenance chain, as §5.5 requires.
+- **The three worst validation cases are the water installation** — *Zbierający Wodę*, *Karmiący
+  Ptaki* and *Wierzbownik*, all 147 m out. §12.1 already suspected Wikidata assigns group members
+  one shared point, so there the camera positions are plausibly the *more* accurate figure. Do not
+  treat `P625` as ground truth when reporting the disagreement; report it as disagreement.
+- **This makes the §7.1 co-location finding testable at scale.** That result currently rests on six
+  statues in one themed installation. Whether proximity is genuinely unhelpful city-wide, or only
+  around that installation, is answerable at 295 classes and was not at 23.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone

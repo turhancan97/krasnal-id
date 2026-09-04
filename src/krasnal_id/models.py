@@ -23,6 +23,18 @@ class Coordinates(BaseModel):
     longitude: float = Field(ge=-180.0, le=180.0)
 
 
+class CoordinateSource(StrEnum):
+    """Where a dwarf's coordinates came from.
+
+    `WIKIDATA` is an authoritative `P625` statement about the statue. `COMMONS_CAMERA`
+    is derived from where photographers stood, which section 5.7 measured at a median
+    of 9 m from the Wikidata point across the classes that have both.
+    """
+
+    WIKIDATA = "wikidata"
+    COMMONS_CAMERA = "commons_camera"
+
+
 class DwarfRecord(BaseModel):
     """Stable identity and source metadata for one dwarf statue."""
 
@@ -31,17 +43,22 @@ class DwarfRecord(BaseModel):
     dwarf_id: str = Field(pattern=DWARF_ID_PATTERN)
     display_name: str = Field(min_length=1)
     # Absent for a statue Wikidata has no item for, which is most of them; see
-    # AGENTS.md section 5.6. Coordinates come from Wikidata's P625, so a record
-    # without a Wikidata item never carries them either.
+    # AGENTS.md section 5.6.
     wikidata_url: HttpUrl | None = None
     commons_category: str = Field(min_length=1)
     coordinates: Coordinates | None = None
+    # Where the coordinates came from. A position derived from where photographers
+    # stood is useful but not authoritative, and section 5.7 requires it to say so
+    # rather than being indistinguishable from a Wikidata P625 value.
+    coordinate_source: CoordinateSource | None = None
 
     @model_validator(mode="after")
-    def validate_wikidata_provenance(self) -> "DwarfRecord":
-        """Require coordinates to arrive with the Wikidata item they came from."""
-        if self.coordinates is not None and self.wikidata_url is None:
-            raise ValueError("coordinates require the Wikidata item they were read from")
+    def validate_provenance(self) -> "DwarfRecord":
+        """Require every coordinate to name its source, and every ID its identity."""
+        if (self.coordinates is None) != (self.coordinate_source is None):
+            raise ValueError("coordinates and their source must be present together")
+        if self.coordinate_source is CoordinateSource.WIKIDATA and self.wikidata_url is None:
+            raise ValueError("a Wikidata coordinate requires the Wikidata item it was read from")
         if self.dwarf_id.startswith("Q") and self.wikidata_url is None:
             raise ValueError("a Wikidata-identified dwarf must record its Wikidata URL")
         if self.dwarf_id.startswith("C-") and self.wikidata_url is not None:
@@ -68,6 +85,9 @@ class ImageRecord(BaseModel):
     commons_page_id: int | None = Field(default=None, gt=0)
     commons_sha1: str | None = Field(default=None, pattern=r"^[0-9a-z]{31,40}$")
     source_revision_at: datetime | None = None
+    # Where the photograph was taken, when Commons records it. Aggregated per dwarf
+    # at manifest time to place statues Wikidata has no item for; see section 5.7.
+    coordinates: Coordinates | None = None
 
 
 class DatasetManifest(BaseModel):

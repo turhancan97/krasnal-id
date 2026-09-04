@@ -30,6 +30,7 @@ from krasnal_id.models import (
     AuditDisposition,
     AuditReason,
     Coordinates,
+    CoordinateSource,
     DiscoveryAuditFile,
     DiscoveryAuditRecord,
     DiscoveryResult,
@@ -302,6 +303,9 @@ def _candidate_record(
                 wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/{candidate.dwarf_id}"),
                 commons_category=next(iter(candidate.commons_categories)),
                 coordinates=coordinates,
+                # P625 is an authoritative statement about the statue, unlike the
+                # positions derived from photographs in section 5.7.
+                coordinate_source=(CoordinateSource.WIKIDATA if coordinates is not None else None),
             ),
             None,
         )

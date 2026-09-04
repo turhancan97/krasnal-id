@@ -10,7 +10,13 @@ from pydantic import HttpUrl
 from krasnal_id.config import BackboneConfig
 from krasnal_id.embeddings.cache import EmbeddingCache
 from krasnal_id.embeddings.store import cache_key_for
-from krasnal_id.models import Coordinates, DatasetManifest, DwarfRecord, ImageRecord
+from krasnal_id.models import (
+    Coordinates,
+    CoordinateSource,
+    DatasetManifest,
+    DwarfRecord,
+    ImageRecord,
+)
 
 FAKE_BACKBONE = BackboneConfig(
     name="dinov2",
@@ -60,6 +66,7 @@ def synthetic_manifest(
                 if f"Q{index}" in placed
                 else None
             ),
+            coordinate_source=(CoordinateSource.WIKIDATA if f"Q{index}" in placed else None),
         )
         for index in range(1, dwarf_count + 1)
     )

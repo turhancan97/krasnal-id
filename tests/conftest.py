@@ -25,6 +25,7 @@ def valid_manifest_data() -> Callable[[], dict[str, Any]]:
                     "wikidata_url": "https://www.wikidata.org/wiki/Q123",
                     "commons_category": "Test dwarf",
                     "coordinates": {"latitude": 51.1079, "longitude": 17.0385},
+                    "coordinate_source": "wikidata",
                 }
             ],
             "images": [

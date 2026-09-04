@@ -7,6 +7,7 @@ import json
 import os
 from datetime import UTC, datetime
 from pathlib import Path
+from statistics import median
 from tempfile import NamedTemporaryFile
 from typing import Final, cast
 
@@ -16,6 +17,8 @@ from krasnal_id.models import (
     CategoryReviewFile,
     CategoryReviewRecord,
     CategoryReviewStatus,
+    Coordinates,
+    CoordinateSource,
     DatasetManifest,
     DwarfDiscoveryFile,
     DwarfRecord,
@@ -49,6 +52,32 @@ def category_review_sha256(review: CategoryReviewFile) -> str:
     for record in payload["records"]:
         record.pop("display_name_override", None)
     return canonical_json_sha256(payload)
+
+
+def place_dwarf(dwarf: DwarfRecord, images: tuple[ImageRecord, ...]) -> DwarfRecord:
+    """Give a dwarf coordinates derived from its photographs, if it has none.
+
+    A Wikidata `P625` statement is authoritative and always wins. Otherwise the
+    position is the **median** of wherever its photographs were taken — the median
+    rather than the mean because one mis-tagged photograph should not drag a class
+    across the city, and a handful of points is exactly where that matters. The
+    source is recorded either way, so a derived position is never mistaken for a
+    stated one. See `AGENTS.md` section 5.7.
+    """
+    if dwarf.coordinates is not None:
+        return dwarf.model_copy(update={"coordinate_source": CoordinateSource.WIKIDATA})
+    placed = [image.coordinates for image in images if image.coordinates is not None]
+    if not placed:
+        return dwarf
+    return dwarf.model_copy(
+        update={
+            "coordinates": Coordinates(
+                latitude=median(point.latitude for point in placed),
+                longitude=median(point.longitude for point in placed),
+            ),
+            "coordinate_source": CoordinateSource.COMMONS_CAMERA,
+        }
+    )
 
 
 def build_dataset_manifest(
@@ -88,8 +117,15 @@ def build_dataset_manifest(
     admitted_dwarf_ids = {
         dwarf_id for dwarf_id, count in counts.items() if count >= minimum_images_per_dwarf
     }
-    admitted_dwarfs = tuple(dwarf for dwarf in dwarfs if dwarf.dwarf_id in admitted_dwarf_ids)
     admitted_images = tuple(image for image in images if image.dwarf_id in admitted_dwarf_ids)
+    images_by_dwarf: dict[str, list[ImageRecord]] = {}
+    for image in admitted_images:
+        images_by_dwarf.setdefault(image.dwarf_id, []).append(image)
+    admitted_dwarfs = tuple(
+        place_dwarf(dwarf, tuple(images_by_dwarf.get(dwarf.dwarf_id, ())))
+        for dwarf in dwarfs
+        if dwarf.dwarf_id in admitted_dwarf_ids
+    )
 
     return DatasetManifest(
         schema_version=SCHEMA_VERSION,

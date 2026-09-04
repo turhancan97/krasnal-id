@@ -33,6 +33,7 @@ from krasnal_id.models import (
     CategoryReviewRecord,
     CategoryReviewStatus,
     CommonsCacheMetadata,
+    Coordinates,
     DiscoveryAuditFile,
     DwarfDiscoveryFile,
     DwarfRecord,
@@ -94,12 +95,33 @@ class _ImageInfo(BaseModel):
     extmetadata: dict[str, _MetadataValue]
 
 
+class _Coordinate(BaseModel):
+    model_config = ConfigDict(extra="ignore", frozen=True)
+    lat: float = Field(ge=-90.0, le=90.0)
+    lon: float = Field(ge=-180.0, le=180.0)
+    type: str | None = None
+
+
 class _CommonsPage(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
     pageid: int = Field(gt=0)
     ns: int
     title: str = Field(min_length=1)
     imageinfo: tuple[_ImageInfo, ...] = ()
+    coordinates: tuple[_Coordinate, ...] = ()
+
+    @property
+    def position(self) -> Coordinates | None:
+        """Return the best available position for this photograph.
+
+        An explicit `object` coordinate states where the subject is and is preferred
+        outright. Otherwise the first coordinate, in practice the camera position,
+        which section 5.7 measured at a median of 9 m from the statue.
+        """
+        if not self.coordinates:
+            return None
+        best = next((c for c in self.coordinates if c.type == "object"), self.coordinates[0])
+        return Coordinates(latitude=best.lat, longitude=best.lon)
 
 
 class _CommonsQuery(BaseModel):
@@ -143,6 +165,7 @@ class _Candidate:
     commons_sha1: str
     source_revision_at: datetime
     extension: str
+    coordinates: Coordinates | None = None
 
 
 @dataclass
@@ -417,7 +440,13 @@ def _request_parameters(config: WikimediaDataConfig, category: str) -> dict[str,
         "iiprop": "timestamp|url|size|mime|sha1|extmetadata",
         "iiurlheight": str(config.image_max_long_side),
         "iiurlwidth": str(config.image_max_long_side),
-        "prop": "imageinfo",
+        # Coordinates ride along with the image info rather than costing a second
+        # pass: `coprimary=all` because a statue photograph's position is usually
+        # recorded as a secondary "camera" coordinate. See AGENTS.md section 5.7.
+        "prop": "imageinfo|coordinates",
+        "coprop": "type",
+        "coprimary": "all",
+        "colimit": "max",
     }
 
 
@@ -653,6 +682,7 @@ def _normalize_page(
             commons_sha1=info.sha1,
             source_revision_at=info.timestamp,
             extension=extension,
+            coordinates=page.position,
         ),
         None,
     )
@@ -790,6 +820,7 @@ def _download_candidate(
         commons_page_id=candidate.page_id,
         commons_sha1=candidate.commons_sha1,
         source_revision_at=candidate.source_revision_at,
+        coordinates=candidate.coordinates,
     )
 
 
@@ -960,7 +991,12 @@ def fetch_images(
                     )
                     old_record = previous.get((dwarf.dwarf_id, candidate.page_id))
                     if _can_reuse(candidate, destination, old_record, config):
-                        acquired.append(cast(ImageRecord, old_record))
+                        reused = cast(ImageRecord, old_record)
+                        if reused.coordinates != candidate.coordinates:
+                            reused = reused.model_copy(
+                                update={"coordinates": candidate.coordinates}
+                            )
+                        acquired.append(reused)
                         counters.reused += 1
                         continue
                     try:

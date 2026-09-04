@@ -17,11 +17,14 @@ from krasnal_id.data_pipeline.build_manifest import (
     build_manifest_from_artifacts,
     canonical_json_sha256,
     category_review_sha256,
+    place_dwarf,
 )
 from krasnal_id.models import (
     CategoryReviewFile,
     CategoryReviewRecord,
     CategoryReviewStatus,
+    Coordinates,
+    CoordinateSource,
     DatasetManifest,
     DwarfDiscoveryFile,
     DwarfRecord,
@@ -289,10 +292,71 @@ def test_current_local_artifacts_produce_expected_manifest() -> None:
     # Tracked display-name overrides survive a Commons-first rebuild.
     assert names["Q136001318"] == "Ossolinek"
     assert names["Q136001344"] == "Demokracja"
-    # Both identity kinds coexist, and only the Wikidata ones carry coordinates.
+    # Both identity kinds coexist, and only the Wikidata ones have a Wikidata item.
     wikidata = [d for d in manifest.dwarfs if d.wikidata_url is not None]
     commons_only = [d for d in manifest.dwarfs if d.wikidata_url is None]
     assert len(wikidata) == 23
     assert len(commons_only) == 283
     assert all(d.coordinates is not None for d in wikidata)
-    assert all(d.coordinates is None for d in commons_only)
+
+    # Commons-only classes are placed from their photographs (AGENTS.md 5.7), so
+    # coverage is no longer limited to Wikidata -- but every coordinate names its
+    # source, and only a Wikidata record may claim a Wikidata one.
+    placed = [d for d in manifest.dwarfs if d.coordinates is not None]
+    derived = [d for d in placed if d.coordinate_source is CoordinateSource.COMMONS_CAMERA]
+    assert len(placed) == 295
+    assert len(derived) == 272
+    assert all(d.coordinate_source is not None for d in placed)
+    assert all(
+        d.wikidata_url is not None
+        for d in manifest.dwarfs
+        if d.coordinate_source is CoordinateSource.WIKIDATA
+    )
+
+
+def _placed(page_id: int, lat: float, lon: float) -> ImageRecord:
+    return _image("Q1", page_id).model_copy(
+        update={"coordinates": Coordinates(latitude=lat, longitude=lon)}
+    )
+
+
+def test_a_wikidata_coordinate_wins_and_names_itself() -> None:
+    stated = _dwarf("Q1", "One", "Category One").model_copy(
+        update={"coordinates": Coordinates(latitude=51.11, longitude=17.03)}
+    )
+
+    placed = place_dwarf(stated, (_placed(1, 51.99, 17.99),))
+
+    # An authoritative P625 statement is never overridden by where a photographer stood.
+    assert placed.coordinates == stated.coordinates
+    assert placed.coordinate_source is CoordinateSource.WIKIDATA
+
+
+def test_a_dwarf_without_coordinates_takes_the_median_of_its_photographs() -> None:
+    dwarf = _dwarf("Q1", "One", "Category One")
+
+    # The outlier is 100x further out than the spread of the other three; a mean
+    # would follow it, the median does not.
+    placed = place_dwarf(
+        dwarf,
+        (
+            _placed(1, 51.10, 17.00),
+            _placed(2, 51.11, 17.01),
+            _placed(3, 51.12, 17.02),
+            _placed(4, 52.50, 18.50),
+        ),
+    )
+
+    assert placed.coordinate_source is CoordinateSource.COMMONS_CAMERA
+    assert placed.coordinates is not None
+    assert placed.coordinates.latitude == pytest.approx(51.115)
+    assert placed.coordinates.longitude == pytest.approx(17.015)
+
+
+def test_a_dwarf_with_no_placed_photographs_stays_unplaced() -> None:
+    dwarf = _dwarf("Q1", "One", "Category One")
+
+    placed = place_dwarf(dwarf, (_image("Q1", 1),))
+
+    assert placed.coordinates is None
+    assert placed.coordinate_source is None
