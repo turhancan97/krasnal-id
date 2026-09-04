@@ -10,6 +10,29 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added Commons-first discovery as `krasnal-id data query --include-commons`, which enumerates the
+  481 per-dwarf categories under `Category:Dwarves in Wrocław by name` as a second source and
+  merges them with Wikidata. Measured on 2026-09-04 it discovers 482 classes against the 41
+  Wikidata alone can reach, because only 44 Wikidata items exist for those 481 categories. A
+  Wikidata record wins any category it claims, since it carries a QID and the P625 coordinates the
+  geographic ablation needs. Both sources share one discovery artifact and one recorded query
+  hash, so every downstream consistency check keeps working, and without the flag the command
+  reproduces the Wikidata-only artifact exactly.
+- Added `data/discovery/commons-categories.json` caching with the same refresh, recovery and
+  query-identity validation as the SPARQL cache, plus `unexpected_category_name`,
+  `duplicate_category_slug` and `claimed_by_wikidata` audit reasons. A slug collision is excluded
+  rather than merged, because two statues would otherwise share one image directory.
+
+### Changed
+
+- Widened the dataset contracts for statues Wikidata has no item for: `wikidata_url` is now
+  optional, `DWARF_ID_PATTERN` is shared by the manifest and both review files, and a
+  Commons-identified dwarf may not claim a Wikidata item or coordinates. Synthetic test fixtures
+  became one-based, because `Q0` is not a QID and the pattern now says so.
+
+
 ## [0.4.0] - 2026-09-03
 
 ### Added

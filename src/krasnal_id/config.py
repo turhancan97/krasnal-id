@@ -35,6 +35,7 @@ class WikimediaDataConfig(BaseModel):
     max_attempts: int = Field(ge=1)
     retry_backoff_seconds: tuple[float, ...]
     max_retry_after_seconds: float = Field(gt=0)
+    commons_root_category: str = Field(min_length=1)
     image_max_long_side: int = Field(gt=0)
     image_min_short_side: int = Field(gt=0)
     allowed_license_families: tuple[str, ...] = Field(min_length=1)

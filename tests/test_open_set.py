@@ -217,8 +217,8 @@ def test_separable_classes_are_rejected_and_twins_are_not(tmp_path: Path) -> Non
     # The twins score high even when removed, so separability is imperfect.
     assert 0.5 < metrics["auroc"].value < 1.0
     # The unrejectable dwarves are exactly the twins, each covered by the other.
-    assert {row.dwarf_id for row in rejections if row.false_accepts} == {"Q0", "Q1"}
-    assert {row.nearest_dwarf_id for row in rejections[:2]} == {"Q0", "Q1"}
+    assert {row.dwarf_id for row in rejections if row.false_accepts} == {"Q1", "Q2"}
+    assert {row.nearest_dwarf_id for row in rejections[:2]} == {"Q1", "Q2"}
     assert metrics["known_queries"].value == pytest.approx(float(len(known)))
     assert metrics["unknown_queries"].value == pytest.approx(float(len(unknown)))
     assert metrics["mean_similarity_gap"].value > 0.0
@@ -244,24 +244,24 @@ def test_rejection_rows_name_what_covered_for_a_removed_dwarf() -> None:
     manifest = synthetic_manifest(dwarf_count=3, per_dwarf=3)
     known = tuple(
         _query(f"Q{index}", 0.5 + 0.01 * position, present=True)
-        for index in range(3)
+        for index in range(1, 4)
         for position in range(3)
     )
     unknown = (
-        # Q0 is covered by Q1 at a similarity no threshold from the others rejects.
-        _query("Q0", 0.99, present=False, top_dwarf_id="Q1"),
-        _query("Q0", 0.98, present=False, top_dwarf_id="Q1"),
-        _query("Q1", 0.10, present=False, top_dwarf_id="Q0"),
-        _query("Q2", 0.10, present=False, top_dwarf_id="Q0"),
+        # Q1 is covered by Q2 at a similarity no threshold from the others rejects.
+        _query("Q1", 0.99, present=False, top_dwarf_id="Q2"),
+        _query("Q1", 0.98, present=False, top_dwarf_id="Q2"),
+        _query("Q2", 0.10, present=False, top_dwarf_id="Q1"),
+        _query("Q3", 0.10, present=False, top_dwarf_id="Q1"),
     )
 
     rejections = rank_rejections(known, unknown, manifest, _config())
 
-    assert [row.dwarf_id for row in rejections] == ["Q0", "Q1", "Q2"]
+    assert [row.dwarf_id for row in rejections] == ["Q1", "Q2", "Q3"]
     assert rejections[0].false_accepts == 2
     assert rejections[0].unknown_queries == 2
-    assert rejections[0].nearest_dwarf_id == "Q1"
-    assert rejections[0].nearest_display_name == "Dwarf 1"
+    assert rejections[0].nearest_dwarf_id == "Q2"
+    assert rejections[0].nearest_display_name == "Dwarf 2"
     assert rejections[1].false_accepts == 0
     # The cap keeps a large dataset's artifact readable.
     assert len(rank_rejections(known, unknown, manifest, _config(top_rejections=1))) == 1
@@ -269,15 +269,15 @@ def test_rejection_rows_name_what_covered_for_a_removed_dwarf() -> None:
 
 def test_rejection_rows_reject_a_dwarf_outside_the_manifest() -> None:
     manifest = synthetic_manifest(dwarf_count=2, per_dwarf=3)
-    known = tuple(_query(f"Q{index}", 0.5, present=True) for index in range(2) for _ in range(3))
+    known = tuple(_query(f"Q{index}", 0.5, present=True) for index in range(1, 3) for _ in range(3))
 
     with pytest.raises(OpenSetExperimentError, match="Q9 is absent from the manifest"):
         rank_rejections(
-            known, (_query("Q9", 0.5, present=False, top_dwarf_id="Q0"),), manifest, _config()
+            known, (_query("Q9", 0.5, present=False, top_dwarf_id="Q1"),), manifest, _config()
         )
     with pytest.raises(OpenSetExperimentError, match="Q8 is absent from the manifest"):
         rank_rejections(
-            known, (_query("Q0", 0.5, present=False, top_dwarf_id="Q8"),), manifest, _config()
+            known, (_query("Q1", 0.5, present=False, top_dwarf_id="Q8"),), manifest, _config()
         )
 
 

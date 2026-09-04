@@ -74,11 +74,11 @@ def _manifest(tmp_path: Path) -> DatasetManifest:
             wikidata_url=HttpUrl(f"https://www.wikidata.org/wiki/Q{index}"),
             commons_category=f"Dwarf {index}",
         )
-        for index in range(2)
+        for index in range(1, 3)
     )
     images = tuple(
         _image_record(tmp_path, f"image-{dwarf}-{index}", f"Q{dwarf}", (dwarf * 50, index * 50, 10))
-        for dwarf in range(2)
+        for dwarf in range(1, 3)
         for index in range(3)
     )
     return DatasetManifest(

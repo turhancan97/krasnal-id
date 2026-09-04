@@ -63,6 +63,71 @@ This ablation — **accuracy vs. candidate-pool size** — is the headline resul
   content spanning different labels to prevent evaluation leakage. Never delete orphan files
   automatically.
 
+### 5.6 Commons-first discovery decision (2026-09-04)
+
+Accepted as the second post-0.3.0 scope change, answering the "larger pool" question §8 lists.
+Wikidata is the binding constraint and cannot be widened into one: measured on 2026-09-04, only
+**44** items carry `P31 = Q136276280`, and a reverse check found the same 44 to be the only
+Wikidata items pointing at *any* of the **481** per-dwarf categories under
+`Category:Dwarves in Wrocław by name`. Relaxing the type filter therefore gains nothing; Wikidata
+simply has no item for the other ~437 statues.
+
+Commons holds the photographs. A 150-category sample of those 481 found 65% with three or more
+files and a mean of 4.14, projecting ~314 categories over the current threshold and ~2,000 files
+in total, against 23 classes and 146 images today.
+
+Decisions:
+
+- **`dwarfs.json` stays the single discovery artifact with a single `query_sha256`.** Every
+  downstream stage validates against that hash, so a second discovery file with a second hash
+  would fork the provenance chain that §5.5 depends on. Commons enumeration is therefore a second
+  source *inside* `data query`, behind an explicit `--include-commons`, and the recorded hash
+  covers both queries. Without the flag the command reproduces the Wikidata-only artifact exactly.
+- **A Wikidata record always wins over a Commons category describing the same statue.** The 44
+  typed items carry `P625` coordinates and a stable QID; the merge prefers them and keeps the
+  Commons-only records only for categories no Wikidata item claims.
+- **Commons-only classes take a `C-<slug>` identifier** derived from the category title, which is
+  unique on Commons by construction. The slug is ASCII-folded and filesystem-safe because the
+  identifier names an image directory. A slug collision is an error to review, never a silent
+  merge of two statues.
+- **`wikidata_url` becomes optional and the dwarf-ID pattern widens** in the manifest and both
+  review contracts. A Commons-only statue has no Wikidata item, so requiring one would be a
+  schema lie.
+- **The geographic ablation does not grow with the dataset.** Coordinates come from `P625`, so
+  they exist for the 44 and for none of the rest. §7.1's geographic finding stays scoped to the
+  statues that have coordinates, and the arm must report how many classes it actually covers
+  rather than implying it covers the pool. Do not report a geo result over a Commons-first
+  manifest without saying what fraction of it carried coordinates.
+- **Review burden scales with discovery, and that is accepted rather than automated away.** 481
+  category decisions instead of 41 is the cost of the larger pool. Mechanical mappings may be
+  pre-approved by pattern in a later change, but a human decision remains the contract.
+- **The merge matches on exact category equality, which is all it can honestly do.** A statue
+  filed under a Commons category that Wikidata's `P373` does not name appears twice, once per
+  source, and only category review catches it. *Papa Krasnal* is the live example: its Wikidata
+  item points at its sculptor's category (`Olaf Brzeski`) rather than at `Papa Krasnal`, so both
+  records survive discovery. Never assume the merge deduplicates statues; it deduplicates
+  category strings.
+- **A normalization warning about a category the merge then supersedes is dropped.** A reviewer
+  reading 481 categories must not be sent to look at records that never reached the artifact.
+  Exclusions survive regardless, because they explain an absence.
+- **Re-acquisition invalidates every published number.** Changing the discovered set changes
+  `query_sha256`, which invalidates staging, the manifest, the split, the caches' relevance and
+  all five experiments plus both figures. Treat a Commons-first rebuild as one deliberate
+  re-run of §6.4's whole reproduction sequence, never as an incremental data top-up.
+
+Measured on 2026-09-04, running `data query --include-commons` against both live sources:
+
+- **482 records: 41 from Wikidata, 441 Commons-only.** The Wikidata arm emits exactly the 41 it
+  always did, so the flag adds classes without disturbing the existing ones. 41 of the 482 carry
+  coordinates, which is the geographic ceiling this decision accepts.
+- 56 audit entries: 40 categories superseded by a Wikidata record, 12 titles too irregular to
+  parse a name from, 4 possible unlinked groups and 3 excluded group entities. Twelve titles to
+  read by hand out of 481 is the review surface, not 481 — but every one of the 441 new records
+  still needs a category-review decision before `data fetch` will touch it.
+- Commons uses `dwarf`, `dwarfs` **and** `dwarves`, plus an undiacriticked `Wroclaw`. Missing
+  `dwarves` initially cost 76 categories their display name, which is why the title pattern
+  accepts all three and why anything it cannot parse is flagged rather than guessed.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone

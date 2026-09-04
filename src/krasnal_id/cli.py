@@ -16,6 +16,7 @@ from krasnal_id.data_pipeline.build_split import (
     build_split_from_artifact,
     write_evaluation_split,
 )
+from krasnal_id.data_pipeline.commons_discovery import CommonsDiscoveryError
 from krasnal_id.data_pipeline.commons_fetch import (
     CommonsConfigurationError,
     fetch_images,
@@ -72,7 +73,14 @@ LimitOption = Annotated[
 ]
 RefreshOption = Annotated[
     bool,
-    typer.Option("--refresh", help="Ignore a valid cache and query Wikidata again."),
+    typer.Option("--refresh", help="Ignore a valid cache and query the sources again."),
+]
+IncludeCommonsOption = Annotated[
+    bool,
+    typer.Option(
+        "--include-commons",
+        help="Also discover Commons per-dwarf categories Wikidata has no item for.",
+    ),
 ]
 PrepareReviewOption = Annotated[
     bool,
@@ -104,8 +112,9 @@ def query_wikidata(
     override: OverrideOption = None,
     limit: LimitOption = None,
     refresh: RefreshOption = False,
+    include_commons: IncludeCommonsOption = False,
 ) -> None:
-    """Discover Wroclaw dwarf records through Wikidata."""
+    """Discover Wroclaw dwarf records through Wikidata, optionally plus Commons."""
     config = load_config(override or [])
     configure_logging(config.logging)
     try:
@@ -114,22 +123,31 @@ def query_wikidata(
             config.paths.discovery_dir,
             limit=limit,
             refresh=refresh,
+            include_commons=include_commons,
         )
     except WikidataConfigurationError as error:
         typer.echo(f"Configuration error: {error}", err=True)
         raise typer.Exit(code=2) from error
-    except WikidataQueryError as error:
+    except (WikidataQueryError, CommonsDiscoveryError) as error:
         typer.echo(f"Query failed: {error}", err=True)
         raise typer.Exit(code=1) from error
 
     excluded = sum(record.disposition is AuditDisposition.EXCLUDED for record in result.audit)
     warnings = sum(record.disposition is AuditDisposition.WARNING for record in result.audit)
     paths = discovery_paths(config.paths.discovery_dir)
+    sources = "wikidata+commons" if include_commons else "wikidata"
     typer.echo(
-        "Wikidata discovery complete: "
+        f"Discovery complete ({sources}): "
         f"cache={result.cache_status} eligible={result.eligible_total} "
         f"emitted={len(result.records)} excluded={excluded} warnings={warnings}"
     )
+    if include_commons:
+        commons_only = sum(1 for record in result.records if record.dwarf_id.startswith("C-"))
+        placed = sum(1 for record in result.records if record.coordinates is not None)
+        typer.echo(
+            f"Sources: {len(result.records) - commons_only} from Wikidata, "
+            f"{commons_only} Commons-only; {placed} carry coordinates"
+        )
     typer.echo(f"Records: {paths.dwarfs}")
     typer.echo(f"Audit: {paths.audit}")
 

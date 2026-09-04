@@ -67,6 +67,22 @@ uv run krasnal-id data query --limit 5
 uv run krasnal-id data query --refresh
 ```
 
+Wikidata alone caps the dataset at 41 classes: only 44 items carry the dwarf-statue type, and the
+same 44 are the only ones pointing at any of the 481 per-dwarf categories Commons holds. Add those
+categories as a second source:
+
+```bash
+uv run krasnal-id data query --include-commons
+```
+
+That discovers 482 classes — 41 from Wikidata, 441 from Commons alone. A Wikidata record wins any
+category it claims, because it carries a QID and the coordinates the geographic ablation needs;
+Commons-only classes have neither, so the geographic arm does not grow with the dataset. Both
+sources share one artifact and one recorded query hash, and without the flag the command
+reproduces the Wikidata-only artifact exactly. Every new class still needs a category-review
+decision, and a rebuild invalidates every published result: see
+[AGENTS.md](AGENTS.md) section 5.6.
+
 The command writes ignored raw-cache, normalized-record, and audit files below
 `data/discovery/`. Cached results can be normalized again without the environment variable.
 

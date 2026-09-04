@@ -17,6 +17,15 @@ import httpx
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
 
 from krasnal_id.config import WikimediaDataConfig
+from krasnal_id.data_pipeline.commons_discovery import (
+    CommonsDiscoveryError,
+    CommonsDiscoveryResult,
+    discover_commons_categories,
+    merge_discovery_records,
+)
+from krasnal_id.data_pipeline.commons_discovery import (
+    query_sha256 as commons_query_sha256,
+)
 from krasnal_id.models import (
     AuditDisposition,
     AuditReason,
@@ -431,6 +440,46 @@ def _request_payload(
     raise WikidataQueryError("Wikidata request exhausted its retry policy.")
 
 
+def _request_commons_page(
+    config: WikimediaDataConfig,
+    user_agent: str,
+    client: httpx.Client,
+    parameters: dict[str, str],
+) -> object:
+    """GET one page of Commons category members under the shared retry policy."""
+    for attempt in range(config.max_attempts):
+        try:
+            response = client.get(
+                str(config.commons_api_endpoint),
+                params=parameters,
+                headers={"Accept": "application/json", "User-Agent": user_agent},
+                timeout=config.request_timeout_seconds,
+            )
+        except (httpx.TimeoutException, httpx.TransportError) as error:
+            if attempt + 1 >= config.max_attempts:
+                raise CommonsDiscoveryError(
+                    f"Commons request failed after {config.max_attempts} attempts."
+                ) from error
+            time.sleep(config.retry_backoff_seconds[attempt])
+            continue
+
+        if response.status_code in RETRYABLE_STATUS_CODES and attempt + 1 < config.max_attempts:
+            delay = _retry_after_seconds(response, config.max_retry_after_seconds)
+            time.sleep(delay if delay is not None else config.retry_backoff_seconds[attempt])
+            continue
+
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as error:
+            raise CommonsDiscoveryError(f"Commons returned HTTP {response.status_code}.") from error
+        try:
+            return cast(object, response.json())
+        except ValueError as error:
+            raise CommonsDiscoveryError("Commons returned malformed JSON.") from error
+
+    raise CommonsDiscoveryError("Commons request exhausted its retry policy.")
+
+
 def _fetch_payload(
     config: WikimediaDataConfig,
     user_agent: str,
@@ -509,21 +558,64 @@ def _write_normalized_outputs(
     audit: tuple[DiscoveryAuditRecord, ...],
     eligible_total: int,
     limit: int | None,
+    query_hash: str,
 ) -> None:
     discovery = DwarfDiscoveryFile(
         schema_version=SCHEMA_VERSION,
-        query_sha256=QUERY_SHA256,
+        query_sha256=query_hash,
         selection_limit=limit,
         eligible_total=eligible_total,
         records=records,
     )
     audit_file = DiscoveryAuditFile(
         schema_version=SCHEMA_VERSION,
-        query_sha256=QUERY_SHA256,
+        query_sha256=query_hash,
         records=audit,
     )
     _atomic_write_json(paths.dwarfs, discovery.model_dump(mode="json"))
     _atomic_write_json(paths.audit, audit_file.model_dump(mode="json"))
+
+
+def effective_query_sha256(config: WikimediaDataConfig, *, include_commons: bool) -> str:
+    """Return the hash recorded for a discovery run over the sources it used.
+
+    Wikidata alone keeps the bare SPARQL hash, so a run without `--include-commons`
+    reproduces the existing artifact byte for byte. Adding Commons folds both query
+    identities together, which is what makes every downstream stage refuse to mix a
+    manifest built from one source set with staging built from another.
+    """
+    if not include_commons:
+        return QUERY_SHA256
+    combined = f"{QUERY_SHA256}:{commons_query_sha256(config.commons_root_category)}"
+    return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
+
+def _discover_commons(
+    config: WikimediaDataConfig,
+    discovery_dir: Path,
+    *,
+    refresh: bool,
+    client: httpx.Client | None,
+) -> CommonsDiscoveryResult:
+    """Run Commons enumeration, supplying transport and the atomic writer."""
+    user_agent: str | None = None
+
+    def request(parameters: dict[str, str]) -> object:
+        nonlocal user_agent
+        if user_agent is None:
+            user_agent = _contact_user_agent()
+        if client is not None:
+            return _request_commons_page(config, user_agent, client, parameters)
+        with httpx.Client() as owned_client:
+            return _request_commons_page(config, user_agent, owned_client, parameters)
+
+    return discover_commons_categories(
+        config,
+        discovery_dir,
+        session=request,
+        write_json=_atomic_write_json,
+        refresh=refresh,
+    )
 
 
 def query_dwarfs(
@@ -532,9 +624,16 @@ def query_dwarfs(
     *,
     limit: int | None = None,
     refresh: bool = False,
+    include_commons: bool = False,
     client: httpx.Client | None = None,
 ) -> DiscoveryResult:
-    """Discover, validate, cache, and persist normalized Wikidata dwarf records."""
+    """Discover, validate, cache, and persist normalized dwarf records.
+
+    Wikidata is always the primary source. With `include_commons`, the Commons
+    per-dwarf category tree is enumerated as a second source and merged in, which
+    is what lets a statue Wikidata has no item for enter the dataset. See
+    `AGENTS.md` section 5.6 for why both sources share one artifact and one hash.
+    """
     if limit is not None and limit <= 0:
         raise WikidataConfigurationError("limit must be a positive integer")
 
@@ -558,7 +657,17 @@ def query_dwarfs(
             cache_status = "fetched"
 
     eligible_records, audit = normalize_query_response(payload)
+
+    if include_commons:
+        commons = _discover_commons(config, discovery_dir, refresh=refresh, client=client)
+        eligible_records, commons_audit = merge_discovery_records(
+            eligible_records, commons.records, commons.audit
+        )
+        audit = audit + commons_audit
+
     eligible_total = len(eligible_records)
+    # The limit is applied after the merge, so a pilot subset is drawn from the
+    # whole discovered pool rather than from whichever source happened to be first.
     selected_records = eligible_records if limit is None else eligible_records[:limit]
     _write_normalized_outputs(
         paths,
@@ -566,12 +675,14 @@ def query_dwarfs(
         audit,
         eligible_total,
         limit,
+        effective_query_sha256(config, include_commons=include_commons),
     )
 
     LOGGER.info(
-        "wikidata discovery completed",
+        "dwarf discovery completed",
         extra={
             "cache_status": cache_status,
+            "include_commons": include_commons,
             "eligible_total": eligible_total,
             "emitted_total": len(selected_records),
             "audit_total": len(audit),

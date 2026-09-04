@@ -29,8 +29,8 @@ _EQUATOR_DEGREE_METRES = 111195.0
 
 
 def _line(count: int, spacing_degrees: float = 0.001) -> dict[str, tuple[float, float]]:
-    """Place dwarves in a west-to-east line, Q0 westmost."""
-    return {f"Q{i}": (51.11, 17.03 + i * spacing_degrees) for i in range(count)}
+    """Place dwarves in a west-to-east line, Q1 westmost."""
+    return {f"Q{i}": (51.11, 17.03 + (i - 1) * spacing_degrees) for i in range(1, count + 1)}
 
 
 def test_haversine_matches_known_distances() -> None:
@@ -47,7 +47,7 @@ def test_haversine_matches_known_distances() -> None:
 
 def test_locations_require_the_whole_set(tmp_path: Path) -> None:
     located = synthetic_manifest(dwarf_count=3, coordinates=_line(3))
-    assert set(dwarf_locations(located)) == {"Q0", "Q1", "Q2"}
+    assert set(dwarf_locations(located)) == {"Q1", "Q2", "Q3"}
 
     partial = synthetic_manifest(dwarf_count=3, coordinates=_line(2))
     with pytest.raises(GeoAblationError, match="1 of 3 dwarves have no coordinates"):
@@ -61,14 +61,14 @@ def test_locations_require_the_whole_set(tmp_path: Path) -> None:
 def test_a_pool_holds_the_query_and_its_nearest_neighbours() -> None:
     locations = _line(5)
 
-    pool, radius = nearest_pool("Q0", 3, locations)
+    pool, radius = nearest_pool("Q1", 3, locations)
 
     # The query comes first, then the two nearest going east.
-    assert pool == ("Q0", "Q1", "Q2")
-    assert radius == pytest.approx(haversine_metres(locations["Q0"], locations["Q2"]))
+    assert pool == ("Q1", "Q2", "Q3")
+    assert radius == pytest.approx(haversine_metres(locations["Q1"], locations["Q3"]))
     # A middle dwarf reaches out in both directions.
-    assert set(nearest_pool("Q2", 3, locations)[0]) == {"Q2", "Q1", "Q3"}
-    assert nearest_pool("Q0", 5, locations)[0] == ("Q0", "Q1", "Q2", "Q3", "Q4")
+    assert set(nearest_pool("Q3", 3, locations)[0]) == {"Q3", "Q2", "Q4"}
+    assert nearest_pool("Q1", 5, locations)[0] == ("Q1", "Q2", "Q3", "Q4", "Q5")
 
 
 def test_equal_distances_break_by_dwarf_id() -> None:
@@ -87,9 +87,9 @@ def test_pool_sizes_outside_the_located_set_are_rejected() -> None:
     locations = _line(3)
 
     with pytest.raises(GeoAblationError, match="at least two"):
-        nearest_pool("Q0", 1, locations)
+        nearest_pool("Q1", 1, locations)
     with pytest.raises(GeoAblationError, match="exceeds the 3 located dwarves"):
-        nearest_pool("Q0", 4, locations)
+        nearest_pool("Q1", 4, locations)
     with pytest.raises(GeoAblationError, match="has no coordinates"):
         nearest_pool("Q9", 2, locations)
 
@@ -119,13 +119,13 @@ def test_a_geographic_measurement_is_exact_and_reports_its_radius(tmp_path: Path
 
 
 def test_co_located_lookalikes_make_a_geographic_pool_harder(tmp_path: Path) -> None:
-    # Q0 and Q1 share a spot and share an embedding axis; the others are far away
+    # Q1 and Q2 share a spot and share an embedding axis; the others are far away
     # and easy. Proximity therefore always pools the one confusable neighbour.
     coordinates = {
-        "Q0": (51.11, 17.03),
         "Q1": (51.11, 17.03),
-        "Q2": (51.20, 17.30),
-        "Q3": (51.30, 17.40),
+        "Q2": (51.11, 17.03),
+        "Q3": (51.20, 17.30),
+        "Q4": (51.30, 17.40),
     }
     manifest = synthetic_manifest(dwarf_count=4, coordinates=coordinates)
 
@@ -145,11 +145,11 @@ def test_co_located_lookalikes_make_a_geographic_pool_harder(tmp_path: Path) -> 
 
     geo = measure_geographic_pool(split, matrix, 2, locations)
 
-    # Every Q0/Q1 query is pooled with its lookalike, so accuracy is far from perfect
+    # Every Q1/Q2 query is pooled with its lookalike, so accuracy is far from perfect
     # even though the pool holds only two candidates.
     assert geo.top_1 < 1.0
     # The co-located pair needs no radius at all to be pooled together.
-    assert nearest_pool("Q0", 2, locations) == (("Q0", "Q1"), 0.0)
+    assert nearest_pool("Q1", 2, locations) == (("Q1", "Q2"), 0.0)
 
 
 def test_summary_pairs_both_arms_and_records_the_advantage() -> None:

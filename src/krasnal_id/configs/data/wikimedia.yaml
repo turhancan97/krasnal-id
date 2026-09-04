@@ -4,6 +4,7 @@ request_timeout_seconds: 30.0
 max_attempts: 3
 retry_backoff_seconds: [1.0, 2.0]
 max_retry_after_seconds: 60.0
+commons_root_category: "Category:Dwarves in Wrocław by name"
 image_max_long_side: 2000
 image_min_short_side: 400
 allowed_license_families: [public-domain, cc0, cc-by, cc-by-sa]

@@ -161,7 +161,7 @@ def test_analysis_summarizes_a_separable_dataset(tmp_path: Path) -> None:
 
 
 def test_analysis_finds_a_planted_confusion(tmp_path: Path) -> None:
-    # Q0 and Q1 share an axis with interleaved offsets, so each is the other's
+    # Q1 and Q2 share an axis with interleaved offsets, so each is the other's
     # nearest neighbour and both directions should be misidentified.
     manifest = synthetic_manifest(dwarf_count=4)
 
@@ -182,7 +182,7 @@ def test_analysis_finds_a_planted_confusion(tmp_path: Path) -> None:
     }
 
     assert named["top_1_errors"] > 0
-    assert ("Q0", "Q1") in confused or ("Q1", "Q0") in confused
+    assert ("Q1", "Q2") in confused or ("Q2", "Q1") in confused
     assert pairs[0].mean_margin < 0.1
 
 

@@ -3,9 +3,15 @@
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Literal
+from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+
+# A dwarf is identified either by its Wikidata QID or, when Wikidata has no item
+# for it, by a slug of its Commons category. Commons category titles are unique by
+# construction, so the slug is a stable key. Both forms are filesystem-safe because
+# the identifier names an image directory.
+DWARF_ID_PATTERN: Final = r"^(?:Q[1-9]\d*|C-[a-z0-9]+(?:-[a-z0-9]+)*)$"
 
 
 class Coordinates(BaseModel):
@@ -22,11 +28,25 @@ class DwarfRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    dwarf_id: str = Field(min_length=1)
+    dwarf_id: str = Field(pattern=DWARF_ID_PATTERN)
     display_name: str = Field(min_length=1)
-    wikidata_url: HttpUrl
+    # Absent for a statue Wikidata has no item for, which is most of them; see
+    # AGENTS.md section 5.6. Coordinates come from Wikidata's P625, so a record
+    # without a Wikidata item never carries them either.
+    wikidata_url: HttpUrl | None = None
     commons_category: str = Field(min_length=1)
     coordinates: Coordinates | None = None
+
+    @model_validator(mode="after")
+    def validate_wikidata_provenance(self) -> "DwarfRecord":
+        """Require coordinates to arrive with the Wikidata item they came from."""
+        if self.coordinates is not None and self.wikidata_url is None:
+            raise ValueError("coordinates require the Wikidata item they were read from")
+        if self.dwarf_id.startswith("Q") and self.wikidata_url is None:
+            raise ValueError("a Wikidata-identified dwarf must record its Wikidata URL")
+        if self.dwarf_id.startswith("C-") and self.wikidata_url is not None:
+            raise ValueError("a Commons-identified dwarf must not claim a Wikidata item")
+        return self
 
 
 class ImageRecord(BaseModel):
@@ -136,6 +156,9 @@ class AuditReason(StrEnum):
     CONFLICTING_SOURCE_VALUES = "conflicting_source_values"
     INVALID_RECORD = "invalid_record"
     POSSIBLE_UNLINKED_GROUP = "possible_unlinked_group"
+    UNEXPECTED_CATEGORY_NAME = "unexpected_category_name"
+    DUPLICATE_CATEGORY_SLUG = "duplicate_category_slug"
+    CLAIMED_BY_WIKIDATA = "claimed_by_wikidata"
 
 
 class DiscoveryAuditRecord(BaseModel):
@@ -206,7 +229,7 @@ class CategoryReviewRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    dwarf_id: str = Field(pattern=r"^Q[1-9]\d*$")
+    dwarf_id: str = Field(pattern=DWARF_ID_PATTERN)
     display_name: str = Field(min_length=1)
     display_name_override: str | None = Field(default=None, min_length=1)
     discovered_category: str = Field(min_length=1)
@@ -264,7 +287,7 @@ class ImageReviewRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    dwarf_id: str = Field(pattern=r"^Q[1-9]\d*$")
+    dwarf_id: str = Field(pattern=DWARF_ID_PATTERN)
     commons_page_id: int = Field(gt=0)
     status: ImageReviewStatus
     reason: ImageReviewReason

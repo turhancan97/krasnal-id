@@ -173,8 +173,8 @@ def test_every_byte_identical_copy_is_withheld(tmp_path: Path) -> None:
     duplicated = "d" * 64
     manifest = synthetic_manifest(dwarf_count=3)
     images = (
-        image_record("copy-a", "Q0", "d"),
-        image_record("copy-b", "Q1", "d"),
+        image_record("copy-a", "Q1", "d"),
+        image_record("copy-b", "Q2", "d"),
         *manifest.images,
     )
     manifest = manifest.model_copy(update={"images": images})

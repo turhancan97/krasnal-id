@@ -50,8 +50,8 @@ def test_embedding_matrix_is_ordered_and_addressable(tmp_path: Path) -> None:
     for image_id, dwarf_id in zip(matrix.image_ids, matrix.dwarf_ids, strict=True):
         assert image_id.startswith(f"image-{dwarf_id[1:]}-")
 
-    vectors, dwarf_ids = matrix.rows_for(["image-2-0", "image-0-1"])
-    assert dwarf_ids == ("Q2", "Q0")
+    vectors, dwarf_ids = matrix.rows_for(["image-2-0", "image-1-1"])
+    assert dwarf_ids == ("Q2", "Q1")
     np.testing.assert_allclose(vectors[0], matrix.vector_for("image-2-0"))
     with pytest.raises(EmbeddingStoreError, match="has no cached vector"):
         matrix.index_of("absent")

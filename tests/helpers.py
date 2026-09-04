@@ -43,7 +43,11 @@ def synthetic_manifest(
     per_dwarf: int = 3,
     coordinates: dict[str, tuple[float, float]] | None = None,
 ) -> DatasetManifest:
-    """Build a manifest with evenly sized classes, optionally placing the dwarves."""
+    """Build a manifest with evenly sized classes, optionally placing the dwarves.
+
+    Identifiers are one-based because `Q0` is not a QID any more than it is a real
+    Wikidata item, and `DWARF_ID_PATTERN` now says so.
+    """
     placed = coordinates or {}
     dwarfs = tuple(
         DwarfRecord(
@@ -57,11 +61,11 @@ def synthetic_manifest(
                 else None
             ),
         )
-        for index in range(dwarf_count)
+        for index in range(1, dwarf_count + 1)
     )
     images = tuple(
         image_record(f"image-{dwarf}-{position}", f"Q{dwarf}", f"{dwarf}{position}")
-        for dwarf in range(dwarf_count)
+        for dwarf in range(1, dwarf_count + 1)
         for position in range(per_dwarf)
     )
     return DatasetManifest(
