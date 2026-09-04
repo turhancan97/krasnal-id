@@ -10,6 +10,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-04
+
 ### Added
 
 - Rebuilt the dataset Commons-first: **306 classes and 1,691 images**, from 23 and 146. 482
@@ -275,8 +277,12 @@ sections above so that a new contributor or agent can read one place to orient t
 - Everything above is released as `0.3.0`. The planned build order is finished, so further
   work is a new research direction rather than a remaining stage; the limitations listed in
   `RESULTS.md` name the open questions.
-- Open-set rejection is implemented and run, as the first of those directions, and is released as
-  `0.4.0`. DINOv2 supports a usable threshold and CLIP does not, which is why the published demo
-  still shows its ranking unconditionally: it runs CLIP, so it cannot be given an "I don't know"
-  answer without first porting DINOv2 to the browser. The remaining open questions are real query
-  photographs and a larger pool, both of which need new data.
+- Open-set rejection was implemented and released as `0.4.0`, then **retired as a working feature
+  by the larger dataset**: false acceptance rises from 4.1% at 23 classes to 38.3% at 306. The demo
+  still shows its ranking unconditionally, which is now the honest behavior rather than a gap.
+- The dataset is rebuilt Commons-first at **306 classes and 1,691 images**, released as `0.5.0`,
+  and every experiment, figure and the published demo are regenerated at that scale. `RESULTS.md`
+  section 7 records which conclusions the rebuild overturned.
+- The one remaining open question from section 8 is **real query photographs**: every reference
+  here is a Commons upload, so the domain gap to a phone camera is still unmeasured. It needs
+  fieldwork rather than code.
