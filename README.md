@@ -342,6 +342,25 @@ Draw the tradeoff from the saved artifacts:
 Every saved backbone is drawn on one axis, with its calibrated operating points marked on the
 descriptive curve they sit on. The figure lands at `results/open-set-rejection.png`.
 
+## Are phone photographs harder queries?
+
+Commons records each file's EXIF camera, so the references split into phone-shot and camera-shot
+queries and the two can be compared against the same reference set:
+
+    uv run krasnal-id data camera-metadata
+    uv run krasnal-id experiment camera-gap
+    uv run krasnal-id experiment camera-gap --override backbone=clip
+
+The metadata step needs the contact-bearing user agent and writes
+`data/discovery/camera-metadata.json`; the experiment is offline and writes
+`results/camera_gap-<backbone>.json`. Results are reported per group with the confounds beside
+them — median references per class, and query counts — because "phone photographs belong to harder
+classes" is the first thing to rule out. Images whose EXIF was stripped form their own `unknown`
+group rather than being folded into either side.
+
+This is a lower bound on the real query-domain gap: these are still Commons uploads. See
+`data/field-guide.md` for the fieldwork that would measure it properly.
+
 ## Development checks
 
 ```bash

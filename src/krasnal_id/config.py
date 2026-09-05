@@ -174,6 +174,23 @@ class OpenSetExperimentConfig(BaseModel):
         return self.target_known_acceptance[0]
 
 
+class CameraGapExperimentConfig(BaseModel):
+    """Phone-versus-camera query comparison settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["camera_gap"]
+    seed: int
+    top_k: tuple[int, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_top_k(self) -> "CameraGapExperimentConfig":
+        """Require positive cut-offs."""
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -200,6 +217,7 @@ ExperimentConfig = Annotated[
     | GeoAblationConfig
     | ProbeExperimentConfig
     | OpenSetExperimentConfig
+    | CameraGapExperimentConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

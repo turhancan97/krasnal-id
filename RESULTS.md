@@ -32,11 +32,15 @@ your own browser.
 5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on
    near-identical statues installed as families — above all the three *Słupniki* pillar dwarves —
    and the embedding projection picks the same clusters out unprompted.
-6. **Open-set rejection does not survive the larger pool.** Thresholding similarity looked usable
+6. **Phone photographs are measurably harder queries.** Using the 51 references that were
+   themselves shot on phones, DINOv2 loses 5.3 top-1 points and CLIP 15.6 against camera-shot
+   queries — and not because they belong to easier or harder classes. It is a lower bound, since
+   these are still Commons uploads.
+7. **Open-set rejection does not survive the larger pool.** Thresholding similarity looked usable
    at 23 classes and does not work at 306: DINOv2's false-acceptance rate rises from 4% to 38% at
    the same operating point. The earlier positive result was an artefact of a small pool.
 
-Findings 2, 4 and 6 all revise conclusions this project previously published from a 23-class
+Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
 
 ## Dataset
@@ -318,11 +322,46 @@ confusability*. Adding 283 classes added a few near-identical families — the S
 absorbs the tail and only pays for the families; a weak one pays for both. That is invisible until
 the tail exists.
 
+## 8. Are phone photographs harder queries?
+
+Every reference here is a Wikimedia Commons upload, and the limitations have always said the gap
+to a casual phone photograph is the largest untested thing in the project. Fieldwork is the clean
+way to close it. This is what can be measured without it: Commons records each file's EXIF camera,
+so the existing references split into phone-originated and camera-originated queries, scored
+against the same reference set.
+
+| | phone (51 queries) | camera (1,565) | gap |
+|---|---|---|---|
+| DINOv2 top-1 | 88.2% [76.6, 94.5] | 93.5% [92.2, 94.6] | **−5.3** |
+| CLIP top-1 | 68.6% [55.0, 79.7] | 84.2% [82.3, 85.9] | **−15.6** |
+
+**Phone-originated photographs are harder queries, and dramatically so for CLIP.** Its intervals do
+not overlap. DINOv2's 5.3-point gap points the same way but with 51 queries it is not
+statistically distinguishable from noise — the honest reading is "consistent with a real gap,
+too few queries to prove one".
+
+The obvious objection is that phone photographs might simply belong to harder classes. They do
+not: the median phone query's dwarf has **seven** reference photographs against six for camera
+queries, so if anything the phone group had the easier task. They are also not lower resolution
+(3.0 MP median against 2.7) and no more likely to belong to a class the confusion analysis already
+flags (25.5% against 22.3%).
+
+A third group is worth noting. 75 queries carry no EXIF at all, usually because it was stripped on
+upload, and they score 89.3% and 65.3% — much closer to the phone group than the camera group.
+Stripped metadata correlates with the same kind of photograph.
+
+**This is a lower bound, and it does not close the question.** These are still Commons uploads:
+chosen, often composed, taken by someone who meant to document the statue. A real snapshot — bad
+angle, passers-by, whatever light was available — is a harder query than anything measured here.
+What this establishes is that the domain gap is real and that CLIP suffers it far worse, which
+also means the published demo, which runs CLIP, is the version most exposed to it.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
-  considered framing. Real query photos would be worse, and this design cannot say by how much.
-  This is now the largest untested gap in the work.
+  considered framing. Section 8 puts a lower bound on what that costs, using the 51 references that
+  were themselves shot on phones, but a real snapshot is harder than any photograph in this
+  dataset. This remains the largest untested gap in the work, and closing it needs fieldwork.
 - **Most coordinates are derived, not stated.** 271 of the 294 placed statues are located from
   where photographers stood rather than from a `P625` statement. Validation against the 23 that
   have both puts the median error at 9 m, an order of magnitude below the smallest pool radius the
@@ -357,6 +396,8 @@ uv run krasnal-id experiment geo-ablation                     # section 3
 uv run krasnal-id experiment probe                            # section 4
 uv run krasnal-id experiment confusion                        # section 5
 uv run krasnal-id experiment open-set                         # section 6
+uv run krasnal-id data camera-metadata                        # EXIF for section 8
+uv run krasnal-id experiment camera-gap                       # section 8
 uv run krasnal-id visualize ablation
 uv run krasnal-id visualize embeddings
 uv run krasnal-id visualize open-set

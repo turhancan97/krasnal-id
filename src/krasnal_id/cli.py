@@ -1,5 +1,6 @@
 """Unified command-line interface for all Krasnal-ID pipeline stages."""
 
+import json
 from pathlib import Path
 from typing import Annotated
 
@@ -15,6 +16,12 @@ from krasnal_id.data_pipeline.build_split import (
     SplitConfigurationError,
     build_split_from_artifact,
     write_evaluation_split,
+)
+from krasnal_id.data_pipeline.camera_metadata import (
+    CameraMetadataError,
+    camera_metadata_path,
+    fetch_camera_metadata,
+    load_camera_metadata,
 )
 from krasnal_id.data_pipeline.commons_discovery import CommonsDiscoveryError
 from krasnal_id.data_pipeline.commons_fetch import (
@@ -40,6 +47,7 @@ from krasnal_id.experiments.artifacts import (
     write_experiment_result,
 )
 from krasnal_id.experiments.baseline_accuracy import BaselineExperimentError, run_baseline
+from krasnal_id.experiments.camera_gap import CameraGapError, run_camera_gap
 from krasnal_id.experiments.confusion_analysis import (
     ConfusionAnalysisError,
     run_confusion_analysis,
@@ -212,6 +220,49 @@ def fetch_commons(
     typer.echo(f"Audit: {paths.audit}")
     if result.operational_failures:
         raise typer.Exit(code=1)
+
+
+@data_app.command("camera-metadata")
+def build_camera_metadata(override: OverrideOption = None) -> None:
+    """Fetch the EXIF camera model behind every manifest image."""
+    import httpx
+
+    from krasnal_id.data_pipeline.wikidata_query import _contact_user_agent, _request_commons_page
+    from krasnal_id.models import DatasetManifest
+
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        manifest = DatasetManifest.model_validate(
+            json.loads(config.paths.manifest_path.read_text(encoding="utf-8"))
+        )
+    except (OSError, ValueError) as error:
+        typer.echo(f"Camera metadata error: invalid manifest: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    user_agent = _contact_user_agent()
+    try:
+        with httpx.Client() as client:
+
+            def request(parameters: dict[str, str]) -> object:
+                return _request_commons_page(config.data, user_agent, client, parameters)
+
+            metadata = fetch_camera_metadata(manifest, config.data, request)
+    except (CameraMetadataError, CommonsConfigurationError) as error:
+        typer.echo(f"Camera metadata error: {error}", err=True)
+        raise typer.Exit(code=1) from error
+
+    path = camera_metadata_path(config.paths.discovery_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(metadata.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    known = sum(1 for value in metadata.cameras.values() if value)
+    typer.echo(
+        f"Camera metadata complete: pages={len(metadata.cameras)} with_camera={known} output={path}"
+    )
 
 
 @data_app.command("build-manifest")
@@ -479,6 +530,36 @@ def open_set_experiment(override: OverrideOption = None) -> None:
             f"{rejection.mean_top_similarity:+.4f}, usually matched "
             f"{rejection.nearest_display_name}"
         )
+
+
+@experiment_app.command("camera-gap")
+def camera_gap_experiment(override: OverrideOption = None) -> None:
+    """Compare phone-originated queries against camera-originated ones."""
+    config = load_config(["experiment=camera_gap", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        metadata = load_camera_metadata(camera_metadata_path(config.paths.discovery_dir))
+        result = run_camera_gap(config, metadata)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        CameraGapError,
+        CameraMetadataError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Camera gap error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Camera gap complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
 
 
 @experiment_app.command("confusion")

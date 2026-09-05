@@ -1,0 +1,3 @@
+kind: camera_gap
+seed: ${seeds.primary}
+top_k: [1, 5]

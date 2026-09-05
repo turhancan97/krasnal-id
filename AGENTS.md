@@ -201,6 +201,35 @@ in Wrocław, so the contract for them is fixed here before any exist.
   §5.7, so a geotagged photograph can be matched to a proposed statue rather than sorted by hand.
   A proposal, never an assignment: the directory a photograph sits in is authoritative.
 
+### 5.9 Camera metadata decision (2026-09-05)
+
+The §5.8 fieldwork is postponed, so the query-domain gap needs a proxy. Commons exposes each
+file's EXIF camera model, and 51 of the 1,691 references were shot on phones — enough to ask
+whether phone-originated photographs are harder queries than camera-originated ones.
+
+- **Camera metadata lives outside the staging chain, in `data/discovery/camera-metadata.json`.**
+  This is a deliberate exception to §5.7's rule that what is known about an image belongs on
+  `ImageRecord`, and the reason is proportionality. Anything added to `fetched-images.json` changes
+  the staging hash, which changes the manifest hash, which invalidates the split, all twelve result
+  artifacts and the published demo — about two hours of recompute. Coordinates earned that because
+  they *build* the dataset by placing classes; a camera model is read by one analysis and nothing
+  else. If a second consumer ever appears, move it onto `ImageRecord` and pay the re-run.
+- **The artifact records its own provenance** — endpoint, retrieval time, and the page IDs it
+  covers — so a stale or partial file is detectable rather than silently mixed with a newer
+  manifest.
+- **Phone detection is a documented heuristic, not a fact.** It matches manufacturer strings, and
+  it will mis-file an unusual device either way. The experiment therefore reports the group sizes
+  and an `unknown` bucket alongside the result, so a reader can judge the classification rather
+  than trust it.
+- **The result is a lower bound on the real domain gap, and must be described as one.** These are
+  still Wikimedia Commons uploads: chosen, often composed, and uploaded by someone who meant to
+  document the statue. A casual snapshot is a harder query than anything measured here, so this
+  does **not** retire the §5.8 fieldwork question — `data/field-guide.md` stays.
+- **Report the confounds with the result.** Phone photographs could be harder because of the class
+  they belong to rather than the camera. Median references per class and the share falling in an
+  already-confused class are reported for both groups, because they are the first thing a reader
+  should check.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone

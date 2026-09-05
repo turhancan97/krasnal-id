@@ -10,6 +10,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `krasnal-id experiment camera-gap`, a lower bound on the query-domain gap that needs no
+  fieldwork. Commons records each file's EXIF camera, so the 51 references shot on phones become
+  queries and are scored against the same reference set as the 1,565 shot on cameras. **DINOv2
+  loses 5.3 top-1 points and CLIP 15.6**; CLIP's intervals do not overlap, DINOv2's do, so its gap
+  points the right way but 51 queries cannot prove one.
+- Added `krasnal-id data camera-metadata`, writing `data/discovery/camera-metadata.json`. It sits
+  outside the staging chain deliberately: anything added to `fetched-images.json` invalidates the
+  manifest, the split, twelve result artifacts and the demo, and a camera model is read by one
+  analysis rather than used to build the dataset. `AGENTS.md` 5.9 records the trade and when to
+  reverse it.
+- Added `RESULTS.md` section 8, reporting the confounds beside the result: phone queries belong to
+  classes with *more* reference photographs (median 7 against 6), are not lower resolution, and
+  are no likelier to be in an already-confused class — so the gap is not explained by which
+  statues they happen to show.
+
+
 ## [0.6.0] - 2026-09-05
 
 ### Added
