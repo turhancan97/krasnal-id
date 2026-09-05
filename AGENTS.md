@@ -272,6 +272,63 @@ starting a build.
   photograph byte-identical to a reference — the last being a Commons upload copied into the query
   set, which would measure the protocol rather than the domain gap.
 
+### 5.11 Dataset redistribution analysis (2026-09-06, not yet decided)
+
+Publishing the dataset to Kaggle and Hugging Face is future work per §8. This records what the
+licences actually permit, measured from the manifest rather than assumed, so the decision is taken
+on facts. **Not legal advice**: confirm the terms before any upload.
+
+What the 1,691 images are licensed under:
+
+| Licence family | Images | Share |
+|---|---:|---:|
+| CC BY-SA (4.0, 3.0, 3.0 pl, 2.5, 2.0) | 1,577 | 93.3% |
+| CC BY (4.0, 3.0, 2.0) | 55 | 3.3% |
+| Public domain | 52 | 3.1% |
+| CC0 | 7 | 0.4% |
+
+Every one of the 1,691 carries `author`, `license`, `license_url` and `source_url`, with no gaps.
+That matters more than the licence mix: attribution at scale is the hard part of redistributing a
+CC BY-SA corpus, and §5.1 made it a schema requirement from the start, so the obligation is already
+satisfiable per file rather than needing reconstruction.
+
+**Redistribution is permitted, and the project already does it.** The published demo ships all
+1,691 photographs as thumbnails from `docs/assets/thumbs/`, names each photographer and licence on
+the result that uses it, and states the licence families on the page. A Kaggle or Hugging Face
+upload is the same act at a different address, so the question is not *whether* but *under which
+obligations*. Three tiers, in increasing order of what they require:
+
+1. **Metadata only** — the manifest, the split, the results, and a script that refetches the images
+   from Commons. Redistributes no pixels, so no image licence obligation attaches at all, and it is
+   enough to reproduce every experiment given a download. The weakest form, and the safest.
+2. **Metadata plus embeddings** — adds the 1,691 cached vectors per backbone. A vector is a derived
+   numeric representation rather than a reproduction of the photograph, so the practical licence
+   burden stays at tier 1 while the artifact becomes directly usable: every retrieval experiment
+   here runs from vectors alone, without an image.
+3. **The photographs as well.** Permitted, with obligations that must be met per file and not per
+   dataset: attribute each photographer, link each licence, and **state that the files are
+   modified** — the pipeline stores downscaled 2,000-pixel copies, so they are adaptations, not
+   originals. ShareAlike then binds those adaptations. A dataset is a *collection* rather than a
+   single adapted work, so per-image licences are preserved side by side instead of collapsing to
+   one; the project's own metadata files can carry whatever licence is chosen for them. Both
+   platforms can express this — Kaggle has an "Other (specified in description)" licence option,
+   Hugging Face takes `license: other` with `license_name` and `license_link` plus a dataset card
+   that carries the per-file terms.
+
+Two things to settle before uploading anything above tier 1:
+
+- **The sculptures are copyrighted, and the photographs are not the only work involved.** The
+  dwarves are contemporary works by living sculptors. Commons hosts photographs of them under
+  Polish freedom of panorama, which permits publishing images of works permanently displayed in
+  public places. Kaggle and Hugging Face are US-hosted, and US law grants no equivalent exemption
+  for sculpture. This does not obviously block anything — the same reasoning would apply to the
+  demo already published — but it is the one question here that the file licences do not answer,
+  and it should be answered deliberately rather than inherited by accident.
+- **A public dataset is a promise about identifiers.** `dwarf_id` values for Commons-only classes
+  are slugs of category titles, and a renamed Commons category changes the slug. Anything published
+  should record the manifest hash it was built from and say plainly that the identifiers are
+  dataset-local, or downstream users will treat them as stable keys.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone
@@ -567,6 +624,12 @@ waiting on photographs rather than on code.
   references shot on phones, and does not retire the question. The protocol (§5.8), the route and
   cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
   what is missing is the photographs, which need a day in Wrocław.
+- **Publishing the dataset to Kaggle and Hugging Face** — future work, and a distribution question
+  rather than a research one. §5.11 measures what the licences permit: redistribution is allowed,
+  every image already carries the attribution CC BY-SA requires, and the published demo already
+  ships all 1,691 photographs, so the precedent exists. Decide the tier there — metadata,
+  metadata plus embeddings, or the photographs too — and settle the freedom-of-panorama question
+  §5.11 raises before uploading pixels to a US-hosted platform.
 - ~~**A larger pool**~~ — done on 2026-09-04 as the Commons-first rebuild of §5.6, which took the
   pool from 23 classes to 306 and overturned three conclusions the small pool had supported; see
   §7.3 and `RESULTS.md` section 7. What it leaves is a *data* question rather than a research one:

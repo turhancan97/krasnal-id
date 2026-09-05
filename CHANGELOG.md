@@ -10,6 +10,18 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `AGENTS.md` section 5.11, the licence analysis behind a possible Kaggle and Hugging Face
+  release, and section 8 now carries that release as future work. Measured from the manifest rather
+  than assumed: 1,577 of the 1,691 images are CC BY-SA, 55 CC BY, 52 public domain and 7 CC0, and
+  all 1,691 carry author, licence, licence URL and source URL with no gaps — so the attribution CC
+  BY-SA requires is already satisfiable per file. Redistribution is permitted and the published
+  demo already ships every photograph as a thumbnail, so the open question is which tier to release
+  (metadata, metadata plus embeddings, or the photographs) and whether Polish freedom of panorama,
+  which is what lets Commons host photographs of copyrighted sculptures, needs answering
+  deliberately before pixels go to a US-hosted platform.
+
 ## [0.8.0] - 2026-09-06
 
 ### Added
