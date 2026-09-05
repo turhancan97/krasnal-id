@@ -418,6 +418,24 @@ found, recorded here because three of these revise published conclusions:
   s/fold, 4 threads 7.1 s, 16 threads 20.8 s. Sixteen threads is 6.7x *slower*. Parallelise the
   probe across processes, never across BLAS threads.
 
+### 7.4 Geographic result at scale (2026-09-05)
+
+The §5.7 derived coordinates took the geographic arm from 23 classes to 294, and the §7.1 finding
+survives the move intact — which it might not have, since at 23 it rested on six statues in one
+themed installation.
+
+- **Geographic pools lose to random pools at every measured pool size, for both backbones.** The
+  arm is exact rather than sampled, so this is not seed noise. DINOv2 peaks at −0.89 points at a
+  pool of five; CLIP at −2.12 at a pool of ten, roughly double throughout.
+- **The penalty has a shape, and the shape is the mechanism.** It is largest at a 171–291 m radius
+  and fades to −0.35 by 2.2 km. Sculptors install related pieces near each other, so a small radius
+  is disproportionately made of a statue's own lookalikes; a wide one dilutes them with unrelated
+  statues. Report the radius alongside the pool size — the radius is what carries the argument.
+- **The overstatement is worst where a real tool would operate.** Random subsampling scatters
+  clustered lookalikes across pools, so it flatters location narrowing most at exactly the small
+  radii a phone-based tool would use. Never quote the random curve as a proxy for a location-aware
+  system at small pool sizes.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.

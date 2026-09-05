@@ -22,9 +22,10 @@ your own browser.
    points per doubling of the candidate pool and holds that rate across the whole measured range;
    CLIP loses 2.06 and gets steadily worse as the pool grows. The gap between them widens from
    under a point at a pool of two to **ten points** at 306.
-3. **Narrowing by location helps less than the simulation suggests.** Real proximity-based pools
-   are consistently *harder* than random pools of the same size, because the statues that are
-   hardest to tell apart were installed together as a themed group.
+3. **Narrowing by location makes identification slightly *harder*, not easier.** Real
+   proximity-based pools lose to random pools of the same size at every pool size measured, and the
+   penalty peaks at a 171–291 m radius — exactly the range a phone-based tool would use. Sculptors
+   install related pieces near each other, so a small radius selects for a statue's own lookalikes.
 4. **Training a classifier helps only the weaker backbone.** A per-fold linear probe is worth
    nothing to DINOv2 (−0.1 points) but gains CLIP 3.1. Class prototypes cost both about 8 points.
    Where retrieval is already strong, it is already the right tool.
@@ -56,7 +57,9 @@ three usable Creative Commons photographs. 482 category mappings were reviewed, 
 per-dwarf categories Commons holds, and the same 44 are the only ones linked to any of them. So
 283 of these 306 classes have no Wikidata item at all and are identified by their Commons
 category. That has one consequence worth carrying into section 3: coordinates come from Wikidata's
-`P625`, so **only 23 of 306 classes are geolocated**.
+`P625`, which places only 23 of them. The rest are placed from their own photographs' camera
+positions instead, which section 3 validates at a median of 9 m — bringing coverage to **294 of
+306**.
 
 Three details matter more than the headline count:
 
@@ -139,34 +142,52 @@ The pools above are sampled at random. The real proposal is to narrow by *locati
 pooled with its **N−1 nearest** dwarves instead of N−1 random ones — same pool size, only the
 selection rule changes.
 
-**This section covers 23 of the 306 classes (7.5%)**, because coordinates come from Wikidata and
-283 classes have no Wikidata item. Both arms are restricted to that subset so they compare like
-with like, and the result artifact records the coverage so it cannot be read as covering the pool.
+**This covers 294 of 306 classes (96%)**, which took an extra step to achieve. Wikidata's `P625`
+places only 23 of them, so the rest are placed from their own photographs: 73.5% of Commons files
+here carry a coordinate, almost always the *camera* position. That is not the statue's position,
+so it was validated rather than assumed — across the 21 classes that have both, the median of a
+class's camera positions falls a **median of 9 m** from its Wikidata point, against a smallest
+pool radius of 171 m. Every coordinate records which kind it is, and one class was dropped for a
+one-degree latitude typo that put it 111 km away.
 
 | pool size | DINOv2 random | DINOv2 geographic | difference | median radius |
 |---|---|---|---|---|
-| 3 | 98.8% | 98.6% | −0.1 | 190 m |
-| 5 | 98.9% | 97.3% | **−1.6** | 260 m |
-| 8 | 97.3% | 96.6% | −0.7 | 390 m |
-| 10 | 96.7% | 96.6% | −0.1 | 398 m |
-| 15 | 96.4% | 96.6% | +0.1 | 571 m |
-| 23 (full) | 95.9% | 95.9% | 0.0 | — |
+| 2 | 99.1% | 98.6% | −0.46 | 52 m |
+| 5 | 97.9% | 97.0% | **−0.89** | 171 m |
+| 10 | 96.9% | 96.2% | −0.68 | 291 m |
+| 20 | 96.3% | 95.6% | −0.76 | 467 m |
+| 50 | 95.4% | 94.7% | −0.67 | 712 m |
+| 100 | 94.7% | 94.2% | −0.48 | 909 m |
+| 200 | 94.0% | 93.6% | −0.35 | 2,223 m |
+| 294 (full) | 93.4% | 93.4% | 0.00 | — |
 
-**Geographic pools are harder than random pools of the same size.** CLIP shows it more strongly:
-−2.5 points at a pool of 5, −2.1 at 8, −1.9 at 10. The effect is small in absolute terms but it
-runs the wrong way at almost every size, and it has a clear cause.
+**Geographic pools are harder than random pools of the same size, at every single pool size, for
+both backbones.** CLIP shows it about twice as strongly, peaking at −2.12 points at a pool of ten.
+Nothing here is sampled — a geographic pool is exact — so these are not seed noise.
+
+At 23 classes this result rested on six statues in one themed installation, and could fairly have
+been dismissed as a quirk of that installation. It now holds across 294 statues spanning the city.
 
 ### Why: the statues you can't separate are standing together
 
-Six of these 23 dwarves sit **within one metre of each other**. They are the group installation
-that includes *Puszczający Stateczki*, *Zbierający Wodę* and *Karmiący Ptaki* — the same statues
-the confusion analysis flags and the same tight neighbourhood the embedding projection shows.
+Look at where the penalty is largest. It peaks at a pool of five to ten — a radius of **171 to 291
+metres** — and then fades steadily as the pool widens, down to −0.35 at a 2.2 km radius.
 
-That is the finding: **the dwarves that are hardest to tell apart were installed as a themed
-group, so they share a sculptor, a pose vocabulary and a location.** Location narrowing cannot
-separate them — it guarantees they land in the same pool. A random-subsampling simulation, which
-scatters the confusable statues across different pools, therefore *overstates* how much location
-narrowing buys.
+That shape is the mechanism. Sculptors install related pieces near each other: the water-themed
+trio at one spot, the three *Słupniki* pillar dwarves on their own streets, pairs like *Ślepak* and
+*Głuchak* facing each other. Within a couple of hundred metres, a candidate pool is disproportionately
+made of a statue's own lookalikes. Widen the radius and you start pulling in unrelated statues,
+which dilutes the effect back toward random.
+
+So **location narrowing selects for exactly the confusions it needs to avoid.** A random-subsampling
+simulation scatters those clustered lookalikes across different pools and therefore *overstates*
+what narrowing buys — and the overstatement is worst precisely at the small radii a phone-based tool
+would actually use.
+
+The practical reading for a location-aware tool: a 291 m radius around a visitor covers about ten
+candidates and identifies at 96.2% top-1 with DINOv2. That is useful. It is also slightly *worse*
+than showing that visitor ten dwarves picked at random from the whole city, which is the part worth
+sitting with.
 
 ## 4. Does a trained classifier beat retrieval?
 
@@ -268,7 +289,7 @@ itself the lesson.
 | A trained classifier does not help either backbone | True for DINOv2, false for CLIP (+3.1) |
 | Similarity thresholding gives usable rejection | It does not; 4% false accepts became 38% |
 | Errors concentrate on the water-themed trio | They concentrate on the Słupniki family |
-| Geographic pools are harder than random ones | Unchanged |
+| Geographic pools are harder than random ones | Unchanged, and now at every pool size over 294 classes rather than 23 |
 
 The previous writeup warned that extrapolating past 23 classes would be optimistic, because a
 small pool holds too few genuinely confusable distractors. That warning was **half right**: true
@@ -286,9 +307,11 @@ the tail exists.
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
   considered framing. Real query photos would be worse, and this design cannot say by how much.
   This is now the largest untested gap in the work.
-- **The geographic result rests on 23 of 306 statues.** Wikidata has no item for the rest, so they
-  carry no coordinates. Whether the co-location effect holds city-wide is still untested, and the
-  arm cannot grow without coordinates from another source.
+- **Most coordinates are derived, not stated.** 271 of the 294 placed statues are located from
+  where photographers stood rather than from a `P625` statement. Validation against the 23 that
+  have both puts the median error at 9 m, an order of magnitude below the smallest pool radius the
+  experiment uses — but it is an inference, and a statue photographed only from across a square
+  would be placed across that square. Twelve classes remain unplaced.
 - **Two classes overlap with a group class.** *Grajek i Meloman* is a class, and so are *Grajek*
   and *Meloman*; likewise *Ogrodnik i Kierownik* and *Ogrodnik*. Their photographs are not
   byte-identical, so the duplicate guard does not catch them, and they duly appear in the confusion
