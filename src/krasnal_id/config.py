@@ -65,6 +65,7 @@ class ThresholdsConfig(BaseModel):
     minimum_images_per_dwarf: int = Field(ge=3)
     confusion_top_pairs: int = Field(gt=0)
     open_set_top_rejections: int = Field(gt=0)
+    max_coordinate_drift_km: float = Field(gt=0)
 
 
 class SeedsConfig(BaseModel):

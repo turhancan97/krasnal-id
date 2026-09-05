@@ -18,6 +18,7 @@ from krasnal_id.data_pipeline.build_manifest import (
     canonical_json_sha256,
     category_review_sha256,
     place_dwarf,
+    reject_outlying_coordinates,
 )
 from krasnal_id.models import (
     CategoryReviewFile,
@@ -304,8 +305,10 @@ def test_current_local_artifacts_produce_expected_manifest() -> None:
     # source, and only a Wikidata record may claim a Wikidata one.
     placed = [d for d in manifest.dwarfs if d.coordinates is not None]
     derived = [d for d in placed if d.coordinate_source is CoordinateSource.COMMONS_CAMERA]
-    assert len(placed) == 295
-    assert len(derived) == 272
+    # 294 placed, not 295: one class's only geotagged photograph carried a
+    # one-degree latitude typo and the drift check drops it.
+    assert len(placed) == 294
+    assert len(derived) == 271
     assert all(d.coordinate_source is not None for d in placed)
     assert all(
         d.wikidata_url is not None
@@ -360,3 +363,61 @@ def test_a_dwarf_with_no_placed_photographs_stays_unplaced() -> None:
 
     assert placed.coordinates is None
     assert placed.coordinate_source is None
+
+
+def _at(name: str, lat: float, lon: float, source: CoordinateSource) -> DwarfRecord:
+    return _dwarf("Q1", name, "Category One").model_copy(
+        update={
+            "dwarf_id": f"C-{name.lower()}-dwarf-wroclaw",
+            "wikidata_url": None,
+            "coordinates": Coordinates(latitude=lat, longitude=lon),
+            "coordinate_source": source,
+        }
+    )
+
+
+def test_a_derived_coordinate_far_outside_the_dataset_is_dropped() -> None:
+    # One degree of latitude out is the observed failure: a typo that lands the
+    # statue 111 km from a city it is named after.
+    near = [
+        _at(f"near{i}", 51.10 + i * 0.001, 17.03, CoordinateSource.COMMONS_CAMERA) for i in range(5)
+    ]
+    typo = _at("typo", 50.10, 17.03, CoordinateSource.COMMONS_CAMERA)
+
+    kept, dropped = reject_outlying_coordinates((*near, typo), 25.0)
+
+    assert dropped == ("typo",)
+    outlier = next(d for d in kept if d.display_name == "typo")
+    assert outlier.coordinates is None
+    assert outlier.coordinate_source is None
+    # Everything plausible keeps its position.
+    assert all(d.coordinates is not None for d in kept if d.display_name != "typo")
+
+
+def test_a_wikidata_coordinate_is_never_second_guessed() -> None:
+    near = [_at(f"near{i}", 51.10, 17.03, CoordinateSource.COMMONS_CAMERA) for i in range(5)]
+    stated = _dwarf("Q9", "Stated", "Category Nine").model_copy(
+        update={
+            "coordinates": Coordinates(latitude=50.10, longitude=17.03),
+            "coordinate_source": CoordinateSource.WIKIDATA,
+        }
+    )
+
+    kept, dropped = reject_outlying_coordinates((*near, stated), 25.0)
+
+    # Authoritative, so a heuristic does not get to overrule it however odd it looks.
+    assert dropped == ()
+    assert next(d for d in kept if d.dwarf_id == "Q9").coordinates is not None
+
+
+def test_too_few_placed_dwarves_to_judge_an_outlier() -> None:
+    pair = (
+        _at("a", 51.1, 17.0, CoordinateSource.COMMONS_CAMERA),
+        _at("b", 50.1, 17.0, CoordinateSource.COMMONS_CAMERA),
+    )
+
+    kept, dropped = reject_outlying_coordinates(pair, 25.0)
+
+    # With two points there is no majority to be an outlier from.
+    assert dropped == ()
+    assert all(d.coordinates is not None for d in kept)

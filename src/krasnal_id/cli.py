@@ -226,6 +226,7 @@ def build_manifest(override: OverrideOption = None) -> None:
             config.paths.category_review_path,
             config.paths.image_review_path,
             config.thresholds.minimum_images_per_dwarf,
+            max_coordinate_drift_km=config.thresholds.max_coordinate_drift_km,
         )
         write_dataset_manifest(config.paths.manifest_path, manifest)
     except ManifestConfigurationError as error:

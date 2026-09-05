@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 from datetime import UTC, datetime
 from pathlib import Path
@@ -13,6 +14,7 @@ from typing import Final, cast
 
 from pydantic import ValidationError
 
+from krasnal_id.geometry import haversine_metres
 from krasnal_id.models import (
     CategoryReviewFile,
     CategoryReviewRecord,
@@ -27,6 +29,8 @@ from krasnal_id.models import (
     ImageReviewFile,
     ImageReviewStatus,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 SCHEMA_VERSION: Final = "1.0"
 
@@ -80,6 +84,47 @@ def place_dwarf(dwarf: DwarfRecord, images: tuple[ImageRecord, ...]) -> DwarfRec
     )
 
 
+def reject_outlying_coordinates(
+    dwarfs: tuple[DwarfRecord, ...],
+    max_drift_km: float,
+) -> tuple[tuple[DwarfRecord, ...], tuple[str, ...]]:
+    """Drop derived coordinates too far from the dataset to be a real position.
+
+    These are Wrocław statues, so a position tens of kilometres outside the city is
+    a mis-tagged photograph rather than a statue — the observed case is a
+    one-degree latitude typo that lands 111 km away, on a class whose only
+    geotagged photograph carried it.
+
+    Only *derived* positions are subject to this. A Wikidata `P625` statement is
+    authoritative and is never second-guessed by a heuristic. The reference point
+    is the median of the placed dwarves themselves rather than a hardcoded city
+    centre, so the check needs no knowledge of where Wrocław is.
+    """
+    placed = [d for d in dwarfs if d.coordinates is not None]
+    if len(placed) < 3:
+        return dwarfs, ()
+
+    centre = (
+        median(d.coordinates.latitude for d in placed if d.coordinates),
+        median(d.coordinates.longitude for d in placed if d.coordinates),
+    )
+    limit_metres = max_drift_km * 1000.0
+    kept: list[DwarfRecord] = []
+    dropped: list[str] = []
+    for dwarf in dwarfs:
+        if (
+            dwarf.coordinates is not None
+            and dwarf.coordinate_source is CoordinateSource.COMMONS_CAMERA
+            and haversine_metres(centre, (dwarf.coordinates.latitude, dwarf.coordinates.longitude))
+            > limit_metres
+        ):
+            dropped.append(dwarf.display_name)
+            kept.append(dwarf.model_copy(update={"coordinates": None, "coordinate_source": None}))
+            continue
+        kept.append(dwarf)
+    return tuple(kept), tuple(dropped)
+
+
 def build_dataset_manifest(
     dwarfs: tuple[DwarfRecord, ...],
     images: tuple[ImageRecord, ...],
@@ -89,6 +134,7 @@ def build_dataset_manifest(
     source_query_sha256: str,
     staging_sha256: str,
     image_review_sha256: str,
+    max_coordinate_drift_km: float = 25.0,
 ) -> DatasetManifest:
     """Build a manifest from validated records without filesystem access."""
     if minimum_images_per_dwarf < 1:
@@ -126,6 +172,16 @@ def build_dataset_manifest(
         for dwarf in dwarfs
         if dwarf.dwarf_id in admitted_dwarf_ids
     )
+    admitted_dwarfs, misplaced = reject_outlying_coordinates(
+        admitted_dwarfs, max_coordinate_drift_km
+    )
+    if misplaced:
+        LOGGER.warning(
+            "dropped %d derived coordinate(s) further than %.0f km from the dataset: %s",
+            len(misplaced),
+            max_coordinate_drift_km,
+            ", ".join(misplaced),
+        )
 
     return DatasetManifest(
         schema_version=SCHEMA_VERSION,
@@ -192,6 +248,7 @@ def build_manifest_from_artifacts(
     minimum_images_per_dwarf: int,
     *,
     generated_at: datetime | None = None,
+    max_coordinate_drift_km: float = 25.0,
 ) -> DatasetManifest:
     """Load audited artifacts, validate provenance, and build the manifest."""
     discovery_raw = _read_json(discovery_path)
@@ -304,6 +361,7 @@ def build_manifest_from_artifacts(
             source_query_sha256=discovery.query_sha256,
             staging_sha256=staging_sha256,
             image_review_sha256=image_review_sha256,
+            max_coordinate_drift_km=max_coordinate_drift_km,
         )
     except ValueError as error:
         raise ManifestConfigurationError(str(error)) from error
