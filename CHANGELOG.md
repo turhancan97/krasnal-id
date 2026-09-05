@@ -10,6 +10,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-05
+
 ### Added
 
 - Added `krasnal-id experiment camera-gap`, a lower bound on the query-domain gap that needs no
@@ -353,6 +355,10 @@ sections above so that a new contributor or agent can read one place to orient t
 - Coordinates are derived from photographs as well as Wikidata, so the geographic experiment covers
   294 of 306 classes rather than 23, and the co-location mechanism behind it is measured rather
   than inferred. Released as `0.6.0`.
-- The one remaining open question from section 8 is **real query photographs**: every reference
-  here is a Commons upload, so the domain gap to a phone camera is still unmeasured. It needs
-  fieldwork rather than code.
+- The query-domain gap now has a **lower bound** rather than being wholly unmeasured: the 51
+  references shot on phones lose 5.3 top-1 points for DINOv2 and 15.6 for CLIP when used as
+  queries. Released as `0.7.0`. It does not close the question — these are still Commons uploads,
+  and a casual snapshot is harder than any photograph in this dataset.
+- **Fieldwork remains the only clean measurement**, and `data/field-guide.md` holds a nineteen-statue
+  route chosen from the data: every member of the three clusters both backbones confuse, plus
+  controls in the same streets. `data/field-queries/` has the directories waiting.

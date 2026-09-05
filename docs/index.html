@@ -499,9 +499,13 @@
       82.4% top-1 against 82.9% for the research CLIP pipeline. That figure is not a claim: append
       <code>?selftest=full</code> to this page's URL and your browser will re-embed all 1,691
       reference photographs and score the protocol itself.</span></div>
-      <div class="limit"><span><b>The reference photos are not phone photos.</b> Wikimedia Commons
-      uploads mean good light and considered framing, so a casual snapshot is a harder query than
-      anything measured here. This is now the largest untested gap in the work.</span></div>
+      <div class="limit"><span><b>The reference photos are not phone photos — and that costs
+      something measurable.</b> 51 of them were themselves shot on phones, and used as queries they
+      score 5.3 points worse for DINOv2 and <strong>15.6 worse for CLIP</strong>, which is what runs
+      on this page. Not because they show harder statues: those queries belong to classes with more
+      reference photographs, not fewer. It is still a lower bound, since every one is a Commons
+      upload someone chose to take and share. A casual snapshot is harder again, and measuring that
+      needs photographs nobody has taken yet.</span></div>
       <div class="limit"><span><b>There is no “I don't know”, and that is a measured result.</b> A
       statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
