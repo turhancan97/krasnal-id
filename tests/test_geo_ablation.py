@@ -17,12 +17,12 @@ from krasnal_id.experiments.geo_ablation import (
     GeoAblationError,
     GeoMeasurement,
     dwarf_locations,
-    haversine_metres,
     measure_geographic_pool,
     nearest_pool,
     run_geo_ablation,
     summarize_geo,
 )
+from krasnal_id.geometry import haversine_metres
 
 # A degree of longitude at the equator, and Wrocław's market square.
 _EQUATOR_DEGREE_METRES = 111195.0
