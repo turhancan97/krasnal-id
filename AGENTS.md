@@ -555,6 +555,8 @@ has real behavior, plus two additions not in the original plan: the geographic a
 pick up. Further work is a new research direction, and the limitations recorded in `RESULTS.md`
 are the open questions. Releases after `0.3.0` each close one of them: `0.4.0` open-set rejection,
 `0.5.0` the Commons-first rebuild, `0.6.0` derived coordinates, `0.7.0` the camera-origin gap.
+`0.8.0` builds the field-query path of §5.10, which does not close its question: it leaves it
+waiting on photographs rather than on code.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

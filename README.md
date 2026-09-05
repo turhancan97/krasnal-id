@@ -11,7 +11,7 @@ would help.
 
 ## Project status
 
-Current version **0.7.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.8.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -24,7 +24,8 @@ The v0.1-v0.3 build order finished at `0.3.0`; every release since closes one re
 and why. `0.6.0` placed 294 of those classes by deriving positions from their own photographs,
 taking the geographic result from six statues in one installation to city-wide. `0.7.0` put a lower
 bound on the query-domain gap without fieldwork, using the 51 references that were themselves shot
-on phones.
+on phones. `0.8.0` built the path that measures it properly, so the only thing the question still
+waits on is photographs.
 
 One question stays open, and it is the one the numbers above cannot answer: **how much accuracy a
 real phone photograph taken in the street costs.** The protocol, the route, the cohorts and the
@@ -69,7 +70,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.7.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.8.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -115,7 +116,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.7.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.8.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

@@ -10,6 +10,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-06
+
 ### Added
 
 - Added the whole measuring path for the field-query experiment, built before the photographs
