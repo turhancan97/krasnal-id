@@ -30,6 +30,15 @@ from krasnal_id.data_pipeline.commons_fetch import (
     fetch_paths,
     prepare_category_review,
 )
+from krasnal_id.data_pipeline.field_queries import (
+    FieldQueryError,
+    field_query_manifest_path,
+    load_field_query_manifest,
+    load_field_route,
+    queries_by_cohort,
+    stage_field_queries,
+    write_field_query_manifest,
+)
 from krasnal_id.data_pipeline.wikidata_query import (
     WikidataConfigurationError,
     WikidataQueryError,
@@ -39,7 +48,13 @@ from krasnal_id.data_pipeline.wikidata_query import (
 from krasnal_id.demo.app import DemoError
 from krasnal_id.demo.app import launch as launch_demo
 from krasnal_id.embeddings.backbone import EmbeddingConfigurationError
-from krasnal_id.embeddings.extract import EmbeddingExtractionError, extract_from_artifact
+from krasnal_id.embeddings.cache import EmbeddingCache
+from krasnal_id.embeddings.extract import (
+    EmbeddingExtractionError,
+    create_backbone,
+    extract_from_artifact,
+)
+from krasnal_id.embeddings.extract import extract_embeddings as extract_record_embeddings
 from krasnal_id.embeddings.store import EmbeddingStoreError
 from krasnal_id.experiments.artifacts import (
     ExperimentArtifactError,
@@ -52,6 +67,7 @@ from krasnal_id.experiments.confusion_analysis import (
     ConfusionAnalysisError,
     run_confusion_analysis,
 )
+from krasnal_id.experiments.field_gap import FieldGapError, run_field_gap
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
@@ -60,12 +76,22 @@ from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
     CategoryReviewStatus,
+    DatasetManifest,
     FetchAuditDisposition,
 )
 from krasnal_id.retrieval.query import QueryError, retrieve_image
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 from krasnal_id.viz.open_set_plot import create_open_set_plot
+
+
+def _read_manifest(path: Path) -> DatasetManifest:
+    """Read the generated manifest for a command that needs the dataset itself."""
+    try:
+        return DatasetManifest.model_validate(json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, ValueError) as error:
+        raise ManifestConfigurationError(f"invalid manifest {path}: {error}") from error
+
 
 OverrideOption = Annotated[
     list[str] | None,
@@ -228,7 +254,6 @@ def build_camera_metadata(override: OverrideOption = None) -> None:
     import httpx
 
     from krasnal_id.data_pipeline.wikidata_query import _contact_user_agent, _request_commons_page
-    from krasnal_id.models import DatasetManifest
 
     config = load_config(override or [])
     configure_logging(config.logging)
@@ -311,23 +336,83 @@ def build_split(override: OverrideOption = None) -> None:
     )
 
 
-@embeddings_app.command("extract")
-def extract_embeddings(override: OverrideOption = None) -> None:
-    """Extract and cache embeddings for every admitted image."""
+@data_app.command("field-queries")
+def stage_field_query_manifest(override: OverrideOption = None) -> None:
+    """Stage the field photographs on disk into a query manifest."""
     config = load_config(override or [])
     configure_logging(config.logging)
     try:
-        summary = extract_from_artifact(
-            config.paths.manifest_path,
-            config.backbone,
-            config.paths.embeddings_dir,
+        route = load_field_route(config.paths.field_route_path)
+        manifest = _read_manifest(config.paths.manifest_path)
+        staged = stage_field_queries(config.paths.field_queries_dir, manifest, route)
+        path = field_query_manifest_path(config.paths.data_dir)
+        write_field_query_manifest(path, staged)
+    except (FieldQueryError, ManifestConfigurationError) as error:
+        typer.echo(f"Field query error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    cohorts = queries_by_cohort(staged.queries)
+    statues = len({query.dwarf_id for query in staged.queries})
+    typer.echo(
+        f"Field query staging complete: photographs={len(staged.queries)} "
+        f"statues={statues} of {len(route.entries)} on the route output={path}"
+    )
+    for cohort, records in sorted(cohorts.items()):
+        typer.echo(
+            f"  {cohort}: {len(records)} photographs of "
+            f"{len({record.dwarf_id for record in records})} statues"
         )
-    except (EmbeddingConfigurationError, EmbeddingExtractionError) as error:
+
+
+@embeddings_app.command("extract")
+def extract_embeddings(
+    override: OverrideOption = None,
+    field_queries: Annotated[
+        bool,
+        typer.Option(
+            "--field-queries",
+            help="Embed the staged field photographs instead of the reference set.",
+        ),
+    ] = False,
+) -> None:
+    """Extract and cache embeddings for every admitted image.
+
+    The cache is content-addressed, so field photographs share it with the
+    references without joining them: `--field-queries` embeds the staged queries
+    and touches neither the manifest nor the split.
+    """
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        if field_queries:
+            staged = load_field_query_manifest(
+                field_query_manifest_path(config.paths.data_dir),
+                _read_manifest(config.paths.manifest_path),
+            )
+            summary = extract_record_embeddings(
+                staged.queries,
+                create_backbone(config.backbone),
+                EmbeddingCache(config.paths.embeddings_dir),
+                config.backbone.batch_size,
+            )
+        else:
+            summary = extract_from_artifact(
+                config.paths.manifest_path,
+                config.backbone,
+                config.paths.embeddings_dir,
+            )
+    except (
+        EmbeddingConfigurationError,
+        EmbeddingExtractionError,
+        FieldQueryError,
+        ManifestConfigurationError,
+    ) as error:
         typer.echo(f"Embedding extraction error: {error}", err=True)
         raise typer.Exit(code=2) from error
 
     typer.echo(
         "Embedding extraction complete: "
+        f"source={'field-queries' if field_queries else 'manifest'} "
         f"backbone={config.backbone.name} total={summary.total} "
         f"reused={summary.reused} computed={summary.computed} "
         f"cache={config.paths.embeddings_dir}"
@@ -560,6 +645,48 @@ def camera_gap_experiment(override: OverrideOption = None) -> None:
                 f"  {metric.name}: {metric.value:.4f} "
                 f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
             )
+
+
+@experiment_app.command("field-gap")
+def field_gap_experiment(override: OverrideOption = None) -> None:
+    """Compare field photographs against the same statues' Commons queries."""
+    config = load_config(["experiment=field_gap", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        staged = load_field_query_manifest(
+            field_query_manifest_path(config.paths.data_dir),
+            _read_manifest(config.paths.manifest_path),
+        )
+        result = run_field_gap(config, staged)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        FieldGapError,
+        FieldQueryError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+        ManifestConfigurationError,
+    ) as error:
+        typer.echo(f"Field gap error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Field gap complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+    typer.echo(f"  hardest statues to identify in the street (of {len(result.classes)}):")
+    for row in result.classes[:10]:
+        typer.echo(
+            f"    {row.display_name} ({row.cohort}): {row.field_top_1_hits} of "
+            f"{row.field_queries} field photographs identified, against "
+            f"{row.commons_top_1_hits} of {row.commons_queries} Commons queries, "
+            f"mean rank {row.field_mean_rank:.1f}"
+        )
 
 
 @experiment_app.command("confusion")

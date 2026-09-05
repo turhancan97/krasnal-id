@@ -116,3 +116,39 @@ class OpenSetRejectionResult(ExperimentResult):
 
     rejections: tuple[DwarfRejection, ...]
     curve: tuple[RejectionOperatingPoint, ...] = ()
+
+
+class FieldClassOutcome(BaseModel):
+    """How one statue's field photographs ranked, beside its Commons photographs.
+
+    Both counts come from the same reference set and the same cut-off, so the
+    difference between them is this statue's contribution to the domain gap. The
+    Commons side is the leave-one-out folds of the same class, which is what
+    `RESULTS.md` reports the headline accuracy over.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    dwarf_id: str = Field(min_length=1)
+    display_name: str = Field(min_length=1)
+    cohort: str = Field(min_length=1)
+    field_queries: int = Field(gt=0)
+    field_top_1_hits: int = Field(ge=0)
+    field_mean_rank: float = Field(ge=1.0)
+    commons_queries: int = Field(ge=0)
+    commons_top_1_hits: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def validate_counts(self) -> "FieldClassOutcome":
+        """Require every hit count to be a subset of the queries it came from."""
+        if self.field_top_1_hits > self.field_queries:
+            raise ValueError("field hits cannot exceed the queries they came from")
+        if self.commons_top_1_hits > self.commons_queries:
+            raise ValueError("Commons hits cannot exceed the queries they came from")
+        return self
+
+
+class FieldGapResult(ExperimentResult):
+    """Experiment result carrying the per-statue rows behind its metrics."""
+
+    classes: tuple[FieldClassOutcome, ...]

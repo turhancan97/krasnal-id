@@ -18,6 +18,8 @@ class PathsConfig(BaseModel):
     embeddings_dir: Path
     evaluation_split_path: Path
     discovery_dir: Path
+    field_queries_dir: Path
+    field_route_path: Path
     category_review_path: Path
     image_review_path: Path
     manifest_path: Path
@@ -191,6 +193,23 @@ class CameraGapExperimentConfig(BaseModel):
         return self
 
 
+class FieldGapExperimentConfig(BaseModel):
+    """Field-photograph query-domain gap settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["field_gap"]
+    seed: int
+    top_k: tuple[int, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_top_k(self) -> "FieldGapExperimentConfig":
+        """Require positive cut-offs."""
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -218,6 +237,7 @@ ExperimentConfig = Annotated[
     | ProbeExperimentConfig
     | OpenSetExperimentConfig
     | CameraGapExperimentConfig
+    | FieldGapExperimentConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

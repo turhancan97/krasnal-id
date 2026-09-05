@@ -189,10 +189,19 @@ in Wrocław, so the contract for them is fixed here before any exist.
   93.1% top-1 is what the existing protocol reports; whatever these queries score, the gap between
   the two is the finding.
 - **Hard classes and controls are both required.** The core route deliberately includes all
-  eleven statues in the three clusters both backbones already confuse, plus eight statues in the
-  same streets that neither has ever confused. A uniform drop and a drop concentrated on the
-  confusable clusters are different findings, and only the second is visible if both are present.
+  eleven statues in the four families both backbones already confuse, plus eight statues in the
+  same streets that belong to no such family. A uniform drop and a drop concentrated on the
+  confusable families are different findings, and only the second is visible if both are present.
   Without controls a drop is confounded by hard statues also standing somewhere awkward.
+- **Cohort is family membership, and is fixed before anything is scored.** It lives in tracked,
+  reviewed `data/field-route.json`, so the split cannot be chosen after seeing the result. Four of
+  the eight controls — Syzyfki, Capgeminiusz Programista, Kowal, Śpioch — draw one to three top-1
+  errors of their own, so "control" means "in no confused family", not "never confused". Their
+  error counts are recorded on the route entries beside the label, and the contamination is
+  reported rather than corrected: it makes the two cohorts look more alike, so it understates a
+  concentrated drop rather than manufacturing one. Defining the cohort by error count instead
+  would leave four controls against fifteen hard classes and mix an eight-error Słupnik with a
+  statue that errs once in thirty-one photographs.
 - **Shooting instructions are part of the protocol, not advice.** A carefully composed phone
   photograph measures nothing this dataset does not already contain. `data/field-guide.md` asks for
   deliberate variation in angle, distance and light, and explicitly asks the photographer not to
@@ -229,6 +238,36 @@ whether phone-originated photographs are harder queries than camera-originated o
   they belong to rather than the camera. Median references per class and the share falling in an
   already-confused class are reported for both groups, because they are the first thing a reader
   should check.
+
+### 5.10 Field query implementation decision (2026-09-05)
+
+Section 5.8 fixed the contract for field photographs before any existed; this records how it is
+implemented, built ahead of the fieldwork so the walk produces a result the same day rather than
+starting a build.
+
+- **Three stages, matching the existing layering.** `data field-queries` stages the photographs on
+  disk into a generated query manifest, `embeddings extract --field-queries` embeds them, and
+  `experiment field-gap` scores them. Staging needs no ML extra and no network; extraction remains
+  the only thing that writes vectors, so the experiment cannot quietly load a model mid-run.
+- **The reference set is the manifest, untouched.** No stage writes to `dwarfs.json`,
+  `fetched-images.json`, the manifest or the split, so nothing here invalidates a published result.
+  The query manifest is generated and git-ignored; only `data/field-route.json` is tracked.
+- **The embedding cache is shared, the datasets are not.** Cache keys are content hashes plus the
+  pinned backbone identity, so a field photograph is as addressable as a reference one and needs
+  no second cache. `load_embedding_matrix` still reads the manifest and nothing else, so a field
+  vector can never enter the reference matrix.
+- **The comparison is the same statues' leave-one-out folds, not the headline 93.1%.** Restricting
+  the Commons side to the photographed classes holds pool size and class difficulty fixed so that
+  only the query's origin varies. Comparing against the whole-dataset number instead would confound
+  the domain gap with which nineteen statues happen to be on the route.
+- **One asymmetry is unavoidable and is reported, not hidden.** A leave-one-out query is withheld
+  from its own class and therefore sees one fewer reference of the right statue than a field query
+  does. That favours the field queries, so it understates the gap. It cannot be removed: an
+  in-dataset query that is not withheld matches itself at similarity 1.0.
+- **Staging refuses what would quietly corrupt the measurement**: a directory naming no dwarf in
+  the manifest, a dwarf that is not on the reviewed route, a file that will not decode, and any
+  photograph byte-identical to a reference — the last being a Commons upload copied into the query
+  set, which would measure the protocol rather than the domain gap.
 
 ## 6. Technical architecture
 
@@ -518,7 +557,10 @@ are the open questions:
   research one: the published demo still shows a ranking unconditionally, and giving it a
   threshold means choosing an operating point on a visitor's behalf.
 - **Real query photographs** — the reference set is Commons uploads, so the domain gap to a phone
-  camera is unmeasured. Needs fieldwork in Wroclaw.
+  camera is unmeasured. `experiment camera-gap` (§5.9) puts a lower bound on it from the 51
+  references shot on phones, and does not retire the question. The protocol (§5.8), the route and
+  cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
+  what is missing is the photographs, which need a day in Wrocław.
 - **A larger pool** — 16 represented classes sit below the three-image threshold, and the full
   23-class pool is close to the accuracy ceiling, which is why the ablation curve is shallow and
   why extrapolating past it is unreliable.
@@ -539,6 +581,9 @@ krasnal-id/
 ├── uv.lock                    # locked transitive dependency graph
 ├── data/
 │   ├── category-review.json   # tracked human review of Commons mappings
+│   ├── field-route.json       # tracked route and cohort per statue, fixed before scoring
+│   ├── field-guide.md         # the shooting protocol for the field queries
+│   ├── field-queries/         # ignored field photographs, one directory per statue
 │   ├── discovery/             # ignored Wikidata/Commons caches, staging, and audits
 │   ├── images/                # ignored cached research copies
 │   ├── embeddings/            # ignored embedding cache
@@ -551,6 +596,7 @@ krasnal-id/
 │   ├── data_pipeline/
 │   │   ├── wikidata_query.py
 │   │   ├── commons_fetch.py   # reviewed, cached Commons acquisition
+│   │   ├── field_queries.py   # field photographs staged as queries, never references
 │   │   └── build_manifest.py
 │   ├── embeddings/
 │   │   ├── backbone.py
@@ -561,6 +607,7 @@ krasnal-id/
 │   │   ├── baseline_accuracy.py
 │   │   ├── pool_size_ablation.py
 │   │   ├── confusion_analysis.py
+│   │   ├── field_gap.py        # the query-domain gap, measured on field photographs
 │   │   └── open_set.py         # unknown-query rejection
 │   └── viz/
 │       └── embedding_plot.py
@@ -655,3 +702,8 @@ still apply, and the reasoning behind each is not repeated anywhere else.
   visualization, the trained-classifier comparison, open-set rejection, and both demos are
   implemented and have been run end to end on this dataset. No module raises `NotImplementedError`. See section 8 for what
   is open beyond this point, and `CHANGELOG.md` for the per-stage record.
+- The field-query path of §5.10 is implemented and its stages have been exercised end to end
+  against this dataset, but only on stand-in photographs derived from references — enough to prove
+  the plumbing, worth nothing as a finding. `data/field-queries/` holds the nineteen core
+  directories and no photographs, so `results/field_gap-*.json` does not exist and no field-gap
+  number is published anywhere. The first real run is the fieldwork.

@@ -1,0 +1,376 @@
+{
+  "entries": [
+    {
+      "cohort": "control",
+      "display_name": "Sprinkler dwarf (Wrocław)",
+      "dwarf_id": "C-sprinkler-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Ślepak",
+      "dwarf_id": "C-slepak-dwarf-wroclaw",
+      "recorded_top_1_errors": 3,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Głuchak",
+      "dwarf_id": "C-gluchak-dwarf-wroclaw",
+      "recorded_top_1_errors": 4,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Syzyfki",
+      "dwarf_id": "Q136001355",
+      "recorded_top_1_errors": 1,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Capgeminiusz Programista",
+      "dwarf_id": "Q136341125",
+      "recorded_top_1_errors": 3,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Słupniki Świdnickie",
+      "dwarf_id": "C-slupniki-swidnickie-dwarves-wroclaw",
+      "recorded_top_1_errors": 7,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Grajek",
+      "dwarf_id": "C-grajek-dwarf-wroclaw",
+      "recorded_top_1_errors": 5,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Grajek i Meloman",
+      "dwarf_id": "C-grajek-i-meloman-dwarves-wroclaw",
+      "recorded_top_1_errors": 8,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Meloman",
+      "dwarf_id": "C-meloman-dwarf-wroclaw",
+      "recorded_top_1_errors": 3,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Słupniki Oławskie",
+      "dwarf_id": "C-slupniki-olawskie-dwarves-wroclaw",
+      "recorded_top_1_errors": 7,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Kowal",
+      "dwarf_id": "Q65742089",
+      "recorded_top_1_errors": 2,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "WrocLovek",
+      "dwarf_id": "C-wroclovek-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Śpioch",
+      "dwarf_id": "C-spioch-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Więzień",
+      "dwarf_id": "C-wiezien-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Słupniki Solne",
+      "dwarf_id": "C-slupniki-solne-dwarfs-wroclaw",
+      "recorded_top_1_errors": 8,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Puszczający Stateczki",
+      "dwarf_id": "Q136290068",
+      "recorded_top_1_errors": 3,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Zbierający Wodę",
+      "dwarf_id": "Q136290218",
+      "recorded_top_1_errors": 5,
+      "tier": "core"
+    },
+    {
+      "cohort": "confusable",
+      "display_name": "Karmiący Ptaki",
+      "dwarf_id": "Q136276947",
+      "recorded_top_1_errors": 2,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Pracz Odrzański",
+      "dwarf_id": "C-pracz-odrzanski-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "core"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Bartonik",
+      "dwarf_id": "C-bartonik-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Pomagajek",
+      "dwarf_id": "C-pomagajek-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Prezentuś",
+      "dwarf_id": "C-prezentus-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Leszko",
+      "dwarf_id": "C-leszko-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Wiesiek Partnerski",
+      "dwarf_id": "C-wiesiek-partnerski-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Życzliwek",
+      "dwarf_id": "C-zyczliwek-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Suvenirek",
+      "dwarf_id": "C-suvenirek-dwarf-wroclaw",
+      "recorded_top_1_errors": 3,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Pocztowiec",
+      "dwarf_id": "C-pocztowiec-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Pożarki",
+      "dwarf_id": "C-pozarki-dwarves-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Chrapek",
+      "dwarf_id": "C-chrapek-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Podróżnik dwarf (Zwolańska–Hołod), Wrocław",
+      "dwarf_id": "C-podroznik-dwarf-zwolanskaholod-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Bankomatki",
+      "dwarf_id": "C-bankomatki-dwarfs-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Rogalik",
+      "dwarf_id": "C-rogalik-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Ciastuś i Amorinek",
+      "dwarf_id": "C-ciastus-i-amorinek-dwarves-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Klucznik",
+      "dwarf_id": "C-klucznik-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Motocyklista",
+      "dwarf_id": "C-motocyklista-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Pomnik Pomarańczowej Alternatywy",
+      "dwarf_id": "Q11823412",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Wodne",
+      "dwarf_id": "C-wodne-dwarves-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Aktor",
+      "dwarf_id": "Q136276711",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Wierzbownik",
+      "dwarf_id": "Q136290183",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Tescoma",
+      "dwarf_id": "C-tescoma-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Turysta",
+      "dwarf_id": "C-turysta-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Powerek",
+      "dwarf_id": "C-powerek-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Wypłatnik",
+      "dwarf_id": "C-wyplatnik-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Bankuś Pieniążek",
+      "dwarf_id": "C-bankus-pieniazek-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Dialogomir",
+      "dwarf_id": "C-dialogomir-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Tolerance",
+      "dwarf_id": "C-tolerance-dwarves-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Szomol",
+      "dwarf_id": "C-szomol-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Profesor Medyk",
+      "dwarf_id": "C-profesor-medyk-dwarf-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Kapitańskie Bliźniaki",
+      "dwarf_id": "C-kapitanskie-blizniaki-dwarves-wroclaw",
+      "recorded_top_1_errors": 0,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Drukarz Kacper",
+      "dwarf_id": "C-drukarz-kacper-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Botanik",
+      "dwarf_id": "C-botanik-dwarf-wroclaw",
+      "recorded_top_1_errors": 2,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Golasek dwarf in Wrocław",
+      "dwarf_id": "C-golasek-dwarf-in-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    },
+    {
+      "cohort": "control",
+      "display_name": "Rozkwietnik",
+      "dwarf_id": "C-rozkwietnik-dwarf-wroclaw",
+      "recorded_top_1_errors": 1,
+      "tier": "extended"
+    }
+  ],
+  "schema_version": "1.0"
+}

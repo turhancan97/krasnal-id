@@ -10,6 +10,39 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added the whole measuring path for the field-query experiment, built before the photographs
+  exist so a day in Wrocław produces a result the same day rather than starting a build.
+  `krasnal-id data field-queries` stages the photographs on disk into a generated query manifest,
+  `krasnal-id embeddings extract --field-queries` embeds them with the pinned backbones, and
+  `krasnal-id experiment field-gap` scores them. Verified end to end on the real 306-class dataset
+  with DINOv2.
+- Added tracked `data/field-route.json`: the 53 statues on the route, each filed as a member of a
+  confused family or as a control, with the top-1 errors its Commons photographs already draw.
+  Fixed before any photograph is scored, so the cohorts cannot be chosen after seeing the result.
+- The field gap is reported against **the same statues' leave-one-out folds**, not against the
+  headline 93.1%, so pool size and class difficulty are held fixed and only the query's origin
+  varies. Overall, per-cohort, and per-statue rows are all written to the result artifact.
+- Nothing in the new path writes to the manifest, the staging file or the split, so staging a
+  photograph invalidates no published result. The embedding cache is shared because it is keyed by
+  content hash, but `load_embedding_matrix` still reads the manifest alone, so a field vector
+  cannot enter the reference set.
+
+### Changed
+
+- The extraction loop now works on any local image record rather than manifest images specifically,
+  which is what lets field photographs reuse it without a second copy of the batching, validation
+  and resume logic.
+
+### Fixed
+
+- Corrected the field guide and `AGENTS.md` section 5.8, which both described the core route's
+  eight controls as statues "neither backbone has ever confused". Four of them — Syzyfki,
+  Capgeminiusz Programista, Kowal and Śpioch — draw one to three top-1 errors each. A control is a
+  statue in no confused family, and the contamination is now named where it matters: it makes the
+  cohorts look more alike, so it understates a concentrated drop rather than manufacturing one.
+
 ## [0.7.0] - 2026-09-05
 
 ### Added

@@ -359,7 +359,33 @@ classes" is the first thing to rule out. Images whose EXIF was stripped form the
 group rather than being folded into either side.
 
 This is a lower bound on the real query-domain gap: these are still Commons uploads. See
-`data/field-guide.md` for the fieldwork that would measure it properly.
+`data/field-guide.md` for the fieldwork that measures it properly, and the next section for the
+path that scores it.
+
+## Measure the query-domain gap with real photographs
+
+Photographs taken in the street are **queries, never references**: the manifest is not rebuilt to
+include them, because admitting them as references would destroy the comparison they exist to make.
+Drop three to five phone photographs of a statue into `data/field-queries/<dwarf_id>/`, following
+`data/field-guide.md`, then:
+
+    uv run krasnal-id data field-queries                    # stage them into a query manifest
+    uv run krasnal-id embeddings extract --field-queries    # embed them with the pinned backbone
+    uv run krasnal-id experiment field-gap                  # score them against the references
+
+Staging is offline and needs no ML extra. It refuses a directory that names no statue in the
+dataset, a statue absent from the reviewed route, a file that will not decode, and any photograph
+byte-identical to a reference — that last one would be a Commons upload copied into the query set,
+which measures the protocol rather than the domain gap.
+
+The finding is a difference, not an absolute. The experiment compares the field photographs with
+the **leave-one-out folds of the same statues**, so pool size and class difficulty are held fixed
+and only the query's origin varies, and it writes overall, per-cohort and per-statue rows to
+`results/field_gap-<backbone>.json`. Which statues are members of a confused family and which are
+controls is fixed in tracked `data/field-route.json` before anything is scored, so the split cannot
+be chosen after seeing the result. One asymmetry is reported rather than hidden: a leave-one-out
+query is withheld from its own class and so sees one fewer reference of the right statue than a
+field query does, which favours the field queries and understates the gap.
 
 ## Development checks
 

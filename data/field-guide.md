@@ -138,9 +138,18 @@ Those eleven are where both backbones already make their mistakes on *clean* pho
 phone photo degrades the hard cases disproportionately, that is a different and more interesting
 finding than a uniform drop, and it is only visible if the hard cases are in the query set.
 
-The remaining eight are controls: well-photographed statues in the same streets that neither
-backbone has ever confused. Without them a drop could just mean "these statues are hard", and the
-comparison would be confounded by hard statues also standing somewhere awkward.
+The remaining eight are controls: well-photographed statues in the same streets that belong to no
+confused family. Four of them — Sprinkler, WrocLovek, Więzień, Pracz Odrzański — have never been
+confused at all; the other four draw one to three top-1 errors each, as their annotations above
+say. That contamination is worth naming, because it works against the finding: an occasionally
+confused control makes the two cohorts look more alike, so a drop concentrated on the confused
+families is understated rather than manufactured. Without controls at all, a drop could just mean
+"these statues are hard", and the comparison would be confounded by hard statues also standing
+somewhere awkward.
+
+Which cohort each statue is in is not decided from these annotations at shooting time. It is fixed
+in tracked `data/field-route.json` before any photograph is scored, so the split cannot be chosen
+after seeing the result.
 
 ### Extended — if you have a longer day
 
@@ -283,6 +292,17 @@ comparison would be confounded by hard statues also standing somewhere awkward.
 
 ## When you get back
 
-Copy the directories across and tell me. I will build a query manifest, embed the photographs with
-the same pinned backbones, and score them against the existing references — reporting the domain
-gap overall and separately for the confusable clusters against the controls.
+Copy the directories across. Everything after that is already built and takes about a minute:
+
+```bash
+uv run krasnal-id data field-queries                          # stage the photographs
+uv run krasnal-id embeddings extract --field-queries          # embed them, DINOv2
+uv run krasnal-id embeddings extract --field-queries --override backbone=clip
+uv run krasnal-id experiment field-gap                        # the gap, DINOv2
+uv run krasnal-id experiment field-gap --override backbone=clip
+```
+
+Staging refuses a directory that names no statue in the dataset, a statue that is not on the
+reviewed route, and any photograph byte-identical to a reference — so a mis-named directory or a
+Commons file copied in by accident is caught before it reaches a result. The experiment reports the
+gap overall and separately for the confused families against the controls, plus a row per statue.

@@ -2,9 +2,10 @@
 
 import hashlib
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 from PIL import Image, UnidentifiedImageError
@@ -19,11 +20,46 @@ from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.embeddings.store import cache_key_for
-from krasnal_id.models import DatasetManifest, ImageRecord
+from krasnal_id.models import DatasetManifest
 
 
 class EmbeddingExtractionError(ValueError):
     """Raised when manifest inputs or extraction outputs are invalid."""
+
+
+@runtime_checkable
+class ExtractableImage(Protocol):
+    """A local image with the provenance every extraction validates against.
+
+    Satisfied by `ImageRecord` and by `FieldQueryRecord`, so reference photographs
+    and field photographs share one extraction loop and one content-addressed
+    cache key. They stay separate datasets; only the machinery is shared.
+    """
+
+    @property
+    def image_id(self) -> str:
+        """Return the identifier this image is reported under."""
+        ...
+
+    @property
+    def local_path(self) -> Path:
+        """Return the path the image was stored at."""
+        ...
+
+    @property
+    def sha256(self) -> str:
+        """Return the recorded content hash."""
+        ...
+
+    @property
+    def width(self) -> int:
+        """Return the recorded pixel width."""
+        ...
+
+    @property
+    def height(self) -> int:
+        """Return the recorded pixel height."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,8 +89,8 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _load_and_validate_image(record: ImageRecord) -> Image.Image:
-    """Read and validate one manifest image and its recorded provenance."""
+def _load_and_validate_image(record: ExtractableImage) -> Image.Image:
+    """Read and validate one image and its recorded provenance."""
     path = record.local_path
     if not path.is_file():
         raise EmbeddingExtractionError(f"image {record.image_id} is missing: {path}")
@@ -79,19 +115,19 @@ def _load_and_validate_image(record: ImageRecord) -> Image.Image:
         ) from error
 
 
-def extract_manifest_embeddings(
-    manifest: DatasetManifest,
+def extract_embeddings(
+    records: Sequence[ExtractableImage],
     backbone: EmbeddingBackbone,
     cache: EmbeddingCache,
     batch_size: int,
 ) -> ExtractionSummary:
-    """Validate manifest images and compute only missing or invalid vectors."""
+    """Validate the given images and compute only missing or invalid vectors."""
     if batch_size <= 0:
         raise EmbeddingExtractionError("batch_size must be positive")
 
     pending: list[tuple[EmbeddingCacheKey, Image.Image]] = []
     reused = 0
-    ordered_records = tuple(sorted(manifest.images, key=lambda image: image.image_id))
+    ordered_records = tuple(sorted(records, key=lambda image: image.image_id))
     for record in ordered_records:
         image = _load_and_validate_image(record)
         key = cache_key_for(record, backbone)
@@ -128,6 +164,16 @@ def extract_manifest_embeddings(
         reused=reused,
         computed=computed,
     )
+
+
+def extract_manifest_embeddings(
+    manifest: DatasetManifest,
+    backbone: EmbeddingBackbone,
+    cache: EmbeddingCache,
+    batch_size: int,
+) -> ExtractionSummary:
+    """Validate manifest images and compute only missing or invalid vectors."""
+    return extract_embeddings(manifest.images, backbone, cache, batch_size)
 
 
 def _read_manifest(path: Path) -> DatasetManifest:

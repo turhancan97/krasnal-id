@@ -10,7 +10,7 @@ import numpy.typing as npt
 
 from krasnal_id.config import BackboneConfig
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
-from krasnal_id.models import DatasetManifest, ImageRecord
+from krasnal_id.models import DatasetManifest
 
 
 class EmbeddingStoreError(ValueError):
@@ -51,8 +51,24 @@ def cache_key_for_digest(image_sha256: str, identity: BackboneIdentity) -> Embed
     )
 
 
-def cache_key_for(record: ImageRecord, identity: BackboneIdentity) -> EmbeddingCacheKey:
-    """Build the cache identity for one manifest image."""
+@runtime_checkable
+class ContentAddressed(Protocol):
+    """Anything a cached vector can be keyed by: an image with a content hash.
+
+    Satisfied by `ImageRecord` and by the field-query record, because the cache is
+    keyed by file content and a field photograph is as content-addressed as a
+    reference one. It does not admit field photographs to the reference set;
+    `load_embedding_matrix` still reads the manifest and nothing else.
+    """
+
+    @property
+    def sha256(self) -> str:
+        """Return the image's content hash."""
+        ...
+
+
+def cache_key_for(record: ContentAddressed, identity: BackboneIdentity) -> EmbeddingCacheKey:
+    """Build the cache identity for one image."""
     return cache_key_for_digest(record.sha256, identity)
 
 

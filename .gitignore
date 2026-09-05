@@ -23,6 +23,8 @@ htmlcov/
 # often symlinks to bulk storage, and a directory-only pattern would not match one.
 data/images
 data/field-queries
+# The staged query manifest is generated; data/field-route.json is reviewed and tracked.
+data/field-queries.json
 data/embeddings
 data/splits
 data/discovery
