@@ -343,7 +343,7 @@ the tail exists.
 
 ```bash
 uv sync --extra ml --extra analysis
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.5.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.6.0 (mailto:you@example.com)'
 
 uv run krasnal-id data query --include-commons                # Wikidata + Commons discovery
 uv run krasnal-id data fetch --prepare-review                 # then review the mappings

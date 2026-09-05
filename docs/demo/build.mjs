@@ -186,7 +186,9 @@ writeFileSync(
     {
       generated_at: new Date().toISOString(),
       model: { repo: MODEL_ID, dtype: DTYPE, dimensions: dim, shortest_edge: EMBED_SHORTEST_EDGE },
-      manifest_sha256: manifest.staging_sha256,
+      // The staging hash, not a hash of the manifest: it is what ties these vectors
+      // to the exact acquisition run that produced their images.
+      staging_sha256: manifest.staging_sha256,
       measured,
       co_located_groups: coLocated,
       self_test: selfTest,

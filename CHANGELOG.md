@@ -10,6 +10,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-05
+
 ### Added
 
 - Added derived coordinates, taking the geographic experiment from 23 of 306 classes to **294**.
@@ -26,6 +28,9 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 - Added `krasnal_id.geometry` and `krasnal_id.statistics`, so the data pipeline does not import an
   experiment to measure a distance and two experiments do not share a rank statistic by importing
   each other.
+- The published demo detects 29 co-located groups where it previously found 2, because 294 statues
+  are placed rather than 23, so its warning that a top match belongs to a co-located installation
+  now fires where it should.
 
 ### Changed
 
@@ -327,6 +332,9 @@ sections above so that a new contributor or agent can read one place to orient t
 - The dataset is rebuilt Commons-first at **306 classes and 1,691 images**, released as `0.5.0`,
   and every experiment, figure and the published demo are regenerated at that scale. `RESULTS.md`
   section 7 records which conclusions the rebuild overturned.
+- Coordinates are derived from photographs as well as Wikidata, so the geographic experiment covers
+  294 of 306 classes rather than 23, and the co-location mechanism behind it is measured rather
+  than inferred. Released as `0.6.0`.
 - The one remaining open question from section 8 is **real query photographs**: every reference
   here is a Commons upload, so the domain gap to a phone camera is still unmeasured. It needs
   fieldwork rather than code.
