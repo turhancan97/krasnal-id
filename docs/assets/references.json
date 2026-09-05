@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-09-04T19:45:57.247Z",
+ "generated_at": "2026-09-05T11:18:11.871Z",
  "model": {
   "repo": "Xenova/clip-vit-base-patch32",
   "dtype": "q4",
   "dimensions": 512,
   "shortest_edge": 224
  },
- "manifest_sha256": "5861db9b90e9501f10bf7853259d0296f67bb7891978240ddb41c0fa7922ba5d",
+ "manifest_sha256": "ce22a7249083a5e7ccc0c3efb396e16791bfb9f242bea5bae719dbed32a5a548",
  "measured": {
   "top_1": 0.823772915434654,
   "top_5": 0.9036073329390893,
@@ -15,6 +15,143 @@
  },
  "co_located_groups": [
   [
+   "C-bankus-pieniazek-dwarf-wroclaw",
+   "C-wyplatnik-dwarf-wroclaw"
+  ],
+  [
+   "C-bardus-dwarf-wroclaw",
+   "C-solidarek-dwarf-wroclaw"
+  ],
+  [
+   "C-bartonik-dwarf-wroclaw",
+   "C-lion-spod-znaku-lwa-dwarf-wroclaw",
+   "C-rmfek-dwarf-wroclaw",
+   "C-sprinkler-dwarf-wroclaw",
+   "C-tynqus-dwarf-wroclaw"
+  ],
+  [
+   "C-botanik-dwarf-wroclaw",
+   "Q136006129"
+  ],
+  [
+   "C-bracia-o-hurt-dwarves-wroclaw",
+   "C-promocjusz-i-przecennik-dwarves-wroclaw",
+   "C-zakupek-dwarf-wroclaw"
+  ],
+  [
+   "C-budoludki-dwarves-wroclaw",
+   "C-modrus-i-odrus-dwarves-wroclaw"
+  ],
+  [
+   "C-bulbulek-dwarf-wroclaw",
+   "C-helpik-dwarf-wroclaw",
+   "C-plumplumek-dwarf-wroclaw",
+   "C-ratus-dwarf-wroclaw"
+  ],
+  [
+   "C-ciagnacy-walizke-dwarf-wroclaw",
+   "C-lezacy-na-trawie-dwarf-wroclaw",
+   "C-lotnicy-dwarves-wroclaw",
+   "C-siedzacy-na-walizce-dwarf-wroclaw"
+  ],
+  [
+   "C-ciastus-i-amorinek-dwarves-wroclaw",
+   "C-dziupelka-dwarf-wroclaw",
+   "C-harivansh-rai-bachchan-dwarf-wroclaw",
+   "C-piwozlop-z-pieselem-piwoszem-wroclaw",
+   "C-rogalik-dwarf-wroclaw",
+   "Q65742089"
+  ],
+  [
+   "C-dialogomir-dwarf-wroclaw",
+   "C-slupniki-solne-dwarfs-wroclaw",
+   "Q136001344"
+  ],
+  [
+   "C-dlugi-dwarf-wroclaw",
+   "C-gieldus-dwarf-wroclaw",
+   "C-ottus-dwarf-wroclaw"
+  ],
+  [
+   "C-gazus-dwarf-wroclaw",
+   "C-rachciach-dwarf-wroclaw"
+  ],
+  [
+   "C-gluchak-dwarf-wroclaw",
+   "C-pomagajek-dwarf-wroclaw",
+   "C-slepak-dwarf-wroclaw",
+   "C-w-skers-dwarf-wroclaw",
+   "C-wodziarz-dwarf-wroclaw"
+  ],
+  [
+   "C-golebnik-dwarf-wroclaw",
+   "C-leszko-dwarf-wroclaw",
+   "C-prezentus-dwarf-wroclaw",
+   "C-wiesiek-partnerski-dwarf-wroclaw"
+  ],
+  [
+   "C-grajek-dwarf-wroclaw",
+   "C-grajek-i-meloman-dwarves-wroclaw",
+   "C-meloman-dwarf-wroclaw",
+   "C-slupniki-olawskie-dwarves-wroclaw",
+   "C-vertigus-dwarf-wroclaw"
+  ],
+  [
+   "C-hulk-i-ryszard-dwarves-wroclaw",
+   "C-silacz-dwarf-wroclaw"
+  ],
+  [
+   "C-italudek-dwarf-wroclaw",
+   "C-wiezien-dwarf-wroclaw"
+  ],
+  [
+   "C-jedrus-dwarf-wroclaw",
+   "C-zoska-dwarf-wroclaw"
+  ],
+  [
+   "C-klucznik-dwarf-wroclaw",
+   "C-motocyklista-dwarf-wroclaw"
+  ],
+  [
+   "C-kolejarz-brochowski-i-dwarf-wroclaw",
+   "C-kolejarz-brochowski-ii-dwarf-wroclaw"
+  ],
+  [
+   "C-lady-wolnosc-dwarf-wroclaw",
+   "C-wedelek-dwarf-wroclaw"
+  ],
+  [
+   "C-marysia-pieknisia-dwarf-wroclaw",
+   "C-wodne-dwarves-wroclaw"
+  ],
+  [
+   "C-mikolaj-ziolko-dwarf-wroclaw",
+   "Q136474992"
+  ],
+  [
+   "C-mis-mokrej-lapki-dwarf-wroclaw",
+   "C-rstynek-dwarf-wroclaw"
+  ],
+  [
+   "C-ogorzalek-i-opilek-dwarves-wroclaw",
+   "C-pozarki-dwarves-wroclaw",
+   "C-spioch-dwarf-wroclaw",
+   "C-wroclovek-dwarf-wroclaw"
+  ],
+  [
+   "C-pocztowiec-dwarf-wroclaw",
+   "C-suvenirek-dwarf-wroclaw"
+  ],
+  [
+   "C-powerek-dwarf-wroclaw",
+   "C-turysta-dwarf-wroclaw"
+  ],
+  [
+   "C-recyklinek-dwarf-wroclaw",
+   "Q136338281",
+   "Q136341163"
+  ],
+  [
    "Q136276711",
    "Q136276947",
    "Q136277457",
@@ -22,10 +159,6 @@
    "Q136290068",
    "Q136290183",
    "Q136290218"
-  ],
-  [
-   "Q136338281",
-   "Q136341163"
   ]
  ],
  "self_test": [

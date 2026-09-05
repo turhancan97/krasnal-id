@@ -168,21 +168,37 @@ Nothing here is sampled — a geographic pool is exact — so these are not seed
 At 23 classes this result rested on six statues in one themed installation, and could fairly have
 been dismissed as a quirk of that installation. It now holds across 294 statues spanning the city.
 
-### Why: the statues you can't separate are standing together
+### Why: co-location causes confusion, but only at very short range
 
-Look at where the penalty is largest. It peaks at a pool of five to ten — a radius of **171 to 291
-metres** — and then fades steadily as the pool widens, down to −0.35 at a 2.2 km radius.
+The obvious explanation is that sculptors install related pieces near each other, so a small pool
+is disproportionately made of a statue's own lookalikes. With 294 statues placed, that can be
+measured rather than assumed — every competing pair has a ground distance, and pairs that produced
+an outright misidentification can be compared against pairs that merely competed.
 
-That shape is the mechanism. Sculptors install related pieces near each other: the water-themed
-trio at one spot, the three *Słupniki* pillar dwarves on their own streets, pairs like *Ślepak* and
-*Głuchak* facing each other. Within a couple of hundred metres, a candidate pool is disproportionately
-made of a statue's own lookalikes. Widen the radius and you start pulling in unrelated statues,
-which dilutes the effect back toward random.
+| | DINOv2 | CLIP |
+|---|---|---|
+| median separation, confused pairs | 1,606 m | 1,285 m |
+| median separation, competing pairs | 1,893 m | 1,877 m |
+| P(confused pair closer than a competing one) | 0.518 | 0.551 |
+| share of confused pairs within 100 m | **11.9%** | 9.0% |
+| share of competing pairs within 100 m | 5.5% | 5.9% |
 
-So **location narrowing selects for exactly the confusions it needs to avoid.** A random-subsampling
-simulation scatters those clustered lookalikes across different pools and therefore *overstates*
-what narrowing buys — and the overstatement is worst precisely at the small radii a phone-based tool
-would actually use.
+**The effect is real, sharply local, and smaller than the story wants it to be.** Confused pairs
+are about **twice as likely** to stand within 100 m of each other as merely-competing pairs (2.1×
+for DINOv2, 1.5× for CLIP). But that enrichment decays fast — 1.2× by 300 m, 1.1× by a kilometre —
+and the rank statistic over the whole population is only 0.518, barely above the 0.5 that would
+mean distance says nothing at all.
+
+So co-location acts at the scale of a shared plinth, not a shared neighbourhood. And it explains
+only a minority of confusion: **88% of DINOv2's confused pairs are more than 100 m apart.** Most
+statues that look alike here do not stand together; they just look alike.
+
+That is still enough to explain the curve. A pool drawn at a 171 m radius only needs a modest
+enrichment of lookalikes to come out worse than a random pool of the same size — and the
+enrichment is concentrated exactly in that range, which is why the penalty peaks there and fades
+by 2.2 km. **Location narrowing does select for the confusions it needs to avoid**, and a
+random-subsampling simulation therefore overstates what narrowing buys, worst at the small radii a
+phone-based tool would use. The mechanism is correct; its magnitude is modest.
 
 The practical reading for a location-aware tool: a 291 m radius around a visitor covers about ten
 candidates and identifies at 96.2% top-1 with DINOv2. That is useful. It is also slightly *worse*

@@ -26,10 +26,10 @@ from krasnal_id.experiments.open_set import (
     run_open_set_rejection,
     score_known_queries,
     score_unknown_queries,
-    separability_auroc,
     summarize_open_set,
     threshold_for_target,
 )
+from krasnal_id.statistics import StatisticsError, separability_auroc
 
 
 def _config(**overrides: object) -> OpenSetExperimentConfig:
@@ -114,7 +114,7 @@ def test_auroc_separates_populations_and_halves_ties() -> None:
     )
     assert partial == pytest.approx(0.75)
 
-    with pytest.raises(OpenSetExperimentError, match="at least one query in each"):
+    with pytest.raises(StatisticsError, match="at least one query in each"):
         separability_auroc(np.asarray([], dtype=np.float64), np.asarray([0.1], dtype=np.float64))
 
 

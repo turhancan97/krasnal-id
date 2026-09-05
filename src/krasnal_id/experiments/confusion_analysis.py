@@ -17,8 +17,15 @@ from krasnal_id.experiments.contracts import (
     ConfusionPair,
     MetricSummary,
 )
+from krasnal_id.geometry import haversine_metres
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.retrieval.knn import cosine_knn
+from krasnal_id.statistics import separability_auroc
+
+# One installation spans tens of metres; a neighbourhood spans hundreds. Reporting
+# both says whether co-location acts at the scale of a shared plinth or a shared
+# street, which the aggregate rank statistic cannot distinguish.
+SEPARATION_BANDS_METRES = (100.0, 300.0)
 
 
 class ConfusionAnalysisError(ValueError):
@@ -87,20 +94,22 @@ def find_strongest_competitor(
     )
 
 
-def rank_confusion_pairs(
+def aggregate_confusion_pairs(
     competitions: tuple[Competition, ...],
     display_names: dict[str, str],
-    top_pairs: int,
+    locations: dict[str, tuple[float, float]] | None = None,
 ) -> tuple[ConfusionPair, ...]:
-    """Aggregate competitions into the most-confused directed pairs.
+    """Aggregate every competition into directed pairs, most-confused first.
 
     Ordered by outright misidentifications first, then by how often the pair
     competed, then by the tightest mean margin, so that pairs which are repeatedly
     near-misses surface even when nothing was actually misidentified.
-    """
-    if top_pairs <= 0:
-        raise ConfusionAnalysisError(f"top_pairs must be positive, got {top_pairs}")
 
+    Returns *all* pairs rather than a top slice, because the separation statistics
+    are a property of the whole population and would be badly biased by computing
+    them over the pairs that were already selected for being confused.
+    """
+    placed = locations or {}
     grouped: dict[tuple[str, str], list[Competition]] = {}
     for competition in competitions:
         key = (competition.true_dwarf_id, competition.competitor_dwarf_id)
@@ -115,6 +124,11 @@ def rank_confusion_pairs(
             queries=len(members),
             misidentifications=sum(1 for member in members if member.misidentified),
             mean_margin=float(np.mean([member.margin for member in members])),
+            separation_metres=(
+                haversine_metres(placed[true_id], placed[confused_id])
+                if true_id in placed and confused_id in placed
+                else None
+            ),
         )
         for (true_id, confused_id), members in grouped.items()
     ]
@@ -127,7 +141,72 @@ def rank_confusion_pairs(
             pair.confused_dwarf_id,
         )
     )
-    return tuple(pairs[:top_pairs])
+    return tuple(pairs)
+
+
+def rank_confusion_pairs(
+    competitions: tuple[Competition, ...],
+    display_names: dict[str, str],
+    top_pairs: int,
+    locations: dict[str, tuple[float, float]] | None = None,
+) -> tuple[ConfusionPair, ...]:
+    """Return the most-confused directed pairs, capped for reporting."""
+    if top_pairs <= 0:
+        raise ConfusionAnalysisError(f"top_pairs must be positive, got {top_pairs}")
+    return aggregate_confusion_pairs(competitions, display_names, locations)[:top_pairs]
+
+
+def summarize_separation(pairs: tuple[ConfusionPair, ...]) -> tuple[MetricSummary, ...]:
+    """Measure whether the statues that get confused are the ones standing together.
+
+    The geographic ablation shows the *shape* of a proximity penalty; this tests the
+    explanation for it directly. Every competing pair that has both statues placed
+    is split by whether it produced an outright misidentification, and the two
+    distance populations are compared.
+
+    The headline is a rank statistic: the probability that a randomly chosen
+    confused pair stands closer together than a randomly chosen merely-competing
+    one. 0.5 means distance says nothing about confusion.
+    """
+    measured = [pair for pair in pairs if pair.separation_metres is not None]
+    confused = [p.separation_metres for p in measured if p.misidentifications]
+    rest = [p.separation_metres for p in measured if not p.misidentifications]
+    if not confused or not rest:
+        return (MetricSummary(name="separation_pairs_measured", value=float(len(measured))),)
+
+    confused_array = np.asarray(confused, dtype=np.float64)
+    rest_array = np.asarray(rest, dtype=np.float64)
+    return (
+        MetricSummary(name="separation_pairs_measured", value=float(len(measured))),
+        MetricSummary(name="confused_pairs_measured", value=float(len(confused))),
+        MetricSummary(
+            name="confused_pair_separation_median_metres",
+            value=float(np.median(confused_array)),
+        ),
+        MetricSummary(
+            name="competing_pair_separation_median_metres",
+            value=float(np.median(rest_array)),
+        ),
+        # Oriented so that above 0.5 means confusion goes with proximity.
+        MetricSummary(
+            name="proximity_predicts_confusion_auroc",
+            value=separability_auroc(rest_array, confused_array),
+        ),
+        *(
+            metric
+            for band in SEPARATION_BANDS_METRES
+            for metric in (
+                MetricSummary(
+                    name=f"confused_pairs_within_{band:.0f}m",
+                    value=float((confused_array <= band).mean()),
+                ),
+                MetricSummary(
+                    name=f"competing_pairs_within_{band:.0f}m",
+                    value=float((rest_array <= band).mean()),
+                ),
+            )
+        ),
+    )
 
 
 def analyze_confusion(
@@ -147,7 +226,13 @@ def analyze_confusion(
         for fold in split.folds
     )
     display_names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
-    pairs = rank_confusion_pairs(competitions, display_names, top_pairs)
+    locations = {
+        dwarf.dwarf_id: (dwarf.coordinates.latitude, dwarf.coordinates.longitude)
+        for dwarf in manifest.dwarfs
+        if dwarf.coordinates is not None
+    }
+    every_pair = aggregate_confusion_pairs(competitions, display_names, locations)
+    pairs = every_pair[:top_pairs]
 
     total = len(competitions)
     errors = sum(1 for competition in competitions if competition.misidentified)
@@ -171,6 +256,7 @@ def analyze_confusion(
             upper_bound=float(np.max(margins)),
         ),
         MetricSummary(name="median_margin", value=float(np.median(margins))),
+        *summarize_separation(every_pair),
     )
     return metrics, pairs
 

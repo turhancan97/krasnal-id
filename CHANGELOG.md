@@ -10,6 +10,50 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added derived coordinates, taking the geographic experiment from 23 of 306 classes to **294**.
+  Wikidata's `P625` places only 23, so the rest are placed from the median of their own
+  photographs' camera positions — 73.5% of Commons files here carry one. Validated against the 21
+  classes that have both: median error **9 m**, against a smallest pool radius of 171 m.
+- Added `DwarfRecord.coordinate_source`, so a derived position can never be mistaken for an
+  authoritative one. The schema rejects a coordinate with no source, a source with no coordinate,
+  and a Wikidata source on a dwarf that has no Wikidata item. Wikidata always wins where both
+  exist, and `ImageRecord.coordinates` carries the per-photograph position it is derived from.
+- Added pair separation to the confusion analysis: `ConfusionPair.separation_metres`, median
+  separations for confused and merely-competing pairs, the share of each within 100 m and 300 m,
+  and a rank statistic for whether proximity predicts confusion at all.
+- Added `krasnal_id.geometry` and `krasnal_id.statistics`, so the data pipeline does not import an
+  experiment to measure a distance and two experiments do not share a rank statistic by importing
+  each other.
+
+### Changed
+
+- **The geographic finding now holds city-wide.** At 23 classes it rested on six statues in one
+  themed installation; across 294 it holds at every measured pool size for both backbones, and the
+  arm is exact rather than sampled, so it is not seed noise. DINOv2 peaks at −0.89 points at a pool
+  of five, CLIP at −2.12 at a pool of ten.
+- **The co-location mechanism is now measured rather than inferred, and it is weaker than the
+  earlier wording implied.** Every competing dwarf pair carries a ground distance. Confused pairs
+  are about twice as likely as merely-competing pairs to stand within 100 m (11.9% against 5.5%
+  for DINOv2), but the enrichment decays to 1.2x by 300 m, the whole-population rank statistic is
+  0.518, and 88% of confused pairs stand more than 100 m apart. Co-location acts at the scale of a
+  shared plinth, not a shared neighbourhood, and explains a minority of confusion — enough to
+  produce the observed penalty, not enough to be described as its main cause. `RESULTS.md` section
+  3 and the published page are corrected accordingly.
+- Extended the geographic ablation's pool sizes to 294, where it previously stopped at 23.
+- Rewrote `RESULTS.md` section 3 and the published page's location section around the new result,
+  including that most positions are inferred rather than stated.
+
+### Fixed
+
+- Dropped a derived coordinate that could not be a real position: one class's only geotagged
+  photograph carried a one-degree latitude typo, placing it 111 km from Wrocław and setting the
+  full-pool radius for every query. The bound lives in the thresholds config, the reference point
+  is the median of the placed dwarves rather than a hardcoded city centre, and Wikidata
+  coordinates are exempt from the check.
+
+
 ## [0.5.0] - 2026-09-04
 
 ### Added

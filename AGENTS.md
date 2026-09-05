@@ -427,10 +427,18 @@ themed installation.
 - **Geographic pools lose to random pools at every measured pool size, for both backbones.** The
   arm is exact rather than sampled, so this is not seed noise. DINOv2 peaks at −0.89 points at a
   pool of five; CLIP at −2.12 at a pool of ten, roughly double throughout.
-- **The penalty has a shape, and the shape is the mechanism.** It is largest at a 171–291 m radius
-  and fades to −0.35 by 2.2 km. Sculptors install related pieces near each other, so a small radius
-  is disproportionately made of a statue's own lookalikes; a wide one dilutes them with unrelated
-  statues. Report the radius alongside the pool size — the radius is what carries the argument.
+- **The penalty has a shape**: largest at a 171–291 m radius, fading to −0.35 by 2.2 km. Report
+  the radius alongside the pool size — the radius is what carries the argument.
+- **The co-location mechanism is measured, not inferred, and it is weaker than it sounds.** Every
+  competing pair now carries a ground distance. Confused pairs are ~2x more likely than
+  merely-competing pairs to stand within 100 m (11.9% against 5.5% for DINOv2), but the enrichment
+  decays to 1.2x by 300 m and the whole-population rank statistic is only 0.518. Co-location acts
+  at the scale of a shared plinth, not a shared neighbourhood, and **88% of confused pairs are more
+  than 100 m apart**. State the mechanism as correct in direction and modest in magnitude; do not
+  write as though proximity explains most confusion, because it does not.
+- **Report the distance bands, not just the rank statistic.** The aggregate AUROC of 0.518 reads as
+  "almost nothing" and would have hidden a real 2x effect concentrated below 100 m. A single
+  summary number over a population whose effect is confined to one tail is the wrong summary.
 - **The overstatement is worst where a real tool would operate.** Random subsampling scatters
   clustered lookalikes across pools, so it flatters location narrowing most at exactly the small
   radii a phone-based tool would use. Never quote the random curve as a proxy for a location-aware

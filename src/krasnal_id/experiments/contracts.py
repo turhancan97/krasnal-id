@@ -45,6 +45,10 @@ class ConfusionPair(BaseModel):
     queries: int = Field(gt=0)
     misidentifications: int = Field(ge=0)
     mean_margin: float
+    # Ground distance between the two statues, when both are placed. Present so the
+    # claim that lookalikes cluster spatially can be checked pair by pair rather
+    # than inferred from the shape of the geographic curve.
+    separation_metres: float | None = Field(default=None, ge=0.0)
 
     @model_validator(mode="after")
     def validate_counts(self) -> "ConfusionPair":
