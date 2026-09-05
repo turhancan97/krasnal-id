@@ -315,10 +315,10 @@
         apart at 306.</p>
       </div>
       <div class="finding">
-        <div class="n red">−1.6</div><div class="u">points from location</div>
-        <p class="body"><b>Narrowing by location helps less than the simulation says.</b> Real
-        proximity-based pools are <em>harder</em> than random pools of the same size, because the
-        statues that are hardest to tell apart were installed together.</p>
+        <div class="n red">−0.89</div><div class="u">points from location</div>
+        <p class="body"><b>Narrowing by location makes it slightly harder, not easier.</b> Real
+        proximity pools lose to random pools at every pool size, worst at a 171–291 m radius —
+        exactly the range a phone would use. Sculptors install lookalikes near each other.</p>
       </div>
       <div class="finding">
         <div class="n">+3.1</div><div class="u">points, CLIP only</div>
@@ -373,43 +373,49 @@
       <p>Those pools are sampled at random. The real proposal is to narrow by <em>location</em>, so
       it can be measured rather than assumed. Each query is pooled with its <strong>nearest</strong>
       dwarves instead of random ones — same pool size, only the selection rule changes.</p>
-      <p><b>This section covers 23 of the 306 statues.</b> Coordinates come from Wikidata, and 283
-      of these dwarves have no Wikidata item at all — they are identified by their Commons category.
-      Both arms are restricted to the located subset so they compare like with like.</p>
+      <p><b>This covers 294 of the 306 statues.</b> Wikidata places only 23 of them, so the rest are
+      placed from their own photographs: most Commons files carry the position the camera was in.
+      That is not the statue's position, so it was checked rather than assumed — across the statues
+      that have both, the photo-derived position sits a median of <strong>9 m</strong> from the
+      Wikidata one, against a smallest pool radius of 171 m.</p>
     </div>
     <div class="scroll">
       <table>
         <thead><tr><th>Pool</th><th>Random</th><th>Geographic</th><th>Diff</th><th>Radius</th></tr></thead>
         <tbody>
-          <tr><td>3</td><td>98.8%</td><td>98.6%</td><td>−0.1</td><td>190 m</td></tr>
-          <tr><td>5</td><td>98.9%</td><td>97.3%</td><td class="worse">−1.6</td><td>260 m</td></tr>
-          <tr><td>8</td><td>97.3%</td><td>96.6%</td><td class="worse">−0.7</td><td>390 m</td></tr>
-          <tr><td>10</td><td>96.7%</td><td>96.6%</td><td>−0.1</td><td>398 m</td></tr>
-          <tr><td>15</td><td>96.4%</td><td>96.6%</td><td>+0.1</td><td>571 m</td></tr>
-          <tr><td>23 (full)</td><td>95.9%</td><td>95.9%</td><td>0.0</td><td>—</td></tr>
+          <tr><td>2</td><td>99.1%</td><td>98.6%</td><td class="worse">−0.46</td><td>52 m</td></tr>
+          <tr><td>5</td><td>97.9%</td><td>97.0%</td><td class="worse">−0.89</td><td>171 m</td></tr>
+          <tr><td>10</td><td>96.9%</td><td>96.2%</td><td class="worse">−0.68</td><td>291 m</td></tr>
+          <tr><td>20</td><td>96.3%</td><td>95.6%</td><td class="worse">−0.76</td><td>467 m</td></tr>
+          <tr><td>50</td><td>95.4%</td><td>94.7%</td><td class="worse">−0.67</td><td>712 m</td></tr>
+          <tr><td>100</td><td>94.7%</td><td>94.2%</td><td class="worse">−0.48</td><td>909 m</td></tr>
+          <tr><td>200</td><td>94.0%</td><td>93.6%</td><td class="worse">−0.35</td><td>2,223 m</td></tr>
+          <tr><td>294 (full)</td><td>93.4%</td><td>93.4%</td><td>0.00</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
     <div class="prose">
-      <p><strong>Geographic pools are harder than random pools of the same size.</strong> CLIP shows
-      it more strongly: −2.5 points at a pool of five, −2.1 at eight, −1.9 at ten. Small in absolute
-      terms, but it runs the wrong way at almost every size — and it has a clear cause.</p>
+      <p><strong>Geographic pools are harder than random pools of the same size — at every pool size,
+      for both backbones.</strong> CLIP shows it about twice as strongly, peaking at −2.12 points at
+      a pool of ten. Nothing here is sampled: a geographic pool is exact, so this is not seed noise.</p>
     </div>
     <div class="callout">
       <h3>The statues you can't separate are standing together</h3>
-      <p>Six of those 23 dwarves stand at <strong>one spot</strong> — a single themed installation
-      that includes Puszczający Stateczki, Zbierający Wodę and Karmiący Ptaki.</p>
-      <p>Those are the same statues the confusion analysis still flags, and the same tight
-      neighbourhood the embedding projection shows.</p>
-      <p>The dwarves that are hardest to tell apart were installed as a group — so they share a
-      sculptor, a pose vocabulary <em>and</em> a location. Location narrowing cannot separate them;
-      it guarantees they land in the same pool. Random subsampling scatters them across different
-      pools, and so overstates what narrowing buys.</p>
+      <p>Look at where the penalty is largest. It peaks at a pool of five to ten — a radius of
+      <strong>171 to 291 metres</strong> — then fades as the pool widens, down to −0.35 at 2.2 km.</p>
+      <p>That shape is the mechanism. Sculptors install related pieces near each other: the
+      water-themed trio at one spot, the three Słupniki pillar dwarves on their own streets, pairs
+      like Ślepak and Głuchak. Within a couple of hundred metres a candidate pool is
+      disproportionately a statue's own lookalikes. Widen the radius and unrelated statues dilute
+      the effect back toward random.</p>
+      <p>So location narrowing selects for exactly the confusions it needs to avoid — and random
+      subsampling overstates what it buys <em>most</em> at the small radii a phone would use.</p>
     </div>
     <div class="prose">
-      <p>For a location-aware tool: a 400 m radius around a visitor covers about ten candidates, and
-      identification within that pool runs at 96.6% top-1 for DINOv2 — useful, but no better than
-      ten dwarves picked at random, for exactly the reason that makes the problem interesting.</p>
+      <p>For a location-aware tool: a 291 m radius around a visitor covers about ten candidates and
+      identifies at 96.2% top-1 with DINOv2. That is useful. It is also slightly <em>worse</em> than
+      showing that visitor ten dwarves picked at random from the whole city, which is the part worth
+      sitting with.</p>
     </div>
   </section>
 
@@ -499,9 +505,11 @@
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
       rises from 4% to 38% at the same operating point, because an absent statue now has 305 chances
       to find a lookalike instead of 22.</span></div>
-      <div class="limit"><span><b>Only 23 of these statues are geolocated.</b> Coordinates come from
-      Wikidata, and most of these dwarves have no Wikidata item — so the location result above rests
-      on 7.5% of the pool, and whether it holds city-wide is untested.</span></div>
+      <div class="limit"><span><b>Most positions are inferred, not stated.</b> 271 of the 294 placed
+      statues are located from where photographers stood rather than from a Wikidata coordinate.
+      Checked against the statues that have both, the median error is 9 m — but it is an inference,
+      and a statue only ever photographed from across a square would be placed across that
+      square.</span></div>
     </div>
   </section>
 
