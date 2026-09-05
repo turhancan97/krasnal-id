@@ -54,7 +54,7 @@ dataset. Section 7 is about which of them the small pool got wrong, and why.
 | Licences | Public Domain, CC0, CC BY, CC BY-SA only |
 
 Coverage is bounded by data quality, not geography: a dwarf is included only if it has at least
-three usable Creative Commons photographs. 482 category mappings were reviewed, 478 approved, and
+three usable Creative Commons photographs. 482 category mappings were reviewed, 469 approved, and
 306 classes survived the image threshold.
 
 **Wikidata is not the limit — Commons is the source.** Only 44 Wikidata items exist for the 481
@@ -363,7 +363,7 @@ also means the published demo, which runs CLIP, is the version most exposed to i
   were themselves shot on phones, but a real snapshot is harder than any photograph in this
   dataset. This remains the largest untested gap in the work, and closing it needs fieldwork.
 - **Most coordinates are derived, not stated.** 271 of the 294 placed statues are located from
-  where photographers stood rather than from a `P625` statement. Validation against the 23 that
+  where photographers stood rather than from a `P625` statement. Validation against the 21 that
   have both puts the median error at 9 m, an order of magnitude below the smallest pool radius the
   experiment uses — but it is an inference, and a statue photographed only from across a square
   would be placed across that square. Twelve classes remain unplaced.

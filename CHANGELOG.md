@@ -42,6 +42,18 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   Capgeminiusz Programista, Kowal and Śpioch — draw one to three top-1 errors each. A control is a
   statue in no confused family, and the contamination is now named where it matters: it makes the
   cohorts look more alike, so it understates a concentrated drop rather than manufacturing one.
+- Corrected the coordinate-validation count in `RESULTS.md`'s limitations, which said the derived
+  positions were checked against "the 23 that have both". 23 is how many classes Wikidata places;
+  21 of those also carry enough photograph coordinates to derive a position, and 21 is what the
+  section itself, `AGENTS.md` 5.7 and the 0.6.0 entry all say. Recomputed from the manifest: 21
+  classes, median error 8.5 m, worst 147 m, 14 within 50 m.
+- `RESULTS.md`'s dataset section said 478 of 482 category mappings were approved; the tracked
+  review file says 469 approved and 13 rejected. Verified by rebuilding the manifest from the
+  current review files, which reproduces the published 306 classes and 1,691 images exactly, so
+  469 is the number behind the results.
+- Noted in `AGENTS.md` 5.7 that its measured 295 placed classes became 294 when the drift check
+  dropped a one-degree latitude typo in the same release, so the decision record no longer reads
+  as if it disagreed with `RESULTS.md`.
 
 ## [0.7.0] - 2026-09-05
 

@@ -74,7 +74,8 @@ simply has no item for the other ~437 statues.
 
 Commons holds the photographs. A 150-category sample of those 481 found 65% with three or more
 files and a mean of 4.14, projecting ~314 categories over the current threshold and ~2,000 files
-in total, against 23 classes and 146 images today.
+in total, against the 23 classes and 146 images the dataset held when this was written. The
+rebuild landed at 306 classes and 1,691 images.
 
 Decisions:
 
@@ -148,7 +149,9 @@ Measured on 2026-09-04, running `data query --include-commons` against both live
 
 - **1,135 of 1,545 photographs (73.5%) of otherwise-unlocated classes carry a coordinate**, almost
   all of type `camera` — where the photographer stood, not where the statue is. That gives at least
-  one coordinate for **293 classes that had none**, for 295 of 306 in total.
+  one coordinate for **293 classes that had none**, for 295 of 306 in total. The 0.6.0 drift check
+  then dropped one derived position as impossible — a one-degree latitude typo, 111 km out — so the
+  shipped figure is 294 placed and 12 unplaced, which is what `RESULTS.md` reports.
 - Commons *category* pages are not a source: 1 of 283 carries a coordinate.
 - **Validated against the 21 classes that have both**: the median of a class's camera positions
   falls a **median of 9 m** from its Wikidata point, with all 21 within 147 m and 14 within 50 m.
@@ -172,7 +175,7 @@ Decisions:
   treat `P625` as ground truth when reporting the disagreement; report it as disagreement.
 - **This makes the §7.1 co-location finding testable at scale.** That result currently rests on six
   statues in one themed installation. Whether proximity is genuinely unhelpful city-wide, or only
-  around that installation, is answerable at 295 classes and was not at 23.
+  around that installation, is answerable at 294 classes and was not at 23.
 
 ### 5.8 Field query set decision (2026-09-05)
 
