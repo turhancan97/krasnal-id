@@ -174,6 +174,33 @@ Decisions:
   statues in one themed installation. Whether proximity is genuinely unhelpful city-wide, or only
   around that installation, is answerable at 295 classes and was not at 23.
 
+### 5.8 Field query set decision (2026-09-05)
+
+`RESULTS.md` names the gap between a Commons upload and a phone photograph as the largest untested
+thing in the project, and it is the only §8 open question left. Closing it needs photographs taken
+in Wrocław, so the contract for them is fixed here before any exist.
+
+- **Field photographs are queries, never references.** They go in `data/field-queries/<dwarf_id>/`,
+  git-ignored like every other image directory, and the manifest is not rebuilt to include them.
+  Admitting them as references would destroy the very comparison they exist to make.
+- **The directory name is the dataset ID**, which is what ties a photograph to a statue. Filenames
+  carry no meaning and keep whatever the camera assigned.
+- **The measurement is the difference against the leave-one-out baseline**, not an absolute number.
+  93.1% top-1 is what the existing protocol reports; whatever these queries score, the gap between
+  the two is the finding.
+- **Hard classes and controls are both required.** The core route deliberately includes all
+  eleven statues in the three clusters both backbones already confuse, plus eight statues in the
+  same streets that neither has ever confused. A uniform drop and a drop concentrated on the
+  confusable clusters are different findings, and only the second is visible if both are present.
+  Without controls a drop is confounded by hard statues also standing somewhere awkward.
+- **Shooting instructions are part of the protocol, not advice.** A carefully composed phone
+  photograph measures nothing this dataset does not already contain. `data/field-guide.md` asks for
+  deliberate variation in angle, distance and light, and explicitly asks the photographer not to
+  wait for a clean frame.
+- **Photo GPS is the intended sorting mechanism.** Every statue on the route is geolocated by
+  §5.7, so a geotagged photograph can be matched to a proposed statue rather than sorted by hand.
+  A proposal, never an assignment: the directory a photograph sits in is authoritative.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone

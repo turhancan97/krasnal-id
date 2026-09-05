@@ -22,6 +22,7 @@ htmlcov/
 # Downloaded and generated research artifacts. No trailing slash: these paths are
 # often symlinks to bulk storage, and a directory-only pattern would not match one.
 data/images
+data/field-queries
 data/embeddings
 data/splits
 data/discovery
