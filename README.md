@@ -11,15 +11,25 @@ would help.
 
 ## Project status
 
-The repository contains the complete typed scaffold for versions 0.1-0.3 plus implemented,
-cached Wikidata discovery, reviewed Wikimedia Commons acquisition, audited manifest construction,
-deterministic evaluation splits, resumable DINOv2/CLIP embedding extraction, cosine k-NN
-retrieval, the full-pool accuracy baseline, the candidate-pool-size ablation, confusion
-analysis, embedding visualization, single-image retrieval, the trained-classifier comparison,
-and the interactive demonstration. The v0.1-v0.3 build order is complete and released as
-`0.3.0` and open-set rejection as `0.4.0`. The dataset has since been rebuilt Commons-first at
-306 classes and 1,691 images, which revised three published conclusions; `RESULTS.md` section 7
-records which ones and why, and `AGENTS.md` section 8 the questions that remain open.
+Current version **0.7.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
+DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
+baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
+comparison, confusion analysis, open-set rejection, and the camera-origin query gap — plus
+embedding visualization, single-image retrieval, a local demo and a published in-browser one.
+
+The v0.1-v0.3 build order finished at `0.3.0`; every release since closes one research question.
+`0.4.0` added open-set rejection. `0.5.0` rebuilt the dataset Commons-first at **306 classes and
+1,691 images**, which overturned three published conclusions — `RESULTS.md` section 7 records which
+and why. `0.6.0` placed 294 of those classes by deriving positions from their own photographs,
+taking the geographic result from six statues in one installation to city-wide. `0.7.0` put a lower
+bound on the query-domain gap without fieldwork, using the 51 references that were themselves shot
+on phones.
+
+One question stays open, and it is the one the numbers above cannot answer: **how much accuracy a
+real phone photograph taken in the street costs.** The protocol, the route, the cohorts and the
+whole measuring path are built and tested; what is missing is a day in Wrocław with a phone. See
+`data/field-guide.md`, and `AGENTS.md` section 8 for the full open-question list.
 
 ## Findings
 
@@ -28,12 +38,14 @@ points per doubling of the candidate pool where CLIP loses 2.06 and accelerates.
 location helps *less* than random subsampling suggests, a trained classifier helps only the weaker
 backbone, and the errors concentrate on families of near-identical statues. Thresholding
 similarity to answer "I don't know this one" worked at 23 classes and **does not** at 306 — one of
-three conclusions the larger dataset overturned.
+three conclusions the larger dataset overturned. Queries shot on phones rather than cameras cost
+DINOv2 5.3 top-1 points and CLIP 15.6, which is a lower bound on what a real street photograph
+would cost.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
-- [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all four
-  experiments, limitations, and how to reproduce them.
+- [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eight
+  result sections, limitations, and how to reproduce them.
 
 ## Setup
 

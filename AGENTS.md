@@ -553,7 +553,8 @@ Agent should scaffold the full directory structure with stubs and docstrings bef
 has real behavior, plus two additions not in the original plan: the geographic ablation of section
 5.2 and a static in-browser demo published from `docs/`. There is therefore no "next stage" to
 pick up. Further work is a new research direction, and the limitations recorded in `RESULTS.md`
-are the open questions:
+are the open questions. Releases after `0.3.0` each close one of them: `0.4.0` open-set rejection,
+`0.5.0` the Commons-first rebuild, `0.6.0` derived coordinates, `0.7.0` the camera-origin gap.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a
@@ -564,9 +565,12 @@ are the open questions:
   references shot on phones, and does not retire the question. The protocol (§5.8), the route and
   cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
   what is missing is the photographs, which need a day in Wrocław.
-- **A larger pool** — 16 represented classes sit below the three-image threshold, and the full
-  23-class pool is close to the accuracy ceiling, which is why the ablation curve is shallow and
-  why extrapolating past it is unreliable.
+- ~~**A larger pool**~~ — done on 2026-09-04 as the Commons-first rebuild of §5.6, which took the
+  pool from 23 classes to 306 and overturned three conclusions the small pool had supported; see
+  §7.3 and `RESULTS.md` section 7. What it leaves is a *data* question rather than a research one:
+  152 staged classes still sit below the three-image threshold, 43 of them with a single
+  photograph, and Wrocław has several hundred statues Commons documents thinly or not at all. More
+  images per class would admit them; more classes would extend the ablation curve past 306.
 
 Any of these is a scope change. Record the decision here before implementing it.
 
@@ -580,42 +584,73 @@ krasnal-id/
 ├── CONTRIBUTING.md
 ├── LICENSE                    # MIT applies to original source code only
 ├── README.md
+├── RESULTS.md                 # the complete written record of every experiment
 ├── pyproject.toml             # exact direct dependency pins and tool configuration
 ├── uv.lock                    # locked transitive dependency graph
 ├── data/
 │   ├── category-review.json   # tracked human review of Commons mappings
+│   ├── image-review.json      # tracked image-level exclusions and overrides
 │   ├── field-route.json       # tracked route and cohort per statue, fixed before scoring
 │   ├── field-guide.md         # the shooting protocol for the field queries
 │   ├── field-queries/         # ignored field photographs, one directory per statue
 │   ├── discovery/             # ignored Wikidata/Commons caches, staging, and audits
 │   ├── images/                # ignored cached research copies
-│   ├── embeddings/            # ignored embedding cache
+│   ├── embeddings/            # ignored embedding cache, keyed by content and backbone
+│   ├── splits/                # ignored generated evaluation split
 │   └── manifest.json          # ignored generated manifest
+├── docs/                      # the published GitHub Pages demo
+│   ├── index.html             # the findings, and an identifier that runs in the browser
+│   ├── app.js                 # ONNX inference, retrieval, and the co-location warning
+│   ├── chart.js               # the figures the page draws from the result artifacts
+│   ├── assets/                # generated reference vectors and thumbnails
+│   ├── brand/                 # tracked lockups and the script that generates them
+│   ├── demo/                  # the build that produces docs/assets
+│   └── figures/               # figures selected for publication
 ├── src/krasnal_id/
 │   ├── cli.py                 # unified Typer CLI
 │   ├── config.py              # Hydra composition + Pydantic validation
-│   ├── models.py              # manifest and attribution schema
+│   ├── models.py              # manifest, split, review, and attribution schemas
+│   ├── geometry.py            # distance on the ground, shared by pipeline and experiments
+│   ├── statistics.py          # the rank statistic two experiments share
+│   ├── logging.py             # structured run logging
 │   ├── configs/               # packaged Hydra configuration groups
 │   ├── data_pipeline/
 │   │   ├── wikidata_query.py
-│   │   ├── commons_fetch.py   # reviewed, cached Commons acquisition
-│   │   ├── field_queries.py   # field photographs staged as queries, never references
-│   │   └── build_manifest.py
+│   │   ├── commons_discovery.py  # the classes Wikidata has no item for
+│   │   ├── commons_fetch.py      # reviewed, cached Commons acquisition
+│   │   ├── camera_metadata.py    # EXIF cameras, deliberately outside the staging chain
+│   │   ├── field_queries.py      # field photographs staged as queries, never references
+│   │   ├── build_manifest.py
+│   │   └── build_split.py        # deterministic leave-one-out folds
 │   ├── embeddings/
-│   │   ├── backbone.py
-│   │   └── cache.py
+│   │   ├── backbone.py        # the adapter contract and its pinned identity
+│   │   ├── dinov2.py
+│   │   ├── clip.py
+│   │   ├── extract.py         # resumable extraction for any local image record
+│   │   ├── cache.py           # atomic, validated, content-addressed vector cache
+│   │   └── store.py           # manifest-ordered access for evaluation code
 │   ├── retrieval/
-│   │   └── knn.py
+│   │   ├── knn.py
+│   │   └── query.py           # single-image retrieval against the reference set
 │   ├── experiments/
+│   │   ├── contracts.py       # serializable result schemas
+│   │   ├── artifacts.py       # atomic result persistence
 │   │   ├── baseline_accuracy.py
 │   │   ├── pool_size_ablation.py
+│   │   ├── geo_ablation.py    # does narrowing by location help?
+│   │   ├── probe_baseline.py  # does a trained classifier beat retrieval?
 │   │   ├── confusion_analysis.py
-│   │   ├── field_gap.py        # the query-domain gap, measured on field photographs
-│   │   └── open_set.py         # unknown-query rejection
+│   │   ├── open_set.py        # unknown-query rejection
+│   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
+│   │   └── field_gap.py       # the query-domain gap, measured on field photographs
+│   ├── demo/
+│   │   └── app.py             # the local Gradio demo
 │   └── viz/
-│       └── embedding_plot.py
+│       ├── embedding_plot.py
+│       ├── ablation_plot.py
+│       └── open_set_plot.py
 ├── results/                   # ignored generated results
-└── tests/                     # schemas, configs, CLI, and interface contracts
+└── tests/                     # schemas, configs, CLI, experiments, and interface contracts
 ```
 
 ## 10. Engineering conventions
@@ -644,12 +679,20 @@ krasnal-id/
 - When cutting a version, move the relevant `Unreleased` entries into a dated version section and recreate an empty `Unreleased` section.
 - Before completing an implementation task, verify whether both this file and `CHANGELOG.md` need corresponding updates. Documentation-only wording fixes do not require a new architectural decision, but should still be logged when material.
 
-### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-04)
+### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-05)
+
+Everything below is recomputed from the tracked artifacts on the date in the heading. Where a
+number here disagrees with an artifact, the artifact wins.
 
 **The manifest is 306 classes and 1,691 images**, rebuilt Commons-first on 2026-09-04 per §5.6.
-482 category mappings carry a decision: 478 approved, 4 rejected. 1,958 images staged across 462
-categories, of which 306 clear the three-image threshold. 23 classes come from Wikidata and carry
-`P625` coordinates; the other 283 are Commons-only and carry none.
+482 category mappings carry a decision: 469 approved, 13 rejected. Staging holds 1,958 images
+across 458 classes; six are excluded by image review, and the 306 classes that clear the
+three-image threshold are exactly the manifest's. The 152 that miss it hold 261 images between
+them — 43 classes with one photograph, 109 with two.
+
+**294 of the 306 classes are placed**, 23 from Wikidata's `P625` and 271 derived from their own
+photographs' camera positions per §5.7. Twelve remain unplaced. A derived position is never
+recorded as an authoritative one; `DwarfRecord.coordinate_source` says which is which.
 
 Three approvals were reversed after acquisition measured what they cost, and the reason
 generalizes: a category byte-identical to another empties *both* sides through §5.5's cross-label
@@ -657,20 +700,16 @@ quarantine. `Papa Krasnal` duplicated `Q11823412` and wiped out a class that was
 results; the `Detektyw Magda i Rabusie` and `Doktor Basia i Krasnalątko` umbrellas emptied their
 own members. Rejecting the three restored `Q11823412`. Where members still collide with each other
 — three robbers photographed in one scene — the quarantine is correct and those classes stay
-absent.
+absent, as Troszka, Adoratorek, Tancerka Balerina and Śpiewak Operowy still are.
 
-The paragraphs below record the 2026-08-20 audit of the *previous* 23-class dataset. They are kept
-because the image-level decisions in `data/image-review.json` are still the live ones, all seven
-still apply, and the reasoning behind each is not repeated anywhere else.
+Live operational facts, each tied to a tracked artifact:
 
-- The latest canonical staging output contains 173 images across 40 represented classes; 24
-  classes meet the current three-image threshold. All staged files decode, match their recorded
-  checksums and dimensions, stay within the 400–2,000-pixel bounds, and have complete attribution
-  and recognized licenses.
-- `data/discovery/fetched-images.json` is authoritative. There are currently 199 files under
-  `data/images/`, so 26 files are quarantined or orphaned and must not enter a manifest through
-  directory scanning. Do not delete them automatically.
-- Image-level audit decisions are recorded in tracked `data/image-review.json`:
+- `data/discovery/fetched-images.json` is authoritative for what is admitted. There are 2,118
+  files under `data/images/`, so about 160 are quarantined or orphaned and must not enter a
+  manifest through directory scanning. Do not delete them automatically.
+- The deterministic image-level exclusion/override contract lives in tracked
+  `data/image-review.json`, tied to the current `fetched-images.json` staging hash. Its seven
+  decisions are still the live ones, and the reasoning behind each is not repeated anywhere else:
   - retain Papa Krasnal page `166491` as the canonical lower-page-ID duplicate winner;
   - exclude Papa Krasnal page `22381955` as its differently encoded duplicate;
   - exclude pages `22398133` (Papa Krasnal), `52890654` and `52890655` (Pralinka), and
@@ -681,32 +720,34 @@ still apply, and the reasoning behind each is not repeated anywhere else.
   `Q136001294` -> `Abruzjusz`, `Q136001318` -> `Ossolinek`, and `Q136001344` -> `Demokracja`.
   Generated discovery files remain unchanged; downstream manifest construction must use the
   reviewed override when present.
-- Cross-label protection is working: 14 Troszka/Adoratorek records and six Śpiewak
-  Operowy/Tancerka Balerina records were quarantined as exact cross-label duplicates. Perceptual
-  hashing found no remaining cross-class near-duplicate candidate in staging.
-- Sixteen represented classes remain below threshold: Ołbiniusz, Adwokatka, and Rowerzysta have
-  two images each; Abruzjusz, Szpitalnik, Troszka, Adoratorek, Komisia i Euruś, Tancerka
-  Balerina, Śpiewak Operowy, Bankierek, Ditek, Glamour, Gryfosław, Solidariusz Walczący, and
-  Unicefuś have one each.
-- The deterministic image-level exclusion/override contract is recorded in tracked
-  `data/image-review.json`, tied to the current `fetched-images.json` staging hash.
-- `data build-manifest` is implemented. It consumes `fetched-images.json` plus both tracked
-  review files, applies the three-image threshold, records discovery/staging/review provenance
-  hashes, and writes the manifest atomically. It never scans the filesystem; the current
-  audited artifacts produce 23 classes and 146 images.
-- data build-split is implemented. It consumes only the validated manifest, creates one
-  deterministic leave-one-out fold per admitted image, records the canonical manifest hash, and
-  writes the ignored split artifact atomically.
-- embeddings extract is implemented for the pinned DINOv2 and CLIP configurations. It validates
-  manifest image checksums and dimensions, supports CPU/automatic CUDA selection and configured
-  batching, reuses valid normalized .npy vectors, and keeps model loading lazy so CI remains
-  offline. CI uses deterministic fake backbones; real weights are downloaded only on local ML runs.
+- Tracked `data/field-route.json` fixes the fieldwork route and each statue's cohort before any
+  photograph is scored, per §5.8 and §5.10. `data/field-queries/` holds the nineteen core
+  directories and no photographs.
+- Cross-label protection is working: perceptual hashing found no remaining cross-class
+  near-duplicate candidate in staging.
+
+Implementation state:
+
+- `data build-manifest` consumes `fetched-images.json` plus both tracked review files, applies the
+  three-image threshold, records discovery/staging/review provenance hashes, and writes the
+  manifest atomically. It never scans the filesystem.
+- `data build-split` consumes only the validated manifest, creates one deterministic leave-one-out
+  fold per admitted image, records the canonical manifest hash, and writes the ignored split
+  artifact atomically.
+- `data camera-metadata` fetches EXIF cameras into `data/discovery/camera-metadata.json`,
+  deliberately outside the staging chain per §5.9.
+- `embeddings extract` is implemented for the pinned DINOv2 and CLIP configurations. It validates
+  image checksums and dimensions, supports CPU/automatic CUDA selection and configured batching,
+  reuses valid normalized `.npy` vectors, and keeps model loading lazy so CI remains offline. CI
+  uses deterministic fake backbones; real weights are downloaded only on local ML runs.
+  `--field-queries` points the same loop at the staged field photographs.
 - Retrieval, baseline metrics, the candidate-pool and geographic ablations, confusion analysis,
-  visualization, the trained-classifier comparison, open-set rejection, and both demos are
-  implemented and have been run end to end on this dataset. No module raises `NotImplementedError`. See section 8 for what
-  is open beyond this point, and `CHANGELOG.md` for the per-stage record.
+  visualization, the trained-classifier comparison, open-set rejection, the camera gap, and both
+  demos are implemented and have been run end to end on this dataset. No module raises
+  `NotImplementedError`. See section 8 for what is open beyond this point, and `CHANGELOG.md` for
+  the per-stage record.
 - The field-query path of §5.10 is implemented and its stages have been exercised end to end
   against this dataset, but only on stand-in photographs derived from references — enough to prove
-  the plumbing, worth nothing as a finding. `data/field-queries/` holds the nineteen core
-  directories and no photographs, so `results/field_gap-*.json` does not exist and no field-gap
-  number is published anywhere. The first real run is the fieldwork.
+  the plumbing, worth nothing as a finding. Since there are no photographs,
+  `results/field_gap-*.json` does not exist and no field-gap number is published anywhere. The
+  first real run is the fieldwork.

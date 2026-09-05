@@ -47,13 +47,30 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   21 of those also carry enough photograph coordinates to derive a position, and 21 is what the
   section itself, `AGENTS.md` 5.7 and the 0.6.0 entry all say. Recomputed from the manifest: 21
   classes, median error 8.5 m, worst 147 m, 14 within 50 m.
+- Noted in `AGENTS.md` 5.7 that its measured 295 placed classes became 294 when the drift check
+  dropped a one-degree latitude typo in the same release, so the decision record no longer reads
+  as if it disagreed with `RESULTS.md`.
+- Refreshed the three documentation sections that had drifted behind the last two releases, so a
+  reader is not told the repository is something it stopped being at `0.4.0`:
+  - `AGENTS.md` 12.1, the handoff a future contributor reads first, was dated 2026-09-04 and still
+    said 23 classes carry coordinates and the rest carry none. Every figure in it is now recomputed
+    from the tracked artifacts: 469 approved and 13 rejected category mappings (it claimed 478 and
+    4), 294 placed classes, 1,958 staged images across 458 classes, and 152 below the three-image
+    threshold. The stale counts from the 23-class era are gone; the live image-review decisions,
+    the cross-label duplicate lesson and the display-name overrides are kept, because the reasoning
+    behind each is not written down anywhere else.
+  - `AGENTS.md` 9's repository tree was missing eighteen modules, `docs/`, `RESULTS.md` and three
+    data artifacts. It now lists what is actually there, and every path in it was checked to exist.
+  - `README.md`'s project status stopped at `0.4.0` and read as a scaffold inventory. It now says
+    what each release since closed, and states plainly that one question remains open and needs a
+    day in Wrocław rather than more code.
 - `RESULTS.md`'s dataset section said 478 of 482 category mappings were approved; the tracked
   review file says 469 approved and 13 rejected. Verified by rebuilding the manifest from the
   current review files, which reproduces the published 306 classes and 1,691 images exactly, so
   469 is the number behind the results.
-- Noted in `AGENTS.md` 5.7 that its measured 295 placed classes became 294 when the drift check
-  dropped a one-degree latitude typo in the same release, so the decision record no longer reads
-  as if it disagreed with `RESULTS.md`.
+- `AGENTS.md` 8 no longer describes the pool-size limitation in terms of a 23-class dataset that
+  has not existed since `0.5.0`. The question is marked done, with the data question it leaves
+  behind stated in current numbers.
 
 ## [0.7.0] - 2026-09-05
 
