@@ -10,6 +10,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `.zenodo.json`, so the DOI minted when a GitHub release is archived describes the work
+  rather than whatever Zenodo infers from the repository. It declares `mit`, and says in both the
+  description and the notes that MIT covers the source code only: the release archive is 30 MB of
+  which 25 MB is 1,691 thumbnails derived from Wikimedia Commons, which keep their own Public
+  Domain, CC0, CC BY and CC BY-SA terms. A single `license` field would otherwise assert MIT over
+  photographs nobody licensed that way — the same over-claim the dataset export refuses to make.
+  It also links the published dataset (`isSourceOf`) and the demo (`isDocumentedBy`).
+
 ## [0.9.0] - 2026-09-06
 
 ### Added

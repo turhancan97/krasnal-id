@@ -1,0 +1,39 @@
+{
+  "upload_type": "software",
+  "title": "Krasnal-ID: fine-grained visual instance retrieval of Wrocław's dwarf statues",
+  "creators": [
+    {
+      "name": "Kargın, Turhan Can"
+    }
+  ],
+  "description": "<p>A research prototype for <strong>fine-grained visual instance retrieval</strong>: identifying which of Wrocław's several hundred bronze dwarf statues (<em>krasnale</em>) a photograph shows. Every statue is the same semantic category, so the problem is instance recognition rather than classification &mdash; what separates them is a hat, a tool, a pose.</p><p>The central experiment asks how identification accuracy decays as the candidate pool grows, and whether narrowing that pool by location helps. It does not: proximity-based pools are consistently harder than random pools of the same size, because sculptors install related pieces near each other, so a small radius selects for a statue's own lookalikes.</p><p>Across a 306-statue pool with no fine-tuning, DINOv2 reaches <strong>93.1% top-1</strong> and CLIP 82.9%, under a leave-one-out protocol over 1,691 reference photographs. Also included: a candidate-pool-size ablation, a geographic ablation over derived coordinates, a trained-classifier comparison, confusion analysis, open-set rejection, and a lower bound on the query-domain gap between curated uploads and phone photographs.</p><p>This record archives the <strong>source code, documentation and published demo assets</strong>. The dataset itself &mdash; 1,691 attributed photographs, both backbones' embeddings and the evaluation folds &mdash; is published separately on Hugging Face and linked below.</p><p><strong>Licensing.</strong> The MIT License covers the original source code only. The archive also contains 1,691 derived thumbnail images obtained from Wikimedia Commons, which keep their own individual terms &mdash; Public Domain, CC0, CC BY and CC BY-SA &mdash; and are not relicensed by this record. Per-image photographer, licence and source URL are recorded in <code>docs/assets/references.json</code> inside the archive. The statues are contemporary sculptures under copyright; the Creative Commons licences cover the photographs, granted by the photographers, and grant no rights in the sculptures depicted.</p>",
+  "license": "mit",
+  "access_right": "open",
+  "language": "eng",
+  "keywords": [
+    "instance retrieval",
+    "fine-grained recognition",
+    "image retrieval",
+    "computer vision",
+    "DINOv2",
+    "CLIP",
+    "self-supervised representations",
+    "cultural heritage",
+    "public art",
+    "Wrocław",
+    "Wikimedia Commons"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://huggingface.co/datasets/turhancan97/wroclaw-dwarves",
+      "relation": "isSourceOf",
+      "resource_type": "dataset"
+    },
+    {
+      "identifier": "https://turhancan97.github.io/krasnal-id/",
+      "relation": "isDocumentedBy",
+      "resource_type": "other"
+    }
+  ],
+  "notes": "The MIT License applies to the original source code. Thumbnail images included under docs/assets/ are derived from Wikimedia Commons and remain under their individual Public Domain, CC0, CC BY and CC BY-SA terms; see docs/assets/references.json for per-image attribution."
+}

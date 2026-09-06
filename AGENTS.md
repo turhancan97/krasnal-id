@@ -695,8 +695,10 @@ Any of these is a scope change. Record the decision here before implementing it.
 ```
 krasnal-id/
 ├── .github/workflows/ci.yml   # Python 3.12 quality gate
+├── .zenodo.json               # metadata for the DOI minted on each GitHub release
 ├── AGENTS.md
 ├── CHANGELOG.md
+├── CITATION.cff               # how to cite; its licence field covers the code only
 ├── CONTRIBUTING.md
 ├── LICENSE                    # MIT applies to original source code only
 ├── README.md
