@@ -27,6 +27,11 @@ bound on the query-domain gap without fieldwork, using the 51 references that we
 on phones. `0.8.0` built the path that measures it properly, so the only thing the question still
 waits on is photographs.
 
+The dataset is published at
+[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
+1,691 attributed photographs, both backbones' embeddings and the evaluation folds, from which the
+headline result re-derives without this repository.
+
 One question stays open, and it is the one the numbers above cannot answer: **how much accuracy a
 real phone photograph taken in the street costs.** The protocol, the route, the cohorts and the
 whole measuring path are built and tested; what is missing is a day in Wrocław with a phone. See
@@ -403,10 +408,34 @@ be chosen after seeing the result. One asymmetry is reported rather than hidden:
 query is withheld from its own class and so sees one fewer reference of the right statue than a
 field query does, which favours the field queries and understates the gap.
 
+## Use the published dataset
+
+The dataset is on the Hub as
+[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), so you
+do not need this repository, a Commons crawl or a GPU to work with it:
+
+```python
+from datasets import load_dataset
+
+images = load_dataset("turhancan97/wroclaw-dwarves", "default", split="reference")
+vectors = load_dataset("turhancan97/wroclaw-dwarves", "embeddings_dinov2", split="reference")
+folds = load_dataset("turhancan97/wroclaw-dwarves", "leave_one_out", split="test")
+```
+
+Six configs are published: `default` (the photographs and their attribution), `metadata` (the same
+rows without the pixels), `classes` (one row per statue), `embeddings_dinov2` and
+`embeddings_clip` (precomputed vectors), and `leave_one_out` (the 1,691 evaluation folds). Only
+the config you ask for is downloaded, so scoring from vectors alone costs about 8 MB rather than
+the full 676 MB of photographs. The split is called `reference`, not `train`, because nothing here
+is trained.
+
+Scoring `embeddings_dinov2` under `leave_one_out` reproduces the headline 93.1% top-1 from the
+published files alone.
+
 ## Publish the dataset
 
-The whole dataset — photographs, metadata, embeddings and the leave-one-out folds — builds into a
-Hugging Face repository with one command:
+Only needed to release a new version. The whole dataset — photographs, metadata, embeddings and
+the leave-one-out folds — builds into a Hugging Face repository with one command:
 
 ```bash
 uv run krasnal-id data license-templates   # once: the basis behind the public-domain files
