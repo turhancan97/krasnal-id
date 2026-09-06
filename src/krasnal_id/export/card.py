@@ -18,6 +18,7 @@ from krasnal_id.export.rows import MODIFICATION_NOTE, ImageRow
 # The dotless i is LATIN SMALL LETTER DOTLESS I: the correct Turkish spelling of
 # the author's name, not a homoglyph slip, so the ambiguity check is suppressed.
 DATASET_AUTHOR = "Turhan Can Kargın"  # noqa: RUF001
+DATASET_AUTHOR_ORCID = "https://orcid.org/0000-0002-6751-4773"
 
 CREDIT_COLUMNS = (
     "image_id",
@@ -494,6 +495,8 @@ Built from manifest `{facts.manifest_sha256[:16]}`. `provenance.json` records ev
 the pinned backbone revisions and the digest of every published file.
 
 ## Citation
+
+Curated by [{DATASET_AUTHOR}]({DATASET_AUTHOR_ORCID}).
 
 ```bibtex
 @misc{{kargin2026krasnalid,

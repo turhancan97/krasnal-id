@@ -12,6 +12,7 @@ type: software
 authors:
   - given-names: "Turhan Can"
     family-names: "Kargın"
+    orcid: "https://orcid.org/0000-0002-6751-4773"
 version: "0.9.0"
 date-released: "2026-09-06"
 license: MIT

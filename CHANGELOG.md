@@ -12,6 +12,9 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- Recorded ORCID `0000-0002-6751-4773` in `.zenodo.json`, `CITATION.cff` and the dataset card, so
+  every surface that asserts authorship points at the same persistent identifier rather than at a
+  name that can be spelled several ways. The checksum digit was verified before use.
 - Added `.zenodo.json`, so the DOI minted when a GitHub release is archived describes the work
   rather than whatever Zenodo infers from the repository. It declares `mit`, and says in both the
   description and the notes that MIT covers the source code only: the release archive is 30 MB of
