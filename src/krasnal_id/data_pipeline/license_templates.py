@@ -32,6 +32,12 @@ LICENSE_TEMPLATE_FILENAME = "license-templates.json"
 SCHEMA_VERSION = "1.0"
 # The API accepts fifty page IDs per request.
 PAGE_ID_BATCH = 50
+# `tllimit` caps at 500 *across the request*, not per page, so a batch of fifty
+# file pages carrying dozens of templates each will be truncated and continued.
+# Without following the token some files would silently appear to have no basis,
+# which is the one thing this artifact exists to record.
+TEMPLATE_PAGE_LIMIT = "500"
+MAX_CONTINUATIONS = 50
 # Commons short names whose basis is a template rather than a licence grant. CC0
 # is a real dedication and needs no lookup; "Public domain" is the bare label.
 UNGRANTED_LICENSES = frozenset({"Public domain"})
@@ -75,21 +81,37 @@ def ungranted_page_ids(manifest: DatasetManifest) -> tuple[int, ...]:
     )
 
 
-def request_parameters(page_ids: tuple[int, ...]) -> dict[str, str]:
+def request_parameters(
+    page_ids: tuple[int, ...], continuation: str | None = None
+) -> dict[str, str]:
     """Build the parameters for one batch of page IDs.
 
     `tlnamespace=10` restricts the reply to the Template namespace, and the limit
     is raised because a Commons file page carries dozens of them.
     """
-    return {
+    parameters = {
         "action": "query",
         "format": "json",
         "formatversion": "2",
         "prop": "templates",
         "tlnamespace": "10",
-        "tllimit": "500",
+        "tllimit": TEMPLATE_PAGE_LIMIT,
         "pageids": "|".join(str(page_id) for page_id in page_ids),
     }
+    if continuation is not None:
+        parameters["tlcontinue"] = continuation
+    return parameters
+
+
+def continuation_token(payload: object) -> str | None:
+    """Return the token for the next page of templates, if the reply was truncated."""
+    if not isinstance(payload, dict):
+        return None
+    envelope = payload.get("continue")
+    if not isinstance(envelope, dict):
+        return None
+    token = envelope.get("tlcontinue")
+    return str(token) if token is not None else None
 
 
 def basis_templates(page: object) -> tuple[int, tuple[str, ...]] | None:
@@ -114,7 +136,12 @@ def basis_templates(page: object) -> tuple[int, tuple[str, ...]] | None:
 
 
 def collect_templates(payloads: tuple[object, ...]) -> dict[str, tuple[str, ...]]:
-    """Fold every response batch into one page-to-basis mapping."""
+    """Fold every response batch into one page-to-basis mapping.
+
+    A page's templates can arrive across several continuations, so entries are
+    unioned rather than overwritten: the last batch to mention a page must not
+    erase what an earlier one found.
+    """
     templates: dict[str, tuple[str, ...]] = {}
     for payload in payloads:
         if not isinstance(payload, dict):
@@ -125,8 +152,10 @@ def collect_templates(payloads: tuple[object, ...]) -> dict[str, tuple[str, ...]
         pages = query.get("pages", []) if isinstance(query, dict) else []
         for page in pages:
             extracted = basis_templates(page)
-            if extracted is not None:
-                templates[str(extracted[0])] = extracted[1]
+            if extracted is None:
+                continue
+            key = str(extracted[0])
+            templates[key] = tuple(sorted(set(templates.get(key, ())) | set(extracted[1])))
     return templates
 
 
@@ -142,15 +171,27 @@ def fetch_license_templates(
             "no manifest image carries a label-only licence, so there is no basis to look up"
         )
 
-    payloads = tuple(
-        session(request_parameters(page_ids[start : start + PAGE_ID_BATCH]))
-        for start in range(0, len(page_ids), PAGE_ID_BATCH)
-    )
+    payloads: list[object] = []
+    for start in range(0, len(page_ids), PAGE_ID_BATCH):
+        batch = page_ids[start : start + PAGE_ID_BATCH]
+        continuation: str | None = None
+        for _ in range(MAX_CONTINUATIONS):
+            payload = session(request_parameters(batch, continuation))
+            payloads.append(payload)
+            continuation = continuation_token(payload)
+            if continuation is None:
+                break
+        else:
+            raise LicenseTemplateError(
+                f"Commons kept continuing past {MAX_CONTINUATIONS} pages of templates for "
+                f"{len(batch)} files; refusing to record a partial basis"
+            )
+
     return LicenseTemplateFile(
         schema_version=SCHEMA_VERSION,
         endpoint=config.commons_api_endpoint,
         retrieved_at=datetime.now(UTC),
-        templates=collect_templates(payloads),
+        templates=collect_templates(tuple(payloads)),
     )
 
 

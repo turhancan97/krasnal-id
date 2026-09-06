@@ -15,6 +15,7 @@ from krasnal_id.data_pipeline.license_templates import (
     LicenseTemplateFile,
     basis_templates,
     collect_templates,
+    continuation_token,
     fetch_license_templates,
     license_template_path,
     load_license_templates,
@@ -106,6 +107,61 @@ def test_requests_ask_only_for_the_template_namespace() -> None:
         fetch_license_templates(
             _labelled((), license_name="CC BY-SA 4.0"), load_config().data, session
         )
+
+
+def test_a_truncated_reply_is_followed_to_the_end() -> None:
+    """tllimit caps across the request, so fifty file pages will be continued.
+
+    Without following the token some files silently appear to have no basis
+    template, which is the one thing this artifact exists to record.
+    """
+    manifest = _labelled((3, 4))
+    seen: list[dict[str, str]] = []
+
+    def session(parameters: dict[str, str]) -> object:
+        seen.append(dict(parameters))
+        if "tlcontinue" not in parameters:
+            # First reply: one page's basis, and more to come.
+            return {
+                "query": {"pages": [{"pageid": 3, "templates": [{"title": "Template:PD-self"}]}]},
+                "continue": {"tlcontinue": "3|10|PD-old-70", "continue": "||"},
+            }
+        return {
+            "query": {
+                "pages": [
+                    # The same page again, with the rest of its templates.
+                    {"pageid": 3, "templates": [{"title": "Template:PD-old-70"}]},
+                    {"pageid": 4, "templates": [{"title": "Template:PD-Polish"}]},
+                ]
+            }
+        }
+
+    result = fetch_license_templates(manifest, load_config().data, session)
+
+    assert len(seen) == 2
+    assert seen[1]["tlcontinue"] == "3|10|PD-old-70"
+    # A page mentioned in two batches keeps what both found.
+    assert result.templates == {"3": ("PD-old-70", "PD-self"), "4": ("PD-Polish",)}
+
+
+def test_an_endless_continuation_is_refused() -> None:
+    manifest = _labelled((3,))
+
+    def session(parameters: dict[str, str]) -> object:
+        return {
+            "query": {"pages": [{"pageid": 3, "templates": []}]},
+            "continue": {"tlcontinue": "3|10|Never"},
+        }
+
+    with pytest.raises(LicenseTemplateError, match="refusing to record a partial basis"):
+        fetch_license_templates(manifest, load_config().data, session)
+
+
+def test_a_continuation_token_is_read_only_when_present() -> None:
+    assert continuation_token({"continue": {"tlcontinue": "abc"}}) == "abc"
+    assert continuation_token({"continue": {}}) is None
+    assert continuation_token({}) is None
+    assert continuation_token(["not a payload"]) is None
 
 
 def test_reading_rejects_a_malformed_artifact(tmp_path: Path) -> None:
