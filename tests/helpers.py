@@ -87,6 +87,50 @@ def synthetic_manifest(
     )
 
 
+def materialise_images(
+    manifest: DatasetManifest,
+    root: Path,
+    *,
+    unmodified: tuple[str, ...] = (),
+) -> DatasetManifest:
+    """Write a real JPEG per manifest image and return a manifest describing them.
+
+    `synthetic_manifest` fabricates a digest and a path that does not exist, which
+    is fine for evaluation code that only reads vectors. The export verifies the
+    bytes it is about to publish, so it needs files that are really there.
+
+    Images named in `unmodified` are given a `commons_sha1` equal to their own
+    content hash, which is how the export recognises a file that was never
+    resized; every other image gets a different one and reads as modified.
+    """
+    import hashlib
+
+    from PIL import Image
+
+    records = []
+    for index, record in enumerate(manifest.images):
+        path = root / record.dwarf_id / f"{record.image_id}.jpg"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (8, 8), (index * 7 % 256, 40, 60)).save(path)
+        payload = path.read_bytes()
+        records.append(
+            record.model_copy(
+                update={
+                    "local_path": path,
+                    "sha256": hashlib.sha256(payload).hexdigest(),
+                    "width": 8,
+                    "height": 8,
+                    "commons_sha1": (
+                        hashlib.sha1(payload).hexdigest()
+                        if record.image_id in unmodified
+                        else "0" * 40
+                    ),
+                }
+            )
+        )
+    return manifest.model_copy(update={"images": tuple(records)})
+
+
 def tight_cluster_vector(
     dwarf_index: int, position: int, dwarf_count: int
 ) -> npt.NDArray[np.float32]:

@@ -1,0 +1,6 @@
+repo_id: turhancan97/wroclaw-dwarves
+backbones: [dinov2, clip]
+shard_target_bytes: 471859200  # 450 MiB
+row_group_rows: 100
+license_name: mixed-cc-and-public-domain-wikimedia-commons
+license_link: LICENSES.md

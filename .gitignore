@@ -28,6 +28,7 @@ data/field-queries.json
 data/embeddings
 data/splits
 data/discovery
+data/export
 data/manifest*.json
 results/*
 !results/README.md

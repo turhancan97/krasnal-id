@@ -2,6 +2,7 @@ defaults:
   - data: wikimedia
   - backbone: dinov2
   - experiment: baseline
+  - export: huggingface
   - logging: default
   - paths: default
   - thresholds: default

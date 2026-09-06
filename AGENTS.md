@@ -272,11 +272,11 @@ starting a build.
   photograph byte-identical to a reference — the last being a Commons upload copied into the query
   set, which would measure the protocol rather than the domain gap.
 
-### 5.11 Dataset redistribution analysis (2026-09-06, not yet decided)
+### 5.11 Dataset redistribution decision (2026-09-06)
 
-Publishing the dataset to Kaggle and Hugging Face is future work per §8. This records what the
-licences actually permit, measured from the manifest rather than assumed, so the decision is taken
-on facts. **Not legal advice**: confirm the terms before any upload.
+Published to Hugging Face as `turhancan97/wroclaw-dwarves`, tier 3 — the photographs, the
+metadata and the embeddings — public and ungated. This records what the licences permit, measured
+from the manifest rather than assumed. **Not legal advice**: confirm the terms before any upload.
 
 What the 1,691 images are licensed under:
 
@@ -306,28 +306,74 @@ obligations*. Three tiers, in increasing order of what they require:
    burden stays at tier 1 while the artifact becomes directly usable: every retrieval experiment
    here runs from vectors alone, without an image.
 3. **The photographs as well.** Permitted, with obligations that must be met per file and not per
-   dataset: attribute each photographer, link each licence, and **state that the files are
-   modified** — the pipeline stores downscaled 2,000-pixel copies, so they are adaptations, not
-   originals. ShareAlike then binds those adaptations. A dataset is a *collection* rather than a
+   dataset: attribute each photographer, link each licence, and **state which files are
+   modified**. That is per file, not blanket: the fetcher only resizes what exceeds the long-side
+   cap, so **1,538 of the 1,691 files are downscaled adaptations and 153 are byte-identical to
+   the Commons original** — measured by comparing each stored file against its recorded
+   `commons_sha1`. An earlier draft of this section asserted modification over all of them, which
+   would have been a false statement in a rights field on 153 files and would have destroyed the
+   one signal telling a reuser which copies are exact. ShareAlike binds the adaptations. A dataset is a *collection* rather than a
    single adapted work, so per-image licences are preserved side by side instead of collapsing to
    one; the project's own metadata files can carry whatever licence is chosen for them. Both
    platforms can express this — Kaggle has an "Other (specified in description)" licence option,
    Hugging Face takes `license: other` with `license_name` and `license_link` plus a dataset card
    that carries the per-file terms.
 
-Two things to settle before uploading anything above tier 1:
+Two things settled before uploading:
 
 - **The sculptures are copyrighted, and the photographs are not the only work involved.** The
   dwarves are contemporary works by living sculptors. Commons hosts photographs of them under
   Polish freedom of panorama, which permits publishing images of works permanently displayed in
   public places. Kaggle and Hugging Face are US-hosted, and US law grants no equivalent exemption
-  for sculpture. This does not obviously block anything — the same reasoning would apply to the
-  demo already published — but it is the one question here that the file licences do not answer,
-  and it should be answered deliberately rather than inherited by accident.
+  for sculpture. **Answered by disclosure plus a named removal path**, not by declining to
+  publish: the card states that the CC licences cover the photographs and cannot grant rights in
+  the sculptures, and it names `data/image-review.json` as the mechanism by which a request is
+  honoured — one exclusion entry, a rebuild, a re-push. The same reasoning already covers the
+  1,691 thumbnails the demo publishes. A removal promise backed by a named artifact is credible
+  in a way "contact us" is not.
 - **A public dataset is a promise about identifiers.** `dwarf_id` values for Commons-only classes
   are slugs of category titles, and a renamed Commons category changes the slug. Anything published
   should record the manifest hash it was built from and say plainly that the identifiers are
   dataset-local, or downstream users will treat them as stable keys.
+
+### 5.12 Dataset export decisions (2026-09-06)
+
+How §5.11's decision is implemented, by `krasnal-id data export-hf`.
+
+- **Hand-written parquet with `pyarrow`, not the `datasets` library.** A Hugging Face `Image`
+  column at rest is a `{bytes, path}` struct plus a declared feature type, which pyarrow can write
+  directly. `datasets` would add pandas, dill, multiprocess and xxhash to the runtime for an
+  encoder we do not need, return `Any` through a strict-typed module, and — decisively — its
+  `push_to_hub` re-encodes and re-shards from its own representation, so the published bytes would
+  not be the bytes just hashed into the receipt. It is a **dev dependency instead**, used as a
+  test oracle: `Features.from_dict(...)` must derive exactly the arrow schema we wrote, and
+  `_to_yaml_list()` exactly the card block we emit. That test is what makes hand-writing safe, and
+  it earned its place immediately by catching that `datasets` models every field as nullable.
+- **Nullability is a build-time contract, not an arrow flag.** Matching `datasets` means every
+  field is nullable in the file. The columns that must never be empty — the attribution and
+  licence ones — are checked before writing and asserted after reading instead, which makes the
+  §5.11 obligation something the writer refuses to violate rather than something the card
+  promises.
+- **Six configs**, because config granularity is download granularity: `default` (pixels),
+  `metadata` (the same rows without them, so §5.11's tier 1 ships inside tier 3), `classes`,
+  `embeddings_dinov2`, `embeddings_clip`, `leave_one_out`. A user comparing backbones must not
+  have to fetch 676 MB of JPEG to do it.
+- **The split is named `reference`, not `train`.** Nothing here is trained; the median class has
+  four photographs. A split called `train` invites someone to fine-tune on it and report a number
+  that means nothing.
+- **Every derived rights column is computed at export time**, never added to `ImageRecord`: the
+  staging chain stays untouched, so an export invalidates no published result. This is the same
+  trade §5.9 priced for camera metadata.
+- **`--push` is opt-in and creates a private repository unless `--public` is passed.** The
+  intended dataset is public, but a mistyped repo id becoming instantly world-readable is not
+  recoverable and flipping private to public is one click. The token is never passed, held or
+  logged — `huggingface_hub` resolves it — and a push failure exits 1 while a configuration
+  failure exits 2.
+- **The 52 public-domain rows get their basis re-queried** by `krasnal-id data license-templates`,
+  which writes `data/discovery/license-templates.json` outside the staging chain for the same
+  reason §5.9 gives. The Commons Public Domain Mark is a label, not a licence: it says a file is
+  free of known copyright without saying why, and the fetcher discarded the template that does.
+  Fifty-two files is small enough that publishing an unverified rights claim would be a choice.
 
 ## 6. Technical architecture
 
@@ -624,12 +670,16 @@ waiting on photographs rather than on code.
   references shot on phones, and does not retire the question. The protocol (§5.8), the route and
   cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
   what is missing is the photographs, which need a day in Wrocław.
-- **Publishing the dataset to Kaggle and Hugging Face** — future work, and a distribution question
-  rather than a research one. §5.11 measures what the licences permit: redistribution is allowed,
-  every image already carries the attribution CC BY-SA requires, and the published demo already
-  ships all 1,691 photographs, so the precedent exists. Decide the tier there — metadata,
-  metadata plus embeddings, or the photographs too — and settle the freedom-of-panorama question
-  §5.11 raises before uploading pixels to a US-hosted platform.
+- ~~**Publishing the dataset to Hugging Face**~~ — done on 2026-09-06 as
+  `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation. Kaggle
+  remains open and undecided: the same export directory would serve, but its metadata conventions
+  differ and nothing has been built for them.
+- **Photographer-disjoint evaluation** — 122 photographers contributed, but two of them took
+  67.4% of the corpus, and near-duplicates from a single visit were never removed. A method can
+  therefore score partly by recognising a photographer's camera and processing rather than the
+  statue, which means 93.1% is inflated by an unmeasured amount. Scoring each query only against
+  references by *other* photographers would bound it. This is the most consequential unmeasured
+  thing in the dataset and it was found while writing the dataset card.
 - ~~**A larger pool**~~ — done on 2026-09-04 as the Commons-first rebuild of §5.6, which took the
   pool from 23 classes to 306 and overturned three conclusions the small pool had supported; see
   §7.3 and `RESULTS.md` section 7. What it leaves is a *data* question rather than a research one:
@@ -675,6 +725,7 @@ krasnal-id/
 │   ├── cli.py                 # unified Typer CLI
 │   ├── config.py              # Hydra composition + Pydantic validation
 │   ├── models.py              # manifest, split, review, and attribution schemas
+│   ├── atomic.py              # shared atomic file replacement
 │   ├── geometry.py            # distance on the ground, shared by pipeline and experiments
 │   ├── statistics.py          # the rank statistic two experiments share
 │   ├── logging.py             # structured run logging
@@ -684,6 +735,7 @@ krasnal-id/
 │   │   ├── commons_discovery.py  # the classes Wikidata has no item for
 │   │   ├── commons_fetch.py      # reviewed, cached Commons acquisition
 │   │   ├── camera_metadata.py    # EXIF cameras, deliberately outside the staging chain
+│   │   ├── license_templates.py  # the public-domain basis, also outside the chain
 │   │   ├── field_queries.py      # field photographs staged as queries, never references
 │   │   ├── build_manifest.py
 │   │   └── build_split.py        # deterministic leave-one-out folds
@@ -708,6 +760,13 @@ krasnal-id/
 │   │   ├── open_set.py        # unknown-query rejection
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
+│   ├── export/
+│   │   ├── schema.py          # arrow schemas, HF features, the shard plan
+│   │   ├── rows.py            # the derived rights columns
+│   │   ├── tables.py          # parquet writing
+│   │   ├── card.py            # the dataset card, licences and credits
+│   │   ├── huggingface.py     # building the export directory
+│   │   └── push.py            # uploading it, behind an explicit flag
 │   ├── demo/
 │   │   └── app.py             # the local Gradio demo
 │   └── viz/

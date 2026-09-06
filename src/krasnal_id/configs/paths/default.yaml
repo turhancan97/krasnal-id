@@ -9,3 +9,4 @@ category_review_path: data/category-review.json
 image_review_path: data/image-review.json
 manifest_path: data/manifest.json
 results_dir: results
+huggingface_export_dir: data/export/huggingface

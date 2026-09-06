@@ -24,6 +24,7 @@ class PathsConfig(BaseModel):
     image_review_path: Path
     manifest_path: Path
     results_dir: Path
+    huggingface_export_dir: Path
 
 
 class WikimediaDataConfig(BaseModel):
@@ -244,6 +245,30 @@ ExperimentConfig = Annotated[
 ]
 
 
+class ExportConfig(BaseModel):
+    """Hugging Face dataset export settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    repo_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$")
+    backbones: tuple[Literal["dinov2", "clip"], ...] = Field(min_length=1)
+    # Under the Hub's ~500 MB shard convention, with headroom for the estimate
+    # being wrong: the size is projected from file sizes before any bytes are read.
+    shard_target_bytes: int = Field(gt=0)
+    # The Hub documents 100 rows per row group for image data, which is what the
+    # datasets library itself writes.
+    row_group_rows: int = Field(gt=0)
+    license_name: str = Field(min_length=1)
+    license_link: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_backbones(self) -> "ExportConfig":
+        """Require distinct backbones, so a vector column cannot be written twice."""
+        if len(set(self.backbones)) != len(self.backbones):
+            raise ValueError("backbones cannot contain duplicates")
+        return self
+
+
 class LoggingConfig(BaseModel):
     """Structured application logging settings."""
 
@@ -261,10 +286,21 @@ class AppConfig(BaseModel):
     data: WikimediaDataConfig
     backbone: BackboneConfig
     experiment: ExperimentConfig
+    export: ExportConfig
     logging: LoggingConfig
     paths: PathsConfig
     thresholds: ThresholdsConfig
     seeds: SeedsConfig
+
+
+def backbone_config(name: str, overrides: list[str] | None = None) -> BackboneConfig:
+    """Compose one named backbone's pinned configuration.
+
+    `AppConfig.backbone` is whichever backbone the overrides selected, but an
+    export writes a vector column per backbone and therefore needs several in one
+    run. This keeps `initialize_config_module` from leaking out of this module.
+    """
+    return load_config([*(overrides or []), f"backbone={name}"]).backbone
 
 
 def load_config(overrides: list[str] | None = None) -> AppConfig:

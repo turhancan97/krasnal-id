@@ -47,6 +47,9 @@ would cost.
   working identifier that runs the model in your browser. Nothing is uploaded.
 - [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eight
   result sections, limitations, and how to reproduce them.
+- [**The dataset on Hugging Face**](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) —
+  1,691 attributed photographs of 306 statues, both backbones' embeddings, and the evaluation
+  folds, as a fine-grained instance-retrieval benchmark.
 
 ## Setup
 
@@ -400,6 +403,39 @@ be chosen after seeing the result. One asymmetry is reported rather than hidden:
 query is withheld from its own class and so sees one fewer reference of the right statue than a
 field query does, which favours the field queries and understates the gap.
 
+## Publish the dataset
+
+The whole dataset — photographs, metadata, embeddings and the leave-one-out folds — builds into a
+Hugging Face repository with one command:
+
+```bash
+uv run krasnal-id data license-templates   # once: the basis behind the public-domain files
+uv run krasnal-id data export-hf           # builds data/export/huggingface
+```
+
+That writes six configs (`default`, `metadata`, `classes`, `embeddings_dinov2`,
+`embeddings_clip`, `leave_one_out`), a dataset card, a licence inventory, credits grouped by
+photographer, a machine-readable `credits.csv`, and a `provenance.json` digesting every emitted
+file. It reads the manifest, the split and the embedding cache, and writes to none of them, so
+building an export invalidates no published result.
+
+Nothing is published until you say so:
+
+```bash
+uv run krasnal-id data export-hf --push                # creates a *private* repository
+uv run krasnal-id data export-hf --push --public       # …or a public one
+```
+
+The token is never passed or logged — `huggingface_hub` resolves `HF_TOKEN` or your stored login
+— and `--push` creates the repository private unless `--public` is given, because a mistyped
+repository id becoming world-readable is not recoverable.
+
+Every photograph keeps the licence it arrived with; the export never relicenses one. Each row
+carries its photographer, licence, SPDX identifier, source URL and a ready-to-paste
+`attribution_text`, plus a `modified` flag derived by comparing the stored bytes against the
+Commons digest — 1,538 of the 1,691 files are downscaled adaptations and 153 are byte-identical
+to their originals.
+
 ## Development checks
 
 ```bash
@@ -419,7 +455,21 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and
 
 ## Data and licensing
 
-The source code is licensed under the MIT License. Images and metadata obtained from
-Wikimedia Commons remain subject to their individual licenses. Every image manifest record
-must retain its source URL, author, license, and license URL. The MIT License does not apply
-to downloaded third-party images.
+The source code is licensed under the MIT License. **It does not apply to the photographs.**
+
+The 1,691 reference images come from Wikimedia Commons and each keeps its own licence: 1,577
+CC BY-SA (2.0 through 4.0), 55 CC BY, 52 public domain and 7 CC0. Every manifest record retains
+its source URL, author, licence and licence URL as a schema requirement, and the published dataset
+carries all four per row so the attribution obligation travels with the data. Nothing in this
+project relicenses a photograph or applies one licence across the collection.
+
+1,538 of the stored files are downscaled to at most 2,000 px and re-encoded, which makes them
+adaptations; the other 153 are byte-identical to the Commons original. The `modified` column says
+which, derived from the bytes rather than asserted.
+
+The statues themselves are contemporary sculptures under copyright. Commons hosts photographs of
+them under Poland's freedom-of-panorama provision; the Creative Commons licences here cover the
+**photographs**, granted by the photographers, and grant no rights in the sculptures depicted. If
+you are a rights-holder and want an image removed, open an issue: exclusions are recorded in
+`data/image-review.json`, and a rebuild propagates the removal through the manifest, the folds,
+the embeddings and the published dataset.

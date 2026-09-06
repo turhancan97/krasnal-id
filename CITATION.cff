@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software or dataset, please cite it as below."
+title: "Krasnal-ID: fine-grained visual instance retrieval of Wrocław's dwarf statues"
+abstract: >-
+  A research prototype for fine-grained visual instance retrieval of Wrocław's bronze dwarf
+  statues, and the dataset it produced: 1,691 attributed Wikimedia Commons photographs of 306
+  individual statues, with DINOv2 and CLIP embeddings and a leave-one-out evaluation protocol.
+  DINOv2 reaches 93.1% top-1 across the 306-class pool with no fine-tuning. The `license` field
+  below covers the source code only. The photographs keep their individual Creative Commons and
+  public-domain terms, recorded per image; see LICENSES.md in the published dataset.
+type: software
+authors:
+  - given-names: "Turhan Can"
+    family-names: "Kargın"
+version: "0.8.0"
+date-released: "2026-09-06"
+license: MIT
+repository-code: "https://github.com/turhancan97/krasnal-id"
+url: "https://turhancan97.github.io/krasnal-id/"
+keywords:
+  - instance retrieval
+  - fine-grained recognition
+  - image retrieval
+  - cultural heritage
+  - public art

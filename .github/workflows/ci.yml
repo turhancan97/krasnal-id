@@ -21,9 +21,10 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Install dependencies
-        # The analysis extra is installed so the visualization code is actually
-        # exercised in CI. The ml extra stays out: it would download model weights.
-        run: uv sync --frozen --extra analysis
+        # The analysis and hf extras are installed so the visualization and export
+        # code are actually exercised in CI; neither downloads anything at import
+        # time. The ml extra stays out: it would download model weights.
+        run: uv sync --frozen --extra analysis --extra hf
       - name: Check lockfile
         run: uv lock --check
       - name: Check formatting

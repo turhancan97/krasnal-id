@@ -371,6 +371,15 @@ also means the published demo, which runs CLIP, is the version most exposed to i
   and *Meloman*; likewise *Ogrodnik i Kierownik* and *Ogrodnik*. Their photographs are not
   byte-identical, so the duplicate guard does not catch them, and they duly appear in the confusion
   pairs. Two of 306 is a small effect, but it is a real one and it is not the model's fault.
+- **Two photographers took two-thirds of the photographs.** 122 people contributed, but Pnapora
+  uploaded 715 images (42.3%) and Fallaner 424 (25.1%) — 67.4% between them. Byte-identical
+  cross-label duplicates were removed, but near-duplicates from one photographer's single visit to
+  a statue were not, so a leave-one-out query is often only near-duplicate-distant from its own
+  reference. A method can score partly by recognising a photographer's camera, distance and
+  processing rather than the statue itself, which means **93.1% is inflated by an unmeasured
+  amount**. Bounding it needs a photographer-disjoint protocol — scoring each query only against
+  references by other photographers — which has not been run. This is the largest unmeasured
+  effect in the work after the query-domain gap.
 - **Class sizes are uneven.** The median class has 4 images and the largest 31, so a handful of
   well-photographed statues carry disproportionate weight in the query set.
 - **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is
@@ -379,6 +388,11 @@ also means the published demo, which runs CLIP, is the version most exposed to i
   it runs CLIP, which has the weaker rejection of the two.
 
 ## Reproducing this
+
+The photographs, both backbones' embeddings and the evaluation folds are published at
+[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), so the
+baselines can be re-derived without re-crawling Commons: load the `embeddings_dinov2` and
+`leave_one_out` configs and score them. The pipeline below is what produced them.
 
 ```bash
 uv sync --extra ml --extra analysis

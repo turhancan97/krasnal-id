@@ -50,6 +50,20 @@ def _read_manifest(path: Path) -> DatasetManifest:
         raise SplitConfigurationError(f"invalid manifest {path}: {error}") from error
 
 
+def read_evaluation_split(path: Path) -> EvaluationSplit:
+    """Read and strictly validate a generated split.
+
+    This module owns split I/O, so a consumer that needs the folds themselves —
+    the dataset export, for one — reads them here rather than reimplementing the
+    validation.
+    """
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return EvaluationSplit.model_validate(payload)
+    except (OSError, json.JSONDecodeError, ValidationError, TypeError, ValueError) as error:
+        raise SplitConfigurationError(f"invalid split {path}: {error}") from error
+
+
 def build_split_from_artifact(
     manifest_path: Path,
     generated_at: datetime | None = None,

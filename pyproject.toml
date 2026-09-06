@@ -47,16 +47,23 @@ demo = [
 web = [
     "onnxruntime==1.24.1",
 ]
+hf = [
+    "huggingface-hub==1.28.0",
+    "pyarrow==22.0.0",
+    "pyyaml==6.0.3",
+]
 
 [project.scripts]
 krasnal-id = "krasnal_id.cli:app"
 
 [dependency-groups]
 dev = [
+    "datasets==5.0.1",
     "mypy==2.3.1",
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "ruff==0.16.3",
+    "types-pyyaml==6.0.12.20250915",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -81,6 +88,10 @@ python_version = "3.12"
 strict = true
 files = ["src/krasnal_id", "tests"]
 warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["datasets.*", "huggingface_hub.*", "pyarrow.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = [

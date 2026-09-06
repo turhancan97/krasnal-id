@@ -12,15 +12,61 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
-- Added `AGENTS.md` section 5.11, the licence analysis behind a possible Kaggle and Hugging Face
-  release, and section 8 now carries that release as future work. Measured from the manifest rather
+- Added `krasnal-id data export-hf`, which builds the whole dataset into a Hugging Face repository
+  — six configs (`default`, `metadata`, `classes`, `embeddings_dinov2`, `embeddings_clip`,
+  `leave_one_out`), a generated dataset card, a licence inventory, credits grouped by photographer,
+  a machine-readable `credits.csv`, and a `provenance.json` digesting every emitted file. Built on
+  the real dataset: 1,691 photographs across 2 derived shards, 306 classes, 676 MB, in 12 seconds.
+  **Both baselines re-derive from the exported artifact alone** — 93.1% and 82.9% top-1, with no
+  code from this repository — which is what makes the export faithful rather than merely valid.
+- Added `krasnal-id data export-hf --push`, opt-in and **private unless `--public` is passed**. The
+  token is never passed, held or logged; `huggingface_hub` resolves it. Push failures exit 1,
+  configuration failures exit 2, and a malformed repository id is refused before anything leaves
+  the machine.
+- Added `krasnal-id data license-templates`, which re-queries the Commons template behind each
+  file labelled "Public domain". The Public Domain Mark is a label rather than a licence — it says
+  a file is free of known copyright without saying why — and the fetcher discarded the template
+  that does. 52 files is small enough that publishing an unverified rights claim would be a choice.
+- Added `krasnal_id.atomic`, the atomic-write idiom that seven modules had been carrying verbatim.
+  The existing seven are unchanged and can migrate later.
+- Added a `CITATION.cff`, whose `license: MIT` covers the code and says so, because a bare MIT on a
+  dataset citation would misstate the photographs' terms.
+- Added `AGENTS.md` section 5.12 recording the export's own decisions, and section 5.11, the
+  licence analysis behind the release. Measured from the manifest rather
   than assumed: 1,577 of the 1,691 images are CC BY-SA, 55 CC BY, 52 public domain and 7 CC0, and
   all 1,691 carry author, licence, licence URL and source URL with no gaps — so the attribution CC
   BY-SA requires is already satisfiable per file. Redistribution is permitted and the published
   demo already ships every photograph as a thumbnail, so the open question is which tier to release
   (metadata, metadata plus embeddings, or the photographs) and whether Polish freedom of panorama,
   which is what lets Commons host photographs of copyrighted sculptures, needs answering
-  deliberately before pixels go to a US-hosted platform.
+  deliberately before pixels go to a US-hosted platform. Section 5.11 is now a decision rather
+  than an analysis: tier 3, public and ungated, with the freedom-of-panorama question answered by
+  disclosure plus a removal path named in the card and backed by `data/image-review.json`.
+
+### Changed
+
+- `RESULTS.md` gains a limitation that changes how to read the headline: **122 photographers
+  contributed, but two of them took 67.4% of the corpus** — Pnapora 715 images, Fallaner 424.
+  Near-duplicates from a single visit were never removed, so a method can score partly by
+  recognising a photographer's camera and processing rather than the statue, and 93.1% is
+  inflated by an unmeasured amount. A photographer-disjoint protocol would bound it; `AGENTS.md`
+  section 8 now carries that as the open question replacing the release.
+- `README.md`'s `## Data and licensing` said nothing about a published dataset and now carries the
+  licence inventory, the modification split, the freedom-of-panorama position and the removal path.
+
+### Fixed
+
+- **`src/krasnal_id/__init__.py` still reported `0.7.0` after the 0.8.0 release.** Every previous
+  release bumped it and cutting 0.8.0 missed it. The export's provenance receipt reads the
+  installed distribution version rather than the module constant regardless, but the constant was
+  wrong and is now correct.
+- Corrected `AGENTS.md` section 5.11, which said the pipeline "stores downscaled 2,000-pixel
+  copies, so they are adaptations". Measured against each file's recorded `commons_sha1`:
+  **1,538 of the 1,691 are downscaled adaptations and 153 are byte-identical to the Commons
+  original**, because the fetcher only resizes what exceeds the cap. Asserting modification over
+  all of them would be a false statement in a rights field on 153 files, and would destroy the one
+  signal telling a reuser which copies are exact. The export derives `modified` per file from the
+  bytes.
 
 ## [0.8.0] - 2026-09-06
 

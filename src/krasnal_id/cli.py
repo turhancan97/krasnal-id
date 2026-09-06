@@ -6,7 +6,7 @@ from typing import Annotated
 
 import typer
 
-from krasnal_id.config import load_config
+from krasnal_id.config import backbone_config, load_config
 from krasnal_id.data_pipeline.build_manifest import (
     ManifestConfigurationError,
     build_manifest_from_artifacts,
@@ -15,6 +15,7 @@ from krasnal_id.data_pipeline.build_manifest import (
 from krasnal_id.data_pipeline.build_split import (
     SplitConfigurationError,
     build_split_from_artifact,
+    read_evaluation_split,
     write_evaluation_split,
 )
 from krasnal_id.data_pipeline.camera_metadata import (
@@ -38,6 +39,12 @@ from krasnal_id.data_pipeline.field_queries import (
     queries_by_cohort,
     stage_field_queries,
     write_field_query_manifest,
+)
+from krasnal_id.data_pipeline.license_templates import (
+    LicenseTemplateError,
+    fetch_license_templates,
+    license_template_path,
+    load_license_templates,
 )
 from krasnal_id.data_pipeline.wikidata_query import (
     WikidataConfigurationError,
@@ -72,6 +79,8 @@ from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablati
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
+from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
+from krasnal_id.export.push import PushConfigurationError, PushError, push_export
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
     AuditDisposition,
@@ -92,6 +101,23 @@ def _read_manifest(path: Path) -> DatasetManifest:
     except (OSError, ValueError) as error:
         raise ManifestConfigurationError(f"invalid manifest {path}: {error}") from error
 
+
+PushOption = Annotated[
+    bool,
+    typer.Option("--push", help="Upload the built export to the Hugging Face Hub."),
+]
+PublicOption = Annotated[
+    bool,
+    typer.Option("--public", help="Create the pushed repository public rather than private."),
+]
+RepoIdOption = Annotated[
+    str | None,
+    typer.Option("--repo-id", help="Hugging Face repository id; defaults to the configured one."),
+]
+EmbeddingsOption = Annotated[
+    bool,
+    typer.Option("--embeddings/--no-embeddings", help="Include the cached backbone vectors."),
+]
 
 OverrideOption = Annotated[
     list[str] | None,
@@ -290,6 +316,47 @@ def build_camera_metadata(override: OverrideOption = None) -> None:
     )
 
 
+@data_app.command("license-templates")
+def build_license_templates(override: OverrideOption = None) -> None:
+    """Fetch the public-domain basis behind every label-licensed image."""
+    import httpx
+
+    from krasnal_id.data_pipeline.wikidata_query import _contact_user_agent, _request_commons_page
+
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        manifest = _read_manifest(config.paths.manifest_path)
+    except ManifestConfigurationError as error:
+        typer.echo(f"Licence template error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    user_agent = _contact_user_agent()
+    try:
+        with httpx.Client() as client:
+
+            def request(parameters: dict[str, str]) -> object:
+                return _request_commons_page(config.data, user_agent, client, parameters)
+
+            templates = fetch_license_templates(manifest, config.data, request)
+    except (LicenseTemplateError, CommonsConfigurationError) as error:
+        typer.echo(f"Licence template error: {error}", err=True)
+        raise typer.Exit(code=1) from error
+
+    path = license_template_path(config.paths.discovery_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(templates.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    known = sum(1 for value in templates.templates.values() if value)
+    typer.echo(
+        f"Licence templates complete: pages={len(templates.templates)} "
+        f"with_basis={known} output={path}"
+    )
+
+
 @data_app.command("build-manifest")
 def build_manifest(override: OverrideOption = None) -> None:
     """Build and validate the versioned dataset manifest."""
@@ -362,6 +429,83 @@ def stage_field_query_manifest(override: OverrideOption = None) -> None:
             f"  {cohort}: {len(records)} photographs of "
             f"{len({record.dwarf_id for record in records})} statues"
         )
+
+
+@data_app.command("export-hf")
+def export_huggingface(
+    override: OverrideOption = None,
+    push: PushOption = False,
+    repo_id: RepoIdOption = None,
+    public: PublicOption = False,
+    embeddings: EmbeddingsOption = True,
+) -> None:
+    """Build the Hugging Face dataset directory, and optionally publish it."""
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    target = repo_id or config.export.repo_id
+
+    try:
+        manifest = _read_manifest(config.paths.manifest_path)
+        split = read_evaluation_split(config.paths.evaluation_split_path)
+        templates = None
+        template_path = license_template_path(config.paths.discovery_dir)
+        if template_path.is_file():
+            templates = load_license_templates(template_path).templates
+        result = build_export(
+            config,
+            manifest,
+            split,
+            backbones=tuple(
+                backbone_config(name, override or []) for name in config.export.backbones
+            ),
+            license_templates=templates,
+            with_embeddings=embeddings,
+        )
+    except (
+        HuggingFaceExportError,
+        LicenseTemplateError,
+        ManifestConfigurationError,
+        SplitConfigurationError,
+        EmbeddingStoreError,
+    ) as error:
+        typer.echo(f"Hugging Face export error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    if templates is None:
+        typer.echo(
+            "  note: no licence templates found, so public-domain rows carry no recorded "
+            "basis; run krasnal-id data license-templates first",
+            err=True,
+        )
+    typer.echo(
+        f"Hugging Face export complete: images={result.images} classes={result.classes} "
+        f"folds={result.folds} shards={result.shards} modified={result.modified} "
+        f"unmodified={result.unmodified} backbones={','.join(result.backbones) or 'none'} "
+        f"manifest={result.manifest_sha256[:12]} output={result.paths.root}"
+    )
+
+    if not push:
+        typer.echo(
+            f"  not published. To publish: krasnal-id data export-hf --push --repo-id {target}"
+        )
+        return
+
+    try:
+        outcome = push_export(
+            result.paths.root,
+            target,
+            private=not public,
+            commit_message=f"Export manifest {result.manifest_sha256[:12]}",
+        )
+    except PushConfigurationError as error:
+        typer.echo(f"Hugging Face push error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    except PushError as error:
+        typer.echo(f"Hugging Face push error: {error}", err=True)
+        raise typer.Exit(code=1) from error
+
+    visibility = "public" if public else "private"
+    typer.echo(f"Pushed: repo={outcome.repo_id} visibility={visibility} url={outcome.url}")
 
 
 @embeddings_app.command("extract")
