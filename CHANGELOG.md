@@ -10,6 +10,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-09-06
+
+Cut so the Zenodo record has correct metadata. The `v0.9.0` tag predated
+`.zenodo.json` and the ORCID, so the DOI minted from it credits an author with no
+persistent identifier and links neither the dataset nor the demo. The concept DOI resolves to the
+newest release, so archiving this one corrects what that DOI points at without changing it.
+
 ### Added
 
 - Recorded the Zenodo concept DOI `10.5281/zenodo.22548023` in the README (badge plus a

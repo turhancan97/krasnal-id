@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.9.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.9.1**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -80,7 +80,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.1 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -126,7 +126,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.1 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 
