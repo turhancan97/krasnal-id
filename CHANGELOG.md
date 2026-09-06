@@ -10,6 +10,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-06
+
 ### Added
 
 - Added `krasnal-id data export-hf`, which builds the whole dataset into a Hugging Face repository
@@ -69,6 +71,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   failure came after `repos/create` had already succeeded, which left an empty repository behind —
   so the card is now validated against the Hub's own validator **before** anything is created, and
   a card the Hub would reject is a message rather than an orphan.
+- Added a test asserting `krasnal_id.__version__` equals the installed distribution version, so a
+  release that bumps one and not the other fails instead of shipping.
 - **`src/krasnal_id/__init__.py` still reported `0.7.0` after the 0.8.0 release.** Every previous
   release bumped it and cutting 0.8.0 missed it. The export's provenance receipt reads the
   installed distribution version rather than the module constant regardless, but the constant was

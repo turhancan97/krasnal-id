@@ -1,9 +1,21 @@
 """Composition tests for every Hydra configuration branch."""
 
+from importlib import metadata
+
 import pytest
 from pydantic import ValidationError
 
+import krasnal_id
 from krasnal_id.config import WikimediaDataConfig, load_config
+
+
+def test_the_package_version_matches_the_distribution() -> None:
+    """Cutting a release must bump both, and 0.8.0 shipped having bumped only one.
+
+    The module constant sat at 0.7.0 for a whole release while the distribution
+    said 0.8.0. Nothing consumed the constant, so nothing complained; this does.
+    """
+    assert krasnal_id.__version__ == metadata.version("krasnal-id")
 
 
 @pytest.mark.parametrize(
