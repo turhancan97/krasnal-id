@@ -18,7 +18,12 @@ from krasnal_id.export.rows import MODIFICATION_NOTE, ImageRow
 # The dotless i is LATIN SMALL LETTER DOTLESS I: the correct Turkish spelling of
 # the author's name, not a homoglyph slip, so the ambiguity check is suppressed.
 DATASET_AUTHOR = "Turhan Can Kargın"  # noqa: RUF001
+# BibTeX wants "Family, Given" so the surname sorts correctly.
+DATASET_AUTHOR_BIBTEX = "Kargın, Turhan Can"  # noqa: RUF001
 DATASET_AUTHOR_ORCID = "https://orcid.org/0000-0002-6751-4773"
+# The concept DOI, which resolves to the newest release, so citations of the work
+# accumulate on one identifier instead of splitting across versions.
+PROJECT_DOI = "10.5281/zenodo.22548023"
 
 CREDIT_COLUMNS = (
     "image_id",
@@ -499,11 +504,17 @@ the pinned backbone revisions and the digest of every published file.
 Curated by [{DATASET_AUTHOR}]({DATASET_AUTHOR_ORCID}).
 
 ```bibtex
-@misc{{kargin2026krasnalid,
-  author       = {{{DATASET_AUTHOR}}},
-  title        = {{Krasnal-ID: fine-grained visual instance retrieval of Wrocław's dwarf statues}},
-  year         = {{2026}},
-  howpublished = {{\\url{{https://github.com/turhancan97/krasnal-id}}}}
+@software{{kargin2026krasnalid,
+  author    = {{{DATASET_AUTHOR_BIBTEX}}},
+  title     = {{Krasnal-ID: fine-grained visual instance retrieval of
+               Wrocław's dwarf statues}},
+  year      = {{2026}},
+  publisher = {{Zenodo}},
+  doi       = {{{PROJECT_DOI}}},
+  url       = {{https://doi.org/{PROJECT_DOI}}}
 }}
 ```
+
+The DOI archives the code and this dataset's build pipeline; the photographs are here. Please also
+credit the photographers, which `credits.csv` makes a one-column job.
 """

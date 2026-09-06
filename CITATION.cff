@@ -16,6 +16,11 @@ authors:
 version: "0.9.0"
 date-released: "2026-09-06"
 license: MIT
+doi: "10.5281/zenodo.22548023"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22548023"
+    description: "The concept DOI, resolving to the latest release."
 repository-code: "https://github.com/turhancan97/krasnal-id"
 url: "https://turhancan97.github.io/krasnal-id/"
 keywords:

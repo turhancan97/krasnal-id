@@ -3,6 +3,7 @@
   <img src="docs/brand/krasnal-lockup-horizontal-light.svg" alt="Krasnal-ID" width="260">
 </picture>
 
+[![DOI](https://zenodo.org/badge/1339843718.svg)](https://doi.org/10.5281/zenodo.22548023)
 
 Krasnal-ID is a research prototype for fine-grained visual instance retrieval of
 Wrocław's bronze dwarf statues. Its central experiment asks how identification accuracy
@@ -482,6 +483,32 @@ script whose only errors come from untyped plotting dependencies.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and
 [AGENTS.md](AGENTS.md) for the research scope, architecture, and build order.
+
+## Citing this work
+
+Archived on Zenodo with a DOI that always resolves to the newest release:
+
+```bibtex
+@software{kargin2026krasnalid,
+  author    = {Kargın, Turhan Can},
+  title     = {Krasnal-ID: fine-grained visual instance retrieval of
+               Wrocław's dwarf statues},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22548023},
+  url       = {https://doi.org/10.5281/zenodo.22548023}
+}
+```
+
+That DOI is the *concept* DOI — cite it, and citations accumulate across versions rather than
+splitting between them. Each release also gets its own version DOI, listed on the Zenodo record,
+for when you need to pin exactly what you ran.
+
+The record archives the source code, the documentation and the published demo assets. The
+photographs themselves live on the
+[Hugging Face dataset](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), where each
+one carries its own photographer and licence; cite that alongside the DOI if the data is what you
+used, and credit the photographers as `credits.csv` there sets out.
 
 ## Data and licensing
 

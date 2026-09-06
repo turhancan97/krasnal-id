@@ -12,6 +12,10 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- Recorded the Zenodo concept DOI `10.5281/zenodo.22548023` in the README (badge plus a
+  `## Citing this work` section the README previously had none of), `CITATION.cff`, and the
+  dataset card's BibTeX. The *concept* DOI rather than the version DOI, so citations accumulate on
+  one identifier instead of splitting across releases.
 - Recorded ORCID `0000-0002-6751-4773` in `.zenodo.json`, `CITATION.cff` and the dataset card, so
   every surface that asserts authorship points at the same persistent identifier rather than at a
   name that can be spelled several ways. The checksum digit was verified before use.
