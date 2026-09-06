@@ -56,6 +56,12 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **The Hub rejected the dataset card**: `license_link` must be an absolute https URI, and it was
+  the repository-relative `LICENSES.md`. It now resolves against the repository being published
+  to, so it still points at the ten-licence inventory rather than at one licence among ten. The
+  failure came after `repos/create` had already succeeded, which left an empty repository behind —
+  so the card is now validated against the Hub's own validator **before** anything is created, and
+  a card the Hub would reject is a message rather than an orphan.
 - **`src/krasnal_id/__init__.py` still reported `0.7.0` after the 0.8.0 release.** Every previous
   release bumped it and cutting 0.8.0 missed it. The export's provenance receipt reads the
   installed distribution version rather than the module constant regardless, but the constant was

@@ -208,12 +208,27 @@ def render_attribution(rows: Sequence[ImageRow], facts: CardFacts) -> str:
     return "\n".join(lines) + "\n"
 
 
+def license_link_uri(repo_id: str, license_link: str) -> str:
+    """Return an absolute URI for the licence inventory.
+
+    The Hub's metadata validator requires `license_link` to be an https URI, so a
+    repository-relative filename is resolved against the repository it is being
+    published to. Pointing at the in-repo inventory rather than at
+    creativecommons.org is deliberate: the collection spans ten licences, and a
+    link to any one of them would misdescribe the other nine.
+    """
+    if license_link.startswith(("http://", "https://")):
+        return license_link
+    return f"https://huggingface.co/datasets/{repo_id}/blob/main/{license_link.lstrip('/')}"
+
+
 def _front_matter(
     facts: CardFacts,
     configs: Sequence[tuple[str, str, str]],
     features: dict[str, list[dict[str, object]]],
     license_name: str,
     license_link: str,
+    repo_id: str,
 ) -> str:
     """Render the YAML the Hub reads.
 
@@ -230,7 +245,7 @@ def _front_matter(
         "pretty_name": "Wrocław Dwarves — Fine-Grained Instance Retrieval",
         "license": "other",
         "license_name": license_name,
-        "license_link": license_link,
+        "license_link": license_link_uri(repo_id, license_link),
         "task_categories": ["image-feature-extraction", "image-classification"],
         "tags": [
             "instance-retrieval",
@@ -303,6 +318,7 @@ def render_card(
         )
         for name, split, _ in configs
     )
+    license_href = license_link_uri(repo_id, license_link)
     vector_configs = [name for name, _, _ in configs if name.startswith("embeddings_")]
     vector_example = (
         f'\nvectors = load_dataset("{repo_id}", "{vector_configs[0]}", split="reference")'
@@ -315,7 +331,7 @@ def render_card(
     )
 
     return f"""---
-{_front_matter(facts, configs, features, license_name, license_link)}---
+{_front_matter(facts, configs, features, license_name, license_link, repo_id)}---
 
 # Wrocław Dwarves — Fine-Grained Instance Retrieval
 
@@ -402,7 +418,8 @@ rather than the full corpus.
 
 ## Licensing and attribution
 
-Every photograph keeps the licence it arrived with. See **[{license_link}]({license_link})** for
+Every photograph keeps the licence it arrived with. See
+**[{license_link}]({license_href})** for
 the full inventory and **`ATTRIBUTION.md`** for the credits; `credits.csv` is the same ledger in
 machine-readable form, downloadable without a parquet reader.
 

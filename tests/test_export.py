@@ -27,7 +27,12 @@ from krasnal_id.data_pipeline.build_split import (
     write_evaluation_split,
 )
 from krasnal_id.export import schema as s
-from krasnal_id.export.card import measure, render_attribution, render_credits_csv
+from krasnal_id.export.card import (
+    license_link_uri,
+    measure,
+    render_attribution,
+    render_credits_csv,
+)
 from krasnal_id.export.huggingface import (
     ExportPaths,
     HuggingFaceExportError,
@@ -37,6 +42,7 @@ from krasnal_id.export.push import (
     PushConfigurationError,
     PushError,
     push_export,
+    validate_card,
 )
 from krasnal_id.export.rows import (
     RowError,
@@ -395,7 +401,7 @@ def test_the_card_declares_what_was_written(tmp_path: Path) -> None:
 
     # A mixed collection cannot honestly claim one SPDX licence.
     assert front["license"] == "other"
-    assert front["license_link"] == "LICENSES.md"
+    assert front["license_link"].endswith("/LICENSES.md")
     declared = {entry["config_name"] for entry in front["configs"]}
     assert declared == {
         "default",
@@ -571,6 +577,41 @@ def test_push_refuses_before_reaching_the_network(tmp_path: Path) -> None:
             commit_message="x",
             uploader=_FakeUploader(fail=True),
         )
+
+
+def test_the_licence_link_is_an_absolute_uri() -> None:
+    """The Hub's validator rejects a repository-relative link outright."""
+    resolved = license_link_uri("turhancan97/wroclaw-dwarves", "LICENSES.md")
+
+    assert resolved == (
+        "https://huggingface.co/datasets/turhancan97/wroclaw-dwarves/blob/main/LICENSES.md"
+    )
+    # An absolute link is left alone.
+    assert license_link_uri("a/b", "https://example.org/x") == "https://example.org/x"
+
+
+def test_the_card_declares_a_link_the_hub_will_accept(tmp_path: Path) -> None:
+    manifest, split = _prepared(tmp_path)
+    config = _config(tmp_path)
+    build_export(config, manifest, split, backbones=(FAKE_BACKBONE,))
+
+    front = yaml.safe_load(
+        ExportPaths(root=config.paths.huggingface_export_dir)
+        .card.read_text(encoding="utf-8")
+        .split("---")[1]
+    )
+
+    assert front["license_link"].startswith("https://")
+    assert front["license_link"].endswith("/LICENSES.md")
+
+
+def test_an_export_with_no_card_is_refused_before_anything_is_created(tmp_path: Path) -> None:
+    """A repository must not be created for a directory that cannot be published."""
+    empty = tmp_path / "empty"
+    empty.mkdir()
+
+    with pytest.raises(PushConfigurationError, match="no dataset card"):
+        validate_card(empty)
 
 
 def test_cli_builds_the_export_and_declines_to_publish(tmp_path: Path) -> None:
