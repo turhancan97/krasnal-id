@@ -53,9 +53,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   section 8 now carries that as the open question replacing the release.
 - `README.md`'s `## Data and licensing` said nothing about a published dataset and now carries the
   licence inventory, the modification split, the freedom-of-panorama position and the removal path.
+- The published demo page now links the dataset beside the repository.
 
 ### Fixed
 
+- Stopped recording `PD-Layout` as a public-domain basis. Commons describes it as a "table style
+  formatting template", used *inside* the real licence tags, so it matched the `PD-` prefix while
+  saying nothing about why a file is free — presentation markup in a rights field, where a reader
+  would reasonably take it for an answer. The 52 public-domain files now state exactly one reason
+  each: 35 `PD-author`, 16 `PD-user`, 1 `PD-self`. Filtered on read as well as on fetch, so an
+  artifact retrieved before the exclusion does not need re-fetching to be clean.
 - **The Hub rejected the dataset card**: `license_link` must be an absolute https URI, and it was
   the repository-relative `LICENSES.md`. It now resolves against the repository being published
   to, so it still points at the ten-licence inventory rather than at one licence among ten. The

@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import unquote
 
+from krasnal_id.data_pipeline.license_templates import basis_only
 from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
 
 # Commons short names to SPDX identifiers. A public-domain *label* has no SPDX
@@ -184,7 +185,9 @@ def build_image_rows(
         commons_file = commons_filename(str(record.source_url))
         license_url = normalise_license_url(str(record.license_url))
         modified = is_modified(record, hashlib.sha1(payload).hexdigest())
-        page_templates = basis.get(str(record.commons_page_id or ""), ())
+        # Filtered again on read, so an artifact fetched before the formatting
+        # templates were excluded does not need re-fetching to be clean.
+        page_templates = basis_only(basis.get(str(record.commons_page_id or ""), ()))
         rows.append(
             ImageRow(
                 record=record,

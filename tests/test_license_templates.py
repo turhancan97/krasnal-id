@@ -13,6 +13,7 @@ from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.license_templates import (
     LicenseTemplateError,
     LicenseTemplateFile,
+    basis_only,
     basis_templates,
     collect_templates,
     continuation_token,
@@ -66,6 +67,27 @@ def test_a_page_yields_only_its_public_domain_templates() -> None:
     assert basis_templates({"pageid": 9}) == (9, ())
     assert basis_templates({"no": "pageid"}) is None
     assert basis_templates(["not a page"]) is None
+
+
+def test_formatting_templates_are_not_recorded_as_a_reason() -> None:
+    """PD-Layout styles other licence tags; it says nothing about why a file is free.
+
+    Commons describes it as a "table style formatting template", used inside the
+    real tags. Recording it would put presentation markup in a rights field, where
+    a reader would reasonably take it for an answer.
+    """
+    page = {
+        "pageid": 5,
+        "templates": [
+            {"title": "Template:PD-Layout"},
+            {"title": "Template:PD-user"},
+        ],
+    }
+
+    assert basis_templates(page) == (5, ("PD-user",))
+    assert basis_only(("PD-Layout", "PD-author")) == ("PD-author",)
+    # A file whose only PD template is the formatting one has no recorded basis.
+    assert basis_templates({"pageid": 6, "templates": [{"title": "Template:PD-Layout"}]}) == (6, ())
 
 
 def test_batches_are_folded_and_api_errors_surface() -> None:

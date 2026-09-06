@@ -44,6 +44,12 @@ UNGRANTED_LICENSES = frozenset({"Public domain"})
 # Template titles arrive namespaced. Anything under these prefixes states a
 # public-domain basis; everything else on a file page is layout and maintenance.
 BASIS_PREFIXES = ("PD-", "Public domain", "CC-zero", "Copyrighted free use")
+# …except these, which match the prefix but say nothing about why a file is free.
+# `PD-Layout` is Commons' own description: "table style formatting template meant
+# to provide uniform styles to different families of license templates", used
+# *inside* the real tags. Recording it as a basis would put presentation markup in
+# a rights field, where a reader would reasonably take it for an answer.
+NON_BASIS_TEMPLATES = frozenset({"PD-Layout", "PD-Layout/sandbox"})
 
 
 class LicenseTemplateError(RuntimeError):
@@ -114,6 +120,11 @@ def continuation_token(payload: object) -> str | None:
     return str(token) if token is not None else None
 
 
+def basis_only(names: tuple[str, ...]) -> tuple[str, ...]:
+    """Keep the templates that actually state a public-domain basis."""
+    return tuple(name for name in names if name not in NON_BASIS_TEMPLATES)
+
+
 def basis_templates(page: object) -> tuple[int, tuple[str, ...]] | None:
     """Extract the public-domain basis templates named on one file page."""
     if not isinstance(page, dict) or "pageid" not in page:
@@ -132,7 +143,7 @@ def basis_templates(page: object) -> tuple[int, tuple[str, ...]] | None:
         name = name or title
         if name.startswith(BASIS_PREFIXES):
             found.append(name)
-    return page_id, tuple(sorted(set(found)))
+    return page_id, basis_only(tuple(sorted(set(found))))
 
 
 def collect_templates(payloads: tuple[object, ...]) -> dict[str, tuple[str, ...]]:
