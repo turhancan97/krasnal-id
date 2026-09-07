@@ -10,6 +10,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-07
+
+The first accuracy improvement in this project that comes from method rather than data, and
+the test of whether it was real. Geometric verification on the top candidates lifts DINOv2 to
+94.0% and CLIP to 86.3%; withholding each query's own photographer shows the spectacular part
+of the evidence was near-duplicate confirmation while 79% of the gain was not.
+
 ### Added
 
 - Added `krasnal-id experiment rerank`, the first accuracy improvement in this project that comes
