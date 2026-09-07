@@ -506,6 +506,14 @@
       reference photographs, not fewer. It is still a lower bound, since every one is a Commons
       upload someone chose to take and share. A casual snapshot is harder again, and measuring that
       needs photographs nobody has taken yet.</span></div>
+      <div class="limit"><span><b>It partly recognises the photographer, not the statue.</b> Two
+      people took 67% of the reference photographs, and near-duplicates from a single visit were
+      never removed. Withhold a query's own photographer, against a control that removes the same
+      number of references at random, and <strong>CLIP &mdash; what runs on this page &mdash; loses
+      13.2 top-1 points</strong> where DINOv2 loses 2.6. Cross-photographer, CLIP identifies a
+      statue <strong>54.1%</strong> of the time against the 82.9% above. If the statue you
+      photograph is one Commons documents through a single contributor, that lower figure is the
+      one to expect.</span></div>
       <div class="limit"><span><b>There is no “I don't know”, and that is a measured result.</b> A
       statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate

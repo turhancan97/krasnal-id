@@ -689,7 +689,8 @@ are the open questions. Releases after `0.3.0` each close one of them: `0.4.0` o
 `0.5.0` the Commons-first rebuild, `0.6.0` derived coordinates, `0.7.0` the camera-origin gap.
 `0.8.0` builds the field-query path of §5.10, which does not close its question: it leaves it
 waiting on photographs rather than on code. `0.9.0` publishes the dataset per §5.11 and §5.12,
-which is a distribution milestone rather than a research one.
+which is a distribution milestone rather than a research one. `0.10.0` closes the
+photographer-disjoint question of §7.5.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

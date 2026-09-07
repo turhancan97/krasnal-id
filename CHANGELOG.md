@@ -10,6 +10,12 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-07
+
+Closes the photographer-disjoint question, and corrects the surfaces that were still
+describing it as unmeasured — including the demo page, which runs the backbone the finding
+hits hardest.
+
 ### Added
 
 - Added `krasnal-id experiment photographer-gap`, which answers the question `RESULTS.md` had been
@@ -40,6 +46,10 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- The published demo page now carries the cross-photographer figure in its limitations. It runs
+  CLIP and quotes 82.9%, where CLIP identifies a statue 54.1% of the time without the same
+  photographer's other photographs — the page a visitor actually uses was the last surface
+  still omitting a finding that `RESULTS.md` and the dataset card both carried.
 - The dataset card no longer says the accuracy is "inflated by an unmeasured amount". It gives the
   measurement, and adds the number a reader actually needs: **cross-photographer accuracy is 81.8%
   for DINOv2 and 54.1% for CLIP**, against headlines of 93.1% and 82.9%. The published demo runs

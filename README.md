@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.9.1**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.10.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -27,7 +27,8 @@ taking the geographic result from six statues in one installation to city-wide. 
 bound on the query-domain gap without fieldwork, using the 51 references that were themselves shot
 on phones. `0.8.0` built the path that measures it properly, so the only thing the question still
 waits on is photographs. `0.9.0` published the dataset itself, as a fine-grained instance-retrieval
-benchmark anyone can load.
+benchmark anyone can load. `0.10.0` asked whether the headline was recognising statues or
+photographers, and answered it: mostly statues for DINOv2, much less so for CLIP.
 
 The dataset is published at
 [turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
@@ -48,7 +49,8 @@ backbone, and the errors concentrate on families of near-identical statues. Thre
 similarity to answer "I don't know this one" worked at 23 classes and **does not** at 306 — one of
 three conclusions the larger dataset overturned. Queries shot on phones rather than cameras cost
 DINOv2 5.3 top-1 points and CLIP 15.6, which is a lower bound on what a real street photograph
-would cost.
+would cost. And identifying a statue from *someone else's* photograph costs DINOv2 2.6 points but
+CLIP 13.2 — CLIP leans on the photographer five times as hard.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
@@ -80,7 +82,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.1 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.10.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -126,7 +128,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.9.1 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.10.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 
