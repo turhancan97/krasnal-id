@@ -46,6 +46,10 @@ from krasnal_id.experiments.baseline_accuracy import (
 )
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.models import DatasetManifest, EvaluationSplit
+from krasnal_id.photographers import (
+    authors_by_image,
+    photographers_by_class,
+)
 
 STANDARD = "standard"
 DISJOINT = "disjoint"
@@ -85,34 +89,10 @@ class ConditionOutcome:
         return sum(1.0 / rank for rank in self.ranks) / len(self.ranks)
 
 
-def authors_by_image(manifest: DatasetManifest) -> dict[str, str]:
-    """Map each image to the photographer credited for it.
-
-    The `author` string is Commons' own `Artist` field, verbatim. It is not
-    normalised: one value credits a sculptor alongside the photographer, and
-    another is a username rather than a legal name. Treating two spellings as two
-    people would split a photographer's work and understate the leakage, so the
-    strings are compared exactly and the count of distinct values is reported for
-    a reader to judge.
-    """
-    return {image.image_id: image.author for image in manifest.images}
-
-
-def disjoint_references(
-    reference_image_ids: tuple[str, ...],
-    authors: dict[str, str],
-    photographer: str,
-) -> tuple[str, ...]:
-    """Return the references not taken by the query's own photographer."""
-    return tuple(image_id for image_id in reference_image_ids if authors[image_id] != photographer)
-
-
 def measure_coverage(manifest: DatasetManifest, split: EvaluationSplit) -> Coverage:
     """Count what this protocol can and cannot ask about."""
     authors = authors_by_image(manifest)
-    by_class: dict[str, set[str]] = {}
-    for image in manifest.images:
-        by_class.setdefault(image.dwarf_id, set()).add(image.author)
+    by_class = photographers_by_class(manifest)
 
     unanswerable = sum(
         1 for fold in split.folds if len(by_class.get(fold.query_dwarf_id, set())) < 2

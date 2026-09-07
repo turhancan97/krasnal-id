@@ -247,6 +247,11 @@ class RerankAblationConfig(BaseModel):
     # The blend weights swept. Zero is the unranked control and is required.
     weights: tuple[float, ...] = Field(min_length=1)
     top_k_metrics: tuple[int, ...] = Field(min_length=1)
+    # Run the sweep twice over the answerable queries — once on all references and
+    # once with the query's own photographer withheld — so the gain can be read
+    # against the regime that produced it. Section 7.6 needs this because its
+    # inlier separation is inflated by same-visit near-duplicates.
+    photographer_disjoint: bool = False
 
     @model_validator(mode="after")
     def validate_settings(self) -> "RerankAblationConfig":

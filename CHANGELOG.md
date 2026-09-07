@@ -29,12 +29,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 - Promotions and demotions are reported alongside the net. DINOv2's best weight fixes 19 queries
   and breaks 4; at twice that weight it fixes 20 and breaks 9 — the net barely moves while the
   churn doubles, and only the decomposition shows it.
-- Added `RESULTS.md` section 10 and `AGENTS.md` 7.6, both stating the two bounds: re-ranking cannot
-  rescue a statue the ranking never proposed (64 DINOv2 and 123 CLIP queries at k=10, so the
-  ceilings are 96.2% and 92.7%), and the measured inlier separation is inflated by the
-  near-duplicate leakage of §7.5, since a candidate's best-matching photograph is often one the
-  same photographer took on the same visit. Combining the two protocols is now a recorded open
-  question.
+- Added `experiment.photographer_disjoint`, which runs the sweep twice over the answerable queries
+  — once on all references, once with the query's own photographer withheld — and settles whether
+  the geometric gain was near-duplicate confirmation. **It was, for the evidence; it was not, for
+  the gain.** The inlier separation collapses from 58–64 against 4 down to **6 against 4**, so the
+  spectacular verification really was two frames from one visit. But **79% of the accuracy gain
+  survives for both backbones** — DINOv2 keeps +0.43 of +0.61, CLIP +2.94 of +3.72 — because the
+  blend is a tie-breaker on top of cosine rather than a replacement for it. Geometry does not need
+  to be decisive to help; it needs to be uncorrelated with the mistake the embedding is making.
+  CLIP cross-photographer goes from 54.1% to 57.0%.
+- Each arm keeps its own weight-zero control, since the disjoint arm's baseline is not the ordinary
+  one; comparing a disjoint gain against the standard baseline would be meaningless.
+- Extracted `krasnal_id.photographers`, because two experiments now need the same reference-
+  selection primitives and section 6 forbids one experiment importing another for shared logic —
+  the same reason `geometry` and `statistics` exist.
+- Added `RESULTS.md` section 10 and `AGENTS.md` 7.6, stating what now binds the result: in the
+  disjoint arm **recall**, not verification, is the limit. The correct statue never enters the top
+  10 for 107 DINOv2 and 288 CLIP queries, capping them at 90.8% and 75.1%, so raising `top_k` or
+  improving the first stage is worth more than better geometry.
 - Added a `rerank` extra (`opencv-python-headless`) and installed it in CI. SIFT rather than a
   learned matcher specifically so nothing downloads weights: the `ml` extra is kept out of CI for
   that reason, and this code would otherwise be the only pipeline stage never exercised there.

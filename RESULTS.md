@@ -448,12 +448,39 @@ from the candidate list for 64 DINOv2 queries and 123 CLIP queries, so the ceili
 and 92.7% respectively. CLIP reaches 86.3% of a possible 92.7%; most of its remaining error is now
 recall, not verification.
 
-**One caveat, and it is not small.** The inlier separation is enormous — a median of 119 for the
-correct statue against 4 for a wrong one — and part of that is the near-duplicate leakage section 9
-measured. A candidate's *best-matching* photograph is often one the same photographer took on the
-same visit, and two frames from one visit verify trivially. So some of this gain is geometry
-confirming a near-duplicate rather than recognising a sculpture. Running the sweep under the
-photographer-disjoint protocol of section 9 would separate the two, and has not been done.
+### The separation is near-duplicate confirmation. The gain mostly is not.
+
+The inlier separation above is enormous — a median of 119 for the correct statue against 4 for a
+wrong one — and the obvious worry is that it is section 9's leakage in another guise: a candidate's
+*best-matching* photograph is often one the same photographer took on the same visit, and two
+frames from one visit verify trivially. Running the sweep with each query's own photographer
+withheld separates the two. Over the 1,157 answerable queries:
+
+| | baseline | best blend | gain | median inliers, correct / wrong |
+|---|---|---|---|---|
+| DINOv2, all references | 94.21% | 94.81% | +0.61 | 58 / 4 |
+| DINOv2, photographer-disjoint | 81.85% | 82.28% | +0.43 | **6 / 4** |
+| CLIP, all references | 82.02% | 85.74% | +3.72 | 64 / 4 |
+| CLIP, photographer-disjoint | 54.11% | **57.04%** | **+2.94** | **6 / 4** |
+
+**The worry was half right.** The evidence really was mostly near-duplicate confirmation: the
+separation collapses from 58–64 inliers against 4 down to **6 against 4** once the photographer is
+gone. Almost all of that spectacular verification was two frames from one visit.
+
+**But the accuracy gain survives it.** DINOv2 keeps +0.43 of +0.61, CLIP +2.94 of +3.72 — **79% of
+the gain in both cases**, which is a suspiciously tidy agreement between two backbones that differ
+in everything else. A median of 6 inliers against 4 is a weak signal, and it turns out a weak
+signal is enough, because the blend is a tie-breaker on top of cosine rather than a replacement
+for it. Geometry does not have to be decisive to be useful; it has to be uncorrelated with the
+mistake the embedding is making.
+
+So re-ranking is worth having for a real user, whose photograph has no near-duplicate in the
+reference set by construction. **CLIP cross-photographer goes from 54.1% to 57.0%** — still poor,
+but the improvement is not an artifact.
+
+**Recall becomes the binding limit.** In the disjoint arm the correct statue never enters the top
+10 for 107 DINOv2 queries and 288 CLIP ones, capping them at 90.8% and 75.1%. CLIP reaches 57.0%
+of a possible 75.1%: raising k, or a better first stage, now matters more than better verification.
 
 ## Limitations
 

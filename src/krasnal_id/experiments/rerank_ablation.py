@@ -23,6 +23,7 @@ experiment rather than a tuning exercise:
   one that fixes two and breaks none, and the net accuracy hides the difference.
 """
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -38,6 +39,12 @@ from krasnal_id.experiments.baseline_accuracy import (
 )
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.models import DatasetManifest, EvaluationSplit
+from krasnal_id.photographers import (
+    authors_by_image,
+    disjoint_references,
+    is_answerable,
+    photographers_by_class,
+)
 from krasnal_id.retrieval.knn import cosine_knn
 from krasnal_id.retrieval.rerank import FeatureCache, blended_score, count_inliers
 
@@ -90,6 +97,9 @@ def collect_evidence(
     matrix: EmbeddingMatrix,
     cache: FeatureCache,
     top_k: int,
+    *,
+    photographer_disjoint: bool = False,
+    only_answerable: bool = False,
 ) -> tuple[QueryEvidence, ...]:
     """Rank globally, then verify the geometry of the top candidates.
 
@@ -101,18 +111,31 @@ def collect_evidence(
         raise RerankAblationError(f"re-ranking needs at least two candidates, got {top_k}")
 
     paths = {image.image_id: image.local_path for image in manifest.images}
+    authors = authors_by_image(manifest)
+    by_class = photographers_by_class(manifest)
     evidence: list[QueryEvidence] = []
 
     for fold in split.folds:
         query, truth = fold.query_image_id, fold.query_dwarf_id
-        vectors, dwarf_ids = matrix.rows_for(fold.reference_image_ids)
+        # Both arms score the same queries, so the two columns are comparable:
+        # the answerable subset is fixed by the dataset, not by the arm.
+        if (only_answerable or photographer_disjoint) and not is_answerable(truth, by_class):
+            continue
+
+        references = fold.reference_image_ids
+        if photographer_disjoint:
+            references = disjoint_references(references, authors, authors[query])
+        if not references:
+            continue
+
+        vectors, dwarf_ids = matrix.rows_for(references)
         ranked = cosine_knn(
             query,
             matrix.vector_for(query),
             vectors,
-            fold.reference_image_ids,
+            references,
             dwarf_ids,
-            top_k=len(fold.reference_image_ids),
+            top_k=len(references),
         )
 
         # Collapse to distinct statues, each represented by its best image, which
@@ -148,6 +171,30 @@ def collect_evidence(
             )
         )
     return tuple(evidence)
+
+
+def summarize_arms(
+    # A Mapping rather than a dict because it is only read, and dict's invariance
+    # would reject a caller's narrower value type for no benefit.
+    arms: Mapping[str, tuple[QueryEvidence, ...]],
+    truths: dict[str, str],
+    weights: tuple[float, ...],
+    cut_offs: tuple[int, ...],
+) -> tuple[MetricSummary, ...]:
+    """Report several reference regimes side by side, each with its own control.
+
+    Each arm keeps its own weight-zero control, so a gain is always read against
+    the same regime that produced it — the point of running the disjoint arm is
+    that its baseline is *not* the ordinary one.
+    """
+    metrics: list[MetricSummary] = []
+    for arm, evidence in arms.items():
+        prefix = f"{arm}_" if arm else ""
+        metrics.extend(
+            summary.model_copy(update={"name": f"{prefix}{summary.name}"})
+            for summary in summarize(evidence, truths, weights, cut_offs)
+        )
+    return tuple(metrics)
 
 
 def separation(evidence: tuple[QueryEvidence, ...]) -> tuple[float, float]:
@@ -251,15 +298,33 @@ def run_rerank_ablation(config: AppConfig) -> ExperimentResult:
             )
 
     cache = FeatureCache(config.experiment.max_keypoints)
-    evidence = collect_evidence(split, manifest, matrix, cache, config.experiment.top_k)
     truths = {fold.query_image_id: fold.query_dwarf_id for fold in split.folds}
+
+    if config.experiment.photographer_disjoint:
+        # Two arms over one query set. The features are described once and reused,
+        # so the second arm costs matching rather than detection.
+        arms = {
+            "all": collect_evidence(
+                split, manifest, matrix, cache, config.experiment.top_k, only_answerable=True
+            ),
+            "disjoint": collect_evidence(
+                split,
+                manifest,
+                matrix,
+                cache,
+                config.experiment.top_k,
+                photographer_disjoint=True,
+            ),
+        }
+    else:
+        arms = {"": collect_evidence(split, manifest, matrix, cache, config.experiment.top_k)}
 
     return ExperimentResult(
         experiment="rerank_ablation",
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
-        metrics=summarize(
-            evidence, truths, config.experiment.weights, config.experiment.top_k_metrics
+        metrics=summarize_arms(
+            arms, truths, config.experiment.weights, config.experiment.top_k_metrics
         ),
     )

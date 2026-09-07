@@ -27,6 +27,7 @@ from krasnal_id.experiments.rerank_ablation import (
     run_rerank_ablation,
     separation,
     summarize,
+    summarize_arms,
 )
 from krasnal_id.models import DatasetManifest
 from krasnal_id.retrieval.rerank import (
@@ -198,6 +199,76 @@ def test_evidence_is_gathered_for_the_top_candidates_only(tmp_path: Path) -> Non
         collect_evidence(split, manifest, matrix, FeatureCache(200), top_k=1)
 
 
+def _by_two_photographers(manifest: DatasetManifest) -> DatasetManifest:
+    """Credit each class's third image to a second photographer."""
+    return manifest.model_copy(
+        update={
+            "images": tuple(
+                image.model_copy(
+                    update={"author": "Bruno" if image.image_id.endswith("-2") else "Ada"}
+                )
+                for image in manifest.images
+            )
+        }
+    )
+
+
+def test_the_disjoint_arm_scores_the_same_queries_on_fewer_references(tmp_path: Path) -> None:
+    """Both arms must cover one query set, or the two columns are not comparable."""
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path))
+    seed_embedding_cache(tmp_path / "embeddings", manifest)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path / "embeddings")
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    cache = FeatureCache(200)
+
+    everything = collect_evidence(split, manifest, matrix, cache, top_k=2, only_answerable=True)
+    disjoint = collect_evidence(split, manifest, matrix, cache, top_k=2, photographer_disjoint=True)
+
+    # Every class has two photographers, so nothing is dropped and the arms match.
+    assert len(everything) == len(disjoint) == len(split.folds)
+    assert [e.query_image_id for e in everything] == [d.query_image_id for d in disjoint]
+    # Features are described once and reused across both arms.
+    assert len(cache) == len(manifest.images)
+
+
+def test_a_single_photographer_class_is_dropped_from_both_arms(tmp_path: Path) -> None:
+    manifest = _manifest_with_images(tmp_path)  # one shared author throughout
+    seed_embedding_cache(tmp_path / "embeddings", manifest)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path / "embeddings")
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+
+    disjoint = collect_evidence(
+        split, manifest, matrix, cache=FeatureCache(200), top_k=2, photographer_disjoint=True
+    )
+
+    # No class can be answered without its only photographer.
+    assert disjoint == ()
+
+
+def test_each_arm_keeps_its_own_control() -> None:
+    """A gain must be read against the regime that produced it.
+
+    The disjoint arm's baseline is not the ordinary one, so prefixing the metrics
+    per arm is what stops the two being compared to the wrong control.
+    """
+    truths = {"q1": "Q1"}
+    arms = {
+        "all": (QueryEvidence("q1", (Candidate("Q1", 0.9, 40, True),), baseline_rank=1),),
+        "disjoint": (QueryEvidence("q1", (Candidate("Q2", 0.7, 0, False),), baseline_rank=0),),
+    }
+
+    metrics = {m.name: m.value for m in summarize_arms(arms, truths, (0.0,), (1,))}
+
+    assert metrics["all_weight_0_top_1"] == 1.0
+    assert metrics["disjoint_weight_0_top_1"] == 0.0
+    assert metrics["all_median_inliers_correct"] == 40.0
+    assert metrics["disjoint_truth_outside_top_k"] == 1.0
+    # A single unnamed arm keeps the unprefixed names, so the existing artifacts
+    # and their schema are unchanged.
+    plain = {m.name for m in summarize_arms({"": arms["all"]}, truths, (0.0,), (1,))}
+    assert "weight_0_top_1" in plain
+
+
 def test_a_missing_photograph_stops_the_run(tmp_path: Path) -> None:
     """Geometry reads the pixels, so a vector-only dataset is not enough."""
     manifest = _manifest_with_images(tmp_path)
@@ -233,6 +304,8 @@ def test_packaged_defaults_are_usable() -> None:
     assert isinstance(experiment, RerankAblationConfig)
     assert 0.0 in experiment.weights, "the sweep is read against its own control"
     assert experiment.top_k >= 2
+    # Off by default: the composed protocol is a deliberate second run.
+    assert experiment.photographer_disjoint is False
     for broken, message in (
         ({"weights": (0.1,)}, r"must include weight 0\.0"),
         ({"weights": (0.0, -1.0)}, "cannot be negative"),

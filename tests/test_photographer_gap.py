@@ -19,13 +19,13 @@ from krasnal_id.experiments.photographer_gap import (
     ConditionOutcome,
     Coverage,
     PhotographerGapError,
-    disjoint_references,
     evaluate_conditions,
     measure_coverage,
     run_photographer_gap,
     summarize,
 )
 from krasnal_id.models import DatasetManifest
+from krasnal_id.photographers import disjoint_references
 
 runner = CliRunner()
 

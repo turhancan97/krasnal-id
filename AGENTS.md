@@ -699,12 +699,20 @@ top-10 candidates and blending that into the cosine similarity.
   doubles, and only the decomposition shows it.
 
 Two things bound the result. Re-ranking cannot rescue a statue the ranking never proposed, and at
-k=10 that is 64 DINOv2 queries and 123 CLIP ones, so the ceilings are 96.2% and 92.7% — most of
-CLIP's remaining error is now recall rather than verification. And the measured inlier separation
-(119 against 4) is inflated by the near-duplicate leakage of §7.5: a candidate's best-matching
-photograph is often one the same photographer took on the same visit, and two frames from one visit
-verify trivially. **Running this sweep under the photographer-disjoint protocol would separate
-geometry from that leakage, and has not been done.**
+k=10 that is 64 DINOv2 queries and 123 CLIP ones, so the ceilings are 96.2% and 92.7%.
+
+And the inlier separation is inflated by §7.5's leakage — **measured, not suspected**, by running
+the sweep with `experiment.photographer_disjoint=true`. The separation collapses from 58–64 inliers
+against 4 down to **6 against 4**, so the spectacular verification was largely two frames from one
+photographer's visit. **The accuracy gain nonetheless survives: 79% of it, for both backbones**
+(DINOv2 +0.43 of +0.61, CLIP +2.94 of +3.72). The lesson is that the blend is a tie-breaker rather
+than a replacement, so geometry does not need to be decisive to be useful — it needs to be
+uncorrelated with the mistake the embedding is making. The two-arm form is the reporting decision
+that makes this readable: each arm keeps its own weight-zero control, because the disjoint arm's
+baseline is not the ordinary one.
+
+In the disjoint arm recall becomes the binding limit rather than verification: the correct statue
+never enters the top 10 for 107 DINOv2 and 288 CLIP queries, capping them at 90.8% and 75.1%.
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
@@ -737,12 +745,13 @@ photographer-disjoint question of §7.5.
   `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation. Kaggle
   remains open and undecided: the same export directory would serve, but its metadata conventions
   differ and nothing has been built for them.
-- **Re-ranking under the photographer-disjoint protocol** — §7.6 gains 0.9 points for DINOv2 and
-  3.4 for CLIP, but its inlier separation (119 against 4) is inflated by the near-duplicate leakage
-  §7.5 measured: a candidate's best-matching photograph is often one the same photographer took on
-  the same visit, and two frames from one visit verify trivially. Combining the two protocols would
-  say how much of the gain is geometry recognising a sculpture rather than confirming a
-  near-duplicate. Both experiments exist; this is a composition of them.
+- ~~**Re-ranking under the photographer-disjoint protocol**~~ — done on 2026-09-07 as
+  `experiment rerank -oexperiment.photographer_disjoint=true`; see §7.6. The separation was mostly
+  near-duplicate confirmation, the gain mostly was not. What it leaves is a *recall* question:
+  withholding a photographer pushes the correct statue outside the top 10 for 288 of CLIP's 1,157
+  queries, so its ceiling there is 75.1% and it reaches 57.0%. Raising `top_k`, or a cheaper first
+  stage that recalls better, is now worth more than better verification — and neither has been
+  tried.
 - ~~**Photographer-disjoint evaluation**~~ — done on 2026-09-07 as
   `experiment photographer-gap`; see §7.5 and `RESULTS.md` section 9. Of DINOv2's 12.4-point drop
   when its own photographer is withheld, a size-matched random control pays 9.8, leaving **2.6
