@@ -391,6 +391,11 @@ expected ordering — DINOv2's self-supervised objective preserves instance-leve
 CLIP's language alignment pulls toward semantic categories, and every statue here *is* the same
 semantic category.
 
+Adding geometric verification on top — RANSAC inlier counts between the query and its top-10
+candidates, blended into the similarity — lifts DINOv2 to **94.0%** and CLIP to **86.3%**, gaining
+0.9 and 3.4 points. Geometry is worth four times as much to the weaker backbone, for the same
+reason the limitations below give.
+
 Four secondary results are worth knowing before using this data. A per-fold linear probe is
 worth nothing to DINOv2 and gains CLIP about three points — where retrieval is already strong,
 training is not the right tool. Proximity-based candidate pools lose to random pools of the same

@@ -411,6 +411,50 @@ correctly just **54.1%** of the time when it cannot lean on the same photographe
 photographs. A visitor photographing a statue that Commons documents through one contributor is
 much closer to that number than to the 82.9% the page reports.
 
+## 10. Does verifying geometry fix the lookalikes?
+
+Section 5 puts the errors on families of near-identical sculptures, and section 9 shows part of the
+ranking signal is the photographer's style rather than the statue's shape. Both say the same thing:
+a whole-image embedding compares *appearance*, and appearance is what these families share.
+Matching keypoints and fitting a homography compares *geometry*, which they do not.
+
+`experiment rerank` takes the global top-10 candidates, counts RANSAC inliers between the query and
+each candidate's best-matching photograph, and blends that count into the cosine similarity. The
+blend weight is swept, and **weight zero is the control**: it must reproduce the unranked baseline
+exactly, and it does, to the digit — 93.14% for DINOv2 either way. Without that check the rest of
+the sweep would not be readable as a difference.
+
+| Blend weight | DINOv2 top-1 | promoted / demoted | CLIP top-1 | promoted / demoted |
+|---|---|---|---|---|
+| 0 (control) | 93.14% | — | 82.91% | — |
+| 0.01 | 93.32% | +3 / −0 | 84.68% | +32 / −2 |
+| 0.02 | 93.55% | +7 / −0 | 85.39% | +47 / −5 |
+| 0.05 | 93.67% | +13 / −4 | **86.34%** | +70 / −12 |
+| 0.1 | **94.03%** | +19 / −4 | 86.16% | +79 / −24 |
+| 0.2 | 93.79% | +20 / −9 | 85.39% | +87 / −45 |
+
+**Geometry helps, and it helps the weaker backbone four times as much.** DINOv2 gains **0.9 top-1
+points** at its best weight, CLIP **3.4**. That is the same asymmetry section 9 found from the
+other side: CLIP leans on appearance, so supplying it with shape evidence is worth more. MRR moves
+with it — 0.9419 to 0.9478 for DINOv2, 0.8640 to 0.8860 for CLIP.
+
+The sweep is reported with promotions and demotions rather than only the net, because they are
+different results. At its best weight DINOv2 fixes 19 queries and breaks 4; push the weight to 0.2
+and it fixes 20 but breaks 9. The net barely moves while the churn doubles, which is what a blend
+weight past its useful range looks like.
+
+**Re-ranking cannot fix what the ranking never proposed.** With k=10, the correct statue is absent
+from the candidate list for 64 DINOv2 queries and 123 CLIP queries, so the ceiling here is 96.2%
+and 92.7% respectively. CLIP reaches 86.3% of a possible 92.7%; most of its remaining error is now
+recall, not verification.
+
+**One caveat, and it is not small.** The inlier separation is enormous — a median of 119 for the
+correct statue against 4 for a wrong one — and part of that is the near-duplicate leakage section 9
+measured. A candidate's *best-matching* photograph is often one the same photographer took on the
+same visit, and two frames from one visit verify trivially. So some of this gain is geometry
+confirming a near-duplicate rather than recognising a sculpture. Running the sweep under the
+photographer-disjoint protocol of section 9 would separate the two, and has not been done.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,

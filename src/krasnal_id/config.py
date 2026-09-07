@@ -232,6 +232,34 @@ class PhotographerGapConfig(BaseModel):
         return self
 
 
+class RerankAblationConfig(BaseModel):
+    """Geometric re-ranking sweep settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["rerank_ablation"]
+    seed: int
+    # How many distinct statues from the global ranking get their geometry
+    # checked. A homography per candidate costs milliseconds against a dot
+    # product's microseconds, so it is spent only where the ranking is uncertain.
+    top_k: int = Field(ge=2)
+    max_keypoints: int = Field(ge=16)
+    # The blend weights swept. Zero is the unranked control and is required.
+    weights: tuple[float, ...] = Field(min_length=1)
+    top_k_metrics: tuple[int, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "RerankAblationConfig":
+        """Require the control weight, non-negative weights and positive cut-offs."""
+        if any(weight < 0.0 for weight in self.weights):
+            raise ValueError("blend weights cannot be negative")
+        if 0.0 not in self.weights:
+            raise ValueError("the sweep must include weight 0.0, the unranked control")
+        if any(k <= 0 for k in self.top_k_metrics):
+            raise ValueError("top_k_metrics values must be positive")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -261,6 +289,7 @@ ExperimentConfig = Annotated[
     | CameraGapExperimentConfig
     | FieldGapExperimentConfig
     | PhotographerGapConfig
+    | RerankAblationConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

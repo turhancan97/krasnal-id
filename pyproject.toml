@@ -52,6 +52,9 @@ hf = [
     "pyarrow==22.0.0",
     "pyyaml==6.0.3",
 ]
+rerank = [
+    "opencv-python-headless>=5.0.0.93",
+]
 
 [project.scripts]
 krasnal-id = "krasnal_id.cli:app"
@@ -90,7 +93,7 @@ files = ["src/krasnal_id", "tests"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["datasets.*", "huggingface_hub.*", "pyarrow.*"]
+module = ["cv2.*", "datasets.*", "huggingface_hub.*", "pyarrow.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

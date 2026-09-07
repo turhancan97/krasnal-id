@@ -10,6 +10,35 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `krasnal-id experiment rerank`, the first accuracy improvement in this project that comes
+  from method rather than data. Counting RANSAC inliers between a query and each of its global
+  top-10 candidates, and blending that into the cosine similarity, lifts DINOv2 from 93.1% to
+  **94.0%** and CLIP from 82.9% to **86.3%**. Geometry is worth four times as much to CLIP, which
+  is the same asymmetry the photographer-disjoint result found from the other side: CLIP leans on
+  appearance, so supplying it with shape evidence is worth more.
+- Weight zero in the sweep is a control rather than a setting, and it is checked rather than
+  assumed — it reproduces the unranked baseline to the digit (93.14%). Ties in the blended score
+  break by the global order, which is what makes that hold; without it the control would shuffle
+  equal scores and no other column in the sweep would be readable as a difference.
+- Geometry is blended into the similarity and never substituted for it, because a pilot over
+  sampled pairs found the inlier distributions overlap and some correct pairs verify at zero.
+  Sorting by inliers alone would demote correct answers that photograph badly. The inlier count is
+  capped, so one spectacular match cannot dominate a score.
+- Promotions and demotions are reported alongside the net. DINOv2's best weight fixes 19 queries
+  and breaks 4; at twice that weight it fixes 20 and breaks 9 — the net barely moves while the
+  churn doubles, and only the decomposition shows it.
+- Added `RESULTS.md` section 10 and `AGENTS.md` 7.6, both stating the two bounds: re-ranking cannot
+  rescue a statue the ranking never proposed (64 DINOv2 and 123 CLIP queries at k=10, so the
+  ceilings are 96.2% and 92.7%), and the measured inlier separation is inflated by the
+  near-duplicate leakage of §7.5, since a candidate's best-matching photograph is often one the
+  same photographer took on the same visit. Combining the two protocols is now a recorded open
+  question.
+- Added a `rerank` extra (`opencv-python-headless`) and installed it in CI. SIFT rather than a
+  learned matcher specifically so nothing downloads weights: the `ml` extra is kept out of CI for
+  that reason, and this code would otherwise be the only pipeline stage never exercised there.
+
 ## [0.10.0] - 2026-09-07
 
 Closes the photographer-disjoint question, and corrects the surfaces that were still

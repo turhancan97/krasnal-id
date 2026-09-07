@@ -674,6 +674,38 @@ at instances" into something mechanical — CLIP's language alignment pulls towa
 style, which is what covaries with who held the camera. It also has a product consequence, since
 the published demo runs CLIP: 54.1% cross-photographer against the 82.9% the page reports.
 
+### 7.6 Geometric re-ranking result (2026-09-07)
+
+The first accuracy improvement in the project that comes from method rather than data. DINOv2 gains
+0.9 top-1 points and CLIP 3.4, by counting RANSAC inliers between a query and each of the global
+top-10 candidates and blending that into the cosine similarity.
+
+- **SIFT, not a learned detector.** SuperPoint or LoFTR would match better under viewpoint change,
+  but both download weights, and §10's CI rule keeps the `ml` extra out for exactly that reason —
+  the re-ranking code would then be the only pipeline stage never exercised in CI. `opencv-python-headless`
+  in a new `rerank` extra downloads nothing, so CI runs it. If a learned matcher is ever tried, it
+  belongs behind the same interface and in `ml`.
+- **Geometry is blended into the similarity, never substituted for it.** A pilot over sampled pairs
+  gave a median of 10 inliers for the same statue against 4 for a different one — real separation,
+  overlapping distributions, and some correct pairs verifying at zero. Sorting by inliers alone
+  would demote correct answers that photograph badly. The blend also caps the inlier count at 30,
+  so one spectacular match cannot dominate.
+- **Weight zero is a control, and it is checked rather than assumed.** It reproduces the unranked
+  baseline to the digit (93.14%). Ties in the blended score break by the global order, which is
+  what makes that hold; without it the control would shuffle equal scores and every other column
+  would be unreadable.
+- **Promotions and demotions are reported, not just the net.** DINOv2's best weight fixes 19 and
+  breaks 4; at twice that weight it fixes 20 and breaks 9. The net barely moves while the churn
+  doubles, and only the decomposition shows it.
+
+Two things bound the result. Re-ranking cannot rescue a statue the ranking never proposed, and at
+k=10 that is 64 DINOv2 queries and 123 CLIP ones, so the ceilings are 96.2% and 92.7% — most of
+CLIP's remaining error is now recall rather than verification. And the measured inlier separation
+(119 against 4) is inflated by the near-duplicate leakage of §7.5: a candidate's best-matching
+photograph is often one the same photographer took on the same visit, and two frames from one visit
+verify trivially. **Running this sweep under the photographer-disjoint protocol would separate
+geometry from that leakage, and has not been done.**
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -705,6 +737,12 @@ photographer-disjoint question of §7.5.
   `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation. Kaggle
   remains open and undecided: the same export directory would serve, but its metadata conventions
   differ and nothing has been built for them.
+- **Re-ranking under the photographer-disjoint protocol** — §7.6 gains 0.9 points for DINOv2 and
+  3.4 for CLIP, but its inlier separation (119 against 4) is inflated by the near-duplicate leakage
+  §7.5 measured: a candidate's best-matching photograph is often one the same photographer took on
+  the same visit, and two frames from one visit verify trivially. Combining the two protocols would
+  say how much of the gain is geometry recognising a sculpture rather than confirming a
+  near-duplicate. Both experiments exist; this is a composition of them.
 - ~~**Photographer-disjoint evaluation**~~ — done on 2026-09-07 as
   `experiment photographer-gap`; see §7.5 and `RESULTS.md` section 9. Of DINOv2's 12.4-point drop
   when its own photographer is withheld, a size-matched random control pays 9.8, leaving **2.6
@@ -782,6 +820,7 @@ krasnal-id/
 │   │   └── store.py           # manifest-ordered access for evaluation code
 │   ├── retrieval/
 │   │   ├── knn.py
+│   │   ├── rerank.py          # SIFT + RANSAC verification of the top candidates
 │   │   └── query.py           # single-image retrieval against the reference set
 │   ├── experiments/
 │   │   ├── contracts.py       # serializable result schemas
@@ -794,6 +833,7 @@ krasnal-id/
 │   │   ├── open_set.py        # unknown-query rejection
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
 │   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
+│   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan

@@ -83,6 +83,7 @@ from krasnal_id.experiments.photographer_gap import (
 )
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
+from krasnal_id.experiments.rerank_ablation import RerankAblationError, run_rerank_ablation
 from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
 from krasnal_id.export.push import PushConfigurationError, PushError, push_export
 from krasnal_id.logging import configure_logging
@@ -93,6 +94,7 @@ from krasnal_id.models import (
     FetchAuditDisposition,
 )
 from krasnal_id.retrieval.query import QueryError, retrieve_image
+from krasnal_id.retrieval.rerank import RerankError
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 from krasnal_id.viz.open_set_plot import create_open_set_plot
@@ -855,6 +857,35 @@ def photographer_gap_experiment(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Photographer gap complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("rerank")
+def rerank_experiment(override: OverrideOption = None) -> None:
+    """Sweep how much geometric verification adds to the global ranking."""
+    config = load_config(["experiment=rerank_ablation", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_rerank_ablation(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        RerankAblationError,
+        RerankError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Re-ranking error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Re-ranking complete: backbone={result.backbone} result={path}")
     for metric in result.metrics:
         if metric.lower_bound is None or metric.upper_bound is None:
             typer.echo(f"  {metric.name}: {metric.value:+.4f}")
