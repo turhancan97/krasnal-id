@@ -31,6 +31,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   the attributable gap: the disjoint arm ends up with a median 252 candidate classes against the
   control's 305, which by the pool-size result is an easier pool, and it still lost.
 
+- Added a **Personal and sensitive information** section to the dataset card, which had none. The
+  dataset documents sculpture rather than people, but these are street photographs, so passers-by
+  may appear incidentally and may be identifiable; no face detection was applied and the frequency
+  was not measured. The section says so, notes that EXIF is absent from the 1,538 re-encoded files
+  and that the coordinates are camera positions already public on Commons, and extends the removal
+  path to anyone who appears in a photograph.
+
 ### Changed
 
 - The dataset card no longer says the accuracy is "inflated by an unmeasured amount". It gives the

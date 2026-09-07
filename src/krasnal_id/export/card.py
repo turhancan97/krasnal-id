@@ -445,6 +445,23 @@ permissive = images.filter(lambda row: row["license_spdx"] in {{"CC0-1.0", "CC-B
 
 No further terms are imposed here, and none may be added by anyone redistributing it.
 
+## Personal and sensitive information
+
+The dataset documents public sculpture, not people, and no photograph was selected for the
+people in it. But these are photographs taken in city streets, so **passers-by may appear
+incidentally** and may be identifiable. No face detection or blurring was applied, and the
+frequency was not measured. Every file was already publicly hosted on Wikimedia Commons before
+inclusion here, and each carries the Commons page it came from.
+
+The EXIF of the {facts.modified:,} re-encoded files was not preserved, so the photographers'
+camera serial numbers and GPS traces are absent from them; the {facts.unmodified:,} untouched
+files retain whatever EXIF Commons holds. Per-photograph coordinates in the metadata are
+*camera positions* recorded by Commons, already public there, and are used to locate statues
+rather than photographers.
+
+If you appear in one of these photographs and want it removed, the removal path below applies
+to you as much as to a rights-holder, and no legal argument is required.
+
 ## Depicted works and freedom of panorama
 
 The statues are contemporary sculptures by living artists, protected by copyright independently
