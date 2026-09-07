@@ -211,6 +211,27 @@ class FieldGapExperimentConfig(BaseModel):
         return self
 
 
+class PhotographerGapConfig(BaseModel):
+    """Photographer-disjoint evaluation settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["photographer_gap"]
+    # Several seeds because the size-matched control samples its reference set,
+    # and one draw of it would not show how much the sampling itself moves.
+    seeds: tuple[int, ...] = Field(min_length=1)
+    top_k: tuple[int, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "PhotographerGapConfig":
+        """Require positive cut-offs and distinct seeds."""
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        if len(set(self.seeds)) != len(self.seeds):
+            raise ValueError("seeds cannot contain duplicates")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -239,6 +260,7 @@ ExperimentConfig = Annotated[
     | OpenSetExperimentConfig
     | CameraGapExperimentConfig
     | FieldGapExperimentConfig
+    | PhotographerGapConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

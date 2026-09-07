@@ -77,6 +77,10 @@ from krasnal_id.experiments.confusion_analysis import (
 from krasnal_id.experiments.field_gap import FieldGapError, run_field_gap
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
+from krasnal_id.experiments.photographer_gap import (
+    PhotographerGapError,
+    run_photographer_gap,
+)
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
 from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
@@ -831,6 +835,34 @@ def field_gap_experiment(override: OverrideOption = None) -> None:
             f"{row.commons_top_1_hits} of {row.commons_queries} Commons queries, "
             f"mean rank {row.field_mean_rank:.1f}"
         )
+
+
+@experiment_app.command("photographer-gap")
+def photographer_gap_experiment(override: OverrideOption = None) -> None:
+    """Measure how much accuracy survives changing the photographer."""
+    config = load_config(["experiment=photographer_gap", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_photographer_gap(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        PhotographerGapError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Photographer gap error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Photographer gap complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
 
 
 @experiment_app.command("confusion")

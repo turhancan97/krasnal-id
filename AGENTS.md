@@ -645,6 +645,35 @@ themed installation.
   radii a phone-based tool would use. Never quote the random curve as a proxy for a location-aware
   system at small pool sizes.
 
+### 7.5 Photographer-disjoint result (2026-09-07)
+
+`RESULTS.md` said the headline was "inflated by an unmeasured amount". It is inflated by 2.6
+points for DINOv2 and 13.2 for CLIP. Three decisions made that measurable rather than merely
+suggestive, and each is the difference between a number and a headline.
+
+- **The gap is decomposed against a size-matched random control, never reported whole.**
+  Withholding a photographer removes distractors too, and §7.3's finding is that accuracy *rises*
+  as the pool shrinks — so the disjoint arm gets an unearned boost that would mask the penalty.
+  Each query is also scored against the same number of references, including the same number of
+  correct ones, drawn at random over five seeds. The raw drop is 12.4 points for DINOv2; the
+  control pays 9.8 of them. Reporting 12.4 as photographer leakage would have overstated it
+  fivefold. The geographic arm answers its question the same way, for the same reason.
+- **Unanswerable queries are excluded and counted, not scored as failures.** 125 of 306 classes
+  have one photographer, so 534 queries have no correct reference at all under this protocol.
+  Counting them wrong would measure the dataset's coverage and report it as the model's weakness.
+  The reported rates cover the 1,157 answerable queries, and both counts are in the artifact.
+- **The result is stated as a lower bound on the attributable gap.** The disjoint arm ends with a
+  median 252 candidate classes against the control's 305, because withholding a photographer
+  removes whole classes — by §7.3 an easier pool, and it still lost. And `author` is Commons'
+  free-text field compared exactly, so one contributor spelling their name two ways is two people
+  and some of their own work stays in the reference set.
+
+The finding worth carrying forward is the *ratio*, not either number: **CLIP leans on the
+photographer five times as hard as DINOv2**. That sharpens §7.3's ordering from "DINOv2 is better
+at instances" into something mechanical — CLIP's language alignment pulls toward appearance and
+style, which is what covaries with who held the camera. It also has a product consequence, since
+the published demo runs CLIP: 54.1% cross-photographer against the 82.9% the page reports.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -675,12 +704,13 @@ which is a distribution milestone rather than a research one.
   `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation. Kaggle
   remains open and undecided: the same export directory would serve, but its metadata conventions
   differ and nothing has been built for them.
-- **Photographer-disjoint evaluation** — 122 photographers contributed, but two of them took
-  67.4% of the corpus, and near-duplicates from a single visit were never removed. A method can
-  therefore score partly by recognising a photographer's camera and processing rather than the
-  statue, which means 93.1% is inflated by an unmeasured amount. Scoring each query only against
-  references by *other* photographers would bound it. This is the most consequential unmeasured
-  thing in the dataset and it was found while writing the dataset card.
+- ~~**Photographer-disjoint evaluation**~~ — done on 2026-09-07 as
+  `experiment photographer-gap`; see §7.5 and `RESULTS.md` section 9. Of DINOv2's 12.4-point drop
+  when its own photographer is withheld, a size-matched random control pays 9.8, leaving **2.6
+  points attributable to the photographer**; CLIP's is 13.2. What it leaves open is *coverage*
+  rather than leakage: 125 of 306 classes have a single photographer, so 534 of the 1,691 queries
+  cannot be asked cross-photographer at all. Shrinking that fraction needs more contributors per
+  statue, which is a data question, and the field photographs of §5.8 would each add one.
 - ~~**A larger pool**~~ — done on 2026-09-04 as the Commons-first rebuild of §5.6, which took the
   pool from 23 classes to 306 and overturned three conclusions the small pool had supported; see
   §7.3 and `RESULTS.md` section 7. What it leaves is a *data* question rather than a research one:
@@ -762,6 +792,7 @@ krasnal-id/
 │   │   ├── confusion_analysis.py
 │   │   ├── open_set.py        # unknown-query rejection
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
+│   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan

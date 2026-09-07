@@ -391,12 +391,13 @@ expected ordering — DINOv2's self-supervised objective preserves instance-leve
 CLIP's language alignment pulls toward semantic categories, and every statue here *is* the same
 semantic category.
 
-Three secondary results are worth knowing before using this data. A per-fold linear probe is
+Four secondary results are worth knowing before using this data. A per-fold linear probe is
 worth nothing to DINOv2 and gains CLIP about three points — where retrieval is already strong,
 training is not the right tool. Proximity-based candidate pools lose to random pools of the same
-size at every radius measured. And thresholding similarity for open-set rejection does **not**
+size at every radius measured. Thresholding similarity for open-set rejection does **not**
 survive the larger pool: it worked at 23 classes and does not at {facts.classes:,}, which retracts
-a positive result an earlier version of this project published.
+a positive result an earlier version of this project published. And identifying a statue from
+*somebody else's* photograph is much harder than the headline suggests — see the limitations.
 
 ## Configurations
 
@@ -471,12 +472,18 @@ folds, embeddings and credit files are regenerated, and a new revision is pushed
   photographs that were themselves shot on phones as a proxy, DINOv2 loses 5.3 top-1 points and
   CLIP 15.6 — and that is a *lower* bound, since those are still Commons uploads. Treat 93.1% as
   a ceiling a phone-camera application will not reach.
-- **The corpus is concentrated in few hands.** {facts.photographers:,} photographers contributed,
-  but {first[0]} took {first[1]:,} photographs and {second[0]} took {second[1]:,} — together
-  {concentration:.1f}% of the dataset. Near-duplicates from a single visit to a statue were not
-  removed, so a method can score partly by recognising a photographer's camera, distance and
-  processing rather than the statue. This likely inflates the reported accuracy by an unmeasured
-  amount, and a photographer-disjoint protocol would be needed to bound it.
+- **The corpus is concentrated in few hands, and it costs a measurable amount.**
+  {facts.photographers:,} photographers contributed, but {first[0]} took {first[1]:,} photographs
+  and {second[0]} took {second[1]:,} — together {concentration:.1f}% of the dataset.
+  Near-duplicates from a single visit were never removed, so a method can score partly by
+  recognising a camera and a processing style rather than a statue. Withholding each query's own
+  photographer and comparing against a size-matched random control puts the part attributable to
+  the photographer at **2.6 top-1 points for DINOv2 and 13.2 for CLIP** — so the headline is
+  inflated, modestly for DINOv2 and substantially for CLIP. Two further caveats follow from the
+  same concentration: **125 of the 306 classes have a single photographer**, so a third of the
+  dataset cannot be evaluated cross-photographer at all, and cross-photographer accuracy is far
+  below the headline — 81.8% for DINOv2 and **54.1% for CLIP**. If your use case means matching a
+  photograph against references somebody else took, those are the numbers to plan around.
 - **Most coordinates are derived, not stated.** {facts.derived_positions:,} of the {facts.placed:,}
   placed statues are located from where photographers stood rather than from a Wikidata `P625`
   statement; validated against the classes that have both, the median error is 9 m.

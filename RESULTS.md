@@ -356,6 +356,61 @@ angle, passers-by, whatever light was available — is a harder query than anyth
 What this establishes is that the domain gap is real and that CLIP suffers it far worse, which
 also means the published demo, which runs CLIP, is the version most exposed to it.
 
+## 9. Is it recognising the statue, or the photographer?
+
+122 people took these 1,691 photographs, but **two of them took 67.4%** — Pnapora 715, Fallaner
+424. Byte-identical cross-label duplicates were removed; near-duplicates from one photographer's
+single visit to a statue were not. So a leave-one-out query is often only near-duplicate-distant
+from one of its own references, and a method could score by recognising a camera, a distance and a
+processing style rather than a sculpture.
+
+`experiment photographer-gap` withholds every image by the query's own photographer, so the
+correct statue can only be matched through somebody else's photograph.
+
+**Two thirds of the pool cannot be asked.** 125 of the 306 classes have a single photographer, and
+under this protocol their 534 queries are not hard but *unanswerable*: no correct reference exists
+at all. They are excluded and counted rather than scored as failures, which would measure the
+dataset's coverage and call it the model's weakness. The remaining **1,157 queries** are what this
+section reports, and they score slightly higher than the whole set under the ordinary protocol
+(94.2% against 93.1% for DINOv2) because a class with two photographers tends to be a
+better-photographed class.
+
+**The gap has to be decomposed, or it means nothing.** Withholding a photographer also removes
+distractors — and section 2's whole finding is that accuracy *rises* as the pool shrinks, so the
+disjoint arm gets an unearned boost that would mask the very penalty being measured. Each query is
+therefore also scored against a **size-matched random control**: the same number of references,
+including the same number of correct ones, drawn at random over five seeds.
+
+| | DINOv2 | CLIP |
+|---|---|---|
+| Standard leave-one-out | 94.2% [92.7, 95.4] | 82.0% [79.7, 84.1] |
+| Size-matched random control | 84.5% [83.5, 85.4] | 67.3% [66.1, 68.5] |
+| Photographer-disjoint | 81.8% [79.5, 84.0] | 54.1% [51.2, 57.0] |
+| **Total drop** | **−12.4** | **−27.9** |
+| **Attributable to the photographer** | **−2.6** | **−13.2** |
+
+**DINOv2's headline is mostly not photographer leakage.** Of its 12.4-point drop, 9.8 points are
+the cost of simply having fewer references — the random control pays that too — leaving **2.6
+points** attributable to the photographer's identity. So 93.1% is inflated, but by a couple of
+points, not by the double digits the concentration of the corpus might suggest.
+
+**CLIP leans on the photographer five times as hard**: 13.2 points against DINOv2's 2.6. That fits
+the ordering section 1 found and sharpens it. DINOv2's self-supervised objective preserves
+instance-level detail, so it is looking at the statue; CLIP's language alignment pulls toward
+appearance and style, which is exactly what covaries with who held the camera.
+
+Two things make these figures a **lower** bound on the attributable gap rather than an estimate of
+it. The disjoint arm ends up with a median of 252 candidate classes against the control's 305,
+because withholding a photographer removes whole classes from contention — by section 2's logic a
+54-class-smaller pool is *easier*, and the disjoint arm still lost. And `author` is Commons' own
+free-text field, compared exactly: one photographer using two spellings is counted as two people,
+which leaves some of their own work in the reference set.
+
+**What this means for the demo.** The published page runs CLIP, and CLIP identifies a statue
+correctly just **54.1%** of the time when it cannot lean on the same photographer's other
+photographs. A visitor photographing a statue that Commons documents through one contributor is
+much closer to that number than to the 82.9% the page reports.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
@@ -372,14 +427,13 @@ also means the published demo, which runs CLIP, is the version most exposed to i
   byte-identical, so the duplicate guard does not catch them, and they duly appear in the confusion
   pairs. Two of 306 is a small effect, but it is a real one and it is not the model's fault.
 - **Two photographers took two-thirds of the photographs.** 122 people contributed, but Pnapora
-  uploaded 715 images (42.3%) and Fallaner 424 (25.1%) — 67.4% between them. Byte-identical
-  cross-label duplicates were removed, but near-duplicates from one photographer's single visit to
-  a statue were not, so a leave-one-out query is often only near-duplicate-distant from its own
-  reference. A method can score partly by recognising a photographer's camera, distance and
-  processing rather than the statue itself, which means **93.1% is inflated by an unmeasured
-  amount**. Bounding it needs a photographer-disjoint protocol — scoring each query only against
-  references by other photographers — which has not been run. This is the largest unmeasured
-  effect in the work after the query-domain gap.
+  uploaded 715 images (42.3%) and Fallaner 424 (25.1%) — 67.4% between them, and near-duplicates
+  from a single visit were never removed. Section 9 measures what that costs: on the 1,157 queries
+  the protocol can ask about, **2.6 top-1 points of DINOv2's accuracy are attributable to the
+  photographer** rather than the statue, and 13.2 points of CLIP's. So the headline is inflated,
+  but modestly for the backbone the headline uses. The concentration still bites elsewhere: 125 of
+  306 classes have a single photographer, so a third of the dataset cannot be evaluated
+  cross-photographer at all.
 - **Class sizes are uneven.** The median class has 4 images and the largest 31, so a handful of
   well-photographed statues carry disproportionate weight in the query set.
 - **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is

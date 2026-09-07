@@ -10,6 +10,35 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `krasnal-id experiment photographer-gap`, which answers the question `RESULTS.md` had been
+  calling unmeasured. Two photographers took 67.4% of the corpus and same-visit near-duplicates
+  were never removed, so the headline could have been the model recognising a camera rather than a
+  statue. Withholding each query's own photographer costs DINOv2 12.4 top-1 points — but a
+  **size-matched random control pays 9.8 of them**, so only **2.6 points are attributable to the
+  photographer**. CLIP's attributable gap is **13.2**, five times DINOv2's, which sharpens the
+  existing ordering into a mechanism: CLIP's language alignment pulls toward appearance and style,
+  and that is what covaries with who held the camera.
+- The control arm is what makes the number mean anything, and it exists because this project's own
+  headline finding is that accuracy rises as the pool shrinks: withholding a photographer removes
+  distractors too, so an undecomposed drop would have overstated the leakage fivefold.
+- Unanswerable queries are excluded and counted rather than scored as failures. **125 of the 306
+  classes have a single photographer**, so 534 of the 1,691 queries have no correct reference at
+  all under this protocol; counting them wrong would measure the dataset's coverage and report it
+  as the model's weakness. The rates cover the 1,157 that can be asked.
+- Added `RESULTS.md` section 9 and `AGENTS.md` 7.5, both stating the figures as a *lower* bound on
+  the attributable gap: the disjoint arm ends up with a median 252 candidate classes against the
+  control's 305, which by the pool-size result is an easier pool, and it still lost.
+
+### Changed
+
+- The dataset card no longer says the accuracy is "inflated by an unmeasured amount". It gives the
+  measurement, and adds the number a reader actually needs: **cross-photographer accuracy is 81.8%
+  for DINOv2 and 54.1% for CLIP**, against headlines of 93.1% and 82.9%. The published demo runs
+  CLIP, so a visitor photographing a statue Commons documents through one contributor is closer to
+  54% than to 83%.
+
 ## [0.9.1] - 2026-09-06
 
 Cut so the Zenodo record has correct metadata. The `v0.9.0` tag predated
