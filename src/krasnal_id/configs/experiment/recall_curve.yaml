@@ -1,0 +1,6 @@
+kind: recall_curve
+seed: ${seeds.primary}
+top_k: [1, 5, 10, 20, 50, 100, 306]
+fuse_backbones: [dinov2, clip]
+expansion_neighbours: [2, 3, 5]
+expansion_alpha: 3.0

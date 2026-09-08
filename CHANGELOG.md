@@ -10,6 +10,31 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Added `krasnal-id experiment recall`, which measures re-ranking's ceiling and tests three
+  standard ways of raising it. **All three fail**, and the failures are the finding:
+  - **Verifying 50 candidates instead of 10 buys 0.18 points** (CLIP disjoint, 57.04% to 57.22%),
+    and is *worse* than k=10 at higher blend weights. The 10.6 points of headroom between k=10 and
+    k=50 are not convertible because the failures are correlated — the ranking loses the statue on
+    hard queries and geometry is weak on those same queries.
+  - **Fusing the backbones does not beat the better one**: 79.6% at r@1 against DINOv2's 81.8%
+    alone. Two models that fail on the same lookalike families do not decorrelate by averaging.
+  - **Query expansion hurts by 7 points** for CLIP at r@10, and worsens with more neighbours. It
+    assumes the top results are mostly right; at 54% precision they are near-identical statues, so
+    the expanded query moves onto its own confuser. A technique that is standard elsewhere is
+    harmful on a fine-grained set whose errors are lookalikes.
+- The experiment reads cached vectors and no photographs, so it runs in seconds and can be
+  consulted *before* a verification sweep that takes forty minutes — which is the order to run them
+  in. Three arms (`full`, `answerable`, `disjoint`) line the columns up with the whole-dataset
+  figures of section 2 and the answerable subset of sections 9 and 10, rather than leaving a reader
+  to reconcile them.
+- Added `RESULTS.md` section 11 and `AGENTS.md` 7.7. The conclusion is that the bottleneck is the
+  representation rather than the amount of it searched, and that it belongs to one backbone:
+  **DINOv2's first guess cross-photographer beats CLIP's tenth**. CLIP is in the project only
+  because the browser demo needs a small model, so a distilled or quantised DINOv2 is now a
+  recorded open question.
+
 ## [0.11.0] - 2026-09-07
 
 The first accuracy improvement in this project that comes from method rather than data, and

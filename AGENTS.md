@@ -714,6 +714,38 @@ baseline is not the ordinary one.
 In the disjoint arm recall becomes the binding limit rather than verification: the correct statue
 never enters the top 10 for 107 DINOv2 and 288 CLIP queries, capping them at 90.8% and 75.1%.
 
+### 7.7 First-stage recall result (2026-09-08)
+
+Three standard ways of raising re-ranking's ceiling, all measured and all rejected. The value is in
+*why* each fails, since each failure says something about this dataset that the successes did not.
+
+- **Verifying 50 candidates instead of 10 buys 0.18 points** (CLIP disjoint, 57.04% to 57.22%), and
+  at higher blend weights it is worse than k=10. The headroom is real — the ceiling rises 10.6
+  points from k=10 to k=50 — but not convertible, because the two failures are correlated: the
+  ranking loses the right statue on hard queries, and geometry is weak on exactly those queries.
+  Every extra candidate is another chance to fluke a homography and nothing more.
+- **Fusing the backbones does not beat the better one**: 79.6% at r@1 against DINOv2's 81.8%. The
+  fused score is DINOv2 with CLIP dragging. Two models that fail on the same lookalike families do
+  not decorrelate by being averaged, which is the assumption fusion needs.
+- **Query expansion hurts, by 7 points for CLIP at r@10**, and the damage scales with the number of
+  neighbours folded in. It assumes the top results are mostly right; at 54% precision they are not,
+  and §5 says the wrong ones are near-identical statues, so the expanded query moves onto its own
+  confuser. A technique that is standard elsewhere is actively harmful on a fine-grained set whose
+  errors are lookalikes.
+
+Reporting decisions worth keeping. The experiment reads cached vectors and no photographs, so it
+runs in seconds and can be consulted *before* committing to a verification sweep that takes forty
+minutes — which is the order these two should be run in. Three arms are reported (`full`,
+`answerable`, `disjoint`) so the columns line up with §7.3's whole-dataset figures and §7.5's
+answerable subset rather than needing a reader to reconcile them. And the fused row is identical in
+both backbones' artifacts by construction, because the sum is symmetric; the config documents that
+rather than leaving it as a puzzle.
+
+The conclusion is that the bottleneck is the representation rather than the amount of it searched,
+and that it belongs to one backbone: DINOv2's first guess cross-photographer beats CLIP's tenth.
+CLIP is here only because §6.3 needs a model small enough for a browser, so this is a deployment
+constraint. **Nothing in this project's research pipeline should use CLIP as a first stage.**
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -748,11 +780,17 @@ the first accuracy improvement from method rather than data.
   differ and nothing has been built for them.
 - ~~**Re-ranking under the photographer-disjoint protocol**~~ — done on 2026-09-07 as
   `experiment rerank -oexperiment.photographer_disjoint=true`; see §7.6. The separation was mostly
-  near-duplicate confirmation, the gain mostly was not. What it leaves is a *recall* question:
-  withholding a photographer pushes the correct statue outside the top 10 for 288 of CLIP's 1,157
-  queries, so its ceiling there is 75.1% and it reaches 57.0%. Raising `top_k`, or a cheaper first
-  stage that recalls better, is now worth more than better verification — and neither has been
-  tried.
+  near-duplicate confirmation, the gain mostly was not.
+- ~~**Raising the first stage's recall**~~ — done on 2026-09-08 as `experiment recall`; see §7.7.
+  A larger `top_k`, backbone fusion and query expansion were all measured and all rejected, so the
+  question is closed in the sense that the obvious answers are gone. What remains open is the
+  *representation*: a stronger or fine-tuned embedding, or local features used as a first stage
+  rather than a re-ranker. Neither has been tried, and the second would be a different pipeline
+  rather than a parameter.
+- **A browser-sized model that is not CLIP** — §7.7 shows DINOv2's first guess cross-photographer
+  beats CLIP's tenth, and §6.3 keeps CLIP only because it fits a browser. A distilled or quantised
+  DINOv2 would make the published demo match the pipeline instead of trailing it by ten points.
+  This is a product question with a measurable answer.
 - ~~**Photographer-disjoint evaluation**~~ — done on 2026-09-07 as
   `experiment photographer-gap`; see §7.5 and `RESULTS.md` section 9. Of DINOv2's 12.4-point drop
   when its own photographer is withheld, a size-matched random control pays 9.8, leaving **2.6
@@ -844,6 +882,7 @@ krasnal-id/
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
 │   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
 │   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
+│   │   ├── recall_curve.py     # the first stage's ceiling, and three rejected fixes
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan

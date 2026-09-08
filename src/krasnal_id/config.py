@@ -265,6 +265,34 @@ class RerankAblationConfig(BaseModel):
         return self
 
 
+class RecallCurveConfig(BaseModel):
+    """First-stage recall diagnostic settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["recall_curve"]
+    seed: int
+    top_k: tuple[int, ...] = Field(min_length=1)
+    # Backbones whose similarities are summed for the fused variant. Independent
+    # of the selected backbone, which supplies the plain and expanded rows, so
+    # the fused figure is the same in either artifact.
+    fuse_backbones: tuple[Literal["dinov2", "clip"], ...] = ()
+    # Neighbour counts for query expansion. Empty skips the variant.
+    expansion_neighbours: tuple[int, ...] = ()
+    expansion_alpha: float = Field(default=3.0, ge=0.0)
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "RecallCurveConfig":
+        """Require positive cut-offs and neighbour counts, and distinct backbones."""
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        if any(n <= 0 for n in self.expansion_neighbours):
+            raise ValueError("expansion_neighbours values must be positive")
+        if len(set(self.fuse_backbones)) != len(self.fuse_backbones):
+            raise ValueError("fuse_backbones cannot contain duplicates")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -295,6 +323,7 @@ ExperimentConfig = Annotated[
     | FieldGapExperimentConfig
     | PhotographerGapConfig
     | RerankAblationConfig
+    | RecallCurveConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

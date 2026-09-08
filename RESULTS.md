@@ -482,6 +482,65 @@ but the improvement is not an artifact.
 10 for 107 DINOv2 queries and 288 CLIP ones, capping them at 90.8% and 75.1%. CLIP reaches 57.0%
 of a possible 75.1%: raising k, or a better first stage, now matters more than better verification.
 
+## 11. Why re-ranking stops there: the first stage's recall
+
+Section 10 ends against a wall. Re-ranking can only reorder what the first stage proposed, so its
+ceiling is recall: with the query's own photographer withheld, the correct statue never enters
+CLIP's top 10 for 288 of the 1,157 queries, and no verification can rescue them.
+`experiment recall` measures that ceiling and tests the standard ways of raising it. All three
+fail, and how they fail is more informative than the ceiling itself.
+
+**The curve.** Recall at k, photographer-disjoint, over the 1,157 answerable queries:
+
+| k | DINOv2 | CLIP |
+|---:|---|---|
+| 1 | 81.8% | 54.1% |
+| 5 | 89.0% | 69.3% |
+| 10 | 90.8% | 75.1% |
+| 20 | 92.0% | 79.7% |
+| 50 | 94.2% | 85.7% |
+
+There is real headroom — CLIP's ceiling rises 10.6 points between k=10 and k=50 — so the obvious
+move is to verify more candidates.
+
+**Verifying 50 candidates instead of 10 buys 0.18 points.** Re-running section 10's sweep at k=50
+takes CLIP's best from 57.04% to 57.22%, and at higher blend weights it is *worse* than k=10: at
+weight 0.2 it demotes 105 queries and lands 1.9 points below its own baseline. The reason the
+headroom is not convertible is that the two failures are correlated. CLIP pushes the right statue
+past rank 10 exactly on the hard queries — awkward viewpoint, poor light, a lookalike family — and
+those are the same queries where geometry is weakest, at 6 inliers against 4. The candidates a
+larger k newly admits are the ones verification is least able to adjudicate, while every one of
+them is a fresh chance to fluke a homography.
+
+**Fusing the two backbones does not beat the better one.** Summing both models' similarities gives
+79.6% at r@1, against DINOv2's 81.8% alone. It is a large gain over CLIP's 54.1%, but that is not
+an independent view being added: the fused score is essentially DINOv2 doing the work with CLIP
+dragging slightly. Two models that fail on the same lookalike families do not decorrelate by being
+averaged.
+
+**Query expansion actively hurts, and the reason is this dataset's error structure.** Re-querying
+with the query averaged into its own top results is the classical recall fix. Here:
+
+| variant | DINOv2 r@10 | CLIP r@10 |
+|---|---|---|
+| no expansion | 90.8% | 75.1% |
+| expansion, 2 neighbours | 89.5% | 68.2% |
+| expansion, 3 neighbours | 89.1% | 68.3% |
+| expansion, 5 neighbours | 88.9% | 69.0% |
+
+Expansion assumes the top results are mostly correct. At 54% precision they are not, and section 5
+says what the wrong ones are: near-identical statues. So the expanded query moves toward its own
+confuser and the mistake is reinforced rather than corrected. The damage scales with how many
+neighbours are folded in, which is the signature of exactly that mechanism — CLIP's r@1 falls from
+54.1% to 43.2% at five neighbours.
+
+**What this leaves.** The bottleneck is the representation, not the amount of it that gets
+searched, and it is specific to one backbone: DINOv2's *first* guess cross-photographer (81.8%) is
+better than CLIP's *tenth* (75.1%). CLIP is in this project because the browser demo needs a model
+small enough to ship, so this is a deployment constraint rather than a research one — and the
+honest fixes are a smaller strong model or a page that says it is weaker than the pipeline, which
+section 10's limitation now does.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,

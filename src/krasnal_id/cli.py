@@ -83,6 +83,7 @@ from krasnal_id.experiments.photographer_gap import (
 )
 from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_pool_size_ablation
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
+from krasnal_id.experiments.recall_curve import RecallCurveError, run_recall_curve
 from krasnal_id.experiments.rerank_ablation import RerankAblationError, run_rerank_ablation
 from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
 from krasnal_id.export.push import PushConfigurationError, PushError, push_export
@@ -857,6 +858,34 @@ def photographer_gap_experiment(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Photographer gap complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("recall")
+def recall_experiment(override: OverrideOption = None) -> None:
+    """Measure the first stage's recall, and whether two standard fixes help."""
+    config = load_config(["experiment=recall_curve", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        result = run_recall_curve(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        RecallCurveError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Recall curve error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Recall curve complete: backbone={result.backbone} result={path}")
     for metric in result.metrics:
         if metric.lower_bound is None or metric.upper_bound is None:
             typer.echo(f"  {metric.name}: {metric.value:+.4f}")
