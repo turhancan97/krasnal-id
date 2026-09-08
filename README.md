@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.11.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.12.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -30,7 +30,8 @@ waits on is photographs. `0.9.0` published the dataset itself, as a fine-grained
 benchmark anyone can load. `0.10.0` asked whether the headline was recognising statues or
 photographers, and answered it: mostly statues for DINOv2, much less so for CLIP. `0.11.0` added
 geometric verification on top of the ranking — the first accuracy gain here from method rather
-than data.
+than data. `0.12.0` measured why it stops there: the first stage's recall, and three standard ways
+of raising it that all fail.
 
 The dataset is published at
 [turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
@@ -54,7 +55,9 @@ DINOv2 5.3 top-1 points and CLIP 15.6, which is a lower bound on what a real str
 would cost. And identifying a statue from *someone else's* photograph costs DINOv2 2.6 points but
 CLIP 13.2 — CLIP leans on the photographer five times as hard. Verifying geometry on the top
 candidates recovers some of that: **94.0% for DINOv2 and 86.3% for CLIP**, and 79% of the gain
-survives when the photographer's own photographs are withheld.
+survives when the photographer's own photographs are withheld. It goes no further because of the
+first stage's recall, and a larger candidate list, backbone fusion and query expansion were all
+measured and all failed.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
@@ -86,7 +89,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.11.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.12.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -132,7 +135,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.11.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.12.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

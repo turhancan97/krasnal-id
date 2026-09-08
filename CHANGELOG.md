@@ -10,6 +10,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-08
+
+Why re-ranking stops where it does, and a guard against the accident that measuring it
+nearly caused. Three standard ways of raising the first stage's recall are measured and all
+three fail; a result artifact now records the settings that produced it, and a run that would
+discard a different run is refused before it is computed rather than after.
+
 ### Added
 
 - **Every result artifact now records the experiment group that produced it.** An artifact
