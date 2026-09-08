@@ -228,5 +228,6 @@ def run_recall_curve(config: AppConfig) -> ExperimentResult:
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize(measurements, config.experiment.top_k),
     )

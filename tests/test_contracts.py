@@ -1,9 +1,11 @@
 """Smoke tests for scaffolded interfaces and dependency boundaries."""
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from krasnal_id.config import load_config
 from krasnal_id.data_pipeline.build_manifest import build_dataset_manifest
@@ -12,6 +14,11 @@ from krasnal_id.embeddings.backbone import EmbeddingBackbone
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
+from krasnal_id.experiments.artifacts import (
+    ExperimentArtifactError,
+    experiment_result_path,
+    write_experiment_result,
+)
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.retrieval.knn import RetrievalMatch, RetrievalResult, cosine_knn
 
@@ -87,3 +94,103 @@ def test_v01_contracts_and_remaining_placeholders_are_explicit(tmp_path: Path) -
 def test_every_scaffolded_stage_is_implemented() -> None:
     # Nothing in the v0.1-v0.3 build order raises NotImplementedError any more.
     assert callable(launch)
+
+
+def _rerank_result(top_k: int, backbone: str = "clip") -> ExperimentResult:
+    """A result carrying the one setting that made two runs collide."""
+    return ExperimentResult(
+        experiment="rerank_ablation",
+        backbone=backbone,
+        created_at=datetime(2026, 9, 8, tzinfo=UTC),
+        seed=42,
+        metrics=(MetricSummary(name="weight_0_top_1", value=0.54),),
+        configuration={"kind": "rerank_ablation", "top_k": top_k, "weights": [0.0, 0.05]},
+    )
+
+
+def test_an_artifact_records_the_settings_that_produced_it() -> None:
+    """Without this an artifact cannot say which cut-offs or weights it used."""
+    recorded = _rerank_result(10)
+
+    assert recorded.configuration is not None
+    assert recorded.configuration["top_k"] == 10
+    # Optional, so artifacts written before the field remain readable.
+    bare = ExperimentResult(
+        experiment="baseline",
+        backbone="clip",
+        created_at=datetime(2026, 9, 8, tzinfo=UTC),
+        seed=1,
+        metrics=(),
+    )
+    assert bare.configuration is None
+
+
+def test_a_run_with_different_settings_will_not_overwrite_another(tmp_path: Path) -> None:
+    """The accident this guards: a k=50 sweep lands on the k=10 file a section cites.
+
+    The filename carries only the experiment and the backbone, because the
+    visualizations glob it and expect one file per backbone — so the collision has
+    to be refused rather than renamed away.
+    """
+    path = experiment_result_path(tmp_path, _rerank_result(10))
+    write_experiment_result(path, _rerank_result(10))
+
+    with pytest.raises(ExperimentArtifactError, match="different settings"):
+        write_experiment_result(path, _rerank_result(50))
+    # The message names what would have been lost.
+    with pytest.raises(ExperimentArtifactError, match=r"top_k.*10.*50"):
+        write_experiment_result(path, _rerank_result(50))
+    # And nothing was written.
+    assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 10
+
+
+def test_re_running_the_same_settings_is_allowed(tmp_path: Path) -> None:
+    """The ordinary case: re-running after re-extracting embeddings."""
+    path = experiment_result_path(tmp_path, _rerank_result(10))
+    write_experiment_result(path, _rerank_result(10))
+
+    write_experiment_result(path, _rerank_result(10))
+
+    assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 10
+
+
+def test_replacing_a_different_run_is_possible_but_deliberate(tmp_path: Path) -> None:
+    path = experiment_result_path(tmp_path, _rerank_result(10))
+    write_experiment_result(path, _rerank_result(10))
+
+    write_experiment_result(path, _rerank_result(50), allow_replace=True)
+
+    assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 50
+
+
+def test_an_artifact_from_before_the_field_does_not_block_a_re_run(tmp_path: Path) -> None:
+    """Otherwise every existing result would refuse its own regeneration."""
+    path = tmp_path / "rerank_ablation-clip.json"
+    path.write_text(
+        json.dumps(
+            {
+                "experiment": "rerank_ablation",
+                "backbone": "clip",
+                "created_at": "2026-01-01T00:00:00Z",
+                "seed": 1,
+                "metrics": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    write_experiment_result(path, _rerank_result(50))
+
+    # The replacement records a configuration, which arms the check from here on.
+    assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 50
+    with pytest.raises(ExperimentArtifactError, match="different settings"):
+        write_experiment_result(path, _rerank_result(10))
+
+
+def test_an_unreadable_file_is_not_mistaken_for_a_run(tmp_path: Path) -> None:
+    path = tmp_path / "rerank_ablation-clip.json"
+    path.write_text("not json at all", encoding="utf-8")
+
+    write_experiment_result(path, _rerank_result(10))
+
+    assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 10

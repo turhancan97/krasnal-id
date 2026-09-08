@@ -285,6 +285,7 @@ def run_confusion_analysis(config: AppConfig) -> ConfusionAnalysisResult:
         created_at=datetime.now(UTC),
         # Nothing here samples; the seed is recorded for provenance.
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=metrics,
         pairs=pairs,
     )

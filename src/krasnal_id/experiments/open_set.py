@@ -393,6 +393,7 @@ def run_open_set_rejection(config: AppConfig) -> OpenSetRejectionResult:
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_open_set(known, unknown, config.experiment),
         rejections=rank_rejections(known, unknown, manifest, config.experiment),
         curve=rejection_curve(

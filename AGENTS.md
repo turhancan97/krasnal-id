@@ -472,6 +472,23 @@ rather than assumed, and each cost accuracy when guessed wrong.
 - Every number in `RESULTS.md` must be traceable to a committed command and a `results/` artifact.
   Extrapolations beyond the measured range are labeled as such, together with why they are
   optimistic.
+- **Every result artifact records the experiment group that produced it**, in a `configuration`
+  field. Before that, an artifact could not say which pool sizes, weights or cut-offs it used, and
+  two runs of one experiment under different settings were indistinguishable — the filename carries
+  only the experiment and the backbone, because `visualize` globs it and expects one file per
+  backbone. A `top_k=50` re-ranking sweep therefore came one command away from silently
+  overwriting the `top_k=10` result section 10 cites.
+- **A run whose artifact would discard a different run is refused, before it is computed.**
+  `guard_result_path` runs at the top of every `experiment` command and `write_experiment_result`
+  repeats the check as a backstop. Identical settings overwrite freely, which is the ordinary case
+  of re-running after re-extracting embeddings; differing settings name what would be lost and say
+  to point `paths.results_dir` elsewhere. The pre-flight is the one that matters: a re-ranking
+  sweep takes forty minutes, and refusing at the end would waste exactly as much time as no check.
+- An artifact written before configurations were recorded cannot be compared against, so it is
+  replaced rather than blocking its own regeneration; the replacement records one, which arms the
+  check from then on. **Do not backfill the field from the packaged defaults** — the defaults are
+  not necessarily what ran, so a backfilled configuration would be an assertion rather than a
+  record, which is worse than an absent one.
 
 - The demo loads the manifest and cached vectors once per session, not per query, and its
   callback returns an explanatory status string instead of raising, because a Gradio callback

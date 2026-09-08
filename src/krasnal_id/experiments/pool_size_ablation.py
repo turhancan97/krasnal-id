@@ -193,5 +193,6 @@ def run_pool_size_ablation(config: AppConfig) -> ExperimentResult:
         # The ablation samples, so record the first seed as the run's identity; the
         # complete seed list is what makes the per-pool error bars reproducible.
         seed=config.experiment.seeds[0],
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_measurements(measurements),
     )

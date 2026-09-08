@@ -247,5 +247,6 @@ def run_probe_comparison(config: AppConfig) -> ExperimentResult:
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_methods(outcomes, config.experiment.top_k),
     )

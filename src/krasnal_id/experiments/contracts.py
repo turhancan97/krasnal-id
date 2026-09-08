@@ -1,6 +1,7 @@
 """Serializable result contracts shared by experiment implementations."""
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -26,6 +27,12 @@ class ExperimentResult(BaseModel):
     created_at: datetime
     seed: int
     metrics: tuple[MetricSummary, ...]
+    # The experiment group that produced these numbers. Without it an artifact
+    # cannot say which pool sizes, weights or cut-offs it used, and two runs of
+    # one experiment under different settings are indistinguishable — which is
+    # how a k=50 sweep came within one command of overwriting a k=10 result.
+    # Optional so artifacts written before this field remain readable.
+    configuration: dict[str, Any] | None = None
 
 
 class ConfusionPair(BaseModel):

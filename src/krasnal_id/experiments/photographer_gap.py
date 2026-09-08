@@ -278,5 +278,6 @@ def run_photographer_gap(config: AppConfig) -> ExperimentResult:
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seeds[0],
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize(outcomes, coverage, config.experiment.top_k),
     )

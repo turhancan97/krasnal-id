@@ -259,6 +259,7 @@ def run_geo_ablation(config: AppConfig) -> ExperimentResult:
         created_at=datetime.now(UTC),
         # Only the random comparison arm samples; the geographic pools are exact.
         seed=config.experiment.seeds[0],
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_geo(
             geo,
             random_arm,

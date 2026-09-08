@@ -159,5 +159,6 @@ def run_camera_gap(config: AppConfig, metadata: CameraMetadataFile) -> Experimen
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_camera_gap(outcomes, config.experiment.top_k),
     )

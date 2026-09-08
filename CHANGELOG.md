@@ -12,6 +12,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **Every result artifact now records the experiment group that produced it.** An artifact
+  previously could not say which pool sizes, weights or cut-offs it used, and two runs of one
+  experiment under different settings were indistinguishable, because the filename carries only the
+  experiment and the backbone — `visualize` globs it and expects one file per backbone. A
+  `top_k=50` re-ranking sweep came one command away from silently overwriting the `top_k=10` result
+  `RESULTS.md` section 10 cites.
+- **A run whose artifact would discard a different run is refused before it is computed.** The
+  pre-flight is the point: a re-ranking sweep takes forty minutes, and refusing at the end would
+  waste exactly as much time as no check at all. Measured: the refusal now arrives in 2.8 seconds,
+  names every differing setting (`max_keypoints: 60 -> 800, top_k: 3 -> 50`), and leaves the
+  earlier artifact intact. `write_experiment_result` repeats the check as a backstop.
+- Identical settings still overwrite freely, which is the ordinary case of re-running after
+  re-extracting embeddings. An artifact written before this field cannot be compared against, so it
+  is replaced rather than blocking its own regeneration — and the replacement arms the check. The
+  19 existing artifacts are therefore unarmed until each is next regenerated; they are deliberately
+  *not* backfilled from the packaged defaults, since the defaults are not necessarily what ran and
+  a backfilled configuration would assert rather than record.
+
 - Added `krasnal-id experiment recall`, which measures re-ranking's ceiling and tests three
   standard ways of raising it. **All three fail**, and the failures are the finding:
   - **Verifying 50 candidates instead of 10 buys 0.18 points** (CLIP disjoint, 57.04% to 57.22%),

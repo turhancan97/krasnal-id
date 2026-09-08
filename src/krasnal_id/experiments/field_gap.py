@@ -312,6 +312,7 @@ def run_field_gap(config: AppConfig, staged: FieldQueryManifest) -> FieldGapResu
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_field_gap(outcomes, config.experiment.top_k, len(cohort_by_dwarf)),
         classes=summarize_classes(field_scores, commons_ranks, manifest),
     )

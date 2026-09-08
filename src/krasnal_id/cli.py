@@ -66,6 +66,7 @@ from krasnal_id.embeddings.store import EmbeddingStoreError
 from krasnal_id.experiments.artifacts import (
     ExperimentArtifactError,
     experiment_result_path,
+    guard_result_path,
     write_experiment_result,
 )
 from krasnal_id.experiments.baseline_accuracy import BaselineExperimentError, run_baseline
@@ -611,6 +612,7 @@ def baseline_experiment(override: OverrideOption = None) -> None:
     """Measure full-pool top-k accuracy and mean reciprocal rank."""
     config = load_config(["experiment=baseline", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_baseline(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -639,6 +641,7 @@ def pool_ablation_experiment(override: OverrideOption = None) -> None:
     """Measure accuracy across synthetic candidate-pool sizes."""
     config = load_config(["experiment=pool_size_ablation", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_pool_size_ablation(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -667,6 +670,7 @@ def geo_ablation_experiment(override: OverrideOption = None) -> None:
     """Compare real proximity-based candidate pools against randomly sampled ones."""
     config = load_config(["experiment=geo_ablation", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_geo_ablation(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -700,6 +704,7 @@ def probe_experiment(override: OverrideOption = None) -> None:
     """Compare trained prototype and linear-probe classifiers against retrieval."""
     config = load_config(["experiment=probe", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_probe_comparison(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -728,6 +733,7 @@ def open_set_experiment(override: OverrideOption = None) -> None:
     """Measure whether a similarity threshold can reject dwarves outside the dataset."""
     config = load_config(["experiment=open_set", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_open_set_rejection(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -773,6 +779,7 @@ def camera_gap_experiment(override: OverrideOption = None) -> None:
     """Compare phone-originated queries against camera-originated ones."""
     config = load_config(["experiment=camera_gap", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         metadata = load_camera_metadata(camera_metadata_path(config.paths.discovery_dir))
         result = run_camera_gap(config, metadata)
@@ -803,6 +810,7 @@ def field_gap_experiment(override: OverrideOption = None) -> None:
     """Compare field photographs against the same statues' Commons queries."""
     config = load_config(["experiment=field_gap", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         staged = load_field_query_manifest(
             field_query_manifest_path(config.paths.data_dir),
@@ -845,6 +853,7 @@ def photographer_gap_experiment(override: OverrideOption = None) -> None:
     """Measure how much accuracy survives changing the photographer."""
     config = load_config(["experiment=photographer_gap", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_photographer_gap(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -873,6 +882,7 @@ def recall_experiment(override: OverrideOption = None) -> None:
     """Measure the first stage's recall, and whether two standard fixes help."""
     config = load_config(["experiment=recall_curve", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_recall_curve(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -901,6 +911,7 @@ def rerank_experiment(override: OverrideOption = None) -> None:
     """Sweep how much geometric verification adds to the global ranking."""
     config = load_config(["experiment=rerank_ablation", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_rerank_ablation(config)
         path = experiment_result_path(config.paths.results_dir, result)
@@ -930,6 +941,7 @@ def confusion_experiment(override: OverrideOption = None) -> None:
     """Find and summarize the most-confused dwarf pairs."""
     config = load_config(["experiment=confusion", *(override or [])])
     configure_logging(config.logging)
+    guard_result_path(config)
     try:
         result = run_confusion_analysis(config)
         path = experiment_result_path(config.paths.results_dir, result)

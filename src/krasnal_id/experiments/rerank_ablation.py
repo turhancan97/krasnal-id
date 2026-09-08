@@ -324,6 +324,7 @@ def run_rerank_ablation(config: AppConfig) -> ExperimentResult:
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
+        configuration=config.experiment.model_dump(mode="json"),
         metrics=summarize_arms(
             arms, truths, config.experiment.weights, config.experiment.top_k_metrics
         ),
