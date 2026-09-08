@@ -3,12 +3,13 @@
  *
  * The reference vectors are produced by *the same library, model and dtype the
  * browser runs*, not by the Python pipeline. That is not a preference: measured
- * on this dataset, transformers.js preprocesses differently enough that
- * Python-built references cost 3.5 points of top-1 when compared against
- * browser-built queries. Anything that embeds a query must embed the references.
+ * on this dataset while the page ran CLIP, transformers.js preprocesses
+ * differently enough that Python-built references cost 3.5 points of top-1 when
+ * compared against browser-built queries. Anything that embeds a query must
+ * embed the references, and that holds whichever model is in use.
  *
- * Both sides also pre-downscale to a 224 shortest edge with a proper antialiased
- * resampler before the model's own processor sees the image. Without that,
+ * Both sides also pre-downscale to the model's own shortest edge with a proper
+ * antialiased resampler before its processor sees the image. Without that,
  * transformers.js downscales a 2000px photograph in one aliasing step and loses
  * roughly two points of accuracy outright.
  *
@@ -16,7 +17,7 @@
  *
  * Model weights are fetched from the Hugging Face CDN on first run and cached.
  */
-import { AutoProcessor, CLIPVisionModelWithProjection, RawImage, env } from "@huggingface/transformers";
+import { AutoModel, AutoProcessor, RawImage, env } from "@huggingface/transformers";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
@@ -28,9 +29,14 @@ const REPO = resolve(import.meta.dirname, "../..");
 const OUT = join(REPO, "docs/assets");
 const THUMBS = join(OUT, "thumbs");
 
-const MODEL_ID = "Xenova/clip-vit-base-patch32";
-const DTYPE = "q4";               // 64 MB, and lossless in practice on this dataset.
-const EMBED_SHORTEST_EDGE = 224;  // What the model wants; we resize to it ourselves.
+// The same model the research pipeline uses, so the page and the results are no
+// longer different models. q4 is 56 MB — smaller than the 64 MB CLIP this
+// replaced — and measured on a 40-class subset it costs 1.0 point against fp16
+// (173 MB) while beating CLIP by 7.5. Never `uint8` here: it agrees with the
+// pipeline at cosine 0.11, which is noise, the same trap as CLIP's `quantized`.
+const MODEL_ID = "Xenova/dinov2-base";
+const DTYPE = "q4";
+const EMBED_SHORTEST_EDGE = 256;  // DINOv2 resizes to 256 then crops 224.
 const THUMB_LONG_SIDE = 320;
 const CO_LOCATED_METRES = 25;
 const SELF_TEST_COUNT = 8;
@@ -70,12 +76,17 @@ const unit = (values) => {
 };
 
 const processor = await AutoProcessor.from_pretrained(MODEL_ID);
-const model = await CLIPVisionModelWithProjection.from_pretrained(MODEL_ID, { dtype: DTYPE });
+const model = await AutoModel.from_pretrained(MODEL_ID, { dtype: DTYPE });
 console.log(`model ready: ${MODEL_ID} (${DTYPE})`);
 
 async function embed(file) {
   const output = await model(await processor(await readScaled(file)));
-  return unit(output.image_embeds.data);
+  // Position 0 of the sequence is the CLS token, which is exactly what the
+  // Python pipeline takes: `outputs.last_hidden_state[:, 0, :]`. Taking the mean
+  // over patches instead would be a different embedding and would not compare.
+  const hidden = output.last_hidden_state;
+  const width = hidden.dims[hidden.dims.length - 1];
+  return unit(hidden.data.subarray(0, width));
 }
 
 // --- thumbnails -------------------------------------------------------------

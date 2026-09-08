@@ -3,26 +3,28 @@
  *
  * The reference vectors in assets/references.bin were produced by this same
  * library, model and dtype, and with the same antialiased pre-downscale applied
- * below. That matters: Python-preprocessed references cost 3.5 points of top-1
- * against browser-preprocessed queries, and skipping the pre-downscale costs
- * another two, because transformers.js resizes a large photograph in one
- * aliasing step.
+ * below. That matters: measured while this page ran CLIP, Python-preprocessed
+ * references cost 3.5 points of top-1 against browser-preprocessed queries, and
+ * skipping the pre-downscale costs another two, because transformers.js resizes
+ * a large photograph in one aliasing step.
  *
  * Nothing is uploaded. The photograph is decoded, scaled, embedded and compared
  * entirely on this device.
  */
 import {
+  AutoModel,
   AutoProcessor,
-  CLIPVisionModelWithProjection,
   RawImage,
   env,
 } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
 import { resizeToShortestEdge } from "./resize.mjs";
 
-const MODEL_ID = "Xenova/clip-vit-base-patch32";
-const DTYPE = "q4"; // 64 MB, and indistinguishable from full precision here.
+// The model the research pipeline uses, so this page and the published results
+// are the same model rather than cousins. 56 MB at q4.
+const MODEL_ID = "Xenova/dinov2-base";
+const DTYPE = "q4";
 const TOP_K = 5;
-const SHORTEST_EDGE = 224; // Must match the build's EMBED_SHORTEST_EDGE.
+const SHORTEST_EDGE = 256; // Must match the build's EMBED_SHORTEST_EDGE.
 
 env.allowLocalModels = false;
 
@@ -84,7 +86,7 @@ async function loadModel() {
     };
     const [processor, model] = await Promise.all([
       AutoProcessor.from_pretrained(MODEL_ID, { progress_callback: onProgress }),
-      CLIPVisionModelWithProjection.from_pretrained(MODEL_ID, {
+      AutoModel.from_pretrained(MODEL_ID, {
         dtype: DTYPE,
         progress_callback: onProgress,
       }),
@@ -207,7 +209,12 @@ function renderCoLocated(hits) {
 async function embedSource(source) {
   const { processor, model } = await loadModel();
   const output = await model(await processor(await readScaled(source)));
-  return normalise(output.image_embeds.data);
+  // The CLS token, position 0 of the sequence — the same vector the build and
+  // the Python pipeline take. Anything else would not compare with the
+  // references this page ships.
+  const hidden = output.last_hidden_state;
+  const width = hidden.dims[hidden.dims.length - 1];
+  return normalise(hidden.data.subarray(0, width));
 }
 
 /**

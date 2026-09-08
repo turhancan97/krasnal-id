@@ -300,14 +300,15 @@ enough that thread oversubscription dominates the runtime.
 ## Interactive demonstration
 
 The published demo at <https://turhancan97.github.io/krasnal-id/> is a static page: it embeds an
-uploaded photograph with a quantised ONNX CLIP in the visitor's own browser and ranks it against
+uploaded photograph with a quantised ONNX DINOv2 — the pipeline's own backbone, 56 MB at `q4` —
+in the visitor's own browser and ranks it against
 reference vectors built by the same pipeline, so nothing is uploaded and there is no backend.
 Rebuild its data after the manifest changes:
 
     cd docs/demo && npm install && node build.mjs
 
-The build re-scores the leave-one-out protocol on the vectors it ships (82.4% top-1, 90.4% top-5
-over 306 dwarves) and records probes so the page can verify itself: `?selftest=1` reports cosine
+The build re-scores the leave-one-out protocol on the vectors it ships (93.2% top-1, 95.9% top-5
+over 306 dwarves, against 93.1% for the research pipeline) and records probes so the page can verify itself: `?selftest=1` reports cosine
 agreement with the build, and `?selftest=full` re-embeds all 1,691 reference photographs in the
 browser and scores the protocol there.
 

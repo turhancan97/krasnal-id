@@ -437,6 +437,10 @@ The published demo at `turhancan97.github.io/krasnal-id` is static: GitHub Pages
 Gradio app, so the model runs in the visitor's browser instead. Four decisions there were measured
 rather than assumed, and each cost accuracy when guessed wrong.
 
+The decisions below are all still in force; the numbers in the two model-specific bullets are
+CLIP's, measured before §6.5 replaced it with DINOv2 on 2026-09-08. Read them as the reasoning
+that survived the swap, not as the shipped figures.
+
 - **Anything that embeds a query must embed the references.** Reference vectors built by the Python
   pipeline scored 89.7% top-1 against browser-built queries, where the build reported 93.2%.
   `docs/demo/build.mjs` therefore runs the same library, model and dtype the browser runs.
@@ -501,6 +505,51 @@ rather than assumed, and each cost accuracy when guessed wrong.
   oversubscription dominates: the leave-one-out sweep went from over six minutes to twelve
   seconds. `threadpoolctl` is declared in the `analysis` extra but its absence is not an error.
 - Optional stretch baseline: a simple linear probe or per-class prototype (mean embedding) comparison, to see whether a trained classifier beats raw retrieval — useful discussion material for the writeup, not required for the headline result.
+
+### 6.5 Browser model swap (2026-09-08)
+
+The demo ran CLIP for six days on one unmeasured premise: that DINOv2 was too big for a browser.
+That premise was never tested, and it was wrong. `Xenova/dinov2-base` at `q4` is **56 MB against
+the 64 MB CLIP export it replaced**, so the page now runs the pipeline's own model on a *smaller*
+download. Everything that followed from the premise — §7.2's "porting DINOv2 is a §6.3-scale
+change", §7.7's "CLIP is here only because §6.3 needs a model small enough for a browser", §8's
+open question — followed from something that cost one afternoon to disprove.
+
+Measured on an identical 40-class, 200-image subset before committing to a dtype:
+
+| | top-1 | download |
+|---|---:|---:|
+| Python DINOv2 (the pipeline) | 98.0% | — |
+| Browser DINOv2 `fp16` | 97.5% | 173.5 MB |
+| **Browser DINOv2 `q4` (shipped)** | **96.5%** | **56.4 MB** |
+| Python CLIP (the old demo) | 89.0% | 63.6 MB |
+
+- **`q4`, not `fp16`.** `fp16` buys 1.0 point for 117 MB more download. `q4` still beats the CLIP
+  it replaced by 7.5 points on the same subset, which is the comparison that decides whether the
+  swap is worth making at all.
+- **`uint8` is broken for DINOv2 and must never be shipped.** Its cosine agreement with the Python
+  pipeline is **0.111** — noise, not drift. This is §6.3's `vision_model_quantized.onnx` trap
+  wearing a different name: the export loads, produces plausible-looking vectors, and retrieves
+  nothing. `q4` and `q4f16` agree at 0.935, `fp16` and `fp32` at 0.991. **Measure agreement against
+  the pipeline before trusting any new export**, because nothing else catches this.
+- **Take the CLS token, `last_hidden_state[:, 0, :]`.** DINOv2 has no pooled output to fall back on,
+  so both `build.mjs` and `app.js` slice position 0 of the sequence explicitly — exactly what
+  `embeddings/extract.py` takes. Mean-pooling the patch tokens instead is a different embedding and
+  would not compare with the shipped references.
+- **`EMBED_SHORTEST_EDGE = 256`, not CLIP's 224.** DINOv2's processor resizes the shortest edge to
+  256 and then centre-crops 224, so pre-scaling to 224 through `docs/resize.mjs` would crop away
+  the border and silently change the input. The constant appears in both files and they must match.
+- §6.3's four decisions carry over unchanged and were re-verified against the new model: the build
+  embeds the references with the same library, model and dtype the browser runs; both sides resize
+  through `docs/resize.mjs`; the site re-scores the vectors it ships rather than quoting the
+  research numbers.
+- **Rebuilt over all 306 classes on 2026-09-08: the shipped vectors score 93.2% top-1, 95.9% top-5,
+  MRR 0.945**, against the research DINOv2 pipeline's 93.1% [91.8, 94.3]. The browser/pipeline drift
+  is 0.1 points *in the browser's favour* — inside the pipeline's own interval, so at 306 classes
+  4-bit quantisation and browser decode together cost nothing measurable. The demo it replaced
+  scored 82.4%, so the page gained 10.8 points on a smaller download. Assets are 28 MB, of which
+  22 MB is the 1,691 thumbnails; `references.bin` grew from 3.5 MB to 5.2 MB with the wider
+  768-dimensional vectors, which is the only size cost of the swap on this side.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
@@ -586,11 +635,13 @@ Measured on 2026-09-03, recorded here because two of these constrain future work
   observed score so that any threshold's cost is readable, and `visualize open-set` draws it with
   the calibrated leave-one-class-out points marked on top. Do not quote a point off the curve as
   an achievable operating point; quote the metrics.
-- The published demo ships no rejection, and **it cannot simply be given one**: section 6.3's
-  browser build runs CLIP, which is the backbone with no usable operating point. Giving the demo
-  an "I don't know" answer means porting DINOv2 to the browser — a section 6.3-scale change of
-  model, reference vectors, self-test baselines and download size — not adding a threshold to
-  what is there.
+- The published demo ships no rejection. When this was written that was doubly blocked: the
+  browser ran CLIP, the backbone with no usable operating point, so an "I don't know" answer meant
+  porting DINOv2 to the browser first. **That port happened on 2026-09-08 (§6.5), so the model is
+  no longer the obstacle** — but the threshold still is. §7.3 measures DINOv2's false-acceptance
+  rising from 4% at 23 classes to 38% at 306 at the same operating point, so there is no operating
+  point worth shipping at this scale for either backbone. The demo's silence is now a measured
+  conclusion rather than a limitation of its model.
 - A DINOv2 port would still have to re-measure its own threshold on the vectors it ships. Section
   6.3 measured `q4` quantization as indistinguishable from full precision, but it measured that
   for *ranking*, and rejection depends on absolute similarity rather than on order. That
@@ -760,8 +811,10 @@ rather than leaving it as a puzzle.
 
 The conclusion is that the bottleneck is the representation rather than the amount of it searched,
 and that it belongs to one backbone: DINOv2's first guess cross-photographer beats CLIP's tenth.
-CLIP is here only because §6.3 needs a model small enough for a browser, so this is a deployment
-constraint. **Nothing in this project's research pipeline should use CLIP as a first stage.**
+CLIP was here only because §6.3 needed a model small enough for a browser. That constraint turned
+out to be false: §6.5 replaced it with DINOv2 at q4, which is *smaller* than the CLIP it replaced,
+so the demo now runs the same model as the pipeline. **Nothing in this project should use CLIP as
+a first stage.**
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
@@ -805,10 +858,10 @@ the first accuracy improvement from method rather than data. `0.12.0` closes the
   *representation*: a stronger or fine-tuned embedding, or local features used as a first stage
   rather than a re-ranker. Neither has been tried, and the second would be a different pipeline
   rather than a parameter.
-- **A browser-sized model that is not CLIP** — §7.7 shows DINOv2's first guess cross-photographer
-  beats CLIP's tenth, and §6.3 keeps CLIP only because it fits a browser. A distilled or quantised
-  DINOv2 would make the published demo match the pipeline instead of trailing it by ten points.
-  This is a product question with a measurable answer.
+- ~~**A browser-sized model that is not CLIP**~~ — done on 2026-09-08; see §6.5. No distillation
+  was needed: `Xenova/dinov2-base` at q4 is 56 MB against the 64 MB CLIP export it replaced, so the
+  demo runs the pipeline's own model on a *smaller* download. The premise that CLIP was there for
+  size was simply wrong.
 - ~~**Photographer-disjoint evaluation**~~ — done on 2026-09-07 as
   `experiment photographer-gap`; see §7.5 and `RESULTS.md` section 9. Of DINOv2's 12.4-point drop
   when its own photographer is withheld, a size-matched random control pays 9.8, leaving **2.6

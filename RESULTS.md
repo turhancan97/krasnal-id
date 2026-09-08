@@ -353,8 +353,9 @@ Stripped metadata correlates with the same kind of photograph.
 **This is a lower bound, and it does not close the question.** These are still Commons uploads:
 chosen, often composed, taken by someone who meant to document the statue. A real snapshot — bad
 angle, passers-by, whatever light was available — is a harder query than anything measured here.
-What this establishes is that the domain gap is real and that CLIP suffers it far worse, which
-also means the published demo, which runs CLIP, is the version most exposed to it.
+What this establishes is that the domain gap is real and that CLIP suffers it far worse. The
+published demo ran CLIP when this was written and was therefore the version most exposed to it; it
+now runs DINOv2, so the gap a visitor meets is the 5.3-point one rather than the 15.6-point one.
 
 ## 9. Is it recognising the statue, or the photographer?
 
@@ -536,10 +537,10 @@ neighbours are folded in, which is the signature of exactly that mechanism — C
 
 **What this leaves.** The bottleneck is the representation, not the amount of it that gets
 searched, and it is specific to one backbone: DINOv2's *first* guess cross-photographer (81.8%) is
-better than CLIP's *tenth* (75.1%). CLIP is in this project because the browser demo needs a model
-small enough to ship, so this is a deployment constraint rather than a research one — and the
-honest fixes are a smaller strong model or a page that says it is weaker than the pipeline, which
-section 10's limitation now does.
+better than CLIP's *tenth* (75.1%). CLIP was in this project because the browser demo was thought
+to need a model small enough to ship — which turned out to be untrue: a quantised DINOv2 ships in
+56 MB against CLIP's 64 MB, and the demo now runs it. The deployment constraint that made CLIP's
+weakness worth tolerating did not exist.
 
 ## Limitations
 
@@ -568,8 +569,10 @@ section 10's limitation now does.
   well-photographed statues carry disproportionate weight in the query set.
 - **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is
   still a Wrocław bronze dwarf photographed like the rest. A genuinely out-of-distribution query is
-  a harder and untested case. The published demo does not threshold at all, and could not usefully:
-  it runs CLIP, which has the weaker rejection of the two.
+  a harder and untested case. The published demo does not threshold at all. That used to be forced
+  — it ran CLIP, which has the weaker rejection of the two — but it now runs DINOv2 and stays silent
+  by choice: section 6's false-acceptance rises from 4% at 23 classes to 38% at 306, so neither
+  backbone has an operating point worth shipping at this scale.
 
 ## Reproducing this
 

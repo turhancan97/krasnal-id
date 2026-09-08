@@ -10,6 +10,35 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- **The published demo now runs DINOv2, the same backbone as the research pipeline, instead of
+  CLIP.** The page had run CLIP since it was built, on the premise that DINOv2 was too large to
+  ship to a browser. That premise was never measured and it was false: `Xenova/dinov2-base`
+  quantised to `q4` is **56 MB against the 64 MB CLIP export it replaced**, so the demo now runs
+  the pipeline's own model on a *smaller* download. Re-scored on exactly the vectors it ships,
+  the page goes from **82.4% to 93.2% top-1** — 0.1 points *above* the research pipeline's 93.1%
+  and inside its confidence interval, so 4-bit quantisation and browser decode together cost
+  nothing measurable at 306 classes. `references.bin` grows from 3.5 MB to 5.2 MB with the wider
+  768-dimensional vectors; total assets are 28 MB, still dominated by the 22 MB of thumbnails.
+- **`uint8` must never be shipped for DINOv2, and only a measured check catches that.** Its cosine
+  agreement with the Python pipeline is **0.111** — noise, not drift. The export loads, produces
+  plausible vectors and retrieves nothing, which is section 6.3's `vision_model_quantized.onnx`
+  trap under a different name. `q4` and `q4f16` agree at 0.935, `fp16` and `fp32` at 0.991. `q4`
+  was chosen over `fp16` because `fp16` buys 1.0 point for 117 MB more download.
+- Both `docs/demo/build.mjs` and `docs/app.js` now take the CLS token explicitly,
+  `last_hidden_state[:, 0, :]`, because DINOv2 offers no pooled output to fall back on, and
+  pre-scale to a 256-pixel shortest edge rather than CLIP's 224 — DINOv2's processor resizes to
+  256 before centre-cropping 224, so scaling to 224 first would crop the border away and silently
+  change the input.
+- Three consequences of the old premise are corrected rather than left standing: section 7.2 no
+  longer says the demo "cannot simply be given" a rejection threshold because it runs CLIP (the
+  model is no longer the obstacle; the absence of any usable operating point at 306 classes is),
+  section 7.7 no longer calls CLIP's presence a deployment constraint, and section 8's open
+  question "a browser-sized model that is not CLIP" is closed. `RESULTS.md`'s demo caveats and
+  `README.md`'s demo section follow. `docs/chart.js` is deliberately unchanged: it plots the
+  research pool-size ablation, where CLIP is still a legitimate comparison arm.
+
 ## [0.12.0] - 2026-09-08
 
 Why re-ranking stops where it does, and a guard against the accident that measuring it

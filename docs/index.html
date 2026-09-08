@@ -252,8 +252,8 @@
     crouching poses and props. Upload a photograph and this page will tell you which one it is,
     running the model in your own browser.</p>
     <div class="facts">
-      <span>306 dwarves</span><span>1,691 reference photographs</span><span>CLIP</span>
-      <span id="fact-acc">82.4% top-1</span>
+      <span>306 dwarves</span><span>1,691 reference photographs</span><span>DINOv2</span>
+      <span id="fact-acc">93.2% top-1</span>
     </div>
   </header>
 
@@ -305,7 +305,9 @@
         <div class="n blue">93.1%</div><div class="u">top-1, full pool</div>
         <p class="body"><b>Frozen embeddings are enough.</b> DINOv2 identifies the right dwarf first
         time in 93.1% of queries across all 306 statues, and within five candidates 95.7% of the
-        time — with no training of any kind. CLIP, which is what runs above, reaches 82.9%.</p>
+        time — with no training of any kind. It is also the model running above, so the identifier
+        on this page and the number beside it are the same model. CLIP, measured alongside it,
+        reaches 82.9%.</p>
       </div>
       <div class="finding">
         <div class="n red">−0.79</div><div class="u">points / doubling</div>
@@ -493,27 +495,29 @@
       is reasonably supported — its rate has been constant for seven doublings — but the CLIP one is
       an optimistic bound, because its decline is still steepening at the edge of the measured
       range.</span></div>
-      <div class="limit"><span><b>The demo above is not the pipeline that produced these numbers.</b>
-      It runs CLIP, which is small enough for a browser, where the results report DINOv2 as ten
-      points better. Its own leave-one-out score, measured on exactly the vectors it ships, is
-      82.4% top-1 against 82.9% for the research CLIP pipeline. That figure is not a claim: append
-      <code>?selftest=full</code> to this page's URL and your browser will re-embed all 1,691
-      reference photographs and score the protocol itself.</span></div>
+      <div class="limit"><span><b>The demo above is the same model as the pipeline, but not the same
+      code.</b> It runs DINOv2 quantised to 4 bits so it fits a 56 MB download, and it decodes and
+      resizes in your browser rather than in Python. Its own leave-one-out score, measured on
+      exactly the vectors it ships, is 93.2% top-1 against 93.1% for the research pipeline &mdash;
+      inside that figure's confidence interval, so the quantisation and the decode drift cost
+      nothing measurable here. Until 8 September this page ran CLIP and scored 82.4%. That figure is
+      not a claim: append <code>?selftest=full</code> to this page's URL and your browser will
+      re-embed all 1,691 reference photographs and score the protocol itself.</span></div>
       <div class="limit"><span><b>The reference photos are not phone photos — and that costs
       something measurable.</b> 51 of them were themselves shot on phones, and used as queries they
-      score 5.3 points worse for DINOv2 and <strong>15.6 worse for CLIP</strong>, which is what runs
-      on this page. Not because they show harder statues: those queries belong to classes with more
-      reference photographs, not fewer. It is still a lower bound, since every one is a Commons
+      score <strong>5.3 points worse for DINOv2</strong>, which is what runs on this page, and 15.6
+      worse for CLIP. Not because they show harder statues: those queries belong to classes with
+      more reference photographs, not fewer. It is still a lower bound, since every one is a Commons
       upload someone chose to take and share. A casual snapshot is harder again, and measuring that
       needs photographs nobody has taken yet.</span></div>
       <div class="limit"><span><b>It partly recognises the photographer, not the statue.</b> Two
       people took 67% of the reference photographs, and near-duplicates from a single visit were
       never removed. Withhold a query's own photographer, against a control that removes the same
-      number of references at random, and <strong>CLIP &mdash; what runs on this page &mdash; loses
-      13.2 top-1 points</strong> where DINOv2 loses 2.6. Cross-photographer, CLIP identifies a
-      statue <strong>54.1%</strong> of the time against the 82.9% above. If the statue you
-      photograph is one Commons documents through a single contributor, that lower figure is the
-      one to expect.</span></div>
+      number of references at random, and <strong>DINOv2 &mdash; what runs on this page &mdash;
+      loses 2.6 top-1 points</strong> where CLIP loses 13.2. Cross-photographer it identifies a
+      statue <strong>81.8%</strong> of the time rather than 94.2%. So if the statue you photograph
+      is one Commons documents through a single contributor, expect the lower figure &mdash; and
+      note this page used to run CLIP, where the same number was 54.1%.</span></div>
       <div class="limit"><span><b>There is no “I don't know”, and that is a measured result.</b> A
       statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
@@ -537,7 +541,7 @@
     <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">turhancan97/wroclaw-dwarves</a>.</p>
     <p>Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
     licences; each result names its photographer and licence. Model weights from
-    <a href="https://huggingface.co/Xenova/clip-vit-base-patch32">Xenova/clip-vit-base-patch32</a>.</p>
+    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a>, quantised to q4.</p>
   </footer>
 </div>
 <script type="module" src="app.js"></script>
