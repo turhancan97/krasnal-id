@@ -842,7 +842,9 @@ waiting on photographs rather than on code. `0.9.0` publishes the dataset per §
 which is a distribution milestone rather than a research one. `0.10.0` closes the
 photographer-disjoint question of §7.5, and `0.11.0` adds the geometric re-ranking of §7.6 —
 the first accuracy improvement from method rather than data. `0.12.0` closes the recall question of
-§7.7 by measuring that its three obvious answers do not work.
+§7.7 by measuring that its three obvious answers do not work. `0.13.0` closes the last of §8's
+open questions by putting DINOv2 in the browser (§6.5) — the only release so far whose finding is
+that a constraint the project had been designing around did not exist.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

@@ -10,23 +10,29 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
-### Fixed
+## [0.13.0] - 2026-09-09
 
-- **`?selftest=1` no longer reports its own expected outcome as a failure.** It required cosine
-  agreement above 0.99 on the *minimum* of 8 probes, a bound the decode drift documented in
-  section 6.3 cannot clear — the probes re-embed the same thumbnail bytes the build embedded, so
-  sharp and the browser canvas are the only difference, measured at 0.989 mean / 0.980 min for
-  DINOv2 and 0.986 for CLIP before it, worth nothing in top-1 either time. The check is there to
-  catch a broken export, which is not a subtle failure: `uint8` agrees at 0.111. The bound is now
-  0.95, clear of both regimes, and the message says which of the two it is looking at.
+The published demo now runs the same model as the research pipeline, on a smaller download than
+the one it replaced.
 
-- **The demo now refuses inconsistent reference data instead of scoring it.**
-  `references.json` and `references.bin` are fetched separately and carry no version in their
-  URLs, so a returning visitor can briefly hold a fresh copy of one and a cached copy of the
-  other — a real window now that the vectors changed width. Slicing 768 floats per image out of a
-  stale 512-wide CLIP buffer runs off the end and yields short vectors, which score as plausible
-  nonsense rather than failing. The loader now checks the buffer length against
-  `images x dimensions` and throws, naming the cache as the cause.
+CLIP had been in the browser since the demo was built, on the premise that DINOv2 was too large to
+ship. The premise was never measured and it was false: `Xenova/dinov2-base` at `q4` is 56 MB
+against CLIP's 64 MB. Re-scored on exactly the vectors it ships, the page goes from 82.4% to
+**93.2% top-1** — 0.1 points above the research pipeline and inside its confidence interval, so
+4-bit quantisation and browser decode together cost nothing measurable at 306 classes.
+
+The interesting part is what the false premise had been holding up. Three separate conclusions
+elsewhere in the project rested on it: that giving the demo an "I don't know" answer required a
+model port first, that CLIP's weakness was a deployment constraint to be tolerated, and that a
+browser-sized alternative was an open research question. All three are now resolved, and none of
+them needed the work they appeared to need.
+
+Two guards came out of building it, both for failures that produce plausible numbers rather than
+errors. A stale cached copy of one asset beside a fresh copy of the other would have sliced
+768-wide vectors out of a 512-wide buffer and scored the result. And the self-test that was
+supposed to catch a bad export demanded an agreement its own measured drift could not reach, so it
+reported healthy browsers as broken while a genuinely broken export — `uint8`, at cosine 0.111 —
+sat two regimes away from the bound.
 
 ### Changed
 
@@ -56,6 +62,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   question "a browser-sized model that is not CLIP" is closed. `RESULTS.md`'s demo caveats and
   `README.md`'s demo section follow. `docs/chart.js` is deliberately unchanged: it plots the
   research pool-size ablation, where CLIP is still a legitimate comparison arm.
+
+### Fixed
+
+- **`?selftest=1` no longer reports its own expected outcome as a failure.** It required cosine
+  agreement above 0.99 on the *minimum* of 8 probes, a bound the decode drift documented in
+  section 6.3 cannot clear — the probes re-embed the same thumbnail bytes the build embedded, so
+  sharp and the browser canvas are the only difference, measured at 0.989 mean / 0.980 min for
+  DINOv2 and 0.986 for CLIP before it, worth nothing in top-1 either time. The check is there to
+  catch a broken export, which is not a subtle failure: `uint8` agrees at 0.111. The bound is now
+  0.95, clear of both regimes, and the message says which of the two it is looking at.
+
+- **The demo now refuses inconsistent reference data instead of scoring it.**
+  `references.json` and `references.bin` are fetched separately and carry no version in their
+  URLs, so a returning visitor can briefly hold a fresh copy of one and a cached copy of the
+  other — a real window now that the vectors changed width. Slicing 768 floats per image out of a
+  stale 512-wide CLIP buffer runs off the end and yields short vectors, which score as plausible
+  nonsense rather than failing. The loader now checks the buffer length against
+  `images x dimensions` and throws, naming the cache as the cause.
 
 ## [0.12.0] - 2026-09-08
 
