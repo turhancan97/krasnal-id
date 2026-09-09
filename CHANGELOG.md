@@ -12,6 +12,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **`?selftest=1` no longer reports its own expected outcome as a failure.** It required cosine
+  agreement above 0.99 on the *minimum* of 8 probes, a bound the decode drift documented in
+  section 6.3 cannot clear — the probes re-embed the same thumbnail bytes the build embedded, so
+  sharp and the browser canvas are the only difference, measured at 0.989 mean / 0.980 min for
+  DINOv2 and 0.986 for CLIP before it, worth nothing in top-1 either time. The check is there to
+  catch a broken export, which is not a subtle failure: `uint8` agrees at 0.111. The bound is now
+  0.95, clear of both regimes, and the message says which of the two it is looking at.
+
 - **The demo now refuses inconsistent reference data instead of scoring it.**
   `references.json` and `references.bin` are fetched separately and carry no version in their
   URLs, so a returning visitor can briefly hold a fresh copy of one and a cached copy of the

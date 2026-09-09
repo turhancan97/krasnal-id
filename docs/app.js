@@ -252,12 +252,28 @@ async function runSelfTest() {
   }
   agreements.sort((a, b) => a - b);
   const mean = agreements.reduce((a, b) => a + b, 0) / agreements.length;
-  const matched = agreements[0] > 0.99;
+  // These probes re-embed the same thumbnail bytes the build embedded, so the only
+  // difference is the decoder: sharp in Node against the canvas here. That drift is
+  // real, documented and harmless — measured at 0.989 mean / 0.980 min for DINOv2 and
+  // 0.986 for the CLIP that preceded it, worth nothing in top-1 either time. So a
+  // threshold of 0.99 on the *minimum*, as this check used to carry, reported the
+  // expected outcome as a failure.
+  //
+  // What the check is actually for is a broken export, and that failure is not subtle:
+  // `uint8` DINOv2 agrees with the pipeline at cosine 0.111. Anything above 0.9 is
+  // decode drift; anything near zero is a model that loaded and produces nonsense.
+  // 0.95 sits an order of magnitude clear of both regimes.
+  const BROKEN_BELOW = 0.95;
+  const broken = agreements[0] < BROKEN_BELOW;
   say(
     `Self-test: ${probes.length} probes, cosine agreement mean ` +
-      `${mean.toFixed(4)}, min ${agreements[0].toFixed(4)} — this browser ` +
-      `${matched ? "matches" : "differs from"} the build.`,
-    !matched,
+      `${mean.toFixed(4)}, min ${agreements[0].toFixed(4)} — ` +
+      (broken
+        ? "far below the 0.95 this should never cross. The model export is wrong, " +
+          "not merely decoding differently."
+        : "this browser reproduces the build, within the decode drift " +
+          "sharp and the canvas are known to differ by."),
+    broken,
   );
 }
 

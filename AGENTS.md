@@ -543,6 +543,14 @@ Measured on an identical 40-class, 200-image subset before committing to a dtype
   embeds the references with the same library, model and dtype the browser runs; both sides resize
   through `docs/resize.mjs`; the site re-scores the vectors it ships rather than quoting the
   research numbers.
+- **Decode drift re-measured for DINOv2 on 2026-09-09: 0.989 mean, 0.980 min** over the 8 shipped
+  probes, against 0.986 for the CLIP it replaced — so §6.3's "not eliminable and does not matter"
+  holds for the new model too. `?selftest=1`'s threshold was wrong and had to be recalibrated:
+  it required `min > 0.99`, which the documented drift cannot clear, so it reported the expected
+  outcome as a failure. The check exists to catch a broken export, and that failure is not subtle —
+  `uint8` sits at 0.111 — so the bound is now 0.95, an order of magnitude clear of both regimes.
+  **Set a tolerance from the two measured regimes it must separate, not from how close to 1.0 the
+  number looks like it should be.**
 - **Rebuilt over all 306 classes on 2026-09-08: the shipped vectors score 93.2% top-1, 95.9% top-5,
   MRR 0.945**, against the research DINOv2 pipeline's 93.1% [91.8, 94.3]. The browser/pipeline drift
   is 0.1 points *in the browser's favour* — inside the pipeline's own interval, so at 306 classes
