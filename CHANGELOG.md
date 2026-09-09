@@ -10,6 +10,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The demo now refuses inconsistent reference data instead of scoring it.**
+  `references.json` and `references.bin` are fetched separately and carry no version in their
+  URLs, so a returning visitor can briefly hold a fresh copy of one and a cached copy of the
+  other — a real window now that the vectors changed width. Slicing 768 floats per image out of a
+  stale 512-wide CLIP buffer runs off the end and yields short vectors, which score as plausible
+  nonsense rather than failing. The loader now checks the buffer length against
+  `images x dimensions` and throws, naming the cache as the cause.
+
 ### Changed
 
 - **The published demo now runs DINOv2, the same backbone as the research pipeline, instead of

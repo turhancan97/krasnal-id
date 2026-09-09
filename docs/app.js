@@ -63,6 +63,17 @@ async function loadReferences() {
   meta = await metaResponse.json();
   const raw = new Float32Array(await binResponse.arrayBuffer());
   const dim = meta.model.dimensions;
+  // references.json and references.bin are fetched separately and carry no version in
+  // their URLs, so a returning visitor can briefly hold a fresh one and a cached other.
+  // Silently slicing a mismatch is the dangerous outcome: 768-wide reads over a stale
+  // 512-wide CLIP buffer run off the end and return short vectors, which score as
+  // plausible nonsense rather than failing. Check the length instead.
+  if (raw.length !== meta.images.length * dim) {
+    throw new Error(
+      `reference data is inconsistent: ${raw.length} floats for ` +
+        `${meta.images.length} x ${dim}. A stale copy is cached — reload without cache.`,
+    );
+  }
   vectors = [];
   for (let i = 0; i < meta.images.length; i += 1) {
     vectors.push(raw.subarray(i * dim, (i + 1) * dim));
