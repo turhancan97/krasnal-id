@@ -57,7 +57,9 @@ CLIP 13.2 — CLIP leans on the photographer five times as hard. Verifying geome
 candidates recovers some of that: **94.0% for DINOv2 and 86.3% for CLIP**, and 79% of the gain
 survives when the photographer's own photographs are withheld. It goes no further because of the
 first stage's recall, and a larger candidate list, backbone fusion and query expansion were all
-measured and all failed.
+measured and all failed. Geometry does not rescue rejection either: it buys 0.65 AUROC points,
+because a known query's 144 average inliers collapse to 17 once its own photographer is withheld,
+making geometry *more* photographer-dependent than appearance rather than less.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
@@ -374,6 +376,37 @@ Draw the tradeoff from the saved artifacts:
 
 Every saved backbone is drawn on one axis, with its calibrated operating points marked on the
 descriptive curve they sit on. The figure lands at `results/open-set-rejection.png`.
+
+### Does geometry reject where similarity cannot?
+
+A similarity threshold fails here because every statue is the same semantic category, so a missing
+statue's nearest neighbour scores much like a present one's. Geometry is different evidence: two
+photographs of one physical object admit a consistent homography and two photographs of
+similar-but-different objects do not. Ask whether that rejects:
+
+    uv run krasnal-id experiment open-set-geometry
+    uv run krasnal-id experiment open-set-geometry --override backbone=clip
+
+Four signals are computed for every query in one pass — `cosine` (the control), `inliers_top_1`,
+`inliers_best` over the checked candidates, and `blended` — so they are compared on an identical
+population rather than across runs. Each is reported as a threshold-free AUROC, a false-acceptance
+rate at a leave-one-class-out calibrated operating point, and an in-sample balanced accuracy that
+is an upper bound. Results are written to `results/open_set_geometry-<backbone>.json`.
+
+Every signal is measured twice. The second condition withholds each query's own photographer from
+both arms, because [AGENTS.md](AGENTS.md) section 7.6 found the inlier separation inflated by
+same-visit near-duplicates:
+a geometric signal that works only when the same person shot the reference has not been shown to
+work at all. It also drops the queries whose statue one person documented, which are unanswerable
+rather than hard once that person is removed.
+
+    uv run krasnal-id experiment open-set-geometry --override experiment.top_k=10
+    uv run krasnal-id experiment open-set-geometry --override experiment.photographer_disjoint=false
+
+Widening `top_k` gives a present statue more chances to verify — and an absent one more chances to
+fluke a homography, which is the same tradeoff [RESULTS.md](RESULTS.md) section 11 measured for
+accuracy. It reads pixels,
+so it needs the images on disk and takes tens of minutes rather than seconds.
 
 ## Are phone photographs harder queries?
 

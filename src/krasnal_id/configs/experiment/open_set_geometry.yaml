@@ -1,0 +1,7 @@
+kind: open_set_geometry
+seed: ${seeds.primary}
+top_k: 5
+max_keypoints: 800
+blend_weight: 0.05
+target_known_acceptance: 0.9
+photographer_disjoint: true

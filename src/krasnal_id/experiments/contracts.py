@@ -125,6 +125,50 @@ class OpenSetRejectionResult(ExperimentResult):
     curve: tuple[RejectionOperatingPoint, ...] = ()
 
 
+class RejectionSignalOutcome(BaseModel):
+    """How well one score separates present statues from absent ones.
+
+    One row per candidate rejection signal, so cosine similarity and the geometric
+    signals are compared on identical query populations rather than across runs.
+    `auroc` is threshold-free and is the headline; the operating point beside it is
+    calibrated leave-one-class-out at `target_known_acceptance`, and
+    `in_sample_balanced_accuracy` is an upper bound chosen with the answers in view.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    signal: str = Field(min_length=1)
+    condition: str = Field(min_length=1)
+    auroc: float = Field(ge=0.0, le=1.0)
+    known_queries: int = Field(gt=0)
+    unknown_queries: int = Field(gt=0)
+    target_known_acceptance: float = Field(gt=0.0, lt=1.0)
+    achieved_known_acceptance: float = Field(ge=0.0, le=1.0)
+    false_acceptance: float = Field(ge=0.0, le=1.0)
+    in_sample_balanced_accuracy: float = Field(ge=0.0, le=1.0)
+    # Mean score on each population, in the signal's own units — cosine for the
+    # appearance signal, inlier counts for the geometric ones. Not comparable
+    # between rows, and present so a separation can be read as more than an AUROC.
+    known_mean_score: float
+    unknown_mean_score: float
+
+
+class OpenSetGeometryResult(ExperimentResult):
+    """Experiment result comparing rejection signals on one query population."""
+
+    signals: tuple[RejectionSignalOutcome, ...]
+
+    @model_validator(mode="after")
+    def validate_signals(self) -> "OpenSetGeometryResult":
+        """Require at least one signal, and no repeated signal within a condition."""
+        if not self.signals:
+            raise ValueError("a rejection comparison needs at least one signal")
+        keys = [(row.condition, row.signal) for row in self.signals]
+        if len(keys) != len(set(keys)):
+            raise ValueError("each signal may appear at most once per condition")
+        return self
+
+
 class FieldClassOutcome(BaseModel):
     """How one statue's field photographs ranked, beside its Commons photographs.
 

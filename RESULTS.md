@@ -36,9 +36,13 @@ your own browser.
    themselves shot on phones, DINOv2 loses 5.3 top-1 points and CLIP 15.6 against camera-shot
    queries — and not because they belong to easier or harder classes. It is a lower bound, since
    these are still Commons uploads.
-7. **Open-set rejection does not survive the larger pool.** Thresholding similarity looked usable
-   at 23 classes and does not work at 306: DINOv2's false-acceptance rate rises from 4% to 38% at
-   the same operating point. The earlier positive result was an artefact of a small pool.
+7. **Open-set rejection does not survive the larger pool, and geometry does not rescue it.**
+   Thresholding similarity looked usable at 23 classes and does not work at 306: DINOv2's
+   false-acceptance rate rises from 4% to 38% at the same operating point, so the earlier positive
+   result was an artefact of a small pool. Geometric verification, which *does* fix accuracy
+   (section 10), buys rejection 0.65 AUROC points and half a point of false acceptance — because a
+   known query's 144 average inliers collapse to 17 once its own photographer is withheld, making
+   geometry *more* photographer-dependent than appearance rather than less.
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -542,6 +546,55 @@ to need a model small enough to ship — which turned out to be untrue: a quanti
 56 MB against CLIP's 64 MB, and the demo now runs it. The deployment constraint that made CLIP's
 weakness worth tolerating did not exist.
 
+## 12. Can geometry say "I don't know"?
+
+Section 6 found no similarity threshold worth shipping: DINOv2 separates present statues from
+absent ones at 0.896 AUROC, but at a 90% acceptance target it lets **38.3%** of unknown statues
+through. Section 10 then found that geometry discriminates where similarity does not. The obvious
+question is whether inlier counts give the rejection that similarity cannot, and
+`experiment open-set-geometry` answers it on one query population, with cosine riding along as a
+control.
+
+**They do not.** DINOv2, 1,691 queries per arm, and 1,157 with each query's own photographer
+withheld from *both* arms:
+
+| Signal | AUROC | false accepts | AUROC, photographer withheld | false accepts |
+|---|---:|---:|---:|---:|
+| `cosine` (control) | 0.8959 | 38.3% | 0.7981 | 74.2% |
+| `inliers_top_1` | 0.8880 | 74.2% | 0.7149 | 75.4% |
+| `inliers_best` | 0.9015 | 48.4% | 0.7069 | 97.0% |
+| `blended` | **0.9071** | **35.1%** | **0.8046** | 73.7% |
+
+The control reproduces section 6 exactly — identical false acceptance, identical balanced accuracy,
+AUROC within 3.5e-7 — so the geometric rows can be read as the signal rather than the harness.
+
+**The honest gain is 0.65 AUROC points**, blended against cosine with the photographer withheld,
+and half a point of false acceptance: 74.2% to 73.7%. Three-quarters of unknown statues are still
+accepted. Geometry alone is *worse* than similarity in that condition, 0.707 and 0.715 against
+0.798; it is only ever useful blended, which is what section 10 found for accuracy too.
+
+**The interesting part is why it looked promising.** A known query averages **144 inliers** in the
+standard condition and **17** once its own photographer is withheld — an eightfold collapse — while
+the unknown arm barely moves, 4.15 to 3.78. A pair yielding 144 inliers is not two photographs of
+one statue; it is the same frame from the same visit. So geometry's apparent edge at rejection was
+largely re-identifying the photographer's own shot, and **geometry turns out to be more
+photographer-dependent than appearance, not less**: its AUROC falls 17 to 19 points between the two
+conditions where cosine falls 9.8. Reported without the disjoint condition, this experiment would
+have concluded the opposite.
+
+**One reading caveat.** The pure-inlier false-acceptance rates are not comparable to cosine's at
+face value. Inlier counts are small integers with heavy mass at zero, so the calibration cannot
+land on the 90% acceptance target — it achieves 95.6%, 91.8% and 99.3% instead, and
+`inliers_best`'s 97.0% is that artefact rather than a 97% failure at the requested point. AUROC is
+threshold-free and is the comparison that holds. That a signal on a coarse integer scale cannot be
+calibrated to a chosen acceptance rate at all is itself a reason not to ship it as a rejector.
+
+**What this leaves.** Both candidate confidence signals in this project have now been measured for
+rejection and both fail at 306 classes. The published demo names a statue for every photograph, and
+that is a measured position rather than an omission. Rejection here needs a signal neither
+appearance nor geometry provides — a calibrated model trained for it, or a second view of the same
+statue — not a threshold on what is already computed.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
@@ -567,6 +620,9 @@ weakness worth tolerating did not exist.
   cross-photographer at all.
 - **Class sizes are uneven.** The median class has 4 images and the largest 31, so a handful of
   well-photographed statues carry disproportionate weight in the query set.
+- **No rejection signal in this project works at 306 classes.** Both candidates have now been
+  measured (sections 6 and 12) and both fail, so naming a statue for every photograph is a measured
+  position rather than an omission — but it is still a limitation for any real use.
 - **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is
   still a Wrocław bronze dwarf photographed like the rest. A genuinely out-of-distribution query is
   a harder and untested case. The published demo does not threshold at all. That used to be forced

@@ -10,6 +10,33 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **`experiment open-set-geometry`: geometry as a rejection signal, not just a re-ranker.**
+  Section 7.3 found no similarity threshold worth shipping at 306 classes, because every statue is
+  the same semantic category and a missing statue's nearest neighbour scores much like a present
+  one's. Section 7.6 then showed that geometry discriminates where similarity does not, and nobody
+  had asked whether it *rejects*. Four signals — `cosine` as the control, `inliers_top_1`,
+  `inliers_best` and `blended` — are computed in one pass over one query population, so a
+  difference between them is the signal rather than the harness, and each is reported as a
+  threshold-free AUROC beside a leave-one-class-out calibrated operating point and an in-sample
+  upper bound.
+- **Every signal is measured with the query's own photographer withheld as well.** Section 7.6
+  found the inlier separation inflated by same-visit near-duplicates, so a known query can match
+  its own photographer's other frame from the same angle rather than the statue. The withholding
+  applies to both arms, not only the known one: the arms would otherwise search galleries of
+  different sizes, and gallery size is itself a difference in how hard the nearest wrong statue is
+  to find.
+- **The answer is no, and the disjoint condition is why it is credible.** Geometry buys rejection
+  0.65 AUROC points and half a point of false acceptance over similarity with the photographer
+  withheld — 74.2% to 73.7% of unknown statues still accepted — and inliers *alone* are worse than
+  cosine there, 0.707 against 0.798. The mechanism is measured: a known query averages **144
+  inliers** in the standard condition and **17** once its own photographer is withheld, while the
+  unknown arm barely moves. A pair yielding 144 inliers is the same frame from the same visit, not
+  two photographs of one statue, so **geometry is more photographer-dependent than appearance, not
+  less**. Reported without the disjoint condition this experiment would have concluded the
+  opposite. Recorded as section 7.8 and `RESULTS.md` section 12.
+
 ## [0.13.0] - 2026-09-09
 
 The published demo now runs the same model as the research pipeline, on a smaller download than

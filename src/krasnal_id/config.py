@@ -177,6 +177,31 @@ class OpenSetExperimentConfig(BaseModel):
         return self.target_known_acceptance[0]
 
 
+class OpenSetGeometryConfig(BaseModel):
+    """Geometric open-set rejection settings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["open_set_geometry"]
+    seed: int
+    # How many candidates from the cosine ranking get their geometry checked. The
+    # unknown arm has no correct answer, so a wider k only offers more chances to
+    # fluke a homography -- the same effect section 7.7 measured when widening
+    # verification from 10 to 50 bought 0.18 points.
+    top_k: int = Field(ge=1)
+    max_keypoints: int = Field(ge=16)
+    # The weight geometry carries in the blended signal. A single value, not a
+    # sweep: section 7.6 already swept it for accuracy, and this experiment asks a
+    # different question of the same evidence.
+    blend_weight: float = Field(ge=0.0)
+    target_known_acceptance: float = Field(gt=0.0, lt=1.0)
+    # Repeat every signal with the query's own photographer withheld from both
+    # arms. Section 7.6 found the inlier separation inflated by same-visit
+    # near-duplicates, so a geometric signal that only works when the same person
+    # shot the reference has not been shown to work at all.
+    photographer_disjoint: bool = True
+
+
 class CameraGapExperimentConfig(BaseModel):
     """Phone-versus-camera query comparison settings."""
 
@@ -319,6 +344,7 @@ ExperimentConfig = Annotated[
     | GeoAblationConfig
     | ProbeExperimentConfig
     | OpenSetExperimentConfig
+    | OpenSetGeometryConfig
     | CameraGapExperimentConfig
     | FieldGapExperimentConfig
     | PhotographerGapConfig

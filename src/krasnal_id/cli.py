@@ -78,6 +78,10 @@ from krasnal_id.experiments.confusion_analysis import (
 from krasnal_id.experiments.field_gap import FieldGapError, run_field_gap
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
+from krasnal_id.experiments.open_set_geometry import (
+    OpenSetGeometryError,
+    run_open_set_geometry,
+)
 from krasnal_id.experiments.photographer_gap import (
     PhotographerGapError,
     run_photographer_gap,
@@ -772,6 +776,39 @@ def open_set_experiment(override: OverrideOption = None) -> None:
             f"{rejection.mean_top_similarity:+.4f}, usually matched "
             f"{rejection.nearest_display_name}"
         )
+
+
+@experiment_app.command("open-set-geometry")
+def open_set_geometry_experiment(override: OverrideOption = None) -> None:
+    """Compare appearance and geometry as signals for rejecting unknown dwarves."""
+    config = load_config(["experiment=open_set_geometry", *(override or [])])
+    configure_logging(config.logging)
+    guard_result_path(config)
+    try:
+        result = run_open_set_geometry(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        OpenSetGeometryError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Geometric open-set rejection error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Geometric open-set rejection complete: backbone={result.backbone} result={path}")
+    for condition in dict.fromkeys(row.condition for row in result.signals):
+        rows = [row for row in result.signals if row.condition == condition]
+        typer.echo(
+            f"  {condition} ({rows[0].known_queries} known, {rows[0].unknown_queries} unknown):"
+        )
+        for row in rows:
+            typer.echo(
+                f"    {row.signal:<14} AUROC {row.auroc:.4f}  "
+                f"false accepts {row.false_acceptance:6.1%} at "
+                f"{row.achieved_known_acceptance:.1%} known  "
+                f"best balanced {row.in_sample_balanced_accuracy:.4f}"
+            )
 
 
 @experiment_app.command("camera-gap")

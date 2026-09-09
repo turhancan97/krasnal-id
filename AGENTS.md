@@ -649,7 +649,8 @@ Measured on 2026-09-03, recorded here because two of these constrain future work
   no longer the obstacle** — but the threshold still is. §7.3 measures DINOv2's false-acceptance
   rising from 4% at 23 classes to 38% at 306 at the same operating point, so there is no operating
   point worth shipping at this scale for either backbone. The demo's silence is now a measured
-  conclusion rather than a limitation of its model.
+  conclusion rather than a limitation of its model — and section 7.8 closes the obvious escape
+  route: geometric evidence, which discriminates where similarity fails, does not reject either.
 - A DINOv2 port would still have to re-measure its own threshold on the vectors it ships. Section
   6.3 measured `q4` quantization as indistinguishable from full precision, but it measured that
   for *ranking*, and rejection depends on absolute similarity rather than on order. That
@@ -824,6 +825,46 @@ out to be false: §6.5 replaced it with DINOv2 at q4, which is *smaller* than th
 so the demo now runs the same model as the pipeline. **Nothing in this project should use CLIP as
 a first stage.**
 
+### 7.8 Geometric rejection result (2026-09-09)
+
+**Geometry does not fix open-set rejection, and the reason it looked like it would is the
+photographer.** Section 7.6 showed geometry discriminating where similarity does not, so the
+obvious next question was whether inliers give the "I don't know" answer section 7.3 could not
+calibrate. They do not. All four signals over one query population, DINOv2:
+
+| Signal | AUROC | false accepts | at known acceptance | AUROC, photographer withheld | false accepts |
+|---|---:|---:|---:|---:|---:|
+| `cosine` (control) | 0.8959 | 38.3% | 90.0% | 0.7981 | 74.2% |
+| `inliers_top_1` | 0.8880 | 74.2% | 95.6% | 0.7149 | 75.4% |
+| `inliers_best` | 0.9015 | 48.4% | 91.8% | 0.7069 | 97.0% |
+| `blended` | **0.9071** | **35.1%** | 89.9% | **0.8046** | 73.7% |
+
+- **The control reproduces section 7.3 exactly**, which is what licenses reading the rest: identical
+  false acceptance, identical known acceptance, identical in-sample balanced accuracy, AUROC within
+  3.5e-7. Any difference in the geometric rows is the signal and not the harness.
+- **The honest gain is 0.65 AUROC points and half a point of false acceptance** — 74.2% to 73.7%
+  with the photographer withheld. Three-quarters of unknown statues are still accepted. There is no
+  operating point worth shipping, so the demo's silence stands as a measured conclusion for
+  geometry too, not only for similarity.
+- **Geometry alone is *worse* than similarity once the photographer is withheld**, 0.707 and 0.715
+  against 0.798. It is only ever useful blended, which is also what section 7.6 found for accuracy.
+- **The mechanism, and the reason this experiment needed the disjoint condition: a known query
+  averages 144 inliers in the standard condition and 17 with its own photographer withheld.** An
+  eightfold collapse. 144 inliers is not two photographs of one statue, it is the same frame from
+  the same visit; the unknown arm barely moves (4.15 to 3.78) because it never had a near-duplicate
+  to find. Geometry's apparent edge at rejection was largely re-identifying the photographer's own
+  shot, and the standard condition alone would have reported that as a finding. **Geometry is more
+  photographer-dependent than appearance, not less** — its AUROC falls 17 to 19 points between
+  conditions where cosine falls 9.8.
+- **Do not compare the pure-inlier false-acceptance rates against cosine's at face value.** Inlier
+  counts are small integers with heavy mass at zero, so leave-one-class-out calibration cannot land
+  on the 90% target: it achieves 95.6%, 91.8% and 99.3%. `inliers_best`'s 97.0% is that artefact,
+  not a 97% failure at the requested operating point. **AUROC is the comparison that holds here**,
+  because it is threshold-free; a signal on a coarse integer scale cannot be calibrated to an
+  arbitrary acceptance rate at all, which is itself a reason not to ship it.
+- Measured on DINOv2 only. CLIP is one command away and was not run: it is weaker at both
+  ingredients, and a negative that already holds for the stronger backbone does not need it.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -868,6 +909,11 @@ that a constraint the project had been designing around did not exist.
   *representation*: a stronger or fine-tuned embedding, or local features used as a first stage
   rather than a re-ranker. Neither has been tried, and the second would be a different pipeline
   rather than a parameter.
+- ~~**Does geometric evidence reject where similarity cannot?**~~ — answered on 2026-09-09, no;
+  see §7.8. What it leaves is sharper than what it closed: **rejection here needs a signal neither
+  appearance nor geometry provides.** Both scores this project computes have now been measured for
+  it and both fail at 306 classes, so the next candidate is not another threshold on the same
+  evidence — it is a model trained to abstain, or a second view of the same statue.
 - ~~**A browser-sized model that is not CLIP**~~ — done on 2026-09-08; see §6.5. No distillation
   was needed: `Xenova/dinov2-base` at q4 is 56 MB against the 64 MB CLIP export it replaced, so the
   demo runs the pipeline's own model on a *smaller* download. The premise that CLIP was there for
@@ -960,6 +1006,7 @@ krasnal-id/
 │   │   ├── probe_baseline.py  # does a trained classifier beat retrieval?
 │   │   ├── confusion_analysis.py
 │   │   ├── open_set.py        # unknown-query rejection
+│   │   ├── open_set_geometry.py # does geometry reject where similarity cannot?
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
 │   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
 │   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
