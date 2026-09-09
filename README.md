@@ -57,9 +57,10 @@ CLIP 13.2 — CLIP leans on the photographer five times as hard. Verifying geome
 candidates recovers some of that: **94.0% for DINOv2 and 86.3% for CLIP**, and 79% of the gain
 survives when the photographer's own photographs are withheld. It goes no further because of the
 first stage's recall, and a larger candidate list, backbone fusion and query expansion were all
-measured and all failed. Geometry does not rescue rejection either: it buys 0.65 AUROC points,
-because a known query's 144 average inliers collapse to 17 once its own photographer is withheld,
-making geometry *more* photographer-dependent than appearance rather than less.
+measured and all failed. Geometry does not rescue rejection either — 0.65 AUROC points for DINOv2
+and 2.3 for CLIP, with four-fifths of unknown statues still accepted — because a known query's 144
+average inliers collapse to 17 once its own photographer is withheld, making geometry *more*
+photographer-dependent than appearance rather than less.
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.

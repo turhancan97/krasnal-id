@@ -832,16 +832,20 @@ photographer.** Section 7.6 showed geometry discriminating where similarity does
 obvious next question was whether inliers give the "I don't know" answer section 7.3 could not
 calibrate. They do not. All four signals over one query population, DINOv2:
 
-| Signal | AUROC | false accepts | at known acceptance | AUROC, photographer withheld | false accepts |
-|---|---:|---:|---:|---:|---:|
-| `cosine` (control) | 0.8959 | 38.3% | 90.0% | 0.7981 | 74.2% |
-| `inliers_top_1` | 0.8880 | 74.2% | 95.6% | 0.7149 | 75.4% |
-| `inliers_best` | 0.9015 | 48.4% | 91.8% | 0.7069 | 97.0% |
-| `blended` | **0.9071** | **35.1%** | 89.9% | **0.8046** | 73.7% |
+| Signal | DINOv2 AUROC | disjoint | CLIP AUROC | disjoint |
+|---|---:|---:|---:|---:|
+| `cosine` (control) | 0.8959 | 0.7981 | 0.8059 | 0.6527 |
+| `inliers_top_1` | 0.8880 | 0.7149 | 0.8532 | 0.6464 |
+| `inliers_best` | 0.9015 | 0.7069 | **0.8798** | 0.6635 |
+| `blended` | **0.9071** | **0.8046** | 0.8583 | **0.6754** |
 
-- **The control reproduces section 7.3 exactly**, which is what licenses reading the rest: identical
-  false acceptance, identical known acceptance, identical in-sample balanced accuracy, AUROC within
-  3.5e-7. Any difference in the geometric rows is the signal and not the harness.
+False acceptance at a 90% known-acceptance target, best signal against the control: DINOv2 38.3% to
+35.1% standard and 74.2% to 73.7% disjoint; CLIP 67.4% to 60.9% and 85.1% to 84.4%.
+
+- **Both controls reproduce section 7.3 exactly**, which is what licenses reading the rest:
+  identical false acceptance, identical known acceptance, identical in-sample balanced accuracy,
+  AUROC within 3.5e-7 for DINOv2 and 1.8e-7 for CLIP. Any difference in the geometric rows is the
+  signal and not the harness.
 - **The honest gain is 0.65 AUROC points and half a point of false acceptance** — 74.2% to 73.7%
   with the photographer withheld. Three-quarters of unknown statues are still accepted. There is no
   operating point worth shipping, so the demo's silence stands as a measured conclusion for
@@ -862,8 +866,24 @@ calibrate. They do not. All four signals over one query population, DINOv2:
   not a 97% failure at the requested operating point. **AUROC is the comparison that holds here**,
   because it is threshold-free; a signal on a coarse integer scale cannot be calibrated to an
   arbitrary acceptance rate at all, which is itself a reason not to ship it.
-- Measured on DINOv2 only. CLIP is one command away and was not run: it is weaker at both
-  ingredients, and a negative that already holds for the stronger backbone does not need it.
+- **Geometry helps CLIP five times as much as DINOv2, and that is the same pattern a third time.**
+  Disjoint, the best geometric signal gains CLIP 2.3 AUROC points against DINOv2's 0.65; standard,
+  7.4 against 1.1. Section 4's linear probe was worth 3.1 points to CLIP and nothing to DINOv2, and
+  section 10's re-ranking gained CLIP 3.4 top-1 points against DINOv2's 0.9. **Every add-on this
+  project has measured helps only where the representation is weak** — they substitute for a poor
+  backbone rather than extending a good one. It is not evidence that geometry rejects; it is
+  evidence that CLIP's similarity is bad enough to be worth replacing with almost anything.
+- **The inlier distributions are nearly identical across backbones, which is the internal check
+  that the mechanism is real.** SIFT reads pixels and knows nothing about the embedding, so only
+  the candidate sets differ between the two runs — and the known-arm means come out 156.4 against
+  152.5 standard and 21.5 against 19.5 disjoint, with the unknown arms at 7.28 against 7.16 and
+  6.51 against 6.53. The eightfold collapse is a property of *this dataset's photographers*, not of
+  either backbone, and it reproduces independently in both runs.
+- **CLIP disjoint is where the integer-tie problem becomes total: `inliers_top_1` records 100.0%
+  false acceptance at 100.0% known acceptance.** More than a tenth of known queries have zero
+  inliers against their top-1 candidate, so the 90% quantile *is* zero and every query clears it.
+  The signal did not fail to reject; it could not express a threshold at all. Treat that row as a
+  demonstration of the calibration limit rather than a measurement.
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.

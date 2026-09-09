@@ -36,6 +36,19 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   two photographs of one statue, so **geometry is more photographer-dependent than appearance, not
   less**. Reported without the disjoint condition this experiment would have concluded the
   opposite. Recorded as section 7.8 and `RESULTS.md` section 12.
+- **Measured on both backbones, and geometry helps CLIP five times as much — which is this
+  project's recurring pattern rather than a point in geometry's favour.** Disjoint, the best
+  geometric signal gains CLIP 2.3 AUROC points against DINOv2's 0.65. Section 4's linear probe was
+  worth 3.1 points to CLIP and nothing to DINOv2, and section 10's re-ranking gained CLIP 3.4
+  top-1 points against DINOv2's 0.9: every add-on measured here helps only where the representation
+  is weak, substituting for a poor backbone rather than extending a good one.
+- The two runs cross-check each other. SIFT reads pixels and knows nothing about the embedding, so
+  only the candidate sets differ between them — and the known-arm inlier means agree within 3%
+  (156.4 against 152.5 standard, 21.5 against 19.5 disjoint). The collapse is a property of this
+  dataset's photographers rather than of either backbone.
+- CLIP's disjoint `inliers_top_1` row records 100% false acceptance at 100% known acceptance, which
+  is the calibration limit in full rather than a measurement: more than a tenth of known queries
+  have zero inliers against their top-1, so the 90% quantile is zero and every query clears it.
 
 ## [0.13.0] - 2026-09-09
 

@@ -40,9 +40,10 @@ your own browser.
    Thresholding similarity looked usable at 23 classes and does not work at 306: DINOv2's
    false-acceptance rate rises from 4% to 38% at the same operating point, so the earlier positive
    result was an artefact of a small pool. Geometric verification, which *does* fix accuracy
-   (section 10), buys rejection 0.65 AUROC points and half a point of false acceptance — because a
-   known query's 144 average inliers collapse to 17 once its own photographer is withheld, making
-   geometry *more* photographer-dependent than appearance rather than less.
+   (section 10), buys rejection 0.65 AUROC points for DINOv2 and 2.3 for CLIP — because a known
+   query's 144 average inliers collapse to 17 once its own photographer is withheld, making
+   geometry *more* photographer-dependent than appearance rather than less. Four-fifths of unknown
+   statues are still accepted.
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -555,23 +556,25 @@ question is whether inlier counts give the rejection that similarity cannot, and
 `experiment open-set-geometry` answers it on one query population, with cosine riding along as a
 control.
 
-**They do not.** DINOv2, 1,691 queries per arm, and 1,157 with each query's own photographer
-withheld from *both* arms:
+**They do not.** AUROC over 1,691 queries per arm, and over the 1,157 answerable ones with each
+query's own photographer withheld from *both* arms:
 
-| Signal | AUROC | false accepts | AUROC, photographer withheld | false accepts |
+| Signal | DINOv2 | disjoint | CLIP | disjoint |
 |---|---:|---:|---:|---:|
-| `cosine` (control) | 0.8959 | 38.3% | 0.7981 | 74.2% |
-| `inliers_top_1` | 0.8880 | 74.2% | 0.7149 | 75.4% |
-| `inliers_best` | 0.9015 | 48.4% | 0.7069 | 97.0% |
-| `blended` | **0.9071** | **35.1%** | **0.8046** | 73.7% |
+| `cosine` (control) | 0.8959 | 0.7981 | 0.8059 | 0.6527 |
+| `inliers_top_1` | 0.8880 | 0.7149 | 0.8532 | 0.6464 |
+| `inliers_best` | 0.9015 | 0.7069 | **0.8798** | 0.6635 |
+| `blended` | **0.9071** | **0.8046** | 0.8583 | **0.6754** |
 
-The control reproduces section 6 exactly — identical false acceptance, identical balanced accuracy,
-AUROC within 3.5e-7 — so the geometric rows can be read as the signal rather than the harness.
+Both controls reproduce section 6 exactly — identical false acceptance, identical balanced
+accuracy, AUROC within 2e-7 — so the geometric rows can be read as the signal rather than the
+harness.
 
-**The honest gain is 0.65 AUROC points**, blended against cosine with the photographer withheld,
-and half a point of false acceptance: 74.2% to 73.7%. Three-quarters of unknown statues are still
-accepted. Geometry alone is *worse* than similarity in that condition, 0.707 and 0.715 against
-0.798; it is only ever useful blended, which is what section 10 found for accuracy too.
+**The honest gain is 0.65 AUROC points for DINOv2 and 2.3 for CLIP**, blended against cosine with
+the photographer withheld. In false acceptance at a 90% acceptance target that is 74.2% to 73.7%
+and 85.1% to 84.4%: four-fifths of unknown statues still accepted, either way. Geometry alone is
+*worse* than similarity for DINOv2 in that condition, 0.707 and 0.715 against 0.798; it is only
+ever useful blended, which is what section 10 found for accuracy too.
 
 **The interesting part is why it looked promising.** A known query averages **144 inliers** in the
 standard condition and **17** once its own photographer is withheld — an eightfold collapse — while
@@ -584,10 +587,28 @@ have concluded the opposite.
 
 **One reading caveat.** The pure-inlier false-acceptance rates are not comparable to cosine's at
 face value. Inlier counts are small integers with heavy mass at zero, so the calibration cannot
-land on the 90% acceptance target — it achieves 95.6%, 91.8% and 99.3% instead, and
-`inliers_best`'s 97.0% is that artefact rather than a 97% failure at the requested point. AUROC is
+land on the 90% acceptance target — it achieves 95.6%, 91.8% and 99.3% instead. CLIP disjoint
+shows the limit in full: `inliers_top_1` records 100% false acceptance at 100% known acceptance,
+because more than a tenth of known queries have zero inliers against their top-1, so the 90%
+quantile *is* zero and every query clears it. That signal did not fail to reject; it could not
+express a threshold at all. AUROC is
 threshold-free and is the comparison that holds. That a signal on a coarse integer scale cannot be
 calibrated to a chosen acceptance rate at all is itself a reason not to ship it as a rejector.
+
+**Geometry helps CLIP five times as much, and that is this project's recurring pattern rather
+than a point in geometry's favour.** Section 4's linear probe was worth 3.1 points to CLIP and
+nothing to DINOv2; section 10's re-ranking gained CLIP 3.4 top-1 points against DINOv2's 0.9; here
+the best geometric signal gains CLIP 2.3 AUROC points against DINOv2's 0.65. **Every add-on
+measured here helps only where the representation is weak.** They substitute for a poor backbone
+rather than extending a good one, so CLIP's larger gain says its similarity is bad enough to be
+worth replacing with almost anything — not that geometry rejects.
+
+**An internal check worth stating, because it is what makes the 144-to-17 collapse credible.** SIFT
+reads pixels and knows nothing about the embedding, so between the two runs only the candidate sets
+differ. The known-arm inlier means come out 156.4 against 152.5 in the standard condition and 21.5
+against 19.5 disjoint, with the unknown arms at 7.28 against 7.16 and 6.51 against 6.53 — agreement
+within 3%. The collapse is a property of this dataset's photographers, not of either backbone, and
+it reproduced independently in both runs.
 
 **What this leaves.** Both candidate confidence signals in this project have now been measured for
 rejection and both fail at 306 classes. The published demo names a statue for every photograph, and
