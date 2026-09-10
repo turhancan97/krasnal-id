@@ -10,6 +10,29 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-09-10
+
+The site becomes two pages, the identifier offers both backbones, and the README shows its
+results instead of only describing them.
+
+`index.html` had grown to 550 lines and the upload control a visitor comes for sat under a fold
+of prose. The findings move to their own page and the identifier drops to about 100 lines.
+
+The backbone switch is the substantive change, and the interesting part is what it must not say.
+CLIP is 64 MB against DINOv2 q4's 56 MB and scores 82.4% against 93.2%: it is the larger download
+*and* the weaker model, so offering it as the lighter option would put back on the front page the
+exact premise `0.13.0` was written to disprove. It is there as a comparison instead. Most of what
+this project has found is about the gap between these two representations, and switching re-ranks
+the photograph already on screen, so a visitor sees that gap on their own photograph rather than
+reading it off a chart. Both backbones reproduce their previous single-backbone builds exactly —
+the DINOv2 vector file is byte-identical to `0.13.0`'s.
+
+Three defects surfaced only because the pages were finally loaded in a real browser and
+screenshotted rather than read. The co-located warning had been rendering as an empty red box
+under almost every result, the headline chart's tooltip had never worked at all, and the demo
+build had been running 17.6x slower than it needed to for as long as it has existed. None of
+them fails loudly; each one produces a page that looks approximately right.
+
 ### Added
 
 - **`visualize retrieval-examples`: the retrieval itself, not an average of it.** Every other

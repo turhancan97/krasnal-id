@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.14.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.15.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and twelve experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -37,7 +37,10 @@ of raising it that all fail. `0.13.0` put the pipeline's own DINOv2 in the brows
 download than the CLIP it replaced, taking the published demo from 82.4% to 93.2% top-1 and
 retiring a size constraint the project had been designing around that turned out not to exist.
 `0.14.0` asked whether geometry can reject what similarity cannot, and answered no — while finding
-that geometry leans on the photographer harder than appearance does.
+that geometry leans on the photographer harder than appearance does. `0.15.0` is the first release
+about the site rather than the research: the findings move to their own page, the identifier
+offers both backbones so the gap between them can be seen on a visitor's own photograph, and three
+defects that only a real browser could show turn up in the process.
 
 The dataset is published at
 [turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
@@ -106,7 +109,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.14.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.15.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -152,7 +155,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.14.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.15.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

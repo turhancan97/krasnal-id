@@ -951,7 +951,9 @@ the first accuracy improvement from method rather than data. `0.12.0` closes the
 open questions by putting DINOv2 in the browser (§6.5) — the only release so far whose finding is
 that a constraint the project had been designing around did not exist. `0.14.0` measures geometry
 as a rejection signal (§7.8) and finds it does not reject, and that geometry is more
-photographer-dependent than appearance rather than less.
+photographer-dependent than appearance rather than less. `0.15.0` is the first release about the
+site rather than the research (§6.6): two pages, a backbone switch offered as a comparison, and
+three defects that only loading the page in a browser could surface.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a
