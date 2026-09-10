@@ -1,5 +1,5 @@
 /**
- * Build the static demo's data files.
+ * Build the static demo's data files, for every backbone the page can run.
  *
  * The reference vectors are produced by *the same library, model and dtype the
  * browser runs*, not by the Python pipeline. That is not a preference: measured
@@ -13,14 +13,26 @@
  * transformers.js downscales a 2000px photograph in one aliasing step and loses
  * roughly two points of accuracy outright.
  *
+ * Each backbone gets its own `references-<id>.bin`; `references.json` carries
+ * the metadata they share and one entry per backbone describing its vectors.
+ * Every photograph is decoded once and scaled once per backbone, because the
+ * two want different shortest edges but the same pixels behind them.
+ *
  *   cd docs/demo && npm install && node build.mjs
  *
  * Model weights are fetched from the Hugging Face CDN on first run and cached.
  */
-import { AutoModel, AutoProcessor, RawImage, env } from "@huggingface/transformers";
+import {
+  AutoModel,
+  AutoProcessor,
+  CLIPVisionModelWithProjection,
+  RawImage,
+  env,
+} from "@huggingface/transformers";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
+import { BACKBONES, unitVector, vectorFile } from "../backbones.mjs";
 import { resizeToShortestEdge } from "../resize.mjs";
 
 env.allowLocalModels = false;
@@ -29,17 +41,34 @@ const REPO = resolve(import.meta.dirname, "../..");
 const OUT = join(REPO, "docs/assets");
 const THUMBS = join(OUT, "thumbs");
 
-// The same model the research pipeline uses, so the page and the results are no
-// longer different models. q4 is 56 MB — smaller than the 64 MB CLIP this
-// replaced — and measured on a 40-class subset it costs 1.0 point against fp16
-// (173 MB) while beating CLIP by 7.5. Never `uint8` here: it agrees with the
-// pipeline at cosine 0.11, which is noise, the same trap as CLIP's `quantized`.
-const MODEL_ID = "Xenova/dinov2-base";
-const DTYPE = "q4";
-const EMBED_SHORTEST_EDGE = 256;  // DINOv2 resizes to 256 then crops 224.
 const THUMB_LONG_SIDE = 320;
 const CO_LOCATED_METRES = 25;
 const SELF_TEST_COUNT = 8;
+
+// Resolved here rather than in backbones.mjs because the browser loads
+// transformers.js from a CDN and this file loads it from npm.
+const CLASSES = { AutoModel, CLIPVisionModelWithProjection };
+
+// Measured on this dataset, embedding DINOv2 q4 where the build actually had
+// four usable CPUs:
+//
+//   default   7502 ms/image   (~7 hours for both backbones)
+//   1 thread   613 ms/image
+//   4 threads  426 ms/image   (~24 minutes)
+//   8 threads 1636 ms/image
+//  16 threads 3497 ms/image
+//
+// onnxruntime-node sizes its thread pool from the host's core count rather than
+// from the cpuset the process is confined to, so on a shared or containerised
+// machine it opens a thread per host core, cannot pin any of them — the
+// pthread_setaffinity_np errors it prints are exactly that — and spends its
+// time in contention instead of in matrix multiplies. Past the number of CPUs
+// really available, every further thread is pure overhead.
+//
+// Set this to the CPUs the build can actually use (`nproc`), not to the ones
+// `/proc/cpuinfo` lists, and re-measure rather than assuming this number
+// transfers to another machine.
+const ONNX_THREADS = 4;
 
 const manifest = JSON.parse(readFileSync(join(REPO, "data/manifest.json"), "utf8"));
 const images = [...manifest.images].sort((a, b) => a.image_id.localeCompare(b.image_id));
@@ -47,49 +76,51 @@ const dwarfs = [...manifest.dwarfs].sort((a, b) => a.dwarf_id.localeCompare(b.dw
 const names = new Map(dwarfs.map((d) => [d.dwarf_id, d.display_name]));
 
 console.log(`${images.length} reference photographs, ${dwarfs.length} dwarves`);
+console.log(`backbones: ${BACKBONES.map((b) => `${b.label} (${b.dtype})`).join(", ")}`);
+
+// --- models -----------------------------------------------------------------
+const loaded = new Map();
+for (const spec of BACKBONES) {
+  const ModelClass = CLASSES[spec.className];
+  if (!ModelClass) throw new Error(`no model class named ${spec.className}`);
+  loaded.set(spec.id, {
+    processor: await AutoProcessor.from_pretrained(spec.modelId),
+    model: await ModelClass.from_pretrained(spec.modelId, {
+      dtype: spec.dtype,
+      session_options: { intraOpNumThreads: ONNX_THREADS },
+    }),
+  });
+  console.log(`model ready: ${spec.modelId} (${spec.dtype})`);
+}
 
 /**
- * Decode, then downscale with the resampler the browser also uses.
+ * Decode once, keeping the raw pixels so each backbone can scale its own way.
  *
  * sharp only decodes here. Its own resize is deliberately not used: it does not
  * match a browser's, and the query and the reference have to agree.
  */
-async function readScaled(file) {
-  const { data, info } = await sharp(file)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+async function decode(file) {
+  const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  return { pixels: new Uint8ClampedArray(data), width: info.width, height: info.height };
+}
+
+/** Embed already-decoded pixels with one backbone, at that backbone's edge. */
+async function embedDecoded(spec, decoded) {
   const scaled = resizeToShortestEdge(
-    new Uint8ClampedArray(data),
-    info.width,
-    info.height,
-    EMBED_SHORTEST_EDGE,
+    decoded.pixels,
+    decoded.width,
+    decoded.height,
+    spec.shortestEdge,
   );
-  return new RawImage(scaled.data, scaled.width, scaled.height, 4);
+  const image = new RawImage(scaled.data, scaled.width, scaled.height, 4);
+  const { processor, model } = loaded.get(spec.id);
+  return unitVector(spec.pool(await model(await processor(image))));
 }
 
-const unit = (values) => {
-  let sum = 0;
-  for (const value of values) sum += value * value;
-  const norm = Math.sqrt(sum) || 1;
-  return Float32Array.from(values, (value) => value / norm);
-};
-
-const processor = await AutoProcessor.from_pretrained(MODEL_ID);
-const model = await AutoModel.from_pretrained(MODEL_ID, { dtype: DTYPE });
-console.log(`model ready: ${MODEL_ID} (${DTYPE})`);
-
-async function embed(file) {
-  const output = await model(await processor(await readScaled(file)));
-  // Position 0 of the sequence is the CLS token, which is exactly what the
-  // Python pipeline takes: `outputs.last_hidden_state[:, 0, :]`. Taking the mean
-  // over patches instead would be a different embedding and would not compare.
-  const hidden = output.last_hidden_state;
-  const width = hidden.dims[hidden.dims.length - 1];
-  return unit(hidden.data.subarray(0, width));
-}
+const embedFile = async (spec, file) => embedDecoded(spec, await decode(file));
 
 // --- thumbnails -------------------------------------------------------------
+// Model-independent, so built once regardless of how many backbones ship.
 mkdirSync(THUMBS, { recursive: true });
 const thumbs = new Map();
 for (const image of images) {
@@ -103,24 +134,27 @@ for (const image of images) {
 console.log(`wrote ${thumbs.size} thumbnails`);
 
 // --- reference vectors ------------------------------------------------------
-const vectors = [];
+const vectors = new Map(BACKBONES.map((spec) => [spec.id, []]));
 for (const [index, image] of images.entries()) {
-  vectors.push(await embed(join(REPO, image.local_path)));
+  const decoded = await decode(join(REPO, image.local_path));
+  for (const spec of BACKBONES) {
+    vectors.get(spec.id).push(await embedDecoded(spec, decoded));
+  }
   if ((index + 1) % 40 === 0) console.log(`  embedded ${index + 1}/${images.length}`);
 }
-const dim = vectors[0].length;
 
 // --- leave-one-out score, on exactly the vectors being shipped --------------
-function score(queries) {
+function score(reference, queries) {
+  const dim = reference[0].length;
   let top1 = 0;
   let top5 = 0;
   let reciprocal = 0;
   for (let q = 0; q < queries.length; q += 1) {
     const best = new Map();
-    for (let r = 0; r < vectors.length; r += 1) {
+    for (let r = 0; r < reference.length; r += 1) {
       if (r === q) continue;
       let dot = 0;
-      for (let d = 0; d < dim; d += 1) dot += queries[q][d] * vectors[r][d];
+      for (let d = 0; d < dim; d += 1) dot += queries[q][d] * reference[r][d];
       const dwarf = images[r].dwarf_id;
       if (!best.has(dwarf) || dot > best.get(dwarf)) best.set(dwarf, dot);
     }
@@ -133,23 +167,50 @@ function score(queries) {
   const n = queries.length;
   return { top_1: top1 / n, top_5: top5 / n, mrr: reciprocal / n, folds: n };
 }
-const measured = score(vectors);
-console.log(
-  `shipped vectors score top-1 ${(measured.top_1 * 100).toFixed(1)}%, ` +
-    `top-5 ${(measured.top_5 * 100).toFixed(1)}%, MRR ${measured.mrr.toFixed(4)}`,
-);
 
 // --- self test: vectors for thumbnails the page can re-fetch ---------------
 // Lets the page verify its own pipeline in a real browser, where the resampler
-// is the canvas rather than sharp.
+// is the canvas rather than sharp. Model-specific, so one set per backbone.
 const step = Math.max(1, Math.floor(images.length / SELF_TEST_COUNT));
 const probes = images.filter((_, index) => index % step === 0).slice(0, SELF_TEST_COUNT);
-const selfTest = [];
-for (const image of probes) {
-  const vector = await embed(join(THUMBS, thumbs.get(image.image_id)));
-  selfTest.push({ thumb: thumbs.get(image.image_id), vector: [...vector].map((v) => Number(v.toFixed(6))) });
+
+const backbones = {};
+for (const spec of BACKBONES) {
+  const built = vectors.get(spec.id);
+  const dim = built[0].length;
+  const measured = score(built, built);
+  console.log(
+    `${spec.label}: top-1 ${(measured.top_1 * 100).toFixed(1)}%, ` +
+      `top-5 ${(measured.top_5 * 100).toFixed(1)}%, MRR ${measured.mrr.toFixed(4)}`,
+  );
+
+  const selfTest = [];
+  for (const image of probes) {
+    const vector = await embedFile(spec, join(THUMBS, thumbs.get(image.image_id)));
+    selfTest.push({
+      thumb: thumbs.get(image.image_id),
+      vector: [...vector].map((v) => Number(v.toFixed(6))),
+    });
+  }
+
+  const buffer = Buffer.alloc(built.length * dim * 4);
+  built.forEach((vector, i) =>
+    vector.forEach((value, d) => buffer.writeFloatLE(value, (i * dim + d) * 4)),
+  );
+  writeFileSync(join(OUT, vectorFile(spec.id)), buffer);
+
+  backbones[spec.id] = {
+    repo: spec.modelId,
+    dtype: spec.dtype,
+    dimensions: dim,
+    shortest_edge: spec.shortestEdge,
+    vectors: vectorFile(spec.id),
+    bytes: buffer.length,
+    measured,
+    self_test: selfTest,
+  };
 }
-console.log(`wrote ${selfTest.length} self-test probes`);
+console.log(`wrote ${probes.length} self-test probes per backbone`);
 
 // --- co-located installations, derived not listed --------------------------
 const R = 6371008.8;
@@ -185,24 +246,16 @@ const coLocated = [...clusters.values()].filter((g) => g.length > 1).map((g) => 
 console.log(`co-located groups: ${coLocated.map((g) => g.length).join(", ")}`);
 
 // --- write ------------------------------------------------------------------
-const buffer = Buffer.alloc(vectors.length * dim * 4);
-vectors.forEach((vector, i) =>
-  vector.forEach((value, d) => buffer.writeFloatLE(value, (i * dim + d) * 4)),
-);
-writeFileSync(join(OUT, "references.bin"), buffer);
-
 writeFileSync(
   join(OUT, "references.json"),
   `${JSON.stringify(
     {
       generated_at: new Date().toISOString(),
-      model: { repo: MODEL_ID, dtype: DTYPE, dimensions: dim, shortest_edge: EMBED_SHORTEST_EDGE },
+      backbones,
       // The staging hash, not a hash of the manifest: it is what ties these vectors
       // to the exact acquisition run that produced their images.
       staging_sha256: manifest.staging_sha256,
-      measured,
       co_located_groups: coLocated,
-      self_test: selfTest,
       dwarfs: dwarfs.map((d) => ({ id: d.dwarf_id, name: d.display_name })),
       images: images.map((image) => ({
         id: image.image_id,
@@ -221,6 +274,8 @@ writeFileSync(
 );
 
 const thumbBytes = readdirSync(THUMBS).reduce((sum, f) => sum + statSync(join(THUMBS, f)).size, 0);
-console.log(`  references.bin   ${(buffer.length / 1024).toFixed(0)} KB`);
-console.log(`  references.json  ${(statSync(join(OUT, "references.json")).size / 1024).toFixed(0)} KB`);
-console.log(`  thumbs/          ${(thumbBytes / 1e6).toFixed(1)} MB`);
+for (const spec of BACKBONES) {
+  console.log(`  ${vectorFile(spec.id).padEnd(22)} ${(backbones[spec.id].bytes / 1024).toFixed(0)} KB`);
+}
+console.log(`  references.json        ${(statSync(join(OUT, "references.json")).size / 1024).toFixed(0)} KB`);
+console.log(`  thumbs/                ${(thumbBytes / 1e6).toFixed(1)} MB`);

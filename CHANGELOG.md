@@ -30,6 +30,33 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- **The published page runs either backbone, and the switch is a comparison rather than a size
+  tier.** DINOv2 stays the default: it is the pipeline's own model, 56 MB at `q4`, and 93.2%
+  top-1 on the vectors it ships. CLIP sits beside it at 64 MB and 82.4%, which makes it the
+  *larger* download and the weaker one — labelling it "lighter" would re-assert on the front page
+  the premise `0.13.0` was written to disprove. It is offered because the gap between the two
+  backbones is what sections 7, 9, 10 and 12 are largely about, and switching re-ranks the
+  photograph already on screen, so a visitor sees that gap on their own photograph rather than
+  reading it off a chart.
+- **Each button's accuracy is what the build measured, never a figure copied across.** The build
+  now embeds every reference photograph with both backbones and re-scores the leave-one-out
+  protocol per backbone; the page reads those numbers out of `references.json`. Both reproduce
+  their previous single-backbone builds exactly — DINOv2 93.2% / 95.9%, CLIP 82.4% / 90.4%.
+- CLIP costs nothing unless it is chosen. Its weights and its `references-clip.bin` are fetched
+  on selection, so the default page load is unchanged. Vectors are per backbone
+  (`references-dinov2.bin`, 5.1 MB; `references-clip.bin`, 3.4 MB) and the metadata they share
+  stays in one `references.json`; the single `references.bin` is gone.
+- **`docs/backbones.mjs` describes the two models once, for both importers.** They differ in the
+  model class, the pooling — DINOv2's CLS token against CLIP's `image_embeds` — and the shortest
+  edge, 256 against 224. Those used to be constants typed into `build.mjs` and `app.js`
+  separately, which held only while nobody edited one of them; disagreement between the two makes
+  every cosine meaningless without making anything fail.
+- **The build sets `intraOpNumThreads` explicitly, which is worth 17.6x.** Embedding one image
+  with DINOv2 q4 took **7502 ms** at onnxruntime's default and **426 ms** at four threads — seven
+  hours against twenty-four minutes for a two-backbone build. onnxruntime sizes its thread pool
+  from the *host's* core count rather than the cpuset the process is confined to, so on a shared
+  machine it opened roughly forty threads onto four usable CPUs. The `pthread_setaffinity_np`
+  errors it has printed on every build since the demo was built are that mismatch.
 - **The site is two pages: an identifier and a written result.** `index.html` had grown to 550
   lines, of which about 230 were the five findings sections, so the upload control a visitor comes
   for sat above a fold of prose most of them are not there for. The findings now live in
@@ -41,6 +68,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **The co-located warning rendered as an empty red box under almost every result.** `.note` sets
+  `display:flex` and the box is toggled with the `hidden` attribute, but `hidden` is only
+  `display:none` in the *user-agent* stylesheet, so any author `display` rule beats it. Every
+  identification of a statue that is not co-located — most of them — therefore showed an empty
+  warning-styled box. `[hidden]{display:none!important}` now enforces it once for the whole
+  stylesheet, which also covers the new `display:grid` model switch. Caught by screenshotting the
+  page rather than by reading it.
 - **The pool-size chart's tooltip and crosshair have never worked on the published site.**
   `chart.js` creates its pointer target as `<rect class="hit-area" id="hit">` and then looked it up
   with `getElementById("hit-area")` — the class, not the id. That returned `null`, so the first

@@ -559,6 +559,50 @@ Measured on an identical 40-class, 200-image subset before committing to a dtype
   22 MB is the 1,691 thumbnails; `references.bin` grew from 3.5 MB to 5.2 MB with the wider
   768-dimensional vectors, which is the only size cost of the swap on this side.
 
+### 6.6 Two backbones in the browser, and two pages (2026-09-10)
+
+The page now offers a choice of backbone, and the site is split in two: `index.html` is the
+identifier, `findings.html` is the written result, and `style.css` is shared so they stay one
+design. `index.html` went from 550 lines to about 100, which was the point — the upload control
+was below a fold of prose that most visitors are not there for.
+
+**The choice is a comparison, not a size tier, and the difference matters because the obvious
+label is false.** CLIP is the *larger* download of the two — 63.6 MB against DINOv2 q4's 56.4 MB,
+measured in §6.5 — and 10.8 top-1 points worse in the browser. A control that offered CLIP as the
+lighter option would re-assert on the front page exactly the premise §6.5 was written to kill.
+What CLIP is good for here is the comparison: §7.3, §7.5, §7.6 and §7.8 are all in some part about
+the gap between these two representations, and a visitor who watches CLIP miss a statue DINOv2
+identifies has learned that faster than the charts teach it. So both buttons carry the measured
+download size and the measured top-1, DINOv2 is the default, and switching re-ranks the photograph
+already on screen rather than asking for it again.
+
+- **The page must never quote these numbers from the research pipeline.** Each button's accuracy
+  comes from `meta.backbones[id].measured`, which the build computes by scoring the leave-one-out
+  protocol on exactly the vectors it just wrote. This is §6.3's rule, now applied per backbone.
+- **CLIP costs nothing until it is asked for.** Its weights and its `references-clip.bin` are
+  fetched on selection, so the default page load is what it was. The shared metadata is one
+  `references.json`; only the vectors are per backbone.
+- **The stale-cache guard from `0.13.0` now guards a case that can really happen.** It was written
+  against a hypothetical 512-wide buffer read as 768-wide; with two bin files of genuinely
+  different widths served from one origin, a visitor holding one fresh file and one cached file is
+  an ordinary event rather than a thought experiment. The length check is per backbone.
+- **One descriptor, two importers: `docs/backbones.mjs`.** The two models differ in three ways that
+  must agree between the build and the page or every cosine is meaningless — the model class
+  (`AutoModel` against `CLIPVisionModelWithProjection`), the pooling (DINOv2's CLS token against
+  CLIP's `image_embeds`), and the shortest edge (256 against 224). These used to be constants typed
+  into both files, which held only while nobody edited one of them. The class is named as a string
+  rather than imported, because the browser resolves transformers.js from a CDN and the build from
+  npm.
+- **Set `intraOpNumThreads` explicitly in the build.** Embedding one image with DINOv2 q4 takes
+  **7502 ms** at onnxruntime-node's default and **426 ms** at four threads — 17.6x, or seven hours
+  against twenty-four minutes for a two-backbone build. The cause is worth knowing because it is
+  invisible: onnxruntime sizes its thread pool from the *host's* core count, not from the cpuset
+  the process is confined to, so on this shared machine it opened around forty threads onto the
+  four CPUs the session actually had. The `pthread_setaffinity_np` errors it prints on every run
+  are that mismatch, and they had been printing for as long as the demo has had a build without
+  anyone reading them as a performance problem. **Set the count from `nproc`, not from
+  `/proc/cpuinfo`, and re-measure on the machine that runs the build.**
+
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
 2. **Headline experiment**: accuracy vs. candidate-pool size N (synthetic random subsampling, repeated with multiple seeds per N for error bars; real geo-based pools as a secondary comparison if coordinate coverage allows).

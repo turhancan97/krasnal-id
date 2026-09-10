@@ -359,8 +359,10 @@ Stripped metadata correlates with the same kind of photograph.
 chosen, often composed, taken by someone who meant to document the statue. A real snapshot — bad
 angle, passers-by, whatever light was available — is a harder query than anything measured here.
 What this establishes is that the domain gap is real and that CLIP suffers it far worse. The
-published demo ran CLIP when this was written and was therefore the version most exposed to it; it
-now runs DINOv2, so the gap a visitor meets is the 5.3-point one rather than the 15.6-point one.
+published demo ran CLIP when this was written and was therefore the version most exposed to it.
+It now runs DINOv2 by default, so the gap a visitor meets is the 5.3-point one rather than the
+15.6-point one — and since the page can still be switched to CLIP, the 15.6-point one is
+reproducible on the same photograph.
 
 ## 9. Is it recognising the statue, or the photographer?
 
@@ -412,10 +414,12 @@ because withholding a photographer removes whole classes from contention — by 
 free-text field, compared exactly: one photographer using two spellings is counted as two people,
 which leaves some of their own work in the reference set.
 
-**What this means for the demo.** The published page runs CLIP, and CLIP identifies a statue
-correctly just **54.1%** of the time when it cannot lean on the same photographer's other
-photographs. A visitor photographing a statue that Commons documents through one contributor is
-much closer to that number than to the 82.9% the page reports.
+**What this means for the demo.** The published page ran CLIP when this was written and now runs
+DINOv2 by default, which is the difference between **81.8%** and **54.1%** cross-photographer. A
+visitor photographing a statue that Commons documents through one contributor is much closer to
+their backbone's cross-photographer figure than to the full-pool number the page reports — and
+because the page offers both backbones, switching to CLIP shows that 54.1% on the visitor's own
+photograph rather than describing it.
 
 ## 10. Does verifying geometry fix the lookalikes?
 

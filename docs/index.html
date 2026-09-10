@@ -32,13 +32,19 @@
     crouching poses and props. Upload a photograph and this page will tell you which one it is,
     running the model in your own browser.</p>
     <div class="facts">
-      <span>306 dwarves</span><span>1,691 reference photographs</span><span>DINOv2</span>
-      <span id="fact-acc">93.2% top-1</span>
+      <span>306 dwarves</span><span>1,691 reference photographs</span>
+      <span id="fact-model">DINOv2</span><span id="fact-acc">93.2% top-1</span>
     </div>
   </header>
 
   <section>
     <div class="demo">
+      <div class="models" id="models" role="group" aria-label="Embedding model" hidden></div>
+      <p class="modelnote" id="model-note" hidden>Both are frozen — neither was trained on these
+      statues. Switching re-ranks the same photograph, which is the comparison most of this
+      project&rsquo;s findings are about. DINOv2 is the smaller download <em>and</em> the more
+      accurate one.</p>
+
       <div class="drop" id="drop">
         <div class="actions">
           <label for="file"><button class="primary" type="button" id="pick">Choose a photo</button></label>
@@ -97,7 +103,9 @@
     <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">turhancan97/wroclaw-dwarves</a>.</p>
     <p>Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
     licences; each result names its photographer and licence. Model weights from
-    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a>, quantised to q4.</p>
+    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a> and
+    <a href="https://huggingface.co/Xenova/clip-vit-base-patch32">Xenova/clip-vit-base-patch32</a>,
+    both quantised to q4 and fetched only when selected.</p>
   </footer>
 </div>
 <script type="module" src="app.js"></script>

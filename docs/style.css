@@ -31,6 +31,12 @@
   --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
 }
 *{box-sizing:border-box}
+/* The `hidden` attribute is only `display:none` in the user-agent stylesheet, so
+   any author rule that sets `display` beats it. `.note` sets `display:flex` and
+   `.models` sets `display:grid`, and both are toggled by that attribute: without
+   this the co-located warning rendered as an empty red box under every result
+   for a statue that is not co-located. Enforce it once rather than per rule. */
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0; background:var(--ground); color:var(--ink);
   font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -82,6 +88,22 @@ button.primary{background:var(--blue); border-color:var(--blue); color:#fff}
 button.primary:hover:not(:disabled){filter:brightness(1.08)}
 input[type=file]{display:none}
 
+/* The model switch. Two peers rather than a primary and a fallback: CLIP is
+   the comparison arm, not a lighter option, and it is in fact the larger
+   download of the two. Each button carries the size and the accuracy the build
+   measured so the choice is stated rather than implied. */
+.models{display:grid; grid-template-columns:1fr 1fr; gap:.55rem}
+.model{display:flex; flex-direction:column; align-items:flex-start; gap:.05rem;
+       padding:.6rem .75rem; text-align:left; line-height:1.32}
+.model .ml{font-weight:600; font-size:.95rem}
+.model .mr{font-size:.78rem; color:var(--ink-3)}
+.model .ms{font-family:"IBM Plex Mono",monospace; font-size:.7rem; color:var(--ink-3);
+           font-variant-numeric:tabular-nums; margin-top:.18rem}
+.model.on{border-color:var(--blue); background:color-mix(in srgb, var(--blue) 7%, var(--ground))}
+.model.on .ml{color:var(--blue)}
+.model.on .ms{color:var(--ink-2)}
+.modelnote{font-size:.8rem; color:var(--ink-3); line-height:1.5; margin:-.5rem 0 0}
+@media (max-width:26rem){.models{grid-template-columns:1fr}}
 
 .status{display:flex; align-items:center; gap:.6rem; font-family:"IBM Plex Mono",monospace;
         font-size:.78rem; color:var(--ink-3); min-height:1.3rem}

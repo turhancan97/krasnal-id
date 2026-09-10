@@ -51,8 +51,9 @@
         <p class="body"><b>Frozen embeddings are enough.</b> DINOv2 identifies the right dwarf first
         time in 93.1% of queries across all 306 statues, and within five candidates 95.7% of the
         time — with no training of any kind. It is also what
-        <a href="index.html">the identifier</a> runs, so the demo and the number beside it are the
-        same model. CLIP, measured alongside it, reaches 82.9%.</p>
+        <a href="index.html">the identifier</a> runs by default, so the demo and the number beside
+        it are the same model. CLIP, measured alongside it, reaches 82.9% — and the identifier will
+        run that instead if you ask it to.</p>
       </div>
       <div class="finding">
         <div class="n red">−0.79</div><div class="u">points / doubling</div>
@@ -246,24 +247,25 @@
       leave-one-out score, measured on exactly the vectors it ships, is 93.2% top-1 against 93.1%
       for the research pipeline &mdash; inside that figure's confidence interval, so the
       quantisation and the decode drift cost nothing measurable here. Until 8 September it ran CLIP
-      and scored 82.4%. That figure is not a claim: append <code>?selftest=full</code> to the
-      identifier's URL and your browser will re-embed all 1,691 reference photographs and score the
-      protocol itself.</span></div>
+      and scored 82.4%; CLIP is still selectable there, as the comparison arm rather than a lighter
+      option &mdash; it is the larger download of the two. Neither figure is a claim: append
+      <code>?selftest=full</code> to the identifier's URL and your browser will re-embed all 1,691
+      reference photographs and score the protocol itself.</span></div>
       <div class="limit"><span><b>The reference photos are not phone photos — and that costs
       something measurable.</b> 51 of them were themselves shot on phones, and used as queries they
-      score <strong>5.3 points worse for DINOv2</strong>, which is what the identifier runs, and
-      15.6 worse for CLIP. Not because they show harder statues: those queries belong to classes with
+      score <strong>5.3 points worse for DINOv2</strong>, the identifier's default, and 15.6
+      worse for CLIP. Not because they show harder statues: those queries belong to classes with
       more reference photographs, not fewer. It is still a lower bound, since every one is a Commons
       upload someone chose to take and share. A casual snapshot is harder again, and measuring that
       needs photographs nobody has taken yet.</span></div>
       <div class="limit"><span><b>It partly recognises the photographer, not the statue.</b> Two
       people took 67% of the reference photographs, and near-duplicates from a single visit were
       never removed. Withhold a query's own photographer, against a control that removes the same
-      number of references at random, and <strong>DINOv2 &mdash; what the identifier runs &mdash;
+      number of references at random, and <strong>DINOv2 &mdash; the identifier's default &mdash;
       loses 2.6 top-1 points</strong> where CLIP loses 13.2. Cross-photographer it identifies a
       statue <strong>81.8%</strong> of the time rather than 94.2%. So if the statue you photograph
       is one Commons documents through a single contributor, expect the lower figure &mdash; and
-      note the identifier used to run CLIP, where the same number was 54.1%.</span></div>
+      switching the identifier to CLIP will show you what 54.1% looks like.</span></div>
       <div class="limit"><span><b>There is no “I don't know”, and that is a measured result.</b> A
       statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
