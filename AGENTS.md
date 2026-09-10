@@ -419,6 +419,19 @@ photographer.
   "does not exist", and declaring `images.zip` fails too because `--dir-mode zip` produces that
   during the upload rather than in the folder. The photographs upload regardless, through the
   folder walk. This cost one failed upload attempt to learn, and a test now pins it.
+- **The description is markdown *with HTML parsing*, and that ate half of it.** The first
+  published version rendered only its opening paragraphs: `embeddings_<backbone>.npy` was read as
+  an unknown opening tag and swallowed everything after it, backticks included. What went missing
+  was the entire licensing section — the family breakdown, the modification statement, the
+  freedom-of-panorama disclosure and the removal path — which is precisely the text that makes a
+  `other` licence tag honest. **Never put an angle bracket in text a platform will render**, and
+  assert its absence rather than trusting a code span.
+- **Describe every file and every column, because Kaggle scores it.** Its usability score checks
+  for file descriptions and column descriptions among other things, and an undescribed file reads
+  as "This file does not have a description yet." `resources[].schema.fields` carries a name, type
+  and description per column; `COLUMN_NOTES` holds one entry per column across every table and
+  `_fields_for` refuses a column missing from it, so adding a column without describing it fails
+  the export rather than publishing a blank.
 - **Publishing stays a human step.** `export-kaggle` writes the directory and prints the
   `kaggle datasets create` and `kaggle datasets version` commands. §5.12 made `--push` opt-in for
   Hugging Face because a mistyped repo id becoming world-readable is unrecoverable; on Kaggle it

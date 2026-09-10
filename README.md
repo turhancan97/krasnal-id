@@ -610,6 +610,19 @@ takes one licence and this corpus has ten. The generated description carries the
 breakdown, the modified/unmodified split, the freedom-of-panorama disclosure and the removal
 path, which is what makes that field honest rather than vague.
 
+It also writes `data/export/kaggle-cover.jpg`, a 1200x600 grid of 32 statues sampled by even
+stride — *beside* the upload directory, not inside it, because Kaggle's cover image is set in
+the web UI and a file in the folder would be published as data. `docs/kaggle-starter.ipynb`
+reproduces the headline from the published files in about twenty lines, and is worth publishing
+as a notebook on the dataset.
+
+Two things Kaggle's renderer and validator will not tell you. The description is rendered as
+markdown **with HTML parsing**, so an angle bracket anywhere in it — `embeddings_<backbone>.npy`,
+say, even inside backticks — is read as an unknown opening tag and silently swallows everything
+after it. And `resources` may only name files that exist in the folder: a directory entry fails
+the upload with "does not exist", and so would `images.zip`, which `--dir-mode` creates during
+the upload rather than in the folder. Tests pin both.
+
 Publishing is left to you, because a Kaggle dataset slug cannot be renamed once created:
 
 ```bash

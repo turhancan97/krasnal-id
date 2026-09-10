@@ -20,6 +20,8 @@ from krasnal_id.config import AppConfig, load_config
 from krasnal_id.data_pipeline.build_split import build_evaluation_split, write_evaluation_split
 from krasnal_id.export.kaggle import (
     ALLOWED_LICENSES,
+    COVER_CELL,
+    COVER_GRID,
     KEYWORDS,
     LICENSE_NAME,
     SUBTITLE,
@@ -27,6 +29,7 @@ from krasnal_id.export.kaggle import (
     TITLE,
     TITLE_LIMITS,
     KaggleExportError,
+    _fields_for,
     build_kaggle_export,
     fold_payloads,
     render_metadata,
@@ -125,6 +128,70 @@ def test_the_metadata_is_the_shape_kaggle_documents(tmp_path: Path) -> None:
         "classes.csv",
         "folds.csv",
     }
+
+
+def test_no_rendered_text_can_be_eaten_by_a_markdown_renderer(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path)
+    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
+
+    # Kaggle renders the description as markdown and parses HTML inside it. A
+    # placeholder written `embeddings_<backbone>.npy` was read as an unknown
+    # opening tag and swallowed everything after it, which silently hid the whole
+    # licensing section on the published page -- backticks did not save it.
+    for field in ("title", "subtitle", "description"):
+        assert "<" not in payload[field], f"{field} contains an angle bracket"
+    for resource in payload["resources"]:
+        assert "<" not in resource["description"], resource["path"]
+
+
+def test_the_licensing_terms_survive_to_the_end_of_the_description(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path)
+    description = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))[
+        "description"
+    ]
+
+    # The licence field says "other", which means "specified in the description".
+    # These sit at the end, so they are the first thing lost to a truncation.
+    assert description.rstrip().endswith("in parquet with the images embedded.")
+    assert "Identifiers are dataset-local" in description
+
+
+def test_every_table_describes_every_column_it_writes(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path)
+    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
+    described = {
+        resource["path"]: resource["schema"]["fields"]
+        for resource in payload["resources"]
+        if "schema" in resource
+    }
+
+    assert set(described) == {"images.csv", "classes.csv", "folds.csv", "credits.csv"}
+    for name, fields in described.items():
+        header = (root / name).read_text(encoding="utf-8").splitlines()[0].split(",")
+        # Same names, same order as the file's own header, every one described.
+        assert [field["name"] for field in fields] == header, name
+        assert all(field["description"] for field in fields), name
+        assert all(field["type"] for field in fields), name
+
+
+def test_a_column_with_no_description_is_refused() -> None:
+    with pytest.raises(KaggleExportError, match="no column description for surprise"):
+        _fields_for(("image_id", "surprise"))
+
+
+def test_every_emitted_file_is_described(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path)
+    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
+    described = {resource["path"] for resource in payload["resources"]}
+
+    # Kaggle scores a dataset on whether its files carry descriptions, and an
+    # undescribed file reads as "This file does not have a description yet."
+    on_disk = {
+        entry.name
+        for entry in root.iterdir()
+        if entry.is_file() and entry.name != "dataset-metadata.json"
+    }
+    assert on_disk <= described, f"undescribed: {sorted(on_disk - described)}"
 
 
 def test_every_declared_resource_is_a_file_that_exists(tmp_path: Path) -> None:
@@ -315,6 +382,33 @@ def test_the_receipt_records_what_was_written(tmp_path: Path) -> None:
     # The 1,691 photographs are digested by the manifest already; listing them
     # here would make the receipt bigger than the table it describes.
     assert not any(entry["path"].startswith("images/") for entry in receipt["files"])
+
+
+def test_the_cover_is_drawn_beside_the_export_not_inside_it(tmp_path: Path) -> None:
+    manifest, split = _prepared(tmp_path)
+    result = build_kaggle_export(_config(tmp_path), manifest, split, backbones=(FAKE_BACKBONE,))
+
+    assert result.cover is not None
+    assert result.cover.is_file()
+    # Kaggle's cover is set in the web UI and is not part of
+    # dataset-metadata.json, so a file inside the upload directory would be
+    # published as one of the dataset's tables instead.
+    assert result.cover.parent == result.paths.root.parent
+    assert result.cover not in set(result.paths.root.iterdir())
+
+    from PIL import Image
+
+    with Image.open(result.cover) as cover:
+        assert cover.size == (COVER_GRID[0] * COVER_CELL, COVER_GRID[1] * COVER_CELL)
+
+
+def test_the_cover_can_be_skipped(tmp_path: Path) -> None:
+    manifest, split = _prepared(tmp_path)
+    result = build_kaggle_export(
+        _config(tmp_path), manifest, split, backbones=(FAKE_BACKBONE,), with_cover=False
+    )
+
+    assert result.cover is None
 
 
 def test_the_pixels_can_be_left_out(tmp_path: Path) -> None:

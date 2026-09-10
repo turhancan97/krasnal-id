@@ -583,6 +583,8 @@ def export_kaggle(
         f"backbones={','.join(result.backbones) or 'none'} "
         f"manifest={result.manifest_sha256[:12]} output={result.paths.root}"
     )
+    if result.cover:
+        typer.echo(f"  cover image for the web UI: {result.cover}")
     if result.image_bytes:
         typer.echo(
             f"  photographs: {result.image_bytes / 1e6:.0f} MB under {result.paths.images_dir}"

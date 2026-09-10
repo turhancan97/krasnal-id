@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from importlib import metadata
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -77,6 +78,12 @@ ALLOWED_LICENSES = frozenset(
 # are better added in the web UI, where the existing vocabulary is searchable.
 KEYWORDS = ("computer vision", "image", "art", "europe")
 
+# Kaggle renders the cover at 1200x600. Eight across by four down at 150 px
+# gives exactly that and shows 32 statues, enough that the corpus reads as
+# "many near-identical bronze figures" at a glance, which is the whole problem.
+COVER_GRID = (8, 4)
+COVER_CELL = 150
+
 # The columns a user needs to *use* the dataset: where the file is, what it
 # shows, and the attribution they must carry when they redistribute it. The full
 # rights ledger is credits.csv; author, licence and source appear in both because
@@ -107,6 +114,50 @@ CLASS_COLUMNS = (
     "longitude",
     "coordinate_source",
 )
+
+# Kaggle shows these per column in the data explorer, and scores the dataset on
+# whether they exist. One entry per column across every table: `_fields_for`
+# refuses a column that is missing here, so adding a column to a table without
+# describing it fails the export rather than publishing a blank.
+COLUMN_NOTES: dict[str, tuple[str, str]] = {
+    "file_path": ("string", "Path to this photograph inside the dataset."),
+    "image_id": ("string", "Stable identifier, derived from the Commons page ID."),
+    "dwarf_id": ("string", "Class identifier: a Wikidata QID where one exists, else a slug."),
+    "dwarf_name": ("string", "Human-readable name of the statue shown."),
+    "display_name": ("string", "Human-readable name of the statue."),
+    "label": ("numeric", "Integer class label, 0-305, matching the embedding row's class."),
+    "images": ("numeric", "How many photographs this dataset holds of this statue."),
+    "width": ("numeric", "Stored image width in pixels."),
+    "height": ("numeric", "Stored image height in pixels."),
+    "author": ("string", "The photographer, as recorded on Wikimedia Commons. Credit them."),
+    "license": ("string", "The licence this photograph is under, as Commons names it."),
+    "license_spdx": ("string", "SPDX identifier for the licence; empty for public-domain marks."),
+    "license_url": ("string", "Canonical URL of the licence, normalised to one form per licence."),
+    "license_template": ("string", "The Commons template giving the public-domain basis, if any."),
+    "source_url": ("string", "The Commons file page this photograph came from."),
+    "commons_file": ("string", "The Commons file title, which the licences call the work's title."),
+    "modified": ("boolean", "True if the stored file was downscaled from the Commons original."),
+    "modification": ("string", "What was changed, when it was; the licences require this stated."),
+    "commons_sha1": (
+        "string",
+        "SHA-1 Commons publishes for the original, used to detect a change.",
+    ),
+    "sha256": ("string", "SHA-256 of the stored file, so a copy can be verified."),
+    "attribution_text": ("string", "A ready-to-paste credit line satisfying the licence."),
+    "wikidata_url": ("string", "The statue's Wikidata item, where one exists."),
+    "commons_category": ("string", "The Commons category the photographs were drawn from."),
+    "latitude": ("numeric", "Latitude in WGS84; empty for the 12 unplaced statues."),
+    "longitude": ("numeric", "Longitude in WGS84; empty for the 12 unplaced statues."),
+    "coordinate_source": (
+        "string",
+        "Whether the position came from Wikidata or was derived from camera positions.",
+    ),
+    "fold_index": ("numeric", "Position of this fold in the protocol, 0-1690."),
+    "query_image_id": ("string", "The photograph held out as the query for this fold."),
+    "query_dwarf_id": ("string", "The class the query belongs to; the correct answer."),
+    "query_label": ("numeric", "Integer label of the correct class."),
+    "reference_count": ("numeric", "Size of the gallery: every image except the query."),
+}
 
 FOLD_COLUMNS = (
     "fold_index",
@@ -191,6 +242,16 @@ class KaggleExportResult:
     backbones: tuple[str, ...]
     image_bytes: int
     manifest_sha256: str
+    cover: Path | None
+
+
+def import_pillow() -> Any:
+    """Import Pillow only when a cover is actually being drawn."""
+    try:
+        from PIL import Image
+    except ImportError as error:  # pragma: no cover - Pillow is a core dependency
+        raise KaggleExportError("Pillow is required to draw the cover image") from error
+    return Image
 
 
 def _package_version() -> str:
@@ -369,7 +430,8 @@ def render_description(facts: card_module.CardFacts, dataset_id: str, images: bo
         "photographs' own camera positions).",
         "- `folds.csv` — the leave-one-out evaluation protocol. Every fold's reference set is "
         "every image except the query, so only the query is listed.",
-        "- `embeddings_<backbone>.npy` — cached vectors, row-aligned with `images.csv`.",
+        "- `embeddings_dinov2.npy` and `embeddings_clip.npy` — cached vectors, one row per "
+        "photograph in the order of `images.csv`.",
         "- `credits.csv`, `ATTRIBUTION.md`, `LICENSES.md` — the full rights ledger.",
         "- `provenance.json` — the manifest hash and a digest of every file here.",
         "",
@@ -414,6 +476,20 @@ def render_description(facts: card_module.CardFacts, dataset_id: str, images: bo
     return "\n".join(lines) + "\n"
 
 
+def _fields_for(columns: Sequence[str]) -> list[dict[str, str]]:
+    """Describe one table's columns, refusing any this file does not name."""
+    missing = [column for column in columns if column not in COLUMN_NOTES]
+    if missing:
+        raise KaggleExportError(
+            f"no column description for {', '.join(missing)}; add them to COLUMN_NOTES so the "
+            "published table does not carry a blank"
+        )
+    return [
+        {"name": column, "type": COLUMN_NOTES[column][0], "description": COLUMN_NOTES[column][1]}
+        for column in columns
+    ]
+
+
 def render_metadata(
     dataset_id: str,
     description: str,
@@ -438,35 +514,68 @@ def render_metadata(
         {
             "path": "images.csv",
             "description": (
-                "One row per photograph: file path, class, dimensions, and the photographer, "
-                "licence and source URL required for attribution."
+                "One row per photograph: where the file is, which statue it shows, and the "
+                "photographer, licence and source URL you must carry when redistributing it."
             ),
+            "schema": {"fields": _fields_for(IMAGE_COLUMNS)},
         },
         {
             "path": "classes.csv",
-            "description": "The statues, their integer labels, image counts and coordinates.",
+            "description": (
+                "One row per statue: its integer label, how many photographs it has, and its "
+                "position where one is known."
+            ),
+            "schema": {"fields": _fields_for(CLASS_COLUMNS)},
         },
         {
             "path": "folds.csv",
             "description": (
-                "The leave-one-out protocol. Each fold's reference set is every image except "
-                "the query, so only the query is listed."
+                "The leave-one-out protocol, one row per fold. Each fold's gallery is every "
+                "image except the query, so only the query is listed."
             ),
+            "schema": {"fields": _fields_for(FOLD_COLUMNS)},
         },
         {
             "path": "credits.csv",
-            "description": "The full rights ledger, one ready-to-paste credit line per file.",
+            "description": (
+                "The full rights ledger: one ready-to-paste credit line per photograph, with "
+                "the SPDX identifier, the public-domain basis and the modification statement."
+            ),
+            "schema": {"fields": _fields_for(card_module.CREDIT_COLUMNS)},
+        },
+        {
+            "path": "LICENSES.md",
+            "description": (
+                "What each licence in the corpus permits and requires, with the count of files "
+                "under each and the modification statement the ShareAlike terms need."
+            ),
+        },
+        {
+            "path": "ATTRIBUTION.md",
+            "description": (
+                "Every photographer and the photographs they contributed, grouped so the "
+                "concentration of the corpus is visible rather than merely stated."
+            ),
+        },
+        {
+            "path": "provenance.json",
+            "description": (
+                "The manifest hash this version was built from, the backbone revisions, and a "
+                "SHA-256 of every file here."
+            ),
         },
     ]
     resources += [
         {
             "path": f"embeddings_{name}.npy",
             "description": (
-                f"Cached {name} vectors, one row per photograph in the order of images.csv."
+                f"Cached {name} vectors as float32, one row per photograph in the order of "
+                "images.csv, L2-normalised so a dot product is a cosine."
             ),
         }
         for name in backbones
     ]
+
     return {
         "title": TITLE,
         "subtitle": SUBTITLE,
@@ -476,6 +585,44 @@ def render_metadata(
         "description": description,
         "resources": resources,
     }
+
+
+def render_cover(rows: Sequence[ImageRow], path: Path) -> Path:
+    """Tile a grid of the statues into a banner for Kaggle's cover slot.
+
+    Written *beside* the export rather than inside it: Kaggle's cover image is
+    set in the web UI and is not part of `dataset-metadata.json`, so a file in
+    the upload directory would be published as data instead. The statues are
+    picked by even stride over image ID, so the banner is a sample of the corpus
+    rather than a selection of its most photogenic members.
+    """
+    image_module = import_pillow()
+    columns, cell = COVER_GRID[0], COVER_CELL
+    stride = max(1, len(rows) // (COVER_GRID[0] * COVER_GRID[1]))
+    picked = rows[::stride][: COVER_GRID[0] * COVER_GRID[1]]
+
+    sheet = image_module.new("RGB", (columns * cell, COVER_GRID[1] * cell), (241, 243, 244))
+    for index, row in enumerate(picked):
+        try:
+            with image_module.open(row.record.local_path) as handle:
+                tile = handle.convert("RGB")
+        except OSError as error:
+            raise KaggleExportError(f"could not read {row.record.local_path}: {error}") from error
+        # Centre-crop to a square before scaling, so nothing is distorted.
+        side = min(tile.width, tile.height)
+        left = (tile.width - side) // 2
+        top = (tile.height - side) // 2
+        tile = tile.crop((left, top, left + side, top + side)).resize(
+            (cell, cell), image_module.LANCZOS
+        )
+        sheet.paste(tile, ((index % columns) * cell, (index // columns) * cell))
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        sheet.save(path, quality=90)
+    except OSError as error:
+        raise KaggleExportError(f"could not write {path}: {error}") from error
+    return path
 
 
 def _copy_images(rows: Sequence[ImageRow], destination: Path) -> int:
@@ -507,6 +654,7 @@ def build_kaggle_export(
     generated_at: datetime | None = None,
     with_embeddings: bool = True,
     with_images: bool = True,
+    with_cover: bool = True,
 ) -> KaggleExportResult:
     """Build the whole Kaggle export directory."""
     export = config.export
@@ -608,6 +756,12 @@ def build_kaggle_export(
         handle.write("\n")
     emitted.append(paths.metadata)
 
+    # Beside the export, never inside it: this is a web-UI asset, and a file in
+    # the upload directory would be published as one of the dataset's tables.
+    cover = None
+    if with_cover:
+        cover = render_cover(rows, paths.root.parent / f"{paths.root.name}-cover.jpg")
+
     receipt = {
         "generated_at": stamp.isoformat(),
         "generator": f"krasnal-id {_package_version()}",
@@ -658,4 +812,5 @@ def build_kaggle_export(
         backbones=tuple(name for name, _, _, _ in measured_backbones),
         image_bytes=image_bytes,
         manifest_sha256=manifest_sha256,
+        cover=cover,
     )

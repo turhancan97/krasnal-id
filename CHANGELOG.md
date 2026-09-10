@@ -12,6 +12,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **The Kaggle export now describes every file and every column, and draws a cover.**
+  `resources[].schema.fields` carries a name, type and description per column across all four
+  CSVs; `COLUMN_NOTES` holds one entry per column and the export refuses a column missing from
+  it, so a new column cannot ship undescribed. `LICENSES.md`, `ATTRIBUTION.md` and
+  `provenance.json` gained descriptions too. A 1200x600 cover image is written beside the upload
+  directory — not inside it, since Kaggle sets the cover in the web UI and a file in the folder
+  would publish as data. `docs/kaggle-starter.ipynb` reproduces the headline from the published
+  files alone.
 - **`data export-kaggle`: the dataset as a Kaggle dataset.** §5.11 left this open on the grounds
   that "the same export directory would serve"; building it showed that it would not. File shape
   and config granularity are platform conventions, not dataset properties — the Hub wants parquet
@@ -53,6 +61,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   folder. The photographs still upload, via the folder walk; `resources` is descriptive metadata
   for the flat files, and the directory is described in the prose instead. A test now asserts
   every declared resource is a real file, which is the CLI's precondition restated.
+- **Kaggle renders the description as markdown *with HTML parsing*, which ate half of it.** The
+  first published version showed only its opening paragraphs: `embeddings_<backbone>.npy` was
+  read as an unknown opening tag and silently swallowed everything after it, backticks and all.
+  What vanished was the whole licensing section — the CC family breakdown, the modification
+  statement, the freedom-of-panorama disclosure and the removal path — which is exactly the text
+  that makes an `other` licence tag mean anything. Fixed by naming both embedding files, and a
+  test now asserts no angle bracket appears in any rendered field.
 - **Validated by re-deriving the headline from the export alone.** Scoring leave-one-out from
   `embeddings_*.npy` and `images.csv` with no project import gives **93.1% top-1 / 95.7% top-5
   for DINOv2 and 82.9% for CLIP** — the published numbers exactly.
