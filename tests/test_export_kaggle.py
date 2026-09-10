@@ -87,6 +87,15 @@ def test_the_licence_is_one_kaggle_accepts_and_claims_nothing_false() -> None:
     assert LICENSE_NAME == "other"
 
 
+def test_the_packaged_ids_are_the_right_accounts_on_each_platform() -> None:
+    export = load_config([]).export
+    # The Kaggle account is not the Hugging Face one, so a single configured id
+    # would send one of the two exports to an account that does not exist.
+    assert export.kaggle_id == "turhancankargin/wroclaw-dwarves"
+    assert export.repo_id == "turhancan97/wroclaw-dwarves"
+    assert validate_dataset_id(export.kaggle_id) == ("turhancankargin", "wroclaw-dwarves")
+
+
 def test_a_dataset_id_must_be_owner_and_slug() -> None:
     assert validate_dataset_id("someone/wroclaw-dwarves") == ("someone", "wroclaw-dwarves")
     for bad, message in (
@@ -109,7 +118,7 @@ def test_the_metadata_is_the_shape_kaggle_documents(tmp_path: Path) -> None:
     assert set(payload) >= {"title", "id", "licenses"}
     assert payload["licenses"] == [{"name": "other"}]
     assert len(payload["licenses"]) == 1, "Kaggle takes exactly one licence"
-    assert payload["id"] == "turhancan97/wroclaw-dwarves"
+    assert payload["id"] == load_config([]).export.kaggle_id
     assert payload["keywords"] == list(KEYWORDS)
     assert {resource["path"] for resource in payload["resources"]} >= {
         "images",

@@ -1,5 +1,6 @@
 repo_id: turhancan97/wroclaw-dwarves
-kaggle_id: turhancan97/wroclaw-dwarves
+# The Kaggle username differs from the GitHub and Hugging Face one.
+kaggle_id: turhancankargin/wroclaw-dwarves
 backbones: [dinov2, clip]
 shard_target_bytes: 471859200  # 450 MiB
 row_group_rows: 100

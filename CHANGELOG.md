@@ -43,6 +43,9 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   the Hub because a mistyped repo id becoming world-readable is unrecoverable; on Kaggle it is
   worse, because a dataset slug cannot be renamed after creation. No `kaggle` dependency is added
   and no credential path exists in this repository.
+- The configured Kaggle id is `turhancankargin/wroclaw-dwarves`, which is a *different account*
+  from the Hugging Face `turhancan97/wroclaw-dwarves`. Both are pinned by a test, because one
+  configured id would send one of the two exports to an account that does not exist.
 - **Validated by re-deriving the headline from the export alone.** Scoring leave-one-out from
   `embeddings_*.npy` and `images.csv` with no project import gives **93.1% top-1 / 95.7% top-5
   for DINOv2 and 82.9% for CLIP** — the published numbers exactly.
