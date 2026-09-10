@@ -121,11 +121,37 @@ def test_the_metadata_is_the_shape_kaggle_documents(tmp_path: Path) -> None:
     assert payload["id"] == load_config([]).export.kaggle_id
     assert payload["keywords"] == list(KEYWORDS)
     assert {resource["path"] for resource in payload["resources"]} >= {
-        "images",
         "images.csv",
         "classes.csv",
         "folds.csv",
     }
+
+
+def test_every_declared_resource_is_a_file_that_exists(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path)
+    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
+
+    # This is exactly what the Kaggle CLI checks before uploading anything:
+    # `os.path.isfile(os.path.join(folder, resource["path"]))` for every entry.
+    # A directory fails it, so `images/` must not be listed however tempting it
+    # is to describe — and neither can `images.zip`, which --dir-mode creates
+    # during the upload rather than in the folder.
+    for resource in payload["resources"]:
+        target = root / resource["path"]
+        assert target.is_file(), f"{resource['path']} is not a file in the export"
+    assert "images" not in {resource["path"] for resource in payload["resources"]}
+    assert "images.zip" not in {resource["path"] for resource in payload["resources"]}
+    # Duplicate paths are the CLI's other precondition.
+    paths = [resource["path"] for resource in payload["resources"]]
+    assert len(paths) == len(set(paths))
+
+
+def test_declared_resources_stay_valid_without_pixels(tmp_path: Path) -> None:
+    root, _ = _build(tmp_path, with_images=False)
+    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
+
+    for resource in payload["resources"]:
+        assert (root / resource["path"]).is_file(), resource["path"]
 
 
 def test_the_description_states_the_per_file_terms_the_licence_field_cannot(
@@ -296,8 +322,6 @@ def test_the_pixels_can_be_left_out(tmp_path: Path) -> None:
 
     assert not (root / "images").exists()
     assert (root / "images.csv").is_file()
-    payload = json.loads((root / "dataset-metadata.json").read_text(encoding="utf-8"))
-    assert "images" not in {resource["path"] for resource in payload["resources"]}
     # Every row still names where it came from, so the corpus stays refetchable.
     assert all(row["source_url"] for row in _rows(root / "images.csv"))
 
@@ -329,7 +353,7 @@ def test_render_metadata_refuses_a_licence_kaggle_does_not_know() -> None:
     try:
         kaggle_module.LICENSE_NAME = "CC-BY-WHATEVER"
         with pytest.raises(KaggleExportError, match="not a licence name Kaggle accepts"):
-            render_metadata("someone/wroclaw-dwarves", "text", ["dinov2"], with_images=True)
+            render_metadata("someone/wroclaw-dwarves", "text", ["dinov2"])
     finally:
         kaggle_module.LICENSE_NAME = original
 

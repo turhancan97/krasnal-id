@@ -46,6 +46,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 - The configured Kaggle id is `turhancankargin/wroclaw-dwarves`, which is a *different account*
   from the Hugging Face `turhancan97/wroclaw-dwarves`. Both are pinned by a test, because one
   configured id would send one of the two exports to an account that does not exist.
+- **`resources` names only files, because that is all Kaggle's validator accepts.** It checks
+  every entry with `os.path.isfile` against the source folder *before* it zips anything, so a
+  `images/` directory entry fails the upload outright with "does not exist" — and `images.zip`
+  would fail too, since `--dir-mode zip` creates that during the upload rather than in the
+  folder. The photographs still upload, via the folder walk; `resources` is descriptive metadata
+  for the flat files, and the directory is described in the prose instead. A test now asserts
+  every declared resource is a real file, which is the CLI's precondition restated.
 - **Validated by re-deriving the headline from the export alone.** Scoring leave-one-out from
   `embeddings_*.npy` and `images.csv` with no project import gives **93.1% top-1 / 95.7% top-5
   for DINOv2 and 82.9% for CLIP** — the published numbers exactly.

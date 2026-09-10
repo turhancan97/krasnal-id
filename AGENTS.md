@@ -413,6 +413,12 @@ photographer.
   photograph is its position in `images.csv`. A mismatch would not fail; it would silently make
   every downstream number wrong, so the export compares the matrix's image order against the
   table's and refuses on disagreement.
+- **`resources` may only name files, and that is not obvious.** Kaggle's CLI validates every
+  entry with `os.path.isfile` against the source folder before it zips anything, so declaring the
+  `images/` directory — the most useful thing to describe — aborts the upload with
+  "does not exist", and declaring `images.zip` fails too because `--dir-mode zip` produces that
+  during the upload rather than in the folder. The photographs upload regardless, through the
+  folder walk. This cost one failed upload attempt to learn, and a test now pins it.
 - **Publishing stays a human step.** `export-kaggle` writes the directory and prints the
   `kaggle datasets create` and `kaggle datasets version` commands. §5.12 made `--push` opt-in for
   Hugging Face because a mistyped repo id becoming world-readable is unrecoverable; on Kaggle it

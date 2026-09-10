@@ -418,10 +418,17 @@ def render_metadata(
     dataset_id: str,
     description: str,
     backbones: Sequence[str],
-    *,
-    with_images: bool,
 ) -> dict[str, object]:
-    """Build Kaggle's `dataset-metadata.json`."""
+    """Build Kaggle's `dataset-metadata.json`.
+
+    `resources` may only name **files that exist in the export directory**. The
+    CLI validates every entry with `os.path.isfile` against the source folder
+    before it zips anything, so listing the `images/` directory fails the upload
+    outright — and listing `images.zip` fails too, because `--dir-mode zip`
+    creates that during upload rather than in the folder. The photographs are
+    still uploaded; `resources` is descriptive metadata for the flat files, and
+    the directory is described in the prose description instead.
+    """
     _check_text_limits(TITLE, SUBTITLE)
     validate_dataset_id(dataset_id)
     if LICENSE_NAME not in ALLOWED_LICENSES:
@@ -460,15 +467,6 @@ def render_metadata(
         }
         for name in backbones
     ]
-    if with_images:
-        resources.insert(
-            0,
-            {
-                "path": "images",
-                "description": "The photographs, one directory per statue.",
-            },
-        )
-
     return {
         "title": TITLE,
         "subtitle": SUBTITLE,
@@ -604,7 +602,6 @@ def build_kaggle_export(
         target,
         description,
         [name for name, _, _, _ in measured_backbones] if with_embeddings else [],
-        with_images=with_images,
     )
     with atomic_text(paths.metadata, KaggleExportError) as handle:
         json.dump(metadata_payload, handle, ensure_ascii=False, indent=2)
