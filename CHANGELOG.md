@@ -12,6 +12,11 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **The published Kaggle dataset is linked wherever the Hugging Face one is.** The README's
+  status paragraph and findings list, the "Use the published dataset" and citation sections,
+  `RESULTS.md`'s reproduction section, both pages' footers, and `.zenodo.json`'s related
+  identifiers, so the DOI record points at both copies. Each mention says which shape is which:
+  parquet with the images embedded on the Hub, images on disk beside CSV tables on Kaggle.
 - **The Kaggle export now describes every file and every column, and draws a cover.**
   `resources[].schema.fields` carries a name, type and description per column across all four
   CSVs; `COLUMN_NOTES` holds one entry per column and the export refuses a column missing from

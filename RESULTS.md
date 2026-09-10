@@ -658,7 +658,8 @@ statue — not a threshold on what is already computed.
 ## Reproducing this
 
 The photographs, both backbones' embeddings and the evaluation folds are published at
-[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), so the
+[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves)
+and on [Kaggle](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves), so the
 baselines can be re-derived without re-crawling Commons: load the `embeddings_dinov2` and
 `leave_one_out` configs and score them. The pipeline below is what produced them.
 

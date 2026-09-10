@@ -42,10 +42,11 @@ about the site rather than the research: the findings move to their own page, th
 offers both backbones so the gap between them can be seen on a visitor's own photograph, and three
 defects that only a real browser could show turn up in the process.
 
-The dataset is published at
-[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
-1,691 attributed photographs, both backbones' embeddings and the evaluation folds, from which the
-headline result re-derives without this repository.
+The dataset is published on
+[Hugging Face](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and
+[Kaggle](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves): 1,691 attributed
+photographs, both backbones' embeddings and the evaluation folds, from which the headline result
+re-derives without this repository.
 
 One question stays open, and it is the one the numbers above cannot answer: **how much accuracy a
 real phone photograph taken in the street costs.** The protocol, the route, the cohorts and the
@@ -85,7 +86,10 @@ shared failures actually look like. Regenerate with `krasnal-id visualize retrie
   result sections, limitations, and how to reproduce them.
 - [**The dataset on Hugging Face**](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) —
   1,691 attributed photographs of 306 statues, both backbones' embeddings, and the evaluation
-  folds, as a fine-grained instance-retrieval benchmark.
+  folds, as a fine-grained instance-retrieval benchmark. Parquet, with the images embedded.
+- [**The dataset on Kaggle**](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves) —
+  the same corpus as images on disk beside CSV tables, which is the shape Kaggle's explorer
+  previews and its notebooks expect.
 
 ## Setup
 
@@ -525,9 +529,15 @@ field query does, which favours the field queries and understates the gap.
 
 ## Use the published dataset
 
-The dataset is on the Hub as
-[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), so you
-do not need this repository, a Commons crawl or a GPU to work with it:
+The dataset is published twice, so you do not need this repository, a Commons crawl or a GPU to
+work with it. On the Hub as
+[turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), in
+parquet with the images embedded and one config per piece, so a comparison of the two backbones
+costs about 8 MB rather than the full 676 MB. On
+[Kaggle](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves) as images on disk
+beside CSV tables, which is what its explorer previews and its notebooks expect —
+[`docs/kaggle-starter.ipynb`](docs/kaggle-starter.ipynb) reproduces the headline there in about
+twenty lines. The Hub copy is the one this section shows:
 
 ```python
 from datasets import load_dataset
@@ -672,8 +682,9 @@ for when you need to pin exactly what you ran.
 
 The record archives the source code, the documentation and the published demo assets. The
 photographs themselves live on the
-[Hugging Face dataset](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves), where each
-one carries its own photographer and licence; cite that alongside the DOI if the data is what you
+[Hugging Face dataset](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and its
+[Kaggle copy](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves), where each one
+carries its own photographer and licence; cite that alongside the DOI if the data is what you
 used, and credit the photographers as `credits.csv` there sets out.
 
 ## Data and licensing

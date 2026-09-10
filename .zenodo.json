@@ -31,6 +31,11 @@
       "resource_type": "dataset"
     },
     {
+      "identifier": "https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves",
+      "relation": "isSourceOf",
+      "resource_type": "dataset"
+    },
+    {
       "identifier": "https://turhancan97.github.io/krasnal-id/",
       "relation": "isDocumentedBy",
       "resource_type": "other"
