@@ -10,6 +10,34 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-09-10
+
+Geometry does not reject what similarity cannot, and why it looked as though it would is worth
+more than the answer.
+
+Section 7.3 found no similarity threshold worth shipping at 306 classes. Section 7.6 then found
+that geometry discriminates where similarity does not, which made rejection look like the obvious
+next measurement. It is not. Blended against cosine with each query's own photographer withheld,
+geometry buys **0.65 AUROC points for DINOv2 and 2.3 for CLIP**, and four-fifths of unknown
+statues are still accepted either way. Inliers alone are *worse* than cosine there.
+
+What makes that credible is the condition that produced it. A known query averages **144 inliers**
+in the standard condition and **17** once its own photographer is withheld, while the unknown arm
+barely moves. A pair yielding 144 inliers is the same frame from the same visit, not two
+photographs of one statue — so geometry's apparent edge at rejection was largely re-identifying
+the photographer's own shot, and **geometry is more photographer-dependent than appearance, not
+less**. Reported without the disjoint condition this experiment would have concluded the opposite.
+
+The gain is five times larger for CLIP than for DINOv2, which is this project's recurring pattern
+rather than a point in geometry's favour: the linear probe was worth 3.1 points to CLIP and
+nothing to DINOv2, and re-ranking gained CLIP 3.4 top-1 points against DINOv2's 0.9. Every add-on
+measured here helps only where the representation is weak, substituting for a poor backbone rather
+than extending a good one.
+
+Both confidence signals this project computes have now been measured for rejection and both fail
+at this scale. The published demo names a statue for every photograph, and that is a measured
+position rather than an omission.
+
 ### Added
 
 - **`experiment open-set-geometry`: geometry as a rejection signal, not just a re-ranker.**

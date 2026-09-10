@@ -12,12 +12,14 @@ would help.
 
 ## Project status
 
-Current version **0.12.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.14.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
-DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and seven experiments — the full-pool
+DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and twelve experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
-comparison, confusion analysis, open-set rejection, and the camera-origin query gap — plus
-embedding visualization, single-image retrieval, a local demo and a published in-browser one.
+comparison, confusion analysis, open-set rejection, geometric rejection, the camera-origin query
+gap, the photographer gap, geometric re-ranking, the first stage's recall, and the field-query
+gap that waits on photographs — plus embedding visualization, single-image retrieval, a local
+demo and a published in-browser one.
 
 The v0.1-v0.3 build order finished at `0.3.0`; every release since closes one research question.
 `0.4.0` added open-set rejection. `0.5.0` rebuilt the dataset Commons-first at **306 classes and
@@ -31,7 +33,11 @@ benchmark anyone can load. `0.10.0` asked whether the headline was recognising s
 photographers, and answered it: mostly statues for DINOv2, much less so for CLIP. `0.11.0` added
 geometric verification on top of the ranking — the first accuracy gain here from method rather
 than data. `0.12.0` measured why it stops there: the first stage's recall, and three standard ways
-of raising it that all fail.
+of raising it that all fail. `0.13.0` put the pipeline's own DINOv2 in the browser on a *smaller*
+download than the CLIP it replaced, taking the published demo from 82.4% to 93.2% top-1 and
+retiring a size constraint the project had been designing around that turned out not to exist.
+`0.14.0` asked whether geometry can reject what similarity cannot, and answered no — while finding
+that geometry leans on the photographer harder than appearance does.
 
 The dataset is published at
 [turhancan97/wroclaw-dwarves](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves):
@@ -92,7 +98,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.12.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.14.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -138,7 +144,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.12.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.14.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

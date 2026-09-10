@@ -905,7 +905,9 @@ photographer-disjoint question of §7.5, and `0.11.0` adds the geometric re-rank
 the first accuracy improvement from method rather than data. `0.12.0` closes the recall question of
 §7.7 by measuring that its three obvious answers do not work. `0.13.0` closes the last of §8's
 open questions by putting DINOv2 in the browser (§6.5) — the only release so far whose finding is
-that a constraint the project had been designing around did not exist.
+that a constraint the project had been designing around did not exist. `0.14.0` measures geometry
+as a rejection signal (§7.8) and finds it does not reject, and that geometry is more
+photographer-dependent than appearance rather than less.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

@@ -13,8 +13,8 @@ authors:
   - given-names: "Turhan Can"
     family-names: "Kargın"
     orcid: "https://orcid.org/0000-0002-6751-4773"
-version: "0.13.0"
-date-released: "2026-09-09"
+version: "0.14.0"
+date-released: "2026-09-10"
 license: MIT
 doi: "10.5281/zenodo.22548023"
 identifiers:
