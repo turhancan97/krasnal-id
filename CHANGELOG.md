@@ -10,6 +10,32 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-09-10
+
+The dataset is published on Kaggle as well, and §5.11's last open question closes.
+
+That section had left it open on the grounds that "the same export directory would serve".
+Building it showed that it would not: file shape and config granularity are platform conventions,
+not dataset properties. The Hub wants parquet whose image column is a `{bytes, path}` struct; a
+Kaggle user opening an image dataset expects a folder of images beside a table describing them.
+So Kaggle is a second writer, and only the rights artifacts are shared — both exports derive
+their licence URL, SPDX identifier, per-file modification flag and credit line from the same
+code, because §5.11's obligation is per file and the two platforms must not be able to disagree
+about a photographer.
+
+Three of the four defects this release fixes were invisible until something outside this
+repository rejected them. Kaggle's CLI validates `resources` with `os.path.isfile` before it zips
+anything, so declaring the `images/` directory — the most useful-looking entry — aborted the
+upload. Its description field is markdown *with HTML parsing*, so `embeddings_<backbone>.npy`
+was read as an unknown opening tag and silently swallowed the entire licensing section, leaving a
+dataset tagged "Other (specified in description)" with nothing specifying it. And the Kaggle
+account is not the GitHub one. Each cost a failed attempt to learn and each is now pinned by a
+test.
+
+Validated the way a dataset release should be: scoring leave-one-out from the published
+`embeddings_dinov2.npy` and `images.csv` alone, with no project import, reproduces 93.1% top-1,
+95.7% top-5 and 116 errors of 1,691 — the numbers in `RESULTS.md`, exactly.
+
 ### Added
 
 - **The published Kaggle dataset is linked wherever the Hugging Face one is.** The README's

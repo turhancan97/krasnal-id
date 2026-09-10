@@ -1021,7 +1021,9 @@ that a constraint the project had been designing around did not exist. `0.14.0` 
 as a rejection signal (§7.8) and finds it does not reject, and that geometry is more
 photographer-dependent than appearance rather than less. `0.15.0` is the first release about the
 site rather than the research (§6.6): two pages, a backbone switch offered as a comparison, and
-three defects that only loading the page in a browser could surface.
+three defects that only loading the page in a browser could surface. `0.16.0` publishes the
+dataset to Kaggle (§5.13), which closes the last of §5.11's open questions and surfaces three
+more defects that only an external platform could reject.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a
