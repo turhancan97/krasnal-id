@@ -10,6 +10,27 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- **The site is two pages: an identifier and a written result.** `index.html` had grown to 550
+  lines, of which about 230 were the five findings sections, so the upload control a visitor comes
+  for sat above a fold of prose most of them are not there for. The findings now live in
+  `findings.html`, `index.html` is about 100 lines, and each page carries one card-sized link to
+  the other. The stylesheet moved out of `index.html`'s `<style>` block into a shared `style.css`,
+  because two pages that drift apart visually are worse than one long one.
+- The root URL is still the identifier, which matters: `CITATION.cff`, the Zenodo record and the
+  Hugging Face dataset card all point at it.
+
+### Fixed
+
+- **The pool-size chart's tooltip and crosshair have never worked on the published site.**
+  `chart.js` creates its pointer target as `<rect class="hit-area" id="hit">` and then looked it up
+  with `getElementById("hit-area")` — the class, not the id. That returned `null`, so the first
+  `addEventListener` call threw, none of the three pointer handlers was ever attached, and the
+  page logged one uncaught `TypeError` on every load. Found by loading the page in a real browser
+  while splitting it, which is the only way this class of bug shows up: the chart draws correctly
+  and only the interaction is missing.
+
 ## [0.14.0] - 2026-09-10
 
 Geometry does not reject what similarity cannot, and why it looked as though it would is worth

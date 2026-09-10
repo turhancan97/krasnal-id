@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krasnal-ID — what the experiments found</title>
+<meta name="description" content="Results from a fine-grained visual instance retrieval study of Wrocław's dwarf statues: accuracy against candidate-pool size, geographic narrowing, trained classifiers, and where the errors are.">
+<link rel="icon" href="brand/krasnal-mark-light.svg">
+<meta property="og:title" content="Krasnal-ID">
+<meta property="og:description" content="What the experiments found: identifying 306 near-identical bronze statues from photographs.">
+<meta property="og:image" content="brand/social-preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="brandrow">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14.5 27C16.5 18 20 11 24 6C28 11 31.5 18 33.5 27Z" fill="var(--logo-red)"/>
+        <rect x="8" y="26" width="32" height="6.6" rx="3.3" fill="var(--logo-red)"/>
+        <circle cx="24" cy="38.6" r="5.2" fill="var(--logo-blue)"/>
+      </svg>
+      <span class="eyebrow">Krasnal-ID · fine-grained visual instance recognition</span>
+    </div>
+    <h1>What the experiments found</h1>
+    <p class="lede">Identifying which of 306 near-identical bronze statues a photograph shows,
+    measured over 1,691 reference photographs. Every number here traces to a committed command and
+    a structured result artifact.</p>
+    <div class="facts">
+      <span>306 dwarves</span><span>1,691 reference photographs</span><span>DINOv2 · CLIP</span>
+      <span>leave-one-out</span>
+    </div>
+  </header>
+
+  <nav class="pagelink back">
+    <a href="index.html">
+      <span class="t">Identify a photograph</span>
+      <span class="s">Run the model on your own photo, in your browser. Nothing is uploaded.</span>
+    </a>
+  </nav>
+
+  <section>
+    <h2>What the experiments found</h2>
+    <div class="findings">
+      <div class="finding">
+        <div class="n blue">93.1%</div><div class="u">top-1, full pool</div>
+        <p class="body"><b>Frozen embeddings are enough.</b> DINOv2 identifies the right dwarf first
+        time in 93.1% of queries across all 306 statues, and within five candidates 95.7% of the
+        time — with no training of any kind. It is also what
+        <a href="index.html">the identifier</a> runs, so the demo and the number beside it are the
+        same model. CLIP, measured alongside it, reaches 82.9%.</p>
+      </div>
+      <div class="finding">
+        <div class="n red">−0.79</div><div class="u">points / doubling</div>
+        <p class="body"><b>DINOv2 decays steadily; CLIP accelerates.</b> Each doubling of the
+        candidate pool costs DINOv2 0.79 accuracy points, a rate that holds across seven doublings.
+        CLIP loses 2.06 and gets worse as the pool grows — a point apart at two candidates, ten
+        apart at 306.</p>
+      </div>
+      <div class="finding">
+        <div class="n red">−0.89</div><div class="u">points from location</div>
+        <p class="body"><b>Narrowing by location makes it slightly harder, not easier.</b> Real
+        proximity pools lose to random pools at every pool size, worst at a 171–291 m radius —
+        exactly the range a phone would use. Sculptors install lookalikes near each other.</p>
+      </div>
+      <div class="finding">
+        <div class="n">+3.1</div><div class="u">points, CLIP only</div>
+        <p class="body"><b>Training helps only the weaker backbone.</b> A linear probe gains CLIP
+        3.1 points and DINOv2 nothing at all. A supervised layer can partly repair an embedding
+        space not laid out for instance detail; it has nothing to add to one that is.</p>
+      </div>
+      <div class="finding">
+        <div class="n">116 / 1691</div><div class="u">errors, dinov2</div>
+        <p class="body"><b>The mistakes are explainable.</b> Both backbones concentrate their errors
+        on families of near-identical statues — above all the three Słupniki pillar dwarves, which
+        the projection picks out on its own using nothing but centroid distance.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Accuracy against candidate-pool size</h2>
+    <div class="prose">
+      <p>The experiment the project was built around. Each photograph is queried against its own
+      dwarf plus a random draw of others, repeated over five seeds at every pool size. The shaded
+      band is the spread across those seeds.</p>
+    </div>
+    <figure class="bleed">
+      <div class="card">
+        <div class="legend" id="legend"></div>
+        <div class="chartwrap">
+          <svg class="chart" id="chart" viewBox="0 0 720 400" role="img"
+               aria-label="Top-1 accuracy against candidate pool size. DINOv2 falls from 98.9 percent at a pool of two to 93.1 percent at 306. CLIP falls from 98.0 to 82.9 percent, and its decline steepens as the pool grows."></svg>
+          <div class="tip" id="tip"></div>
+        </div>
+      </div>
+      <figcaption><b>Narrowing the pool buys much more to a weak backbone than a strong one.</b>
+      Cutting the candidate list from 306 dwarves to 10 gains DINOv2 3.9 points and CLIP 11.1. The
+      useful signal is the gap that opens between them as the problem gets harder.</figcaption>
+    </figure>
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="scroll">
+        <table>
+          <caption>Top-1 accuracy by candidate-pool size, mean of five seeds.</caption>
+          <thead><tr><th>Pool size</th><th>DINOv2</th><th>CLIP</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Does narrowing by location actually help?</h2>
+    <div class="prose">
+      <p>Those pools are sampled at random. The real proposal is to narrow by <em>location</em>, so
+      it can be measured rather than assumed. Each query is pooled with its <strong>nearest</strong>
+      dwarves instead of random ones — same pool size, only the selection rule changes.</p>
+      <p><b>This covers 294 of the 306 statues.</b> Wikidata places only 23 of them, so the rest are
+      placed from their own photographs: most Commons files carry the position the camera was in.
+      That is not the statue's position, so it was checked rather than assumed — across the statues
+      that have both, the photo-derived position sits a median of <strong>9 m</strong> from the
+      Wikidata one, against a smallest pool radius of 171 m.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Pool</th><th>Random</th><th>Geographic</th><th>Diff</th><th>Radius</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>99.1%</td><td>98.6%</td><td class="worse">−0.46</td><td>52 m</td></tr>
+          <tr><td>5</td><td>97.9%</td><td>97.0%</td><td class="worse">−0.89</td><td>171 m</td></tr>
+          <tr><td>10</td><td>96.9%</td><td>96.2%</td><td class="worse">−0.68</td><td>291 m</td></tr>
+          <tr><td>20</td><td>96.3%</td><td>95.6%</td><td class="worse">−0.76</td><td>467 m</td></tr>
+          <tr><td>50</td><td>95.4%</td><td>94.7%</td><td class="worse">−0.67</td><td>712 m</td></tr>
+          <tr><td>100</td><td>94.7%</td><td>94.2%</td><td class="worse">−0.48</td><td>909 m</td></tr>
+          <tr><td>200</td><td>94.0%</td><td>93.6%</td><td class="worse">−0.35</td><td>2,223 m</td></tr>
+          <tr><td>294 (full)</td><td>93.4%</td><td>93.4%</td><td>0.00</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><strong>Geographic pools are harder than random pools of the same size — at every pool size,
+      for both backbones.</strong> CLIP shows it about twice as strongly, peaking at −2.12 points at
+      a pool of ten. Nothing here is sampled: a geographic pool is exact, so this is not seed noise.</p>
+    </div>
+    <div class="callout">
+      <h3>The statues you can't separate are standing together</h3>
+      <p>Look at where the penalty is largest. It peaks at a pool of five to ten — a radius of
+      <strong>171 to 291 metres</strong> — then fades as the pool widens, down to −0.35 at 2.2 km.</p>
+      <p>With 294 statues placed, the obvious explanation can be measured rather than assumed.
+      Pairs that actually got confused are <strong>about twice as likely</strong> to stand within
+      100 m of each other as pairs that merely competed — 11.9% against 5.5%.</p>
+      <p>But that enrichment decays fast: 1.2× by 300 m, 1.1× by a kilometre. Co-location acts at
+      the scale of a shared plinth, not a shared neighbourhood, and <strong>88% of confused pairs
+      stand more than 100 m apart</strong>. Most statues that look alike here simply look alike.</p>
+      <p>It is still enough to explain the curve — a pool at a 171 m radius only needs a modest
+      enrichment of lookalikes to lose to a random one. Location narrowing does select for the
+      confusions it needs to avoid; the effect is just smaller than the story wants it to be.</p>
+    </div>
+    <div class="prose">
+      <p>For a location-aware tool: a 291 m radius around a visitor covers about ten candidates and
+      identifies at 96.2% top-1 with DINOv2. That is useful. It is also slightly <em>worse</em> than
+      showing that visitor ten dwarves picked at random from the whole city, which is the part worth
+      sitting with.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Does training beat retrieval?</h2>
+    <div class="prose">
+      <p>All three methods scored on the same leave-one-out folds, with one classifier fitted per
+      fold so no query ever sits in its own training data.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Method</th><th>DINOv2</th><th>CLIP</th><th>vs. retrieval</th></tr></thead>
+        <tbody>
+          <tr><td>Cosine retrieval</td><td class="win">93.1%</td><td>82.9%</td><td>—</td></tr>
+          <tr><td>Linear probe</td><td>93.0%</td><td class="win">86.0%</td><td>−0.1 / +3.1</td></tr>
+          <tr><td>Class prototypes</td><td>85.1%</td><td>74.6%</td><td>−8.0 / −8.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p>The answer splits by backbone, which is the finding. The probe changes nothing for DINOv2
+      — two queries in 1,691 — and gains CLIP 3.1 points, though the confidence intervals still
+      overlap slightly. Prototypes actively hurt, about eight points for both: averaging a class
+      into one vector throws away the pose and viewpoint variation that makes a particular
+      photograph matchable, and the more classes there are the more that costs.</p>
+      <p>One detail worth keeping, because it nearly became a wrong conclusion. At scikit-learn's
+      default <code>C=1.0</code> the probe scored <strong>66%</strong> — which reads as a decisive
+      result and is really just underfitting, since L2-normalised embeddings put per-dimension
+      magnitudes near <code>1/√d</code> and that penalty crushes the weights. At <code>C=100</code>
+      it scores as above. A badly regularised baseline is worse than no baseline.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where the errors are</h2>
+    <div class="prose">
+      <p>Outright errors are still relatively rare — 116 of 1,691 for DINOv2, 289 for CLIP — so
+      every query contributes its strongest <em>wrong</em> candidate, not just the failures. The
+      dominant cluster is now the three <b>Słupniki</b> pillar dwarves, near-identical statues
+      installed on different streets.</p>
+    </div>
+    <div class="pairs">
+      <div class="pair">
+        <span class="names"><b>Słupniki Solne</b><span class="arrow">→</span>Słupniki Oławskie</span>
+        <span class="val">2 of 10 · DINOv2</span>
+      </div>
+      <div class="pair">
+        <span class="names"><b>Słupniki Świdnickie</b><span class="arrow">→</span>Słupniki Oławskie</span>
+        <span class="val">3 of 7 · CLIP</span>
+      </div>
+      <div class="pair">
+        <span class="names"><b>Puszczający Stateczki</b><span class="arrow">→</span>Zbierający Wodę</span>
+        <span class="val">2 of 3 · 0 m apart</span>
+      </div>
+    </div>
+    <figure class="bleed">
+      <div class="plate">
+        <img src="figures/embeddings-umap-dinov2.png" loading="lazy"
+             alt="UMAP projection of 1,691 DINOv2 embeddings. The 24 classes sitting closest to another class are coloured and named; the remaining 282 are grey. The named clusters include the Słupniki pillar dwarves and the water-themed trio.">
+      </div>
+      <figcaption><b>Three analyses, one answer.</b> With 306 classes the figure names only the 24
+      sitting closest to another class and greys the rest — and that selection, which uses nothing
+      but centroid distance, picks out the Słupniki pair, the water-themed trio and Ślepak/Głuchak.
+      The clusters the error analysis finds are the clusters the geometry shows.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What this does not show</h2>
+    <div class="limits">
+      <div class="limit"><span><b>306 classes is still not the whole city.</b> Extrapolated to
+      Wrocław's ~1,400 dwarves the fit gives 91.4% for DINOv2 and 78.4% for CLIP. The DINOv2 figure
+      is reasonably supported — its rate has been constant for seven doublings — but the CLIP one is
+      an optimistic bound, because its decline is still steepening at the edge of the measured
+      range.</span></div>
+      <div class="limit"><span><b><a href="index.html">The identifier</a> runs the same model as
+      the pipeline, but not the same code.</b> It runs DINOv2 quantised to 4 bits so it fits a
+      56 MB download, and it decodes and resizes in your browser rather than in Python. Its own
+      leave-one-out score, measured on exactly the vectors it ships, is 93.2% top-1 against 93.1%
+      for the research pipeline &mdash; inside that figure's confidence interval, so the
+      quantisation and the decode drift cost nothing measurable here. Until 8 September it ran CLIP
+      and scored 82.4%. That figure is not a claim: append <code>?selftest=full</code> to the
+      identifier's URL and your browser will re-embed all 1,691 reference photographs and score the
+      protocol itself.</span></div>
+      <div class="limit"><span><b>The reference photos are not phone photos — and that costs
+      something measurable.</b> 51 of them were themselves shot on phones, and used as queries they
+      score <strong>5.3 points worse for DINOv2</strong>, which is what the identifier runs, and
+      15.6 worse for CLIP. Not because they show harder statues: those queries belong to classes with
+      more reference photographs, not fewer. It is still a lower bound, since every one is a Commons
+      upload someone chose to take and share. A casual snapshot is harder again, and measuring that
+      needs photographs nobody has taken yet.</span></div>
+      <div class="limit"><span><b>It partly recognises the photographer, not the statue.</b> Two
+      people took 67% of the reference photographs, and near-duplicates from a single visit were
+      never removed. Withhold a query's own photographer, against a control that removes the same
+      number of references at random, and <strong>DINOv2 &mdash; what the identifier runs &mdash;
+      loses 2.6 top-1 points</strong> where CLIP loses 13.2. Cross-photographer it identifies a
+      statue <strong>81.8%</strong> of the time rather than 94.2%. So if the statue you photograph
+      is one Commons documents through a single contributor, expect the lower figure &mdash; and
+      note the identifier used to run CLIP, where the same number was 54.1%.</span></div>
+      <div class="limit"><span><b>There is no “I don't know”, and that is a measured result.</b> A
+      statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
+      unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
+      rises from 4% to 38% at the same operating point, because an absent statue now has 305 chances
+      to find a lookalike instead of 22.</span></div>
+      <div class="limit"><span><b>Most positions are inferred, not stated.</b> 271 of the 294 placed
+      statues are located from where photographers stood rather than from a Wikidata coordinate.
+      Checked against the statues that have both, the median error is 9 m — but it is an inference,
+      and a statue only ever photographed from across a square would be placed across that
+      square.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Every number here traces to a committed command and a structured result artifact. Full
+    method, dataset construction, licensing and attribution handling, and the reproduction script
+    are in the repository.</p>
+    <p class="repo"><a href="https://github.com/turhancan97/krasnal-id">github.com/turhancan97/krasnal-id</a></p>
+    <p>The dataset behind this page &mdash; 1,691 attributed photographs of 306 statues, both
+    backbones&rsquo; embeddings and the evaluation folds &mdash; is published as
+    <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">turhancan97/wroclaw-dwarves</a>.</p>
+    <p>Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
+    licences; each result names its photographer and licence. Model weights from
+    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a>, quantised to q4.</p>
+  </footer>
+</div>
+<script src="chart.js"></script>
+</body>
+</html>

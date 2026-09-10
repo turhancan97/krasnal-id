@@ -29,7 +29,10 @@
   const tip=document.getElementById("tip");
 
   function wire(colors){
-    const hit=document.getElementById("hit-area"), ch=document.getElementById("ch");
+    // "hit-area" is the rect's class; its id is "hit". Looking it up by the
+    // class name returned null, so every pointer handler below threw before it
+    // was attached and the crosshair and tooltip never worked.
+    const hit=document.getElementById("hit"), ch=document.getElementById("ch");
     function near(evt){
       const r=svg.getBoundingClientRect();
       const sx=(evt.clientX-r.left)/r.width*W;

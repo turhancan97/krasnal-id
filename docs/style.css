@@ -1,0 +1,243 @@
+/*
+ * Shared stylesheet for both pages of the site.
+ *
+ * index.html is the identifier and findings.html is the written result, and
+ * they are one design rather than two: extracting this from index.html's
+ * <style> block when the pages split is what keeps them that way.
+ */
+:root{
+  --ground:#F1F3F4; --surface:#FFFFFF; --raised:#FFFFFF; --plate:#FFFFFF;
+  --ink:#182126; --ink-2:#47535A; --ink-3:#76838A;
+  --rule:#DDE1E3; --rule-soft:#E9ECEE;
+  --red:#cf4832; --blue:#2578AF; --logo-red:#cf4832; --logo-blue:#3a7eab;
+  --good:#1F7A5C;
+  --shadow:0 1px 2px rgba(24,33,38,.05),0 10px 26px -14px rgba(24,33,38,.2);
+  --measure:38rem; --wide:56rem;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
+  --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
+  --rule:#262E33; --rule-soft:#1E252A;
+  --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+  --good:#4FBF97;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
+}}
+:root[data-theme="dark"]{
+  --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
+  --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
+  --rule:#262E33; --rule-soft:#1E252A;
+  --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+  --good:#4FBF97;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased}
+.page{max-width:var(--measure); margin:0 auto;
+      padding:clamp(2rem,6vw,4rem) 1.5rem 4rem; display:flex; flex-direction:column; gap:3rem}
+h1,h2{margin:0; text-wrap:balance; font-weight:600; letter-spacing:-.022em}
+h1{font-size:clamp(1.95rem,6vw,2.75rem); line-height:1.08}
+h2{font-size:1.4rem; line-height:1.22}
+h3{margin:0; font-size:1rem; font-weight:600}
+p{margin:0}
+a{color:var(--blue); text-underline-offset:3px}
+a:focus-visible,button:focus-visible,summary:focus-visible,label:focus-within{
+  outline:2px solid var(--blue); outline-offset:3px; border-radius:3px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.17em;
+         text-transform:uppercase; color:var(--ink-3)}
+.lede{font-size:1.12rem; color:var(--ink-2); line-height:1.56}
+section{display:flex; flex-direction:column; gap:1.05rem}
+.prose{display:flex; flex-direction:column; gap:.95rem; color:var(--ink-2)}
+.prose strong{color:var(--ink); font-weight:600}
+code{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--rule-soft);
+     padding:.1em .34em; border-radius:3px; color:var(--ink)}
+.bleed{width:min(100vw - 2rem,var(--wide)); margin-inline:calc(50% - min(50vw - 1rem,var(--wide)/2))}
+
+header{display:flex; flex-direction:column; gap:1.1rem}
+.brandrow{display:flex; align-items:center; gap:.7rem}
+.brandrow svg{width:34px; height:34px; flex:none; display:block}
+.facts{display:flex; flex-wrap:wrap; gap:.4rem 1.1rem;
+       font-family:"IBM Plex Mono",monospace; font-size:.75rem; color:var(--ink-3)}
+
+/* ---------- demo ---------- */
+.demo{background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+      box-shadow:var(--shadow); padding:1.35rem 1.25rem; display:flex; flex-direction:column;
+      gap:1.1rem}
+.drop{border:1.5px dashed var(--rule); border-radius:8px; padding:1.6rem 1rem;
+      display:flex; flex-direction:column; align-items:center; gap:.85rem; text-align:center;
+      transition:border-color .15s, background .15s; background:var(--ground)}
+.drop.over{border-color:var(--blue); background:color-mix(in srgb, var(--blue) 7%, var(--ground))}
+.drop p{color:var(--ink-3); font-size:.9rem}
+.actions{display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center}
+button{font:inherit; font-size:.92rem; font-weight:500; border-radius:7px; cursor:pointer;
+       padding:.58rem 1.05rem; border:1px solid var(--rule); background:var(--raised);
+       color:var(--ink); transition:border-color .15s, transform .05s}
+button:hover:not(:disabled){border-color:var(--blue)}
+button:active:not(:disabled){transform:translateY(1px)}
+button:disabled{opacity:.5; cursor:default}
+button.primary{background:var(--blue); border-color:var(--blue); color:#fff}
+button.primary:hover:not(:disabled){filter:brightness(1.08)}
+input[type=file]{display:none}
+
+
+.status{display:flex; align-items:center; gap:.6rem; font-family:"IBM Plex Mono",monospace;
+        font-size:.78rem; color:var(--ink-3); min-height:1.3rem}
+.status .bar{flex:1; height:4px; border-radius:2px; background:var(--rule-soft);
+             overflow:hidden; max-width:14rem}
+.status .bar i{display:block; height:100%; width:0; background:var(--blue);
+               transition:width .2s linear}
+.status.err{color:var(--red)}
+
+.examples{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; justify-content:center}
+.examples span{font-size:.78rem; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+.examples img{width:46px; height:46px; object-fit:cover; border-radius:6px; cursor:pointer;
+              border:1px solid var(--rule); display:block}
+.examples img:hover{border-color:var(--blue)}
+
+.query{display:flex; gap:1rem; align-items:flex-start}
+.query img{width:104px; height:104px; object-fit:cover; border-radius:8px;
+           border:1px solid var(--rule); flex:none}
+.query .meta{display:flex; flex-direction:column; gap:.3rem; min-width:0}
+.query .meta .t{font-weight:600}
+.query .meta .s{font-size:.85rem; color:var(--ink-3)}
+
+ol.results{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem}
+.hit{display:grid; grid-template-columns:auto 56px 1fr auto; gap:.75rem; align-items:center;
+     padding:.55rem .65rem; border:1px solid var(--rule); border-radius:8px;
+     background:var(--ground)}
+.hit.top{border-color:var(--blue); background:color-mix(in srgb, var(--blue) 6%, var(--ground))}
+.hit .rank{font-family:"IBM Plex Mono",monospace; font-size:.8rem; color:var(--ink-3);
+           width:1.2rem; text-align:right}
+.hit img{width:56px; height:56px; object-fit:cover; border-radius:6px; display:block;
+         border:1px solid var(--rule)}
+.hit .who{min-width:0; display:flex; flex-direction:column; gap:.12rem}
+.hit .name{font-weight:600; font-size:.96rem; line-height:1.25}
+.hit .credit{font-size:.72rem; color:var(--ink-3); overflow:hidden; text-overflow:ellipsis;
+             white-space:nowrap}
+.hit .credit a{color:var(--ink-3)}
+.hit .score{font-family:"IBM Plex Mono",monospace; font-size:.86rem;
+            font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.hit.top .score{color:var(--blue); font-weight:500}
+@media (max-width:30rem){
+  .hit{grid-template-columns:auto 46px 1fr auto; gap:.55rem}
+  .hit img{width:46px; height:46px}
+}
+
+.note{display:flex; gap:.65rem; align-items:flex-start; padding:.8rem .9rem; border-radius:8px;
+      background:color-mix(in srgb, var(--red) 8%, var(--surface));
+      border:1px solid color-mix(in srgb, var(--red) 28%, var(--rule)); font-size:.88rem;
+      color:var(--ink-2); line-height:1.5}
+.note b{color:var(--ink)}
+.note svg{flex:none; margin-top:.15rem}
+.privacy{font-size:.78rem; color:var(--ink-3); text-align:center;
+         font-family:"IBM Plex Mono",monospace}
+
+/* ---------- findings ---------- */
+.findings{display:flex; flex-direction:column; border-top:1px solid var(--rule)}
+.finding{display:grid; grid-template-columns:7.4rem 1fr; gap:.3rem 1.3rem; padding:1.05rem 0;
+         border-bottom:1px solid var(--rule-soft); align-items:baseline}
+.finding .n{font-family:"IBM Plex Mono",monospace; font-size:1.35rem; font-weight:500;
+            font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1.15}
+.finding .n.blue{color:var(--blue)} .finding .n.red{color:var(--red)}
+.finding .u{grid-column:1; font-family:"IBM Plex Mono",monospace; font-size:.65rem;
+            letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.finding .body{grid-column:2; grid-row:1 / span 2; color:var(--ink-2); font-size:.95rem;
+               line-height:1.55}
+.finding .body b{color:var(--ink); font-weight:600}
+@media (max-width:36rem){
+  .finding{grid-template-columns:1fr; gap:.1rem}
+  .finding .u{grid-column:1} .finding .body{grid-column:1; grid-row:auto; margin-top:.35rem}
+}
+
+figure{margin:0; display:flex; flex-direction:column; gap:.8rem}
+.card{background:var(--surface); border:1px solid var(--rule); border-radius:8px;
+      padding:1.25rem 1.15rem .9rem; box-shadow:var(--shadow)}
+figcaption{font-size:.85rem; color:var(--ink-3); line-height:1.5}
+figcaption b{color:var(--ink-2); font-weight:600}
+.plate{background:var(--plate); border:1px solid var(--rule); border-radius:8px; padding:.5rem}
+.plate img{display:block; width:100%; height:auto; border-radius:4px}
+
+.legend{display:flex; flex-wrap:wrap; gap:1rem; align-items:center;
+        font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--ink-2)}
+.legend .k{display:inline-flex; align-items:center; gap:.4rem}
+.legend .sw{width:16px; height:3px; border-radius:2px; flex:none}
+.legend .slope{color:var(--ink-3)}
+.chart{width:100%; height:auto; display:block; overflow:visible}
+.chart text{font-family:"IBM Plex Mono",ui-monospace,monospace; fill:var(--ink-3);
+            font-size:11px; font-variant-numeric:tabular-nums}
+.chart .axis-title{fill:var(--ink-3); font-size:10.5px; letter-spacing:.09em;
+                   text-transform:uppercase}
+.chart .grid{stroke:var(--rule-soft); stroke-width:1}
+.chart .axis{stroke:var(--rule); stroke-width:1}
+.chart .line{fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.chart .dot{stroke:var(--surface); stroke-width:2}
+.chart .dlabel{font-size:11px; font-weight:500}
+.chart .crosshair{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:3 3; opacity:0}
+.chart .hit-area{fill:transparent; cursor:crosshair}
+.chartwrap{position:relative}
+.tip{position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-118%);
+     background:var(--surface); border:1px solid var(--rule); border-radius:5px;
+     padding:.46rem .56rem; box-shadow:var(--shadow); font-family:"IBM Plex Mono",monospace;
+     font-size:.71rem; color:var(--ink); white-space:nowrap; transition:opacity .1s linear; z-index:5}
+.tip .row{display:flex; align-items:center; gap:.36rem; font-variant-numeric:tabular-nums}
+.tip .row .sw{width:9px; height:9px; border-radius:2px; flex:none}
+.tip .hd{color:var(--ink-3); margin-bottom:.24rem}
+
+.scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:.86rem}
+caption{text-align:left; font-size:.85rem; color:var(--ink-3); padding-bottom:.5rem}
+th,td{text-align:right; padding:.46rem .55rem; border-bottom:1px solid var(--rule-soft);
+      font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace}
+th:first-child,td:first-child{text-align:left; font-family:"IBM Plex Sans",sans-serif}
+thead th{color:var(--ink-3); font-weight:500; font-size:.71rem; letter-spacing:.08em;
+         text-transform:uppercase; border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:none}
+td.worse{color:var(--red); font-weight:500}
+td.win{color:var(--blue)}
+details{border-top:1px solid var(--rule-soft); padding-top:.7rem}
+summary{cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:.73rem;
+        letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
+details[open] summary{margin-bottom:.75rem}
+
+.callout{background:var(--surface); border:1px solid var(--rule);
+         border-left:3px solid var(--red); border-radius:6px; padding:1rem 1.05rem;
+         display:flex; flex-direction:column; gap:.55rem}
+.callout p{color:var(--ink-2); font-size:.94rem}
+.pairs{display:flex; flex-direction:column; font-size:.9rem}
+.pair{display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+      padding:.52rem 0; border-bottom:1px solid var(--rule-soft)}
+.pair:last-child{border-bottom:none}
+.pair .names{color:var(--ink-2)} .pair .names b{color:var(--ink); font-weight:600}
+.pair .arrow{color:var(--ink-3); padding:0 .26rem}
+.pair .val{font-family:"IBM Plex Mono",monospace; font-size:.77rem; color:var(--ink-3);
+           font-variant-numeric:tabular-nums; white-space:nowrap}
+.limits{display:flex; flex-direction:column; gap:.7rem; font-size:.93rem; color:var(--ink-2)}
+.limit{display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:start}
+.limit::before{content:""; width:5px; height:5px; border-radius:50%; background:var(--red);
+               margin-top:.6rem}
+.limit b{color:var(--ink); font-weight:600}
+/* ---------- cross-page link ---------- */
+/* The two pages each carry one link to the other, styled as a destination
+   rather than a line of body text: the identifier has to stay compact, so the
+   findings have to look worth the click from it. */
+.pagelink a{display:flex; flex-direction:column; gap:.3rem; text-decoration:none;
+            background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+            box-shadow:var(--shadow); padding:1.05rem 1.15rem;
+            transition:border-color .15s, transform .05s}
+.pagelink a:hover{border-color:var(--blue)}
+.pagelink a:active{transform:translateY(1px)}
+.pagelink .t{color:var(--blue); font-weight:600; font-size:1.02rem}
+.pagelink .t::after{content:" \2192"}
+.pagelink .s{color:var(--ink-2); font-size:.92rem; line-height:1.5}
+.pagelink.back .t::after{content:""}
+.pagelink.back .t::before{content:"\2190 "}
+
+footer{border-top:1px solid var(--rule); padding-top:1.35rem; display:flex;
+       flex-direction:column; gap:.6rem; font-size:.87rem; color:var(--ink-3)}
+footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
+.visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
+                 white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
