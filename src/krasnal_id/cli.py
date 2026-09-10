@@ -91,6 +91,7 @@ from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_prob
 from krasnal_id.experiments.recall_curve import RecallCurveError, run_recall_curve
 from krasnal_id.experiments.rerank_ablation import RerankAblationError, run_rerank_ablation
 from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
+from krasnal_id.export.kaggle import KaggleExportError, build_kaggle_export
 from krasnal_id.export.push import PushConfigurationError, PushError, push_export
 from krasnal_id.logging import configure_logging
 from krasnal_id.models import (
@@ -130,6 +131,14 @@ RepoIdOption = Annotated[
 EmbeddingsOption = Annotated[
     bool,
     typer.Option("--embeddings/--no-embeddings", help="Include the cached backbone vectors."),
+]
+DatasetIdOption = Annotated[
+    str | None,
+    typer.Option("--dataset-id", help="Kaggle dataset id; defaults to the configured one."),
+]
+ImagesOption = Annotated[
+    bool,
+    typer.Option("--images/--no-images", help="Include the photographs themselves."),
 ]
 
 OverrideOption = Annotated[
@@ -519,6 +528,75 @@ def export_huggingface(
 
     visibility = "public" if public else "private"
     typer.echo(f"Pushed: repo={outcome.repo_id} visibility={visibility} url={outcome.url}")
+
+
+@data_app.command("export-kaggle")
+def export_kaggle(
+    override: OverrideOption = None,
+    dataset_id: DatasetIdOption = None,
+    embeddings: EmbeddingsOption = True,
+    images: ImagesOption = True,
+) -> None:
+    """Build the Kaggle dataset directory, ready for `kaggle datasets create`."""
+    config = load_config(override or [])
+    configure_logging(config.logging)
+
+    try:
+        manifest = _read_manifest(config.paths.manifest_path)
+        split = read_evaluation_split(config.paths.evaluation_split_path)
+        templates = None
+        template_path = license_template_path(config.paths.discovery_dir)
+        if template_path.is_file():
+            templates = load_license_templates(template_path).templates
+        result = build_kaggle_export(
+            config,
+            manifest,
+            split,
+            backbones=tuple(
+                backbone_config(name, override or []) for name in config.export.backbones
+            ),
+            dataset_id=dataset_id,
+            license_templates=templates,
+            with_embeddings=embeddings,
+            with_images=images,
+        )
+    except (
+        KaggleExportError,
+        LicenseTemplateError,
+        ManifestConfigurationError,
+        SplitConfigurationError,
+        EmbeddingStoreError,
+    ) as error:
+        typer.echo(f"Kaggle export error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    if templates is None:
+        typer.echo(
+            "  note: no licence templates found, so public-domain rows carry no recorded "
+            "basis; run krasnal-id data license-templates first",
+            err=True,
+        )
+
+    typer.echo(
+        f"Kaggle export complete: images={result.images} classes={result.classes} "
+        f"folds={result.folds} modified={result.modified} unmodified={result.unmodified} "
+        f"backbones={','.join(result.backbones) or 'none'} "
+        f"manifest={result.manifest_sha256[:12]} output={result.paths.root}"
+    )
+    if result.image_bytes:
+        typer.echo(
+            f"  photographs: {result.image_bytes / 1e6:.0f} MB under {result.paths.images_dir}"
+        )
+
+    # Publishing is deliberately not automated. A Kaggle dataset slug cannot be
+    # renamed after creation, so the one irreversible step stays a human one.
+    typer.echo(
+        f"  not published. To create it:\n"
+        f"    kaggle datasets create -p {result.paths.root} --dir-mode zip\n"
+        f"  To publish a new version of {result.dataset_id}:\n"
+        f"    kaggle datasets version -p {result.paths.root} --dir-mode zip "
+        f'-m "manifest {result.manifest_sha256[:12]}"'
+    )
 
 
 @embeddings_app.command("extract")

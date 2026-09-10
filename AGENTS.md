@@ -375,6 +375,55 @@ How §5.11's decision is implemented, by `krasnal-id data export-hf`.
   free of known copyright without saying why, and the fetcher discarded the template that does.
   Fifty-two files is small enough that publishing an unverified rights claim would be a choice.
 
+### 5.13 Kaggle export decision (2026-09-10)
+
+§5.11 left Kaggle open on the grounds that "the same export directory would serve". Building it
+showed that it would not, and the reason is the one worth recording: **config granularity and
+file shape are platform conventions, not dataset properties.** The Hub wants parquet whose image
+column is a `{bytes, path}` struct with a declared feature type; Kaggle's data explorer previews
+CSV and serves files, and its users open an image dataset expecting a folder of images beside a
+table describing them. Shipping the Hub's parquet to Kaggle would hand a Kaggle user a column
+their tools cannot open. So `krasnal-id data export-kaggle` is a second writer, not a second
+target.
+
+What is deliberately *not* duplicated is everything the rights obligation rests on.
+`build_image_rows` derives the same licence URL, SPDX identifier, per-file modification flag and
+credit line for both, and `LICENSES.md`, `ATTRIBUTION.md` and `credits.csv` are the same generated
+artifacts. §5.11's obligation is per file, so the two exports must not be able to disagree about a
+photographer.
+
+- **The licence field says `other`, and that is the honest answer rather than a lazy one.** Kaggle
+  accepts exactly one licence per dataset from a fixed list. This corpus has ten across four
+  families, so every specific name is false of most of it: `CC-BY-SA-4.0` would assert 4.0 over
+  the 3.0, 2.5 and 2.0 files and assert a licence at all over the 52 public-domain and 7 CC0 ones.
+  `other` is Kaggle's "Other (specified in description)", which only stays honest if the
+  description *does* specify them — so the generated description carries the family breakdown, the
+  modified/unmodified split, the freedom-of-panorama disclosure and the `data/image-review.json`
+  removal path, and a test asserts each is present.
+- **Kaggle's limits are checked before the upload, not by it.** Title 6-50 characters, subtitle
+  20-80, slug 3-50 and alphanumeric-with-hyphens: Kaggle rejects rather than trims, and learning
+  that a title is one character too long after sending 676 MB is a bad trade. The packaged title
+  is 48 characters and a test pins it inside the bound.
+- **`folds.csv` states a rule and verifies it.** Written out, each fold's reference set is 1,690
+  image IDs and the table is 30 MB of identifiers nobody reads. Leave-one-out makes it
+  unnecessary: the references are every image except the query. That is a property of the current
+  split rather than a promise, so the export *checks* it fold by fold and refuses if it ever stops
+  holding, instead of publishing a table whose stated rule has quietly become false.
+- **Row alignment is checked, because a `.npy` has no keys.** The only thing tying a vector to a
+  photograph is its position in `images.csv`. A mismatch would not fail; it would silently make
+  every downstream number wrong, so the export compares the matrix's image order against the
+  table's and refuses on disagreement.
+- **Publishing stays a human step.** `export-kaggle` writes the directory and prints the
+  `kaggle datasets create` and `kaggle datasets version` commands. §5.12 made `--push` opt-in for
+  Hugging Face because a mistyped repo id becoming world-readable is unrecoverable; on Kaggle it
+  is worse, because a dataset slug **cannot be renamed after creation**. No `kaggle` dependency is
+  added and no credential path exists in this repository.
+- **Validated by re-deriving the headline from the export alone.** Scoring leave-one-out from
+  `embeddings_*.npy` and `images.csv` with no project import reproduces **93.1% top-1 / 95.7%
+  top-5 for DINOv2 and 82.9% for CLIP** — the published numbers exactly. That is the property that
+  makes a dataset release worth making, and it is checkable in twenty lines by anyone who
+  downloads it.
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone
@@ -965,9 +1014,14 @@ three defects that only loading the page in a browser could surface.
   cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
   what is missing is the photographs, which need a day in Wrocław.
 - ~~**Publishing the dataset to Hugging Face**~~ — done on 2026-09-06 as
-  `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation. Kaggle
-  remains open and undecided: the same export directory would serve, but its metadata conventions
-  differ and nothing has been built for them.
+  `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation.
+- ~~**Publishing the dataset to Kaggle**~~ — done on 2026-09-10 as `krasnal-id data
+  export-kaggle`; see §5.13. The premise that "the same export directory would serve" was wrong:
+  file shape and config granularity are platform conventions, so Kaggle gets images-on-disk plus
+  CSV while the Hub keeps parquet, and only the rights artifacts are shared. What it leaves is an
+  operational question rather than a research one — the directory is built and validated, and
+  creating the dataset is one `kaggle datasets create` away, deliberately left to a human because
+  a Kaggle slug cannot be renamed.
 - ~~**Re-ranking under the photographer-disjoint protocol**~~ — done on 2026-09-07 as
   `experiment rerank -oexperiment.photographer_disjoint=true`; see §7.6. The separation was mostly
   near-duplicate confirmation, the gain mostly was not.

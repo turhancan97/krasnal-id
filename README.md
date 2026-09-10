@@ -580,6 +580,46 @@ carries its photographer, licence, SPDX identifier, source URL and a ready-to-pa
 Commons digest — 1,538 of the 1,691 files are downscaled adaptations and 153 are byte-identical
 to their originals.
 
+### Kaggle
+
+Kaggle is a second writer rather than a second target, because file shape is a platform
+convention: the Hub wants parquet whose image column is a `{bytes, path}` struct, and a Kaggle
+user opening an image dataset expects a folder of images beside a table describing them.
+
+```bash
+uv run krasnal-id data export-kaggle                       # builds data/export/kaggle
+uv run krasnal-id data export-kaggle --no-images           # metadata and vectors only, ~10 MB
+uv run krasnal-id data export-kaggle --dataset-id you/wroclaw-dwarves
+```
+
+That writes `images/<dwarf_id>/`, `images.csv`, `classes.csv`, `folds.csv`, one
+`embeddings_<backbone>.npy` per backbone, Kaggle's `dataset-metadata.json`, and the same
+`LICENSES.md`, `ATTRIBUTION.md`, `credits.csv` and `provenance.json` the Hugging Face export
+publishes — deliberately the same generated artifacts, so the two platforms cannot disagree about
+a photographer.
+
+Three things it refuses rather than discovers late. Kaggle rejects an over-long title or slug
+instead of trimming it, so the limits are checked before 676 MB is copied. `folds.csv` stores
+only the query, since every fold's reference set is every other image — a rule the export
+verifies fold by fold and refuses if it stops holding. And a `.npy` has no keys, so the vector
+order is compared against `images.csv` before writing, because a mismatch would make every
+downstream number wrong without failing.
+
+The licence field says `other` — Kaggle's "Other (specified in description)" — because Kaggle
+takes one licence and this corpus has ten. The generated description carries the family
+breakdown, the modified/unmodified split, the freedom-of-panorama disclosure and the removal
+path, which is what makes that field honest rather than vague.
+
+Publishing is left to you, because a Kaggle dataset slug cannot be renamed once created:
+
+```bash
+kaggle datasets create -p data/export/kaggle --dir-mode zip
+kaggle datasets version -p data/export/kaggle --dir-mode zip -m "manifest <hash>"
+```
+
+Scoring leave-one-out from `embeddings_dinov2.npy` and `images.csv` alone — no project import —
+reproduces 93.1% top-1 and 95.7% top-5, and CLIP's 82.9%, which are the published numbers exactly.
+
 ## Development checks
 
 ```bash

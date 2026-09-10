@@ -25,6 +25,7 @@ class PathsConfig(BaseModel):
     manifest_path: Path
     results_dir: Path
     huggingface_export_dir: Path
+    kaggle_export_dir: Path
 
 
 class WikimediaDataConfig(BaseModel):
@@ -360,11 +361,14 @@ ExperimentConfig = Annotated[
 
 
 class ExportConfig(BaseModel):
-    """Hugging Face dataset export settings."""
+    """Dataset export settings, shared by the Hugging Face and Kaggle writers."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     repo_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$")
+    # Kaggle slugs are lowercase, hyphenated and 3-50 characters; the export
+    # checks the length itself so a rejection costs a message, not an upload.
+    kaggle_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9-]*$")
     backbones: tuple[Literal["dinov2", "clip"], ...] = Field(min_length=1)
     # Under the Hub's ~500 MB shard convention, with headroom for the estimate
     # being wrong: the size is projected from file sizes before any bytes are read.

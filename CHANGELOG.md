@@ -10,6 +10,43 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **`data export-kaggle`: the dataset as a Kaggle dataset.** §5.11 left this open on the grounds
+  that "the same export directory would serve"; building it showed that it would not. File shape
+  and config granularity are platform conventions, not dataset properties — the Hub wants parquet
+  whose image column is a `{bytes, path}` struct, and a Kaggle user opening an image dataset
+  expects a folder of images beside a table describing them. So Kaggle gets
+  `images/<dwarf_id>/`, `images.csv`, `classes.csv`, `folds.csv` and one
+  `embeddings_<backbone>.npy` per backbone, and the Hub keeps its parquet.
+- **The rights artifacts are shared, deliberately.** `LICENSES.md`, `ATTRIBUTION.md` and
+  `credits.csv` are the same generated files both exports publish, and both derive their licence
+  URL, SPDX identifier, per-file modification flag and credit line from `build_image_rows`.
+  §5.11's obligation is per file, so the two platforms must not be able to disagree about a
+  photographer.
+- **The licence field says `other`, which is the honest answer.** Kaggle takes exactly one licence
+  and this corpus has ten across four families: `CC-BY-SA-4.0` would assert 4.0 over the 3.0, 2.5
+  and 2.0 files and assert a licence at all over the 52 public-domain and 7 CC0 ones. `other` is
+  Kaggle's "Other (specified in description)", which is only honest if the description specifies
+  them — so the generated description carries the family breakdown, the modified/unmodified
+  split, the freedom-of-panorama disclosure and the `data/image-review.json` removal path, each
+  asserted by a test.
+- **Three things are refused rather than discovered late.** Kaggle rejects an over-long title,
+  subtitle or slug instead of trimming, so the limits are checked before 676 MB is copied.
+  `folds.csv` stores only the query because every fold's reference set is every other image — a
+  rule the export verifies fold by fold and refuses if it ever stops holding, rather than
+  publishing a table whose stated rule has quietly become false. And a `.npy` has no keys, so the
+  vector order is compared against `images.csv` before writing: a mismatch there would not fail,
+  it would make every downstream number wrong in silence.
+- **Publishing stays a human step.** The command writes the directory and prints the
+  `kaggle datasets create` and `kaggle datasets version` commands. §5.12 made `--push` opt-in for
+  the Hub because a mistyped repo id becoming world-readable is unrecoverable; on Kaggle it is
+  worse, because a dataset slug cannot be renamed after creation. No `kaggle` dependency is added
+  and no credential path exists in this repository.
+- **Validated by re-deriving the headline from the export alone.** Scoring leave-one-out from
+  `embeddings_*.npy` and `images.csv` with no project import gives **93.1% top-1 / 95.7% top-5
+  for DINOv2 and 82.9% for CLIP** — the published numbers exactly.
+
 ## [0.15.0] - 2026-09-10
 
 The site becomes two pages, the identifier offers both backbones, and the README shows its
