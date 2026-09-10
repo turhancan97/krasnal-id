@@ -10,6 +10,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **`visualize retrieval-examples`: the retrieval itself, not an average of it.** Every other
+  figure here plots an aggregate. This one draws a query photograph beside the five dwarves each
+  backbone ranks highest for it, green for the correct statue, so a reader can see what 93.1%
+  top-1 is made of. Written to `results/retrieval-examples.jpg`.
+- **The queries are chosen by a stated rule, because a hand-picked example of a model succeeding
+  is worth nothing.** Every fold is scored under both backbones exactly as `experiment baseline`
+  scores it, folds are grouped by which backbones ranked the right statue first — both right,
+  DINOv2 only, DINOv2 missed, both wrong — and the first fold in image-ID order represents its
+  group. Image IDs order by Commons page ID, which is unrelated to anything either model sees.
+- The figure is a JPEG where every other one is a PNG: it is 44 photographs rather than a line
+  plot, and PNG stores those exactly and at 3.7 MB against 756 KB.
+- **The README now shows its results instead of only describing them.** It carried no figures at
+  all, despite four already sitting in `docs/figures/`: the new contact sheet joins the pool-size
+  ablation, the UMAP projection and the open-set rejection curve, each beside the section that
+  produces it.
+
 ### Changed
 
 - **The site is two pages: an identifier and a written result.** `index.html` had grown to 550

@@ -1,3 +1,4 @@
 kind: visualization
 method: umap
 seed: ${seeds.primary}
+backbones: [dinov2, clip]

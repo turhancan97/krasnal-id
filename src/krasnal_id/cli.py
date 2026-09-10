@@ -104,6 +104,7 @@ from krasnal_id.retrieval.rerank import RerankError
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 from krasnal_id.viz.open_set_plot import create_open_set_plot
+from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 
 
 def _read_manifest(path: Path) -> DatasetManifest:
@@ -1043,6 +1044,20 @@ def visualize_open_set(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Open-set visualization complete: figure={path}")
+
+
+@visualize_app.command("retrieval-examples")
+def visualize_retrieval_examples(override: OverrideOption = None) -> None:
+    """Draw query photographs beside the five dwarves each backbone ranks highest."""
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path = create_retrieval_examples_plot(config)
+    except (VisualizationError, EmbeddingStoreError) as error:
+        typer.echo(f"Retrieval example visualization error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Retrieval example visualization complete: figure={path}")
 
 
 @app.command("demo")

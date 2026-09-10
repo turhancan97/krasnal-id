@@ -68,6 +68,14 @@ and 2.3 for CLIP, with four-fifths of unknown statues still accepted — because
 average inliers collapse to 17 once its own photographer is withheld, making geometry *more*
 photographer-dependent than appearance rather than less.
 
+![One query photograph and the five dwarves each backbone ranks highest, for four queries: one both backbones identify, one only DINOv2 identifies, one only CLIP identifies, and one neither identifies. Correct statues are outlined in green and wrong ones in red.](docs/figures/retrieval-examples.jpg)
+
+*What the accuracy numbers are an average over. Each query is followed by the five dwarves each
+backbone ranks highest, green for the correct statue. The four rows are not hand-picked: folds are
+grouped by which backbones ranked the right statue first and the first query in image-ID order
+represents its group, so this is what the ordinary case, the gap between the backbones, and their
+shared failures actually look like. Regenerate with `krasnal-id visualize retrieval-examples`.*
+
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
 - [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eight
@@ -241,6 +249,11 @@ configured seed and reported with the observed spread across seeds as its error 
 pool sizes larger than the available class count are skipped with a warning, and the full pool is
 always measured. Results are written to `results/pool_size_ablation-<backbone>.json`.
 
+![Top-1 accuracy against candidate-pool size on a log axis. DINOv2 falls from 98.9% at a pool of two to 93.1% at 306; CLIP falls from 98.0% to 82.9% and its decline steepens as the pool grows.](docs/figures/pool-size-ablation.png)
+
+*The headline curve. Error bars are the observed spread across seeds. Draw it from saved results
+with `krasnal-id visualize ablation`.*
+
 The reported `top_1_points_per_doubling` is a least-squares fit of top-1 accuracy against
 log2 pool size over every measured size. Small pools sit near the accuracy ceiling, so the fit is
 a conservative estimate of degradation in the larger-pool regime. See `AGENTS.md` §7.1 for the
@@ -267,10 +280,25 @@ Project the cached vectors into a labeled two-dimensional figure:
     uv run krasnal-id visualize embeddings
     uv run krasnal-id visualize embeddings --override experiment.method=tsne
 
+![UMAP projection of 1,691 DINOv2 embeddings. The 24 classes sitting closest to another class are coloured and named; the remaining 282 are grey.](docs/figures/embeddings-umap-dinov2.png)
+
+*With 306 classes the figure names only the 24 sitting closest to another class and greys the
+rest. That selection uses nothing but centroid distance, and it picks out the same Słupniki pair
+and water-themed trio the error analysis finds.*
+
 The figure is written to `results/embeddings-<method>-<backbone>.png`. Classes are separated by
 color and, beyond the twenty-color palette, by marker shape, and each class is named at its own
 centroid with overlapping labels nudged apart and connected by leader lines. Projections are
 seeded and reproducible.
+
+Draw the retrieval itself rather than an average of it:
+
+    uv run krasnal-id visualize retrieval-examples
+
+One query photograph beside the five dwarves each backbone ranks highest, written to
+`results/retrieval-examples.jpg`. The queries are chosen by rule, not by eye: every fold is scored
+under both backbones, folds are grouped by which backbones ranked the right statue first, and the
+first query in image-ID order represents its group. `experiment.backbones` names the arms to draw.
 
 ## Identify a single photograph
 
@@ -362,6 +390,11 @@ neighbour:
 Two populations of equal size are scored. The known arm is the leave-one-out split. The unknown
 arm removes every image of a query's own dwarf, so that dwarf is genuinely absent and the correct
 answer is rejection. Results are written to `results/open_set-<backbone>.json`.
+
+![Rejection tradeoff curves for both backbones: the fraction of unknown statues wrongly accepted against the fraction of known statues accepted.](docs/figures/open-set-rejection.png)
+
+*Why there is no "I don't know" button on the demo. Draw it from saved results with
+`krasnal-id visualize open-set`.*
 
 The headline is AUROC, which is threshold-free and so cannot be tuned. Operating points are named
 by the fraction of known queries they accept, and each one's threshold is calibrated

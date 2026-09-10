@@ -329,13 +329,16 @@ class ConfusionExperimentConfig(BaseModel):
 
 
 class VisualizationExperimentConfig(BaseModel):
-    """Embedding projection settings."""
+    """Embedding projection and contact-sheet settings."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     kind: Literal["visualization"]
     method: Literal["umap", "tsne"]
     seed: int
+    # Which backbones the retrieval contact sheet draws a row for. The
+    # projection commands use one backbone at a time and ignore this.
+    backbones: tuple[str, ...] = Field(min_length=1)
 
 
 ExperimentConfig = Annotated[
