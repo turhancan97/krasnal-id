@@ -1039,10 +1039,11 @@ more defects that only an external platform could reject.
 - ~~**Publishing the dataset to Kaggle**~~ — done on 2026-09-10 as `krasnal-id data
   export-kaggle`; see §5.13. The premise that "the same export directory would serve" was wrong:
   file shape and config granularity are platform conventions, so Kaggle gets images-on-disk plus
-  CSV while the Hub keeps parquet, and only the rights artifacts are shared. What it leaves is an
-  operational question rather than a research one — the directory is built and validated, and
-  creating the dataset is one `kaggle datasets create` away, deliberately left to a human because
-  a Kaggle slug cannot be renamed.
+  CSV while the Hub keeps parquet, and only the rights artifacts are shared. The dataset is live at
+  `turhancankargin/wroclaw-dwarves`; publishing remains a human step, because a Kaggle slug cannot
+  be renamed, so `export-kaggle` still only writes the directory and prints the
+  `kaggle datasets create` and `kaggle datasets version` commands. Nothing is left open: three of
+  §5.13's defects were invisible until the platform rejected them, and each is pinned by a test.
 - ~~**Re-ranking under the photographer-disjoint protocol**~~ — done on 2026-09-07 as
   `experiment rerank -oexperiment.photographer_disjoint=true`; see §7.6. The separation was mostly
   near-duplicate confirmation, the gain mostly was not.

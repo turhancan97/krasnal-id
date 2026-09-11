@@ -10,6 +10,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`AGENTS.md` §8 no longer says the Kaggle dataset is waiting to be created.** It was written
+  before the upload and left describing the publication as "one `kaggle datasets create` away",
+  which would tell a future contributor that a done thing was pending — the dataset has been live
+  at `turhancankargin/wroclaw-dwarves` since `0.16.0`, and §5.13's description defect was found by
+  reading the published page. The bullet now records the slug, keeps the reason publishing stays a
+  human step, and says the question is closed.
+
 ## [0.16.0] - 2026-09-10
 
 The dataset is published on Kaggle as well, and §5.11's last open question closes.
