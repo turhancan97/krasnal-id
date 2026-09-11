@@ -20,8 +20,11 @@ from krasnal_id.experiments.geometry_first import (
     GEOMETRY,
     GeometryFirstError,
     QueryRanks,
+    append_journal,
+    journal_identity,
     measure,
     rank_one_query,
+    read_journal,
     run_geometry_first,
     summarize,
 )
@@ -268,3 +271,64 @@ def test_cli_ranks_by_geometry_and_writes_the_artifact(tmp_path: Path) -> None:
     assert f"{ANSWERABLE}_appearance_r_at_1" in names
     # The configuration is recorded, which is what arms the overwrite guard.
     assert written["configuration"]["max_keypoints"] == 200
+
+
+def test_a_killed_sweep_resumes_instead_of_starting_over(tmp_path: Path) -> None:
+    """Two hours of matching must not be lost to whatever stopped the process."""
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path))
+    seed_embedding_cache(tmp_path / "embeddings", manifest)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path / "embeddings")
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    journal = tmp_path / "journals" / "geometry.jsonl"
+    config = _experiment(max_keypoints=200)
+
+    partial = measure(
+        split, manifest, matrix, _experiment(max_keypoints=200, max_queries=3), journal
+    )
+    assert len(read_journal(journal)) == 3
+
+    # The resumed run reads those three back and computes only the rest.
+    resumed = measure(split, manifest, matrix, config, journal)
+    everything = measure(split, manifest, matrix, config)
+
+    assert resumed == everything
+    assert resumed[:3] == partial
+    assert len(read_journal(journal)) == len(everything)
+
+
+def test_a_truncated_final_line_is_a_miss_rather_than_a_crash(tmp_path: Path) -> None:
+    """A process killed mid-write leaves half a line; that query is recomputed."""
+    journal = tmp_path / "geometry.jsonl"
+    ranks = QueryRanks(
+        answerable={APPEARANCE: 1, GEOMETRY: 2}, disjoint={APPEARANCE: 3, GEOMETRY: 4}
+    )
+    append_journal(journal, "commons-1", ranks)
+    with journal.open("a", encoding="utf-8") as handle:
+        handle.write('{"query_image_id": "commons-2", "answer')
+
+    recovered = read_journal(journal)
+
+    assert set(recovered) == {"commons-1"}
+    assert recovered["commons-1"] == ranks
+
+
+def test_a_journal_belongs_to_one_dataset_backbone_and_keypoint_budget(tmp_path: Path) -> None:
+    """Resuming onto rows that mean something else would be silent corruption."""
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path))
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    config = _experiment(max_keypoints=200)
+    baseline = journal_identity(split, FAKE_BACKBONE, config)
+
+    assert journal_identity(split, FAKE_BACKBONE, config) == baseline
+    # A different keypoint budget is a different geometry column.
+    assert journal_identity(split, FAKE_BACKBONE, _experiment(max_keypoints=400)) != baseline
+    # A different backbone is a different appearance column.
+    other = FAKE_BACKBONE.model_copy(update={"revision": "another-revision"})
+    assert journal_identity(split, other, config) != baseline
+    # And a different dataset is a different candidate set entirely.
+    moved = split.model_copy(update={"manifest_sha256": "b" * 64})
+    assert journal_identity(moved, FAKE_BACKBONE, config) != baseline
+
+
+def test_a_missing_journal_is_an_empty_one(tmp_path: Path) -> None:
+    assert read_journal(tmp_path / "never-written.jsonl") == {}

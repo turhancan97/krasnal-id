@@ -22,6 +22,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   `recall_curve-dinov2.json`, because a paired comparison needs both rankings over the identical
   candidate set. It is a feasibility probe and says so — 1,690 homographies is seven seconds a
   photograph, and a positive result would argue for building an index, not for shipping the loop.
+- **The geometry-first sweep resumes instead of starting over.** Two hours of matching should not
+  be lost to whatever stops the process, and the first full attempt was killed by a memory
+  watchdog at five minutes in. Each query's four ranks are appended to a journal and fsynced
+  before the next query starts, so a restart recomputes only what is missing — the contract
+  `embeddings extract` already offers. The journal's filename carries a digest of the split's
+  `manifest_sha256`, the backbone identity and `max_keypoints`, which is everything that decides
+  a row, so a changed setting starts a fresh journal rather than resuming onto rows that mean
+  something else. A partial final line from a mid-write kill is read as a miss, not a corruption.
 
 - **`RESULTS.md` section 13: the first stage's limit is not capacity.** Four DINOv2 checkpoints
   cross size against the register fix, all scoring the same 1,157 photographer-disjoint queries.

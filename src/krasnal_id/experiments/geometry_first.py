@@ -19,6 +19,10 @@ be an argument for building an index (ASMK, VLAD, a learned detector), not for
 shipping this loop.
 """
 
+import hashlib
+import json
+import logging
+import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -27,7 +31,11 @@ import numpy as np
 import numpy.typing as npt
 
 from krasnal_id.config import AppConfig, GeometryFirstConfig
-from krasnal_id.embeddings.store import EmbeddingMatrix, load_embedding_matrix
+from krasnal_id.embeddings.store import (
+    BackboneIdentity,
+    EmbeddingMatrix,
+    load_embedding_matrix,
+)
 from krasnal_id.experiments.baseline_accuracy import (
     BaselineExperimentError,
     accuracy_metric,
@@ -49,6 +57,12 @@ DISJOINT = "disjoint"
 
 APPEARANCE = "appearance"
 GEOMETRY = "geometry"
+
+# How often a long sweep says where it has got to. Two hours in silence is
+# indistinguishable from two hours hung.
+PROGRESS_EVERY = 50
+
+logger = logging.getLogger(__name__)
 
 
 class GeometryFirstError(ValueError):
@@ -109,13 +123,81 @@ def rank_one_query(
     return QueryRanks(answerable=ranks[ANSWERABLE], disjoint=ranks[DISJOINT])
 
 
+def journal_identity(
+    split: EvaluationSplit,
+    backbone: BackboneIdentity,
+    config: GeometryFirstConfig,
+) -> str:
+    """Digest everything that decides a query's row, so rows can never be mixed.
+
+    The split's `manifest_sha256` covers the candidate set and the truth; the
+    backbone covers the appearance column; `max_keypoints` covers the geometry
+    one. Change any of them and the digest changes, which starts a fresh journal
+    rather than resuming onto rows that mean something else.
+    """
+    payload = json.dumps(
+        {
+            "manifest_sha256": split.manifest_sha256,
+            "model_id": backbone.model_id,
+            "revision": backbone.revision,
+            "preprocessing_id": backbone.preprocessing_id,
+            "max_keypoints": config.max_keypoints,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def read_journal(path: Path) -> dict[str, QueryRanks]:
+    """Load the rows a previous run finished, tolerating a truncated tail.
+
+    A sweep killed mid-write leaves a partial final line. That line is a miss,
+    not a corruption: the query is simply recomputed.
+    """
+    if not path.is_file():
+        return {}
+    done: dict[str, QueryRanks] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            row = json.loads(line)
+            done[row["query_image_id"]] = QueryRanks(
+                answerable={k: int(v) for k, v in row[ANSWERABLE].items()},
+                disjoint={k: int(v) for k, v in row[DISJOINT].items()},
+            )
+        except (ValueError, KeyError, TypeError):
+            continue
+    return done
+
+
+def append_journal(path: Path, query_image_id: str, ranks: QueryRanks) -> None:
+    """Record one finished query, durably, before the next one starts."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    row = {
+        "query_image_id": query_image_id,
+        ANSWERABLE: ranks.answerable,
+        DISJOINT: ranks.disjoint,
+    }
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def measure(
     split: EvaluationSplit,
     manifest: DatasetManifest,
     matrix: EmbeddingMatrix,
     config: GeometryFirstConfig,
+    journal: Path | None = None,
 ) -> tuple[QueryRanks, ...]:
-    """Rank every answerable query by geometry alone, and by appearance."""
+    """Rank every answerable query by geometry alone, and by appearance.
+
+    Resumable, because the full sweep is hours and anything can stop it. Each
+    query's four ranks are appended to `journal` as soon as they exist, and a
+    restart recomputes only what is not already there — the same contract
+    `embeddings extract` offers, for the same reason.
+    """
     authors = authors_by_image(manifest)
     by_class = photographers_by_class(manifest)
     paths = {image.image_id: Path(image.local_path) for image in manifest.images}
@@ -123,6 +205,9 @@ def measure(
     dwarf_ids = np.asarray(matrix.dwarf_ids)
     author_of = np.asarray([authors[image_id] for image_id in matrix.image_ids])
     cache = FeatureCache(config.max_keypoints)
+    done = read_journal(journal) if journal is not None else {}
+    if done:
+        logger.info("geometry-first resuming: %d queries already scored", len(done))
 
     measured: list[QueryRanks] = []
     for fold in split.folds:
@@ -131,6 +216,11 @@ def measure(
             continue
         if config.max_queries and len(measured) >= config.max_queries:
             break
+
+        finished = done.get(fold.query_image_id)
+        if finished is not None:
+            measured.append(finished)
+            continue
 
         query = rows[fold.query_image_id]
         keep = np.ones(len(dwarf_ids), dtype=bool)
@@ -146,15 +236,18 @@ def measure(
             cache, fold.query_image_id, paths[fold.query_image_id], candidates
         )
         cosine = np.asarray(matrix.vectors[indices] @ matrix.vectors[query], dtype=np.float32)
-        measured.append(
-            rank_one_query(
-                inliers,
-                cosine,
-                dwarf_ids[indices],
-                truth,
-                author_of[indices] != author_of[query],
-            )
+        ranks = rank_one_query(
+            inliers,
+            cosine,
+            dwarf_ids[indices],
+            truth,
+            author_of[indices] != author_of[query],
         )
+        measured.append(ranks)
+        if journal is not None:
+            append_journal(journal, fold.query_image_id, ranks)
+        if len(measured) % PROGRESS_EVERY == 0:
+            logger.info("geometry-first progress: %d queries scored", len(measured))
 
     if not measured:
         raise GeometryFirstError("no answerable query could be scored")
@@ -223,7 +316,13 @@ def run_geometry_first(config: AppConfig) -> ExperimentResult:
         raise GeometryFirstError(str(error)) from error
 
     matrix = load_embedding_matrix(manifest, config.backbone, Path(config.paths.embeddings_dir))
-    measured = measure(split, manifest, matrix, config.experiment)
+    digest = journal_identity(split, config.backbone, config.experiment)
+    journal = (
+        Path(config.paths.results_dir)
+        / "journals"
+        / f"geometry_first-{config.backbone.name}-{digest[:16]}.jsonl"
+    )
+    measured = measure(split, manifest, matrix, config.experiment, journal)
 
     return ExperimentResult(
         experiment="geometry_first",
