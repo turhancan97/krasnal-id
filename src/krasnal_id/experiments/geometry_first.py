@@ -56,11 +56,32 @@ ANSWERABLE = "answerable"
 DISJOINT = "disjoint"
 
 APPEARANCE = "appearance"
+# Geometry gets two ranks, not one, and the reason is the scale it scores on.
+# An inlier count is a small integer and most candidates score exactly zero, so
+# the correct statue is routinely tied with hundreds of others -- and a rank read
+# off a sorted array would then be decided by manifest order rather than by
+# evidence, which could land a statue inside k=50 by luck. Section 7.8 hit the
+# same wall from the rejection side. So the truth's rank is reported as a range:
+# `geometry` counts only the classes that strictly beat it, and
+# `geometry_worst` counts everything tied with it too. A conclusion has to hold
+# at both ends or it is an artifact of the tie-break.
 GEOMETRY = "geometry"
+GEOMETRY_WORST = "geometry_worst"
+# The truth's own best inlier count. Zero means geometry found no evidence at
+# all, which is the case where any rank is meaningless, so the share of queries
+# in that state is published beside the curve.
+TRUTH_INLIERS = "truth_inliers"
 
 # How often a long sweep says where it has got to. Two hours in silence is
 # indistinguishable from two hours hung.
 PROGRESS_EVERY = 50
+
+# What a journal row means. Bumped whenever the recorded fields change, because
+# the digest below otherwise covers only the data and the settings -- and a
+# resumed run would then read old rows under a new interpretation, which is
+# silent corruption rather than a crash. Adding the tie-break range and the
+# truth's inlier count is exactly such a change.
+JOURNAL_SCHEMA = "2"
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +118,38 @@ def _inliers_against(
     )
 
 
+def tied_class_rank(
+    scores: npt.NDArray[np.float32],
+    dwarf_ids: npt.NDArray[np.str_],
+    truth: str,
+) -> tuple[int, int, float]:
+    """Rank a statue on a scale that ties, reporting the best and worst readings.
+
+    Returns `(best, worst, truth_score)`. `best` counts only the classes that
+    strictly beat the truth, which is the reading a sorted array would give if
+    every tie broke the truth's way; `worst` also counts the classes level with
+    it. A statue with no photograph in the candidate set is absent from both.
+
+    `class_rank` is deliberately not reused here. It is right for cosine, where
+    two float32 similarities do not collide, and wrong for inlier counts, where
+    most of the corpus scores exactly zero and the sort order among them is
+    whatever the manifest happened to be.
+    """
+    if scores.shape[0] != dwarf_ids.shape[0]:
+        raise GeometryFirstError("one score is needed per candidate photograph")
+    classes, inverse = np.unique(dwarf_ids, return_inverse=True)
+    best_per_class = np.full(classes.shape[0], -np.inf, dtype=np.float64)
+    np.maximum.at(best_per_class, inverse, scores.astype(np.float64))
+
+    where = np.flatnonzero(classes == truth)
+    if where.size == 0:
+        return ABSENT, ABSENT, 0.0
+    truth_score = float(best_per_class[where[0]])
+    strictly_better = int(np.count_nonzero(best_per_class > truth_score))
+    level_with = int(np.count_nonzero(best_per_class == truth_score)) - 1
+    return strictly_better + 1, strictly_better + level_with + 1, truth_score
+
+
 def rank_one_query(
     inliers: npt.NDArray[np.float32],
     cosine: npt.NDArray[np.float32],
@@ -113,12 +166,20 @@ def rank_one_query(
     for name, keep in ((ANSWERABLE, np.ones_like(disjoint_mask)), (DISJOINT, disjoint_mask)):
         indices = np.flatnonzero(keep)
         if indices.size == 0:
-            ranks[name] = {APPEARANCE: ABSENT, GEOMETRY: ABSENT}
+            ranks[name] = {
+                APPEARANCE: ABSENT,
+                GEOMETRY: ABSENT,
+                GEOMETRY_WORST: ABSENT,
+                TRUTH_INLIERS: 0,
+            }
             continue
         candidates = dwarf_ids[indices]
+        best, worst, truth_inliers = tied_class_rank(inliers[indices], candidates, truth)
         ranks[name] = {
             APPEARANCE: class_rank(cosine[indices], candidates, truth),
-            GEOMETRY: class_rank(inliers[indices], candidates, truth),
+            GEOMETRY: best,
+            GEOMETRY_WORST: worst,
+            TRUTH_INLIERS: int(truth_inliers),
         }
     return QueryRanks(answerable=ranks[ANSWERABLE], disjoint=ranks[DISJOINT])
 
@@ -132,11 +193,13 @@ def journal_identity(
 
     The split's `manifest_sha256` covers the candidate set and the truth; the
     backbone covers the appearance column; `max_keypoints` covers the geometry
-    one. Change any of them and the digest changes, which starts a fresh journal
-    rather than resuming onto rows that mean something else.
+    one; `JOURNAL_SCHEMA` covers what a row is. Change any of them and the digest
+    changes, which starts a fresh journal rather than resuming onto rows that mean
+    something else.
     """
     payload = json.dumps(
         {
+            "journal_schema": JOURNAL_SCHEMA,
             "manifest_sha256": split.manifest_sha256,
             "model_id": backbone.model_id,
             "revision": backbone.revision,
@@ -266,37 +329,63 @@ def summarize(
     for arm in (ANSWERABLE, DISJOINT):
         ranks = [getattr(query, arm) for query in measured]
         total = len(ranks)
+
+        # How often geometry found nothing at all for the correct statue. Where
+        # this is high, every rank below is a statement about tie-breaking rather
+        # than about evidence, which is why it is published before the curve.
+        blind = sum(1 for r in ranks if r[TRUTH_INLIERS] <= 0)
+        metrics.append(accuracy_metric(f"{arm}_truth_without_evidence", blind, total))
+        with_evidence = [r for r in ranks if r[TRUTH_INLIERS] > 0]
+
         for k in sorted(set(cut_offs)):
             hit = {
                 signal: [r[signal] != ABSENT and r[signal] <= k for r in ranks]
-                for signal in (APPEARANCE, GEOMETRY)
+                for signal in (APPEARANCE, GEOMETRY, GEOMETRY_WORST)
             }
             for signal, hits in hit.items():
                 metrics.append(accuracy_metric(f"{arm}_{signal}_r_at_{k}", sum(hits), total))
 
+            # The same curve over only the queries geometry had any evidence for,
+            # so a reader can see whether the shortfall is bad ranking or no signal.
+            if with_evidence:
+                found = sum(1 for r in with_evidence if r[GEOMETRY] != ABSENT and r[GEOMETRY] <= k)
+                metrics.append(
+                    accuracy_metric(
+                        f"{arm}_geometry_r_at_{k}_given_evidence", found, len(with_evidence)
+                    )
+                )
+
             # The decisive number: a first stage does not have to beat appearance
             # everywhere, only to find what appearance loses.
             missed = [i for i, found in enumerate(hit[APPEARANCE]) if not found]
-            rescued = sum(1 for i in missed if hit[GEOMETRY][i])
             metrics.append(
                 MetricSummary(name=f"{arm}_appearance_misses_at_{k}", value=float(len(missed)))
             )
-            metrics.append(MetricSummary(name=f"{arm}_rescued_at_{k}", value=float(rescued)))
-            if missed:
-                metrics.append(accuracy_metric(f"{arm}_rescue_rate_at_{k}", rescued, len(missed)))
+            for signal in (GEOMETRY, GEOMETRY_WORST):
+                rescued = sum(1 for i in missed if hit[signal][i])
+                suffix = "" if signal == GEOMETRY else "_worst"
+                metrics.append(
+                    MetricSummary(name=f"{arm}_rescued{suffix}_at_{k}", value=float(rescued))
+                )
+                if missed:
+                    metrics.append(
+                        accuracy_metric(f"{arm}_rescue_rate{suffix}_at_{k}", rescued, len(missed))
+                    )
 
-            wins = sum(
-                1 for g, a in zip(hit[GEOMETRY], hit[APPEARANCE], strict=True) if g and not a
-            )
-            losses = sum(
-                1 for g, a in zip(hit[GEOMETRY], hit[APPEARANCE], strict=True) if a and not g
-            )
-            label = f"{arm}_geometry_vs_appearance_at_{k}"
-            metrics.append(MetricSummary(name=f"{label}_wins", value=float(wins)))
-            metrics.append(MetricSummary(name=f"{label}_losses", value=float(losses)))
-            metrics.append(
-                MetricSummary(name=f"{label}_p_value", value=exact_mcnemar_p_value(wins, losses))
-            )
+                wins = sum(
+                    1 for g, a in zip(hit[signal], hit[APPEARANCE], strict=True) if g and not a
+                )
+                losses = sum(
+                    1 for g, a in zip(hit[signal], hit[APPEARANCE], strict=True) if a and not g
+                )
+                label = f"{arm}_{signal}_vs_appearance_at_{k}"
+                metrics.append(MetricSummary(name=f"{label}_wins", value=float(wins)))
+                metrics.append(MetricSummary(name=f"{label}_losses", value=float(losses)))
+                metrics.append(
+                    MetricSummary(
+                        name=f"{label}_p_value", value=exact_mcnemar_p_value(wins, losses)
+                    )
+                )
         metrics.append(MetricSummary(name=f"{arm}_queries", value=float(total)))
     return tuple(metrics)
 

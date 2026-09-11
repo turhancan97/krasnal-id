@@ -3,6 +3,7 @@
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest import mock
 
 import numpy as np
 import pytest
@@ -13,11 +14,14 @@ from krasnal_id.cli import app
 from krasnal_id.config import GeometryFirstConfig, RerankAblationConfig, load_config
 from krasnal_id.data_pipeline.build_split import build_evaluation_split, write_evaluation_split
 from krasnal_id.embeddings.store import load_embedding_matrix
+from krasnal_id.experiments import geometry_first
 from krasnal_id.experiments.geometry_first import (
     ANSWERABLE,
     APPEARANCE,
     DISJOINT,
     GEOMETRY,
+    GEOMETRY_WORST,
+    TRUTH_INLIERS,
     GeometryFirstError,
     QueryRanks,
     append_journal,
@@ -27,6 +31,7 @@ from krasnal_id.experiments.geometry_first import (
     read_journal,
     run_geometry_first,
     summarize,
+    tied_class_rank,
 )
 from krasnal_id.experiments.recall_curve import ABSENT
 from krasnal_id.models import DatasetManifest
@@ -114,11 +119,21 @@ def test_an_empty_candidate_set_is_absent_rather_than_an_error() -> None:
         np.zeros(1, dtype=bool),
     )
 
-    assert ranks.disjoint == {APPEARANCE: ABSENT, GEOMETRY: ABSENT}
+    assert ranks.disjoint == {
+        APPEARANCE: ABSENT,
+        GEOMETRY: ABSENT,
+        GEOMETRY_WORST: ABSENT,
+        TRUTH_INLIERS: 0,
+    }
 
 
-def _ranks(appearance: int, geometry: int) -> QueryRanks:
-    row = {APPEARANCE: appearance, GEOMETRY: geometry}
+def _ranks(appearance: int, geometry: int, truth_inliers: int = 7) -> QueryRanks:
+    row = {
+        APPEARANCE: appearance,
+        GEOMETRY: geometry,
+        GEOMETRY_WORST: geometry,
+        TRUTH_INLIERS: truth_inliers,
+    }
     return QueryRanks(answerable=dict(row), disjoint=dict(row))
 
 
@@ -156,7 +171,10 @@ def test_a_rescue_rate_is_omitted_when_appearance_missed_nothing() -> None:
 
 def test_both_arms_are_reported_and_cut_offs_must_be_positive() -> None:
     measured = (
-        QueryRanks(answerable={APPEARANCE: 1, GEOMETRY: 5}, disjoint={APPEARANCE: 9, GEOMETRY: 2}),
+        QueryRanks(
+            answerable={APPEARANCE: 1, GEOMETRY: 5, GEOMETRY_WORST: 5, TRUTH_INLIERS: 3},
+            disjoint={APPEARANCE: 9, GEOMETRY: 2, GEOMETRY_WORST: 2, TRUTH_INLIERS: 3},
+        ),
     )
 
     metrics = {m.name: m.value for m in summarize(measured, (1, 10))}
@@ -300,7 +318,8 @@ def test_a_truncated_final_line_is_a_miss_rather_than_a_crash(tmp_path: Path) ->
     """A process killed mid-write leaves half a line; that query is recomputed."""
     journal = tmp_path / "geometry.jsonl"
     ranks = QueryRanks(
-        answerable={APPEARANCE: 1, GEOMETRY: 2}, disjoint={APPEARANCE: 3, GEOMETRY: 4}
+        answerable={APPEARANCE: 1, GEOMETRY: 2, GEOMETRY_WORST: 2, TRUTH_INLIERS: 5},
+        disjoint={APPEARANCE: 3, GEOMETRY: 4, GEOMETRY_WORST: 4, TRUTH_INLIERS: 5},
     )
     append_journal(journal, "commons-1", ranks)
     with journal.open("a", encoding="utf-8") as handle:
@@ -332,3 +351,101 @@ def test_a_journal_belongs_to_one_dataset_backbone_and_keypoint_budget(tmp_path:
 
 def test_a_missing_journal_is_an_empty_one(tmp_path: Path) -> None:
     assert read_journal(tmp_path / "never-written.jsonl") == {}
+
+
+def test_a_tied_statue_is_reported_as_a_range_not_a_lucky_position() -> None:
+    """Inlier counts tie constantly, and a sort would resolve ties by manifest order.
+
+    Three classes all score zero. Read optimistically the truth is first; read
+    pessimistically it is third. Publishing either alone would be a statement
+    about the order the manifest happened to have.
+    """
+    dwarfs = np.asarray(["Q1", "Q2", "Q3"])
+    inliers = np.zeros(3, dtype=np.float32)
+
+    best, worst, truth_score = tied_class_rank(inliers, dwarfs, "Q2")
+
+    assert (best, worst) == (1, 3)
+    assert truth_score == 0.0
+
+
+def test_an_untied_statue_reads_the_same_either_way() -> None:
+    """Where the evidence separates, the range collapses to one number."""
+    dwarfs = np.asarray(["Q1", "Q2", "Q3"])
+    inliers = np.asarray([4.0, 30.0, 1.0], dtype=np.float32)
+
+    assert tied_class_rank(inliers, dwarfs, "Q2") == (1, 1, 30.0)
+    assert tied_class_rank(inliers, dwarfs, "Q1") == (2, 2, 4.0)
+    assert tied_class_rank(inliers, dwarfs, "Q3") == (3, 3, 1.0)
+
+
+def test_a_class_is_scored_by_its_best_photograph() -> None:
+    """The same collapse the rest of the pipeline uses, so k means statues."""
+    dwarfs = np.asarray(["Q1", "Q1", "Q2"])
+    inliers = np.asarray([0.0, 20.0, 5.0], dtype=np.float32)
+
+    assert tied_class_rank(inliers, dwarfs, "Q1") == (1, 1, 20.0)
+
+
+def test_a_statue_with_no_photograph_left_is_absent() -> None:
+    dwarfs = np.asarray(["Q1", "Q2"])
+    inliers = np.asarray([3.0, 4.0], dtype=np.float32)
+
+    assert tied_class_rank(inliers, dwarfs, "Q9") == (ABSENT, ABSENT, 0.0)
+
+
+def test_a_score_is_required_for_every_candidate() -> None:
+    with pytest.raises(GeometryFirstError, match="one score is needed"):
+        tied_class_rank(np.asarray([1.0], dtype=np.float32), np.asarray(["Q1", "Q2"]), "Q1")
+
+
+def test_queries_geometry_found_nothing_for_are_counted_and_set_aside() -> None:
+    """Where the truth has no inliers its rank is tie-breaking, not evidence."""
+    measured = (
+        _ranks(9, 1, truth_inliers=12),
+        _ranks(9, 1, truth_inliers=0),
+        _ranks(1, 1, truth_inliers=0),
+        _ranks(1, 1, truth_inliers=4),
+    )
+
+    metrics = {m.name: m.value for m in summarize(measured, (1,))}
+
+    assert metrics[f"{ANSWERABLE}_truth_without_evidence"] == pytest.approx(0.5)
+    # The plain curve counts all four; the conditional one only the two with evidence.
+    assert metrics[f"{ANSWERABLE}_geometry_r_at_1"] == pytest.approx(1.0)
+    assert metrics[f"{ANSWERABLE}_geometry_r_at_1_given_evidence"] == pytest.approx(1.0)
+
+
+def test_both_readings_of_the_rescue_rate_are_reported() -> None:
+    """A rescue that only happens under the optimistic tie-break is not a rescue."""
+    optimistic_only = QueryRanks(
+        answerable={APPEARANCE: 40, GEOMETRY: 1, GEOMETRY_WORST: 300, TRUTH_INLIERS: 0},
+        disjoint={APPEARANCE: 40, GEOMETRY: 1, GEOMETRY_WORST: 300, TRUTH_INLIERS: 0},
+    )
+
+    metrics = {m.name: m.value for m in summarize((optimistic_only,), (1,))}
+
+    assert metrics[f"{ANSWERABLE}_appearance_misses_at_1"] == 1
+    assert metrics[f"{ANSWERABLE}_rescued_at_1"] == 1
+    assert metrics[f"{ANSWERABLE}_rescued_worst_at_1"] == 0
+    assert metrics[f"{ANSWERABLE}_rescue_rate_at_1"] == pytest.approx(1.0)
+    assert metrics[f"{ANSWERABLE}_rescue_rate_worst_at_1"] == pytest.approx(0.0)
+
+
+def test_changing_what_a_row_means_starts_a_new_journal(tmp_path: Path) -> None:
+    """The digest must cover the schema, or a resume reinterprets old rows.
+
+    Everything else about a run can be identical while the recorded fields
+    change, and rows written before such a change are not missing -- they are
+    wrong, which no amount of validation downstream would catch.
+    """
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path))
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    config = _experiment(max_keypoints=200)
+
+    with mock.patch.object(geometry_first, "JOURNAL_SCHEMA", "1"):
+        first = journal_identity(split, FAKE_BACKBONE, config)
+    with mock.patch.object(geometry_first, "JOURNAL_SCHEMA", "2"):
+        second = journal_identity(split, FAKE_BACKBONE, config)
+
+    assert first != second

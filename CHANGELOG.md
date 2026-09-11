@@ -30,6 +30,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   `manifest_sha256`, the backbone identity and `max_keypoints`, which is everything that decides
   a row, so a changed setting starts a fresh journal rather than resuming onto rows that mean
   something else. A partial final line from a mid-write kill is read as a miss, not a corruption.
+- **Geometry's rank is reported as a range, because inlier counts tie constantly.** Most of the
+  corpus scores exactly zero against any query, so reading the correct statue's rank off a sorted
+  array would have resolved hundreds of ties by manifest order — and could have landed a statue
+  inside k=50 on nothing but its position in the file. Section 12 hit the same wall from the
+  rejection side. `tied_class_rank` therefore reports both readings: `geometry` counts only the
+  classes that strictly beat the truth, `geometry_worst` counts those level with it too, and a
+  conclusion has to hold at both ends. The share of queries where the truth has **no inliers at
+  all** is published beside the curve, since those ranks are tie-breaking rather than evidence,
+  along with the same curve computed over only the queries that had evidence.
 
 - **`RESULTS.md` section 13: the first stage's limit is not capacity.** Four DINOv2 checkpoints
   cross size against the register fix, all scoring the same 1,157 photographer-disjoint queries.
