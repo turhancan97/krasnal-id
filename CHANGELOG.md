@@ -12,6 +12,29 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`RESULTS.md` section 13: the first stage's limit is not capacity.** Four DINOv2 checkpoints
+  cross size against the register fix, all scoring the same 1,157 photographer-disjoint queries.
+  `dinov2-large` at 3.5x the parameters moves r@10 — section 10's re-ranking ceiling — by **0.17
+  points on 22 wins against 20 losses, p = 0.88**, so the statues the first stage loses are not
+  found by a bigger model of the same family. Its one real gain is **2.59 points at disjoint r@1
+  (p = 0.0026)** against 0.77 on the full arm, which makes it a result about surviving a change of
+  photographer rather than about recall. Registers lose 1.30 points at r@10 for the base and 1.82
+  for the large. Of eighteen comparisons only the disjoint r@1 gain survives Bonferroni.
+- **Three DINOv2 checkpoints, as configuration rather than code.** `dinov2-large`,
+  `dinov2-registers` and `dinov2-registers-large` are packaged backbone configs, each pinned by
+  revision. A backbone now carries a `name` (the artifact identity: result file, vector column,
+  cache key) and a `family` (the adapter), and `create_backbone` dispatches on the family — so a
+  new checkpoint of a known family is a YAML file. They are named in no export or visualization
+  list, so the published datasets and the browser demo are untouched: **`dinov2` remains the
+  pipeline's backbone**, since `dinov2-large` buys 0.8 headline points that are not statistically
+  established for 3.5x the parameters.
+- **`experiment recall` compares backbones pairwise, with an exact McNemar test.**
+  `experiment.compare_backbones` scores each named backbone on the selected one's folds and
+  candidate sets, and reports the discordant counts, the delta and a two-sided exact p-value per
+  cut-off. Two separate confidence intervals are the wrong instrument when every query is answered
+  by both backbones: they discard the pairing, and section 4 records how easily that reads as
+  "undecided". `exact_mcnemar_p_value` computes the binomial directly rather than adding a runtime
+  dependency, and refuses to difference two backbones scored on different query sets.
 - **A recorded decision to test whether the first stage's limit is capacity (`AGENTS.md` §8).**
   §7.7 left two branches open and this takes the one that needs no training: `dinov2-large`,
   `dinov2-with-registers-base` and `dinov2-with-registers-large` cross capacity against the
@@ -22,6 +45,11 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **`compare_backbones` is declared empty in the packaged recall config rather than omitted.**
+  Hydra refuses to override a key the composed config does not carry, so a field that existed only
+  as a Pydantic default turned `experiment.compare_backbones=[...]` into a composition error rather
+  than a comparison. It cannot carry a real default either — a fresh clone has only the two
+  extracted backbones, and naming a third would fail the default run on a missing vector.
 - **`AGENTS.md` §8 no longer says the Kaggle dataset is waiting to be created.** It was written
   before the upload and left describing the publication as "one `kaggle datasets create` away",
   which would tell a future contributor that a done thing was pending — the dataset has been live

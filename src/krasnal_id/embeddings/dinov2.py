@@ -19,8 +19,8 @@ class DinoV2Backbone:
     """Extract normalized DINOv2 CLS-token image embeddings."""
 
     def __init__(self, config: BackboneConfig) -> None:
-        if config.name != "dinov2":
-            raise ValueError("DinoV2Backbone requires a dinov2 configuration")
+        if config.family != "dinov2":
+            raise ValueError("DinoV2Backbone requires a dinov2-family configuration")
         self._config = config
         self._processor: Any | None = None
         self._model: Any | None = None

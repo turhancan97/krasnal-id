@@ -19,8 +19,8 @@ class ClipBackbone:
     """Extract normalized CLIP projected image embeddings."""
 
     def __init__(self, config: BackboneConfig) -> None:
-        if config.name != "clip":
-            raise ValueError("ClipBackbone requires a clip configuration")
+        if config.family != "clip":
+            raise ValueError("ClipBackbone requires a clip-family configuration")
         self._config = config
         self._processor: Any | None = None
         self._model: Any | None = None

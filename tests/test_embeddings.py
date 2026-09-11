@@ -12,12 +12,14 @@ from pydantic import HttpUrl
 from typer.testing import CliRunner
 
 from krasnal_id.cli import app
-from krasnal_id.config import load_config
+from krasnal_id.config import backbone_config, load_config
 from krasnal_id.embeddings.backbone import EmbeddingBackbone
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
+from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.embeddings.extract import (
     EmbeddingExtractionError,
+    create_backbone,
     extract_manifest_embeddings,
 )
 from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
@@ -229,3 +231,28 @@ def test_clip_accepts_tensor_or_output_object() -> None:
     backbone._model = _FakeClipModel(_FakeVisionOutput(None))
     with pytest.raises(ValueError, match="unsupported image features"):
         backbone.get_embeddings((Image.new("RGB", (2, 2)),))
+
+
+def test_create_backbone_dispatches_on_family_not_name() -> None:
+    """A new DINOv2 checkpoint must reach the DINOv2 adapter without a code change.
+
+    Section 8's capacity question adds three checkpoints that are new *identities*
+    and not new adapters. Dispatching on `name` would have made each of them an
+    "unsupported backbone" until someone remembered to extend the branch.
+    """
+    for name in ("dinov2", "dinov2-large", "dinov2-registers", "dinov2-registers-large"):
+        backbone = create_backbone(backbone_config(name))
+
+        assert isinstance(backbone, DinoV2Backbone)
+        assert backbone.model_id == backbone_config(name).model_id
+
+    assert isinstance(create_backbone(backbone_config("clip")), ClipBackbone)
+
+
+def test_an_adapter_refuses_a_configuration_from_another_family() -> None:
+    """The guard is what keeps CLIP's pooling off a DINOv2 checkpoint."""
+    with pytest.raises(ValueError, match="dinov2-family"):
+        DinoV2Backbone(backbone_config("clip"))
+
+    with pytest.raises(ValueError, match="clip-family"):
+        ClipBackbone(backbone_config("dinov2-large"))

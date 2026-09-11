@@ -1,12 +1,18 @@
 """Composition tests for every Hydra configuration branch."""
 
 from importlib import metadata
+from importlib.resources import files
 
 import pytest
 from pydantic import ValidationError
 
 import krasnal_id
-from krasnal_id.config import WikimediaDataConfig, load_config
+from krasnal_id.config import (
+    BackboneConfig,
+    WikimediaDataConfig,
+    backbone_config,
+    load_config,
+)
 
 
 def test_the_package_version_matches_the_distribution() -> None:
@@ -67,3 +73,51 @@ def test_rejects_invalid_wikidata_retry_schedule(updates: dict[str, object]) -> 
 
     with pytest.raises(ValidationError):
         WikimediaDataConfig.model_validate(raw_config)
+
+
+def _packaged_backbone_names() -> list[str]:
+    """Every backbone the config package ships, by Hydra group option name."""
+    group = files("krasnal_id.configs").joinpath("backbone")
+    return sorted(
+        entry.name.removesuffix(".yaml")
+        for entry in group.iterdir()
+        if entry.name.endswith(".yaml")
+    )
+
+
+def test_every_packaged_backbone_composes_and_names_itself_after_its_file() -> None:
+    """A checkpoint added as a file must be reachable as `backbone=<file stem>`.
+
+    Section 8's capacity question turns on comparing four DINOv2 checkpoints, and
+    a file whose `name` disagreed with its stem would be composed under one
+    identity and written under another.
+    """
+    for option in _packaged_backbone_names():
+        config = backbone_config(option)
+
+        assert config.name == option
+
+
+def test_backbone_names_are_unique_across_the_package() -> None:
+    """Two backbones sharing a name would overwrite each other's result file."""
+    names = [backbone_config(option).name for option in _packaged_backbone_names()]
+
+    assert sorted(names) == sorted(set(names))
+
+
+def test_the_four_dinov2_checkpoints_are_one_family_and_four_identities() -> None:
+    """The cross section 8 records: distinct checkpoints, one adapter."""
+    cells = ["dinov2", "dinov2-large", "dinov2-registers", "dinov2-registers-large"]
+    configs = [backbone_config(name) for name in cells]
+
+    assert {config.family for config in configs} == {"dinov2"}
+    assert len({config.model_id for config in configs}) == len(cells)
+    assert len({config.revision for config in configs}) == len(cells)
+
+
+def test_a_backbone_cannot_declare_a_family_with_no_adapter() -> None:
+    raw_config = backbone_config("dinov2").model_dump()
+    raw_config["family"] = "dinov3"
+
+    with pytest.raises(ValidationError):
+        BackboneConfig.model_validate(raw_config)

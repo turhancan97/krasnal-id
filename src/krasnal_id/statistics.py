@@ -1,5 +1,7 @@
 """Rank statistics shared by the experiments."""
 
+import math
+
 import numpy as np
 import numpy.typing as npt
 
@@ -43,3 +45,28 @@ def separability_auroc(known: npt.NDArray[np.float64], unknown: npt.NDArray[np.f
     return (known_rank_sum - count_known * (count_known + 1.0) / 2.0) / (
         count_known * count_unknown
     )
+
+
+def exact_mcnemar_p_value(wins: int, losses: int) -> float:
+    """Two-sided exact McNemar p-value for two methods scored on the same queries.
+
+    Comparing two backbones through their separate confidence intervals wastes the
+    pairing and is the wrong test: every query is answered by both, so the only
+    evidence about which is better lives in the queries where they disagree. Under
+    the null those discordant queries split like a fair coin, which makes the exact
+    binomial test on `wins` of `wins + losses` the whole comparison.
+
+    Exact rather than the chi-square approximation because the discordant counts
+    here are tens, not thousands, and dependency-free because a p-value is four
+    lines of `math.comb` and the alternative is a new runtime dependency for it.
+    """
+    if wins < 0 or losses < 0:
+        raise StatisticsError("discordant counts cannot be negative")
+    total = wins + losses
+    if total == 0:
+        # No query distinguishes the two methods, so nothing is evidence against
+        # the null. Returning 1.0 keeps a caller from reading "no data" as "equal".
+        return 1.0
+    smaller = min(wins, losses)
+    tail = sum(math.comb(total, index) for index in range(smaller + 1))
+    return min(1.0, 2.0 * tail / (2.0**total))

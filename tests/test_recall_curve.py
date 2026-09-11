@@ -214,3 +214,127 @@ def test_cli_reports_the_curve_and_writes_the_artifact(tmp_path: Path) -> None:
         assert expected in result.output
     written = json.loads((tmp_path / "results" / "recall_curve-dinov2.json").read_text())
     assert written["experiment"] == "recall_curve"
+
+
+def test_a_comparison_counts_only_the_queries_that_separate_two_backbones() -> None:
+    """The paired comparison is the whole reason a second backbone is scored.
+
+    Four queries: one both get right, one both get wrong, one only the comparison
+    gets right, one only the selected one does. Only the last two are evidence, and
+    they cancel -- so the delta is zero and nothing is significant, which two
+    separate recall figures of 0.5 and 0.5 could not have told apart from agreement.
+    """
+    measurements = {
+        FULL: (
+            {
+                "plain": [1, ABSENT, ABSENT, 1],
+                "against_dinov2-large": [1, ABSENT, 1, ABSENT],
+            },
+            4,
+        )
+    }
+
+    metrics = {m.name: m.value for m in summarize(measurements, (1,))}
+
+    assert metrics["full_r_at_1"] == pytest.approx(0.5)
+    assert metrics["full_against_dinov2-large_r_at_1"] == pytest.approx(0.5)
+    assert metrics["full_dinov2-large_vs_selected_at_1_wins"] == 1
+    assert metrics["full_dinov2-large_vs_selected_at_1_losses"] == 1
+    assert metrics["full_dinov2-large_vs_selected_at_1_delta"] == pytest.approx(0.0)
+    assert metrics["full_dinov2-large_vs_selected_at_1_p_value"] == pytest.approx(1.0)
+
+
+def test_a_one_sided_comparison_is_reported_as_significant() -> None:
+    """Eight queries gained and none lost is not a coin, and must not read as one."""
+    measurements = {
+        DISJOINT: (
+            {
+                "plain": [ABSENT] * 8,
+                "against_dinov2-large": [1] * 8,
+            },
+            8,
+        )
+    }
+
+    metrics = {m.name: m.value for m in summarize(measurements, (1,))}
+
+    assert metrics["disjoint_dinov2-large_vs_selected_at_1_wins"] == 8
+    assert metrics["disjoint_dinov2-large_vs_selected_at_1_losses"] == 0
+    assert metrics["disjoint_dinov2-large_vs_selected_at_1_delta"] == pytest.approx(1.0)
+    assert metrics["disjoint_dinov2-large_vs_selected_at_1_p_value"] < 0.01
+
+
+def test_an_unpaired_comparison_is_refused_rather_than_averaged() -> None:
+    """Two backbones scored on different query sets cannot be differenced."""
+    measurements = {FULL: ({"plain": [1, 2, 3], "against_clip": [1, 2]}, 3)}
+
+    with pytest.raises(RecallCurveError, match="would not be paired"):
+        summarize(measurements, (1,))
+
+
+def test_a_compared_backbone_is_scored_on_the_selected_backbones_folds(tmp_path: Path) -> None:
+    """Pairing is by construction: the same folds, and the same candidate sets."""
+    manifest = _with_two_photographers(synthetic_manifest(dwarf_count=3, per_dwarf=3))
+    seed_embedding_cache(tmp_path, manifest)
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    experiment = load_config(
+        [
+            "experiment=recall_curve",
+            "experiment.fuse_backbones=[]",
+            "experiment.expansion_neighbours=[]",
+            "experiment.compare_backbones=[clip]",
+        ]
+    ).experiment
+    assert isinstance(experiment, RecallCurveConfig)
+
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
+    ranks, total = measure_arm(
+        Arm(FULL, only_answerable=False, photographer_disjoint=False),
+        split,
+        manifest,
+        {"dinov2": matrix, "clip": matrix},
+        "dinov2",
+        experiment,
+    )
+
+    # The same vectors under two names must rank identically, query for query.
+    assert ranks["against_clip"] == ranks["plain"]
+    assert len(ranks["plain"]) == total
+
+
+def test_a_comparison_against_the_selected_backbone_itself_is_dropped(tmp_path: Path) -> None:
+    """Otherwise every artifact would carry a comparison of a backbone with itself."""
+    manifest = _with_two_photographers(synthetic_manifest(dwarf_count=3, per_dwarf=3))
+    seed_embedding_cache(tmp_path, manifest)
+    experiment = load_config(
+        [
+            "experiment=recall_curve",
+            "experiment.fuse_backbones=[]",
+            "experiment.expansion_neighbours=[]",
+            "experiment.compare_backbones=[dinov2]",
+        ]
+    ).experiment
+    assert isinstance(experiment, RecallCurveConfig)
+
+    ranks, _ = measure_arm(
+        Arm(FULL, only_answerable=False, photographer_disjoint=False),
+        build_evaluation_split(manifest, datetime.now(UTC)),
+        manifest,
+        {"dinov2": load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)},
+        "dinov2",
+        experiment,
+    )
+
+    assert set(ranks) == {"plain"}
+
+
+def test_duplicate_comparisons_are_refused() -> None:
+    with pytest.raises(ValueError, match="compare_backbones cannot contain duplicates"):
+        RecallCurveConfig.model_validate(
+            {
+                "kind": "recall_curve",
+                "seed": 1,
+                "top_k": (1, 5),
+                "compare_backbones": ("clip", "clip"),
+            }
+        )

@@ -1,0 +1,9 @@
+# The register fix, holding capacity fixed: ViT-B/14 whose feature map no longer
+# carries the high-norm artifact tokens the CLS token would otherwise see.
+name: dinov2-registers
+family: dinov2
+model_id: facebook/dinov2-with-registers-base
+revision: a1d738ccfa7ae170945f210395d99dde8adb1805
+preprocessing_id: transformers-auto-image-processor
+device: auto
+batch_size: 16

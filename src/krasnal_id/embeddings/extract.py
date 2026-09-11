@@ -72,12 +72,16 @@ class ExtractionSummary:
 
 
 def create_backbone(config: BackboneConfig) -> EmbeddingBackbone:
-    """Create the configured adapter without loading optional ML dependencies."""
-    if config.name == "dinov2":
+    """Create the configured adapter without loading optional ML dependencies.
+
+    Dispatch is on the family rather than the name, because §8's capacity question
+    runs four DINOv2 checkpoints through one adapter.
+    """
+    if config.family == "dinov2":
         return DinoV2Backbone(config)
-    if config.name == "clip":
+    if config.family == "clip":
         return ClipBackbone(config)
-    raise EmbeddingConfigurationError(f"unsupported backbone: {config.name}")
+    raise EmbeddingConfigurationError(f"unsupported backbone family: {config.family}")
 
 
 def _sha256_file(path: Path) -> str:

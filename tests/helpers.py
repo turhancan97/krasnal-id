@@ -20,6 +20,7 @@ from krasnal_id.models import (
 
 FAKE_BACKBONE = BackboneConfig(
     name="dinov2",
+    family="dinov2",
     model_id="fake/model",
     revision="fake-revision",
     preprocessing_id="fake-processor",

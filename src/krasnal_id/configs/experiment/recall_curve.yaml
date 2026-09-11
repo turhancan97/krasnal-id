@@ -2,5 +2,11 @@ kind: recall_curve
 seed: ${seeds.primary}
 top_k: [1, 5, 10, 20, 50, 100, 306]
 fuse_backbones: [dinov2, clip]
+# Declared empty rather than omitted: Hydra refuses to override a key the
+# packaged config does not carry, so leaving it out made
+# `experiment.compare_backbones=[...]` an error instead of a comparison.
+# Empty by default because a fresh clone has only the two extracted backbones,
+# and naming a third here would fail the default run on a missing vector.
+compare_backbones: []
 expansion_neighbours: [2, 3, 5]
 expansion_alpha: 3.0

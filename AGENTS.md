@@ -997,6 +997,48 @@ False acceptance at a 90% known-acceptance target, best signal against the contr
   The signal did not fail to reject; it could not express a threshold at all. Treat that row as a
   demonstration of the calibration limit rather than a measurement.
 
+### 7.9 Capacity result (2026-09-11)
+
+The stronger-embedding branch of §8, answered: **the first stage's limit is not capacity.** Four
+DINOv2 checkpoints crossing size against the register fix, every one of them scoring the same 1,157
+photographer-disjoint queries, and `dinov2-large` at 3.5x the parameters moves r@10 by **0.17
+points on 22 wins against 20 losses, p = 0.88**. r@10 is §7.6's re-ranking ceiling, so the statues
+the first stage loses are not found by a bigger model of the same family.
+
+- **The gain that is real is about the photographer, not retrieval.** `dinov2-large` takes r@1 up
+  **2.59 points (62 to 32, p = 0.0026)** disjoint and 0.77 points (p = 0.09) on the full arm. A
+  larger model is better at a statue shot by *someone else* and barely different on one shot by the
+  same person, which files this under §7.5's photographer gap rather than under recall. The
+  headline moves 93.1% to 93.9% and that difference is not established.
+- **Registers are aimed somewhere else.** Both register checkpoints lose to their plain
+  counterparts at every disjoint cut-off but r@50, by 1.30 points at r@10 for the base (p = 0.036)
+  and 1.82 for the large (p = 0.019). Artifact tokens spoil dense feature maps; this pipeline reads
+  the CLS token, which they evidently were not spoiling. A fix for a real defect is not a fix for
+  *this* defect.
+- **State the family, because it decides the answer.** The pre-specified family is the nine
+  disjoint comparisons the question was posed about (threshold 0.0056) and the r@1 gain clears it
+  at p = 0.0026; over the eighteen §13 tabulates it still clears (0.0028); over all sixty-three
+  p-values the artifact computes it does not (0.0008). `RESULTS.md` says all three rather than
+  picking the one that flatters the result. Nothing else approaches any threshold, so the register
+  penalties stay directions. The r@10 null needs no correction either way.
+- **Paired, because unpaired would have been the wrong instrument.** Every checkpoint answers every
+  query, so the evidence lives entirely in the queries where exactly one succeeds. Reading two
+  overlapping confidence intervals instead would have called the r@1 gain undecided and the r@10
+  null indistinguishable from it — and §4 is the precedent for how that goes wrong. `summarize`
+  emits the discordant counts and an exact McNemar p-value per comparison, and
+  `exact_mcnemar_p_value` computes the two-sided binomial directly rather than adding a runtime
+  dependency for four lines of `math.comb`.
+- **`compare_backbones` had to be declared empty in the packaged config, not omitted.** Hydra
+  refuses to override a key the composed config does not carry, so leaving it out turned
+  `experiment.compare_backbones=[...]` into a composition error. It cannot carry a real default
+  either: a fresh clone has only the two extracted backbones and naming a third would fail the
+  default run on a missing vector.
+- **What this does not test, and must not be read as testing.** One pretraining recipe and one
+  corpus across all four cells, so this is capacity *within* DINOv2. A different pretraining is
+  untested and DINOv3 stays out while it is gated. What is retired is the cheap version of §8's
+  question — scaling the model already in the pipeline — and with it most of the case for
+  fine-tuning the same family, since scaling its pretraining did not move the ceiling.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1076,14 +1118,13 @@ more defects that only an external platform could reject.
   photograph, and Wrocław has several hundred statues Commons documents thinly or not at all. More
   images per class would admit them; more classes would extend the ablation curve past 306.
 
-- **Is the first stage's bottleneck capacity, or the pretraining?** — taken on 2026-09-11, in
-  progress. §7.7 rejected three ways of searching the representation harder and concluded the
-  representation itself is the limit, which left two branches: a stronger embedding, or local
-  features promoted to the first stage. The stronger embedding goes first, because it needs no
-  training and therefore raises no leakage question, and because either outcome is a result: if a
-  larger DINOv2 lifts photographer-disjoint recall, §7.7's conclusion is confirmed and §7.6's
-  re-ranking ceiling moves; if it does not, the limit is not capacity, which is the more
-  informative answer and retires fine-tuning before it is paid for.
+- ~~**Is the first stage's bottleneck capacity?**~~ — answered on 2026-09-11, **no**; see §7.9.
+  3.5x the parameters moves the re-ranking ceiling by 0.17 points on 22 wins against 20 losses
+  (p = 0.88), so the statues the first stage loses are not found by a bigger model of the same
+  family. The one real gain is 2.59 points at disjoint r@1 (p = 0.0026), which is about surviving
+  a change of photographer rather than about recall, and registers hurt. What it leaves open is
+  narrower than what it closed: a *different pretraining* is still untested, and local features as
+  a first stage — §7.7's other branch — is now the only cheap idea left standing.
   - **Four cells, two variables, one of them not size.** `facebook/dinov2-base` is the cell the
     project already has. Adding `dinov2-large`, `dinov2-with-registers-base` and
     `dinov2-with-registers-large` crosses capacity against the register fix, so a gain can be
@@ -1094,11 +1135,14 @@ more defects that only an external platform could reject.
   - **DINOv3 is deliberately excluded.** `facebook/dinov3-*` is `gated=manual` on the Hub, so a
     run of this repository would need a human to accept a licence and a token to exist, and §5.13
     keeps credential paths out of this repository. If it is ever added it is a separate decision.
-  - **The new backbones are experiment-local until one of them wins.** `export/huggingface.yaml`
-    lists the backbones an export writes and the visualization config lists the ones it draws, so
-    a backbone absent from those lists costs the published datasets, the browser demo and the
-    other eleven experiments nothing. Promoting one to first-class means re-cutting both published
-    datasets and re-running everything, which is a release, not an experiment.
+  - **The new backbones are experiment-local until one of them wins, and none did.**
+    `export/huggingface.yaml` lists the backbones an export writes and the visualization config
+    lists the ones it draws, so a backbone absent from those lists costs the published datasets,
+    the browser demo and the other eleven experiments nothing. Promoting one means re-cutting both
+    published datasets and re-running everything, which is a release rather than an experiment —
+    and §7.9 gives no reason to: `dinov2-large` buys 0.8 headline points that are not
+    statistically established, for 3.5x the parameters and a 1024-wide vector in every published
+    file. `dinov2` stays the pipeline's backbone.
   - **Fine-tuning is not the first branch, and the honest reason is that the leak-free data is not
     there.** §12.1's sub-threshold pool is the only image set disjoint from the benchmark, and it
     is 261 admissible images over 152 classes — 262 staged, since Binio `Q136343586` stages three
@@ -1288,6 +1332,17 @@ Implementation state:
   artifact atomically.
 - `data camera-metadata` fetches EXIF cameras into `data/discovery/camera-metadata.json`,
   deliberately outside the staging chain per §5.9.
+- **A backbone has two identities: `name` and `family`.** `name` owns the artifact — the result
+  filename, the exported vector column, the cached-vector key — and `family` selects the adapter
+  that runs the checkpoint. `create_backbone` dispatches on the family, so §7.9's three extra
+  DINOv2 checkpoints are configuration rather than code. `BackboneName` is declared once in
+  `config.py` and reused by every experiment field that names backbones in a list, because
+  `fuse_backbones` having its own copy meant it could reject a checkpoint the pipeline could run.
+- **Five backbones are packaged; two are first-class.** `dinov2` and `clip` are exported,
+  visualized and shipped to the browser. `dinov2-large`, `dinov2-registers` and
+  `dinov2-registers-large` exist for §7.9 and are named in no export or visualization list, so they
+  cost the published artifacts nothing. Their vectors sit in the same content-addressed cache; the
+  key includes the model id and revision, so no checkpoint can read another's vectors.
 - `embeddings extract` is implemented for the pinned DINOv2 and CLIP configurations. It validates
   image checksums and dimensions, supports CPU/automatic CUDA selection and configured batching,
   reuses valid normalized `.npy` vectors, and keeps model loading lazy so CI remains offline. CI

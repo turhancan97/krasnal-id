@@ -38,6 +38,7 @@ from krasnal_id.experiments.baseline_accuracy import (
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.photographers import authors_by_image, photographers_by_class
+from krasnal_id.statistics import exact_mcnemar_p_value
 
 # Every query whose correct statue never appears. Kept out of band so a rank is
 # always a positive integer and "absent" cannot be mistaken for "last".
@@ -122,9 +123,12 @@ def measure_arm(
     author_of = np.asarray([authors[image_id] for image_id in primary.image_ids])
 
     fused = [name for name in config.fuse_backbones if name in matrices]
+    compared = [name for name in config.compare_backbones if name in matrices and name != selected]
     ranks: dict[str, list[int]] = {"plain": []}
     if len(fused) >= 2:
         ranks["fused"] = []
+    for name in compared:
+        ranks[f"against_{name}"] = []
     for neighbours in config.expansion_neighbours:
         ranks[f"expanded_{neighbours}"] = []
 
@@ -156,6 +160,12 @@ def measure_arm(
                 combined = combined + other.vectors[indices] @ other.vectors[query]
             ranks["fused"].append(class_rank(combined, candidates, truth))
 
+        for name in compared:
+            other = matrices[name]
+            ranks[f"against_{name}"].append(
+                class_rank(other.vectors[indices] @ other.vectors[query], candidates, truth)
+            )
+
         for neighbours in config.expansion_neighbours:
             vector = expanded_query(
                 primary.vectors[query], vectors, scores, neighbours, config.expansion_alpha
@@ -182,8 +192,53 @@ def summarize(
             for k in sorted(set(cut_offs)):
                 hits = sum(1 for rank in ranks if rank != ABSENT and rank <= k)
                 metrics.append(accuracy_metric(f"{label}_r_at_{k}", hits, total))
+        metrics.extend(paired_metrics(arm_name, variants, cut_offs))
         metrics.append(MetricSummary(name=f"{arm_name}_queries", value=float(total)))
     return tuple(metrics)
+
+
+def paired_metrics(
+    arm_name: str,
+    variants: dict[str, list[int]],
+    cut_offs: tuple[int, ...],
+) -> list[MetricSummary]:
+    """Compare each `against_*` backbone to the selected one, query by query.
+
+    Two backbones' separate intervals are the wrong comparison here: every query is
+    answered by both, so reading two overlapping intervals throws away the pairing
+    and calls a real difference undecided. What carries the evidence is the queries
+    where exactly one of them succeeds, which is what these counts report and what
+    the exact McNemar p-value is computed from.
+    """
+    baseline = variants.get("plain")
+    if baseline is None:
+        return []
+
+    metrics: list[MetricSummary] = []
+    for variant, ranks in sorted(variants.items()):
+        if not variant.startswith("against_"):
+            continue
+        other = variant.removeprefix("against_")
+        if len(ranks) != len(baseline):
+            raise RecallCurveError(
+                f"{other} scored {len(ranks)} queries against {len(baseline)}, "
+                "so the comparison would not be paired"
+            )
+        for k in sorted(set(cut_offs)):
+            label = f"{arm_name}_{other}_vs_selected_at_{k}"
+            hit = [rank != ABSENT and rank <= k for rank in ranks]
+            was = [rank != ABSENT and rank <= k for rank in baseline]
+            wins = sum(1 for new, old in zip(hit, was, strict=True) if new and not old)
+            losses = sum(1 for new, old in zip(hit, was, strict=True) if old and not new)
+            metrics.append(
+                MetricSummary(name=f"{label}_delta", value=(wins - losses) / len(baseline))
+            )
+            metrics.append(MetricSummary(name=f"{label}_wins", value=float(wins)))
+            metrics.append(MetricSummary(name=f"{label}_losses", value=float(losses)))
+            metrics.append(
+                MetricSummary(name=f"{label}_p_value", value=exact_mcnemar_p_value(wins, losses))
+            )
+    return metrics
 
 
 def run_recall_curve(config: AppConfig) -> ExperimentResult:
@@ -200,7 +255,11 @@ def run_recall_curve(config: AppConfig) -> ExperimentResult:
     except BaselineExperimentError as error:
         raise RecallCurveError(str(error)) from error
 
-    wanted = {config.backbone.name, *config.experiment.fuse_backbones}
+    wanted = {
+        config.backbone.name,
+        *config.experiment.fuse_backbones,
+        *config.experiment.compare_backbones,
+    }
     matrices: dict[str, EmbeddingMatrix] = {}
     for name in sorted(wanted):
         backbone = config.backbone if name == config.backbone.name else backbone_config(name)

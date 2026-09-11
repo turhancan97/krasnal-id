@@ -1,0 +1,8 @@
+# Both variables at once, so the cross is complete and an interaction is visible.
+name: dinov2-registers-large
+family: dinov2
+model_id: facebook/dinov2-with-registers-large
+revision: e4c89a4e05589de9b3e188688a303d0f3c04d0f3
+preprocessing_id: transformers-auto-image-processor
+device: auto
+batch_size: 16

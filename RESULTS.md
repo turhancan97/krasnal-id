@@ -44,6 +44,12 @@ your own browser.
    query's 144 average inliers collapse to 17 once its own photographer is withheld, making
    geometry *more* photographer-dependent than appearance rather than less. Four-fifths of unknown
    statues are still accepted.
+8. **A bigger backbone does not raise the ceiling that stops re-ranking.** DINOv2 at 3.5x the
+   parameters moves recall@10 — the limit section 10's geometric verification runs into — by 0.17
+   points, on 22 queries won against 20 lost. What it does gain is 2.59 points at rank 1 when the
+   query's own photographer is withheld, so scale buys robustness to *who took the photograph*
+   rather than the ability to retrieve what the first stage misses. Adding registers costs
+   accuracy at both sizes.
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -619,6 +625,74 @@ rejection and both fail at 306 classes. The published demo names a statue for ev
 that is a measured position rather than an omission. Rejection here needs a signal neither
 appearance nor geometry provides — a calibrated model trained for it, or a second view of the same
 statue — not a threshold on what is already computed.
+
+## 13. Is the first stage's limit capacity?
+
+Section 11 concluded that the bottleneck is the representation rather than the amount of it
+searched, which leaves the obvious question of whether a bigger representation moves it. Four
+DINOv2 checkpoints cross capacity against the register fix — `dinov2-base` is the pipeline's own,
+`dinov2-large` has 3.5x the parameters and a 1024-wide embedding, and the two
+`dinov2-with-registers` checkpoints add the extra tokens that keep high-norm artifacts out of the
+feature map. Nothing is trained; each is extracted, cached and scored exactly as the existing two
+are.
+
+Every checkpoint answers the same 1,157 photographer-disjoint queries, so the comparison is paired
+and the test is McNemar's on the queries where exactly one checkpoint succeeds. Two separate
+confidence intervals would be the wrong instrument here: they discard the pairing, and section 4
+already shows how easily overlapping intervals read as "undecided" when the paired evidence is not.
+
+| checkpoint | params | r@1 | r@10 | r@50 | full-pool top-1 |
+|---|---:|---|---|---|---|
+| `dinov2-base` | 86.6M | 81.8% | 90.8% | 94.2% | 93.1% |
+| `dinov2-large` | 304.4M | **84.4%** | 90.9% | 93.7% | **93.9%** |
+| `dinov2-with-registers-base` | 86.6M | 80.6% | 89.5% | 94.0% | 92.6% |
+| `dinov2-with-registers-large` | 304.4M | 80.8% | 88.9% | 94.4% | 93.1% |
+
+**Capacity moves the head of the ranking and leaves the ceiling exactly where it was.** Against
+`dinov2-base`, the larger checkpoint gains **2.59 points at r@1** — 62 queries won against 32 lost,
+p = 0.0026 — and **0.17 points at r@10**, on 22 wins against 20 losses, p = 0.88. The second number
+is the one that matters, because r@10 *is* section 10's re-ranking ceiling: the statues the first
+stage fails to retrieve are not retrieved by 3.5x the parameters. At r@50 the larger checkpoint is
+0.52 points *worse*. So the answer to section 11's question is no — the limit is not capacity, and
+a bigger model of this family does not unlock the verification that section 10 left stranded.
+
+**What capacity does buy is the photographer, not the statue.** The gain is 2.59 points when the
+query's own photographer is withheld and 0.77 points when it is not (32 wins to 19, p = 0.09, not
+significant). A larger model is therefore better at recognising a statue photographed by someone
+else, and barely different at recognising one photographed by the same person — which makes this a
+result about section 9's photographer gap rather than about retrieval. It is also why the headline
+barely moves: 93.1% to 93.9% on the full pool is not statistically established.
+
+**Registers do not help, and at large they hurt.** Both register checkpoints fall below their
+plain counterparts on every disjoint cut-off except r@50: −1.30 points at r@10 for the base
+(p = 0.036) and −1.82 for the large (p = 0.019). The fix they implement is real but it is aimed
+elsewhere — artifact tokens degrade dense feature maps, and this pipeline reads only the CLS token,
+which evidently was not what those artifacts were spoiling.
+
+**How many comparisons you count decides whether the one gain survives, so here is the count.**
+Section 8 posed this question about photographer-disjoint recall, which makes the pre-specified
+family the nine disjoint comparisons above — three checkpoints at three cut-offs. Bonferroni puts
+that threshold at 0.0056 and the r@1 gain clears it at p = 0.0026. Adding the full arm makes
+eighteen and a threshold of 0.0028, which it still clears. Correcting over all **sixty-three**
+p-values the artifact computes — three arms, three checkpoints, seven cut-offs — puts the threshold
+at 0.0008, which it does not clear; a reader who counts that way should read the gain as suggestive
+rather than established. Nothing else approaches any of these thresholds, so the register penalties
+and the full-pool gain are reported as directions throughout. The r@10 null needs no correction in
+any case: 22 against 20 is as close to no difference as a paired comparison gets.
+
+**What this does not test.** All four checkpoints share one pretraining recipe and one corpus, so
+this measures capacity *within* DINOv2 and not "a stronger representation" in general. A different
+pretraining — DINOv3, SigLIP — is untested here, and DINOv3 is gated on the Hub, which this
+repository's no-credentials rule keeps out of a default run. What the result does retire is the
+cheapest version of the idea: scaling the model this pipeline already uses.
+
+Reproduce with:
+
+```bash
+krasnal-id embeddings extract -o backbone=dinov2-large
+krasnal-id experiment recall -o backbone=dinov2 \
+  -o "experiment.compare_backbones=[dinov2-large,dinov2-registers,dinov2-registers-large]"
+```
 
 ## Limitations
 

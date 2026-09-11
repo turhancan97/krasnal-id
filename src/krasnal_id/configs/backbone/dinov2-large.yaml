@@ -1,0 +1,8 @@
+# Capacity, holding the pretraining fixed: ViT-L/14 against dinov2's ViT-B/14.
+name: dinov2-large
+family: dinov2
+model_id: facebook/dinov2-large
+revision: 47b73eefe95e8d44ec3623f8890bd894b6ea2d6c
+preprocessing_id: transformers-auto-image-processor
+device: auto
+batch_size: 16

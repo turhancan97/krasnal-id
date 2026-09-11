@@ -81,12 +81,34 @@ class SeedsConfig(BaseModel):
     ablation: tuple[int, ...] = Field(min_length=1)
 
 
+# Every backbone identity the config package ships. Declared once, because the
+# experiments that name backbones in a list -- fusing them, or comparing against
+# them -- must accept exactly the identities that can be selected. Keeping two
+# copies of this let `fuse_backbones` reject a checkpoint the pipeline could run.
+BackboneName = Literal[
+    "dinov2",
+    "clip",
+    "dinov2-large",
+    "dinov2-registers",
+    "dinov2-registers-large",
+]
+
+
 class BackboneConfig(BaseModel):
-    """Pinned embedding-backbone identity and preprocessing contract."""
+    """Pinned embedding-backbone identity and preprocessing contract.
+
+    `name` is the artifact identity: it names the result file, the exported vector
+    column and the cached-vector owner. `family` is the adapter that knows how to
+    run the checkpoint. They were the same field until §8's capacity question
+    needed four DINOv2 checkpoints, which are one family and four identities --
+    and collapsing them would have made `recall_curve-dinov2.json` mean whichever
+    checkpoint ran last.
+    """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    name: Literal["dinov2", "clip"]
+    name: BackboneName
+    family: Literal["dinov2", "clip"]
     model_id: str = Field(min_length=1)
     revision: str = Field(min_length=1)
     preprocessing_id: str = Field(min_length=1)
@@ -302,7 +324,11 @@ class RecallCurveConfig(BaseModel):
     # Backbones whose similarities are summed for the fused variant. Independent
     # of the selected backbone, which supplies the plain and expanded rows, so
     # the fused figure is the same in either artifact.
-    fuse_backbones: tuple[Literal["dinov2", "clip"], ...] = ()
+    fuse_backbones: tuple[BackboneName, ...] = ()
+    # Backbones scored on the same folds as the selected one and compared to it
+    # pairwise. Separate from `fuse_backbones`, which combines two backbones into
+    # one ranking: these stay separate rankings and are only ever differenced.
+    compare_backbones: tuple[BackboneName, ...] = ()
     # Neighbour counts for query expansion. Empty skips the variant.
     expansion_neighbours: tuple[int, ...] = ()
     expansion_alpha: float = Field(default=3.0, ge=0.0)
@@ -316,6 +342,8 @@ class RecallCurveConfig(BaseModel):
             raise ValueError("expansion_neighbours values must be positive")
         if len(set(self.fuse_backbones)) != len(self.fuse_backbones):
             raise ValueError("fuse_backbones cannot contain duplicates")
+        if len(set(self.compare_backbones)) != len(self.compare_backbones):
+            raise ValueError("compare_backbones cannot contain duplicates")
         return self
 
 
