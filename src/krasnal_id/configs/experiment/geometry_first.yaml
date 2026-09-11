@@ -1,0 +1,8 @@
+kind: geometry_first
+seed: ${seeds.primary}
+top_k: [1, 5, 10, 20, 50]
+# Section 7.6's value, so both experiments describe the same keypoints.
+max_keypoints: 800
+# Every answerable query. A full sweep is 1,157 queries against 1,690
+# references; set a small value to exercise the path without paying for it.
+max_queries: 0

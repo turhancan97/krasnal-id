@@ -77,6 +77,7 @@ from krasnal_id.experiments.confusion_analysis import (
 )
 from krasnal_id.experiments.field_gap import FieldGapError, run_field_gap
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
+from krasnal_id.experiments.geometry_first import GeometryFirstError, run_geometry_first
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
 from krasnal_id.experiments.open_set_geometry import (
     OpenSetGeometryError,
@@ -1014,6 +1015,36 @@ def recall_experiment(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Recall curve complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("geometry-first")
+def geometry_first_experiment(override: OverrideOption = None) -> None:
+    """Rank every reference by geometry alone, with no appearance involved."""
+    config = load_config(["experiment=geometry_first", *(override or [])])
+    configure_logging(config.logging)
+    guard_result_path(config)
+    try:
+        result = run_geometry_first(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        GeometryFirstError,
+        RerankError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Geometry-first error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Geometry-first complete: backbone={result.backbone} result={path}")
     for metric in result.metrics:
         if metric.lower_bound is None or metric.upper_bound is None:
             typer.echo(f"  {metric.name}: {metric.value:+.4f}")

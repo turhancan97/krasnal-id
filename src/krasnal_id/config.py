@@ -347,6 +347,30 @@ class RecallCurveConfig(BaseModel):
         return self
 
 
+class GeometryFirstConfig(BaseModel):
+    """Local features promoted from re-ranker to first stage."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["geometry_first"]
+    seed: int
+    top_k: tuple[int, ...] = Field(min_length=1)
+    # Matched to the re-ranking sweep so the two experiments describe the same
+    # keypoints; changing it here would make their inlier counts incomparable.
+    max_keypoints: int = Field(ge=16)
+    # Stop after this many queries. Zero means every answerable query, which is
+    # the published run; a small value is for exercising the path, since a full
+    # sweep is 1,957,330 homographies.
+    max_queries: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "GeometryFirstConfig":
+        """Require positive cut-offs."""
+        if any(k <= 0 for k in self.top_k):
+            raise ValueError("top_k values must be positive")
+        return self
+
+
 class ConfusionExperimentConfig(BaseModel):
     """Most-confused-pair analysis settings."""
 
@@ -382,6 +406,7 @@ ExperimentConfig = Annotated[
     | PhotographerGapConfig
     | RerankAblationConfig
     | RecallCurveConfig
+    | GeometryFirstConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

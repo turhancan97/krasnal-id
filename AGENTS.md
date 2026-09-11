@@ -1152,6 +1152,32 @@ more defects that only an external platform could reject.
     comparability with every published number. §4 is also prior evidence against it: a linear probe
     on frozen DINOv2 features moved two queries of 1,691.
 
+- **Can local features retrieve what appearance loses?** — taken on 2026-09-11, in progress.
+  §7.7's other branch, and after §7.9 the only cheap one left: geometry promoted from re-ranker to
+  first stage. §7.6 only ever showed it what cosine had already chosen, so it has never been asked
+  to *find* anything.
+  - **Scored over every answerable query, not a sample.** SIFT matching costs 4.0 ms a pair with
+    OpenCV's own threading, so all 1,157 answerable queries against all 1,690 references is 2.2
+    hours rather than the ten it was assumed to be. A sample was the plan until it was measured;
+    the full sweep makes the curve directly comparable to §7.7's table instead of nearly so.
+  - **One pair matrix, two arms.** Inliers are computed once per query against every reference and
+    the arms are masks over it, so `answerable` and `disjoint` cost the same as either alone. The
+    `full` arm is deliberately absent: its extra 534 queries are the single-photographer classes,
+    which cannot be asked cross-photographer at all, and including them would buy a third of the
+    runtime for a column §7.7 already reports appearance-only.
+  - **Appearance is re-scored here rather than read from `recall_curve-dinov2.json`.** The
+    comparison is paired per query, which needs both rankings over the identical candidate set in
+    the same run. Reading one from another artifact would pair them by assumption.
+  - **The headline is the rescue rate, not geometry's own recall.** A first stage does not have to
+    beat appearance everywhere; it has to find what appearance misses. So the reported number is
+    how many of the queries appearance loses at k geometry retrieves at k, and geometry's own
+    recall curve is the context for it.
+  - **This is a feasibility probe and must not be described as a retrieval system.** 1,690
+    homographies per query is seven seconds a photograph; nothing about it is deployable. It
+    measures whether an actual local-feature index — ASMK, VLAD, a learned detector — could be
+    worth building, and §7.8 predicts it is not: a known query's 144 inliers collapse to 17 once
+    its own photographer is withheld, which is the regime this arm runs in.
+
 Any of these is a scope change. Record the decision here before implementing it.
 
 ## 9. Repository structure

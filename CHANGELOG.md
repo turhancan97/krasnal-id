@@ -12,6 +12,17 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`experiment geometry-first`: local features promoted from re-ranker to first stage.** Section
+  10 only ever showed geometry a shortlist cosine similarity had already chosen, so it has never
+  been asked to *find* anything. This ranks every reference by RANSAC inlier count with no
+  appearance involved, over all 1,157 answerable queries, and reports the number that decides the
+  branch: how many of the queries appearance loses at k geometry retrieves at k. Inliers are
+  computed once per query and the `answerable` and `disjoint` arms are masks over the same vector,
+  so two arms cost what one would; appearance is re-scored in the same pass rather than read from
+  `recall_curve-dinov2.json`, because a paired comparison needs both rankings over the identical
+  candidate set. It is a feasibility probe and says so — 1,690 homographies is seven seconds a
+  photograph, and a positive result would argue for building an index, not for shipping the loop.
+
 - **`RESULTS.md` section 13: the first stage's limit is not capacity.** Four DINOv2 checkpoints
   cross size against the register fix, all scoring the same 1,157 photographer-disjoint queries.
   `dinov2-large` at 3.5x the parameters moves r@10 — section 10's re-ranking ceiling — by **0.17
