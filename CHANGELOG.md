@@ -10,6 +10,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **A recorded decision to test whether the first stage's limit is capacity (`AGENTS.md` §8).**
+  §7.7 left two branches open and this takes the one that needs no training: `dinov2-large`,
+  `dinov2-with-registers-base` and `dinov2-with-registers-large` cross capacity against the
+  register fix, with the existing `dinov2-base` as the fourth cell, so a gain is attributable to
+  one variable rather than to "a bigger model". The new backbones stay experiment-local, DINOv3 is
+  excluded because it is gated and this repository has no credential path, and the entry records
+  why fine-tuning is not first: the only leak-free training pool is 109 positive pairs.
+
 ### Fixed
 
 - **`AGENTS.md` §8 no longer says the Kaggle dataset is waiting to be created.** It was written

@@ -1076,6 +1076,38 @@ more defects that only an external platform could reject.
   photograph, and Wrocław has several hundred statues Commons documents thinly or not at all. More
   images per class would admit them; more classes would extend the ablation curve past 306.
 
+- **Is the first stage's bottleneck capacity, or the pretraining?** — taken on 2026-09-11, in
+  progress. §7.7 rejected three ways of searching the representation harder and concluded the
+  representation itself is the limit, which left two branches: a stronger embedding, or local
+  features promoted to the first stage. The stronger embedding goes first, because it needs no
+  training and therefore raises no leakage question, and because either outcome is a result: if a
+  larger DINOv2 lifts photographer-disjoint recall, §7.7's conclusion is confirmed and §7.6's
+  re-ranking ceiling moves; if it does not, the limit is not capacity, which is the more
+  informative answer and retires fine-tuning before it is paid for.
+  - **Four cells, two variables, one of them not size.** `facebook/dinov2-base` is the cell the
+    project already has. Adding `dinov2-large`, `dinov2-with-registers-base` and
+    `dinov2-with-registers-large` crosses capacity against the register fix, so a gain can be
+    attributed to one or the other rather than to "a bigger model". Registers are in the design
+    because DINOv2's feature maps carry high-norm artifact tokens that the CLS token sees, which is
+    a plausible defect for instance retrieval and is not a capacity story. Every checkpoint is
+    pinned by revision like the existing two.
+  - **DINOv3 is deliberately excluded.** `facebook/dinov3-*` is `gated=manual` on the Hub, so a
+    run of this repository would need a human to accept a licence and a token to exist, and §5.13
+    keeps credential paths out of this repository. If it is ever added it is a separate decision.
+  - **The new backbones are experiment-local until one of them wins.** `export/huggingface.yaml`
+    lists the backbones an export writes and the visualization config lists the ones it draws, so
+    a backbone absent from those lists costs the published datasets, the browser demo and the
+    other eleven experiments nothing. Promoting one to first-class means re-cutting both published
+    datasets and re-running everything, which is a release, not an experiment.
+  - **Fine-tuning is not the first branch, and the honest reason is that the leak-free data is not
+    there.** §12.1's sub-threshold pool is the only image set disjoint from the benchmark, and it
+    is 261 admissible images over 152 classes — 262 staged, since Binio `Q136343586` stages three
+    and loses page `89462414` to image review — of which 43 classes have one photograph and 109
+    have two. That is about **109 positive pairs** from 29 photographers, which overfits a ViT
+    rather than adapting one. Fine-tuning therefore needs a class-disjoint split of the 306, paying
+    comparability with every published number. §4 is also prior evidence against it: a linear probe
+    on frozen DINOv2 features moved two queries of 1,691.
+
 Any of these is a scope change. Record the decision here before implementing it.
 
 ## 9. Repository structure
