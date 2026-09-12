@@ -50,12 +50,13 @@ your own browser.
    query's own photographer is withheld, so scale buys robustness to *who took the photograph*
    rather than the ability to retrieve what the first stage misses. Adding registers costs
    accuracy at both sizes.
-9. **Local features cannot replace appearance as the first stage.** Ranking every reference by
-   geometric inlier count alone, with no embedding involved, retrieves the right statue in the top
-   10 for 43.5% of photographer-disjoint queries against cosine's 90.8% — and rescues only 12% of
-   what cosine misses, for 1,690 homographies a query. Geometry is three times as
-   photographer-dependent as appearance: withholding the photographer costs it 42 points at rank
-   one where appearance loses 12.
+9. **SIFT cannot replace appearance as the first stage.** Ranking every reference by SIFT inlier
+   count alone, with no embedding involved, retrieves the right statue in the top 10 for 43.5% of
+   photographer-disjoint queries against cosine's 90.8% — and rescues only 12% of what cosine
+   misses, for 1,690 homographies a query. It is three times as photographer-dependent as
+   appearance: withholding the photographer costs it 42 points at rank one where appearance loses
+   12. This is measured for SIFT and **not** for learned matchers, which are built for exactly the
+   wide-baseline regime where it collapses; that comparison is not yet run.
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -700,13 +701,20 @@ krasnal-id experiment recall -o backbone=dinov2 \
   -o "experiment.compare_backbones=[dinov2-large,dinov2-registers,dinov2-registers-large]"
 ```
 
-## 14. Can local features retrieve what appearance loses?
+## 14. Can SIFT retrieve what appearance loses?
 
 Section 10 only ever handed geometry a shortlist that cosine similarity had already chosen, so it
 has never been asked to *find* anything — only to reorder. Section 11 showed the shortlist is the
 ceiling and section 13 ruled out raising it with capacity. This asks the remaining cheap question:
-rank every one of the 1,690 references by RANSAC inlier count, with no appearance involved at any
+rank every one of the 1,690 references by RANSAC inlier count, with no embedding involved at any
 point, and see where the correct statue lands.
+
+**The scope of this section is SIFT, and that qualification is load-bearing.** SIFT is what section
+10 already used, needs no weights and so runs in CI like the rest of the pipeline — but it is a
+hand-designed detector from 1999, and the failure measured below is concentrated in exactly the
+wide-baseline, cross-illumination regime that learned matchers such as SuperPoint+LightGlue or
+LoFTR were built for. Bronze is also close to SIFT's worst case: specular, low-texture, few stable
+corners. **Nothing here should be read as a result about local features in general.**
 
 Inlier counts tie constantly — most of the corpus scores exactly zero against any given query — so
 the correct statue's rank is reported as a range. **geometry** counts only the classes that

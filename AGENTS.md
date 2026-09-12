@@ -1041,8 +1041,11 @@ the first stage loses are not found by a bigger model of the same family.
 
 ### 7.10 Geometry-first result (2026-09-12)
 
-§7.7's other branch, answered: **local features cannot be this pipeline's first stage, and the
-margin is not close.** Every reference ranked by RANSAC inlier count with no appearance involved,
+§7.7's other branch, answered **for SIFT**: it cannot be this pipeline's first stage, and the
+margin is not close. The qualification is load-bearing — SIFT is a hand-designed detector from
+1999, bronze is close to its worst case, and the collapse measured below is concentrated in the
+wide-baseline regime learned matchers exist to handle. §7.11 is the experiment that tests whether
+this generalises; until it runs, nothing here is a result about local features as a family. Every reference ranked by RANSAC inlier count with no appearance involved,
 over the same 1,157 photographer-disjoint queries — geometry reaches **43.5% at r@10 against
 appearance's 90.8%**, winning 13 queries and losing 560 (p ≈ 7 x 10^-147). Its recall at fifty
 candidates, 63.1%, is below appearance's at one.
@@ -1103,7 +1106,7 @@ three defects that only loading the page in a browser could surface. `0.16.0` pu
 dataset to Kaggle (§5.13), which closes the last of §5.11's open questions and surfaces three
 more defects that only an external platform could reject. `0.17.0` closes both branches §7.7 left
 open and both answers are negative: §7.9 finds the first stage's limit is not capacity, and §7.10
-finds local features cannot be the first stage. It is the release that exhausts this section's
+finds SIFT cannot be the first stage. It is the release that exhausts this section's
 cheap ideas — what remains is blocked on photographs, on a gated checkpoint, or on a signal
 neither appearance nor geometry provides.
 
@@ -1192,12 +1195,35 @@ neither appearance nor geometry provides.
     comparability with every published number. §4 is also prior evidence against it: a linear probe
     on frozen DINOv2 features moved two queries of 1,691.
 
-- ~~**Can local features retrieve what appearance loses?**~~ — answered on 2026-09-12, **no**;
-  see §7.10. Geometry alone reaches 43.5% at disjoint r@10 against appearance's 90.8%, wins 13
-  queries and loses 560, and rescues 12.1% of what appearance misses — about one point of recall
-  for 1,690 homographies a query. §7.7's two branches are now both closed, and with them the cheap
-  ideas: what remains is a genuinely different pretraining, a local-feature index that would have
-  to beat this by an order of magnitude, or more photographs.
+- ~~**Can SIFT retrieve what appearance loses?**~~ — answered on 2026-09-12, **no**; see §7.10.
+  SIFT alone reaches 43.5% at disjoint r@10 against appearance's 90.8%, wins 13 queries and loses
+  560, and rescues 12.1% of what appearance misses — about one point of recall for 1,690
+  homographies a query. What it does **not** answer is whether a *learned* matcher does better,
+  which is the next bullet.
+- **Does a learned matcher change §7.10's answer, and §7.6's?** — taken on 2026-09-12, in
+  progress. §7.10 tested SIFT and its conclusion was written as though it were about local
+  features generally, which is an overclaim a reviewer of the §11.1 paper would find immediately:
+  SIFT is hand-designed, from 1999, and the regime where it collapsed — wide baseline, changed
+  illumination, changed sensor — is precisely what SuperPoint+LightGlue and LoFTR were built for.
+  Bronze is also close to SIFT's worst case, being specular and low-texture.
+  - **Two arms, cheapest first.** Replacing SIFT in §7.6's re-ranking protocol is 11,570 pairs and
+    minutes, and lands directly against the 94.0% SIFT reached. Only if that moves is the
+    first-stage arm worth running, and then only on the 107 disjoint queries appearance misses at
+    k=10 rather than the full 1.96M-pair sweep — learned matchers are 5-25x SIFT's cost per pair,
+    so repeating §7.10 wholesale is ten hours for a question a targeted hour answers.
+  - **`superpoint-lightglue` as primary, `xfeat-star` as the light second.** The first is what a
+    reviewer recognises as the strong sparse baseline; the second is built for CPU and edge, which
+    is what would make §6.6's browser demo able to draw correspondences.
+  - **Explore with `gmberton/vismatch`, depend on the winner directly.** The wrapper covers 50+
+    models and is the right tool for choosing one; shipping it as a dependency is not, because
+    every other model here is pinned by revision and CI must stay offline.
+  - **Check the model's licence before anything reaches `docs/`.** vismatch is BSD-3 but the
+    weights it wraps are not uniform and some are research-only — SuperGlue notably. Fine for a
+    paper, not fine for a published demo, and §5.11's care about licensing applies to models too.
+  - **The match visualisation is the second deliverable, not the first.** Drawing correspondences
+    shows *why* a statue was identified rather than asserting a score, and it is tractable in the
+    browser by running the matcher on DINOv2's top five rather than on 1,690 references. It waits
+    on the measurement, so that whatever ships is whatever won.
   - **Scored over every answerable query, not a sample.** SIFT matching costs 4.0 ms a pair with
     OpenCV's own threading, so all 1,157 answerable queries against all 1,690 references is 2.2
     hours rather than the ten it was assumed to be. A sample was the plan until it was measured;

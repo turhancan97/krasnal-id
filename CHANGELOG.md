@@ -10,6 +10,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- **§14's conclusion is qualified to SIFT, because that is all it measured.** It was written as
+  "local features cannot be the first stage" — a claim about a family of methods, from one 1999
+  member of it, sitting in the README's findings list and the summary. The regime where SIFT
+  collapsed is wide-baseline, cross-illumination matching, which is exactly what learned matchers
+  exist for, and bronze is close to SIFT's worst case besides. `RESULTS.md` §14 now states its
+  scope in the section itself, finding 9 says SIFT, and `AGENTS.md` §7.10 carries the same
+  qualification with a pointer to the experiment that tests whether it generalises.
+
 ### Added
 
 - **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** One paper to

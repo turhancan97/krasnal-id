@@ -79,9 +79,10 @@ average inliers collapse to 17 once its own photographer is withheld, making geo
 photographer-dependent than appearance rather than less. Neither of the two ways out works. A
 DINOv2 at 3.5x the parameters moves that first-stage ceiling by **0.17 points**, winning 22
 queries and losing 20 — what it does buy is 2.59 points of robustness to a change of photographer.
-And geometry promoted to the first stage, ranking all 1,690 references by inlier count with no
+And SIFT promoted to the first stage, ranking all 1,690 references by inlier count with no
 embedding involved, reaches **43.5%** in the top ten where cosine reaches 90.8%, rescuing 12% of
-what cosine loses for seven seconds a photograph.
+what cosine loses for seven seconds a photograph — measured for SIFT, and not yet for the learned
+matchers built for the regime where it fails.
 
 ![One query photograph and the five dwarves each backbone ranks highest, for four queries: one both backbones identify, one only DINOv2 identifies, one only CLIP identifies, and one neither identifies. Correct statues are outlined in green and wrong ones in red.](docs/figures/retrieval-examples.jpg)
 
