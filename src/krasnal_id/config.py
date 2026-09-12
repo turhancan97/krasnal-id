@@ -360,7 +360,7 @@ class GeometryFirstConfig(BaseModel):
     max_keypoints: int = Field(ge=16)
     # Stop after this many queries. Zero means every answerable query, which is
     # the published run; a small value is for exercising the path, since a full
-    # sweep is 1,957,330 homographies.
+    # sweep is 1,955,330 homographies.
     max_queries: int = Field(default=0, ge=0)
 
     @model_validator(mode="after")

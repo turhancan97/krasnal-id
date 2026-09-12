@@ -50,6 +50,12 @@ your own browser.
    query's own photographer is withheld, so scale buys robustness to *who took the photograph*
    rather than the ability to retrieve what the first stage misses. Adding registers costs
    accuracy at both sizes.
+9. **Local features cannot replace appearance as the first stage.** Ranking every reference by
+   geometric inlier count alone, with no embedding involved, retrieves the right statue in the top
+   10 for 43.5% of photographer-disjoint queries against cosine's 90.8% — and rescues only 12% of
+   what cosine misses, for 1,690 homographies a query. Geometry is three times as
+   photographer-dependent as appearance: withholding the photographer costs it 42 points at rank
+   one where appearance loses 12.
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -693,6 +699,64 @@ krasnal-id embeddings extract -o backbone=dinov2-large
 krasnal-id experiment recall -o backbone=dinov2 \
   -o "experiment.compare_backbones=[dinov2-large,dinov2-registers,dinov2-registers-large]"
 ```
+
+## 14. Can local features retrieve what appearance loses?
+
+Section 10 only ever handed geometry a shortlist that cosine similarity had already chosen, so it
+has never been asked to *find* anything — only to reorder. Section 11 showed the shortlist is the
+ceiling and section 13 ruled out raising it with capacity. This asks the remaining cheap question:
+rank every one of the 1,690 references by RANSAC inlier count, with no appearance involved at any
+point, and see where the correct statue lands.
+
+Inlier counts tie constantly — most of the corpus scores exactly zero against any given query — so
+the correct statue's rank is reported as a range. **geometry** counts only the classes that
+strictly beat it; **geometry (worst)** also counts those level with it. A conclusion has to hold at
+both ends, or it is an artifact of how ties were broken rather than a finding.
+
+| k | appearance | geometry | geometry (worst) |
+|---:|---|---|---|
+| 1 | **81.8%** | 28.3% | 27.0% |
+| 5 | 89.0% | 38.2% | 34.7% |
+| 10 | **90.8%** | 43.5% | 39.1% |
+| 20 | 92.0% | 50.4% | 43.0% |
+| 50 | 94.2% | 63.1% | 50.6% |
+
+*Photographer-disjoint, over the same 1,157 answerable queries as sections 9, 11 and 13.*
+
+**No, and not narrowly.** Geometry alone retrieves the right statue in the top 10 for 43.5% of
+disjoint queries against appearance's 90.8%. Query by query it wins 13 and loses 560, which is not
+a close call at any tie-break: p ≈ 7 × 10⁻¹⁴⁷. Geometry's recall at **50** candidates, 63.1%, is
+still well below appearance's at **one**. As a replacement first stage it is not a candidate.
+
+**It is not that geometry finds nothing — it finds the wrong thing.** The correct statue has no
+inliers at all for only 2.7% of disjoint queries, and restricting the curve to queries that did
+have evidence barely moves it (44.7% at k=10 against 43.5%). So the failure is not silence. Some
+other statue simply admits a more convincing homography, which is section 5's lookalike-family
+problem arriving through a second channel.
+
+**The rescue rate, which is the number that actually decides the branch.** A first stage does not
+have to beat appearance everywhere; it has to find what appearance misses. Of the 107 disjoint
+queries whose correct statue falls outside appearance's top 10, geometry retrieves **13 — 12.1%**,
+or 9 under the pessimistic tie-break. Union-ing the two candidate lists would therefore lift
+recall@10 from 90.8% to about 91.9%, a gain of roughly one point, for 1,690 homographies per query
+— seven seconds a photograph against a cosine ranking's microseconds. That is the whole case for
+building a real local-feature index here, and it is not enough of one.
+
+**Geometry is three times as photographer-dependent as appearance, now measured on retrieval.**
+Withholding the query's own photographer costs appearance 12.4 points at r@1 (94.2% to 81.8%) and
+costs geometry **42.4** (70.7% to 28.3%). Section 12 found the same asymmetry from the rejection
+side, where a known query's 144 average inliers collapse to 17. This is that collapse seen as
+retrieval, and it explains the result above: with a co-visit near-duplicate in the reference set
+geometry is a strong signal, and without one it is largely matching incidental background.
+
+Reproduce with:
+
+```bash
+krasnal-id experiment geometry-first
+```
+
+The sweep is 1,955,330 homographies and takes about two hours; it journals each query as it
+finishes and resumes where it stopped.
 
 ## Limitations
 

@@ -1039,6 +1039,42 @@ the first stage loses are not found by a bigger model of the same family.
   question — scaling the model already in the pipeline — and with it most of the case for
   fine-tuning the same family, since scaling its pretraining did not move the ceiling.
 
+### 7.10 Geometry-first result (2026-09-12)
+
+§7.7's other branch, answered: **local features cannot be this pipeline's first stage, and the
+margin is not close.** Every reference ranked by RANSAC inlier count with no appearance involved,
+over the same 1,157 photographer-disjoint queries — geometry reaches **43.5% at r@10 against
+appearance's 90.8%**, winning 13 queries and losing 560 (p ≈ 7 x 10^-147). Its recall at fifty
+candidates, 63.1%, is below appearance's at one.
+
+- **The rescue rate is the number that decided it, and it is 12.1%.** Of the 107 disjoint queries
+  whose statue falls outside appearance's top 10, geometry retrieves 13 — 9 under the pessimistic
+  tie-break. Union-ing both candidate lists would lift recall@10 by about one point, from 90.8% to
+  91.9%, for 1,690 homographies a query. That is the entire case for building a real local-feature
+  index here and it does not pay for one.
+- **The failure is wrong evidence, not absent evidence.** The correct statue has no inliers at all
+  for only 2.7% of disjoint queries, and conditioning the curve on having evidence moves r@10 from
+  43.5% to 44.7%. Some *other* statue admits the better homography, which is §5's lookalike
+  families arriving through a second channel.
+- **Geometry is three times as photographer-dependent as appearance, now measured on retrieval.**
+  Withholding the photographer costs appearance 12.4 points at r@1 and geometry **42.4** (70.7% to
+  28.3%). §7.8 found this from the rejection side as the 144-to-17 inlier collapse; this is the
+  same fact seen as retrieval, and it is the mechanism behind the headline. With a co-visit
+  near-duplicate in the reference set geometry is strong; without one it is largely matching
+  incidental background.
+- **Ties had to be handled before the run, not after.** Inlier counts are small integers and most
+  of the corpus scores zero, so reading a rank off a sorted array would have resolved hundreds of
+  ties by manifest order — and could have put a statue inside k=50 on nothing but its position in
+  the file. Every figure is therefore published as a range, `geometry` against `geometry_worst`,
+  and every conclusion above holds at both ends. This was caught by reading the code while the
+  sweep warmed up; it would otherwise have cost two hours and produced a partly manufactured
+  number.
+- **The sweep journals and resumes.** The first attempt was killed at five minutes by a memory
+  watchdog on a machine with 1.8 TB free, so the run has to survive that rather than avoid it.
+  Each query's ranks are fsynced before the next begins and the journal's digest covers the
+  manifest, the backbone, `max_keypoints` **and a schema version** — without the last, changing
+  what a row means would let a resume reinterpret old rows, which is silent corruption.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1152,10 +1188,12 @@ more defects that only an external platform could reject.
     comparability with every published number. §4 is also prior evidence against it: a linear probe
     on frozen DINOv2 features moved two queries of 1,691.
 
-- **Can local features retrieve what appearance loses?** — taken on 2026-09-11, in progress.
-  §7.7's other branch, and after §7.9 the only cheap one left: geometry promoted from re-ranker to
-  first stage. §7.6 only ever showed it what cosine had already chosen, so it has never been asked
-  to *find* anything.
+- ~~**Can local features retrieve what appearance loses?**~~ — answered on 2026-09-12, **no**;
+  see §7.10. Geometry alone reaches 43.5% at disjoint r@10 against appearance's 90.8%, wins 13
+  queries and loses 560, and rescues 12.1% of what appearance misses — about one point of recall
+  for 1,690 homographies a query. §7.7's two branches are now both closed, and with them the cheap
+  ideas: what remains is a genuinely different pretraining, a local-feature index that would have
+  to beat this by an order of magnitude, or more photographs.
   - **Scored over every answerable query, not a sample.** SIFT matching costs 4.0 ms a pair with
     OpenCV's own threading, so all 1,157 answerable queries against all 1,690 references is 2.2
     hours rather than the ten it was assumed to be. A sample was the plan until it was measured;

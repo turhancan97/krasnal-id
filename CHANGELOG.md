@@ -12,6 +12,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`RESULTS.md` section 14: local features cannot be the first stage.** Every reference ranked by
+  RANSAC inlier count with no appearance involved, over all 1,157 answerable queries. Geometry
+  reaches **43.5% at photographer-disjoint r@10 against appearance's 90.8%**, wins 13 queries and
+  loses 560 (p ≈ 7 × 10⁻¹⁴⁷), and its recall at fifty candidates is below appearance's at one. The
+  rescue rate — the share of what appearance loses that geometry finds — is **12.1%**, worth about
+  one point of recall@10 for 1,690 homographies a query. The failure is wrong evidence rather than
+  absent evidence: the correct statue has no inliers at all for only 2.7% of queries. And geometry
+  is three times as photographer-dependent as appearance, losing 42.4 points at r@1 to the
+  disjoint protocol where appearance loses 12.4 — section 12's inlier collapse, seen as retrieval.
+
 - **`experiment geometry-first`: local features promoted from re-ranker to first stage.** Section
   10 only ever showed geometry a shortlist cosine similarity had already chosen, so it has never
   been asked to *find* anything. This ranks every reference by RANSAC inlier count with no
