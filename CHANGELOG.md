@@ -12,16 +12,19 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
-- **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** Two papers
-  rather than one, because *Scientific Data* states that "Data Descriptors should not contain
-  results, discussion, or analyses" — so the corpus gets a Data Descriptor there and the findings
-  get a separate analysis paper, each citing the other. The entry fixes what leads the pitch
-  (per-image photographer attribution, not the 306-class size), what counts as Technical
-  Validation and what must not be dressed as it, and records the unresolved blocker: the corpus
-  spans ten licences including copyleft CC BY-SA on photographs the author does not own, against
-  a journal that generally wants CC0 or CC BY. That policy page is behind an authentication
-  redirect and has not been read, so it is flagged unverified and routed to a presubmission
-  enquiry rather than guessed at.
+- **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** One paper to
+  *Scientific Reports* carrying the dataset and the analysis together. *Scientific Data* was
+  considered and rejected on a fact about the venue rather than a judgement: its guidelines state
+  that "Data Descriptors should not contain results, discussion, or analyses", which is most of
+  §7. Splitting into a Descriptor plus an analysis paper was the first plan and was dropped the
+  same day — the corpus is modest at 1,691 images and the analysis paper would describe its
+  construction anyway, so splitting writes the Methods twice for two review cycles. The entry
+  fixes the spine (the photographer gap as a claim about benchmark construction, not a case study
+  of Wrocław dwarves), maps the paper's sections onto material that already exists, records the
+  fieldwork as stated future work with the reviewer objection named and its defence, and flags
+  two things to confirm before writing: the venue's scope and acceptance criteria, which sit
+  behind an authentication redirect and were not read, and whether an article-processing charge
+  applies.
 
 ## [0.17.0] - 2026-09-12
 

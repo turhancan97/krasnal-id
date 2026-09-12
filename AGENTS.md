@@ -1220,12 +1220,13 @@ neither appearance nor geometry provides.
     worth building, and §7.8 predicts it is not: a known query's 144 inliers collapse to 17 once
     its own photographer is withheld, which is the regime this arm runs in.
 
-- **Two papers: a Data Descriptor and an analysis paper** — taken on 2026-09-12, not started;
-  see §11.1 for the framing and what goes where. The Data Descriptor targets *Scientific Data*,
-  which forbids results and analysis in that article type, so the findings go to a separate paper
-  rather than being cut. Submitting on the corpus as it stands with the field gap as a stated
-  limitation. The open blocker is **licensing**: the mixed CC BY-SA corpus against a journal that
-  generally wants CC0 or CC BY, unverified and worth a presubmission enquiry before any writing.
+- **One paper to *Scientific Reports*, dataset and analysis together** — taken on 2026-09-12, not
+  started; see §11.1. *Scientific Data* was considered and rejected: its Data Descriptors "should
+  not contain results, discussion, or analyses", which is most of this project. The paper leads on
+  the photographer gap as a claim about benchmark construction rather than on the statues, and the
+  fieldwork is future work stated in it rather than a prerequisite. Two things to confirm before
+  writing: that *Scientific Reports*' scope and acceptance criteria are as assumed, and whether an
+  article-processing charge applies.
 
 Any of these is a scope change. Record the decision here before implementing it.
 
@@ -1345,45 +1346,54 @@ krasnal-id/
 
 ### 11.1 Publication plan decision (2026-09-12)
 
-**Two papers, not one, because the target venue forbids the shape of the obvious one.** Scientific
-Data's submission guidelines state that "Data Descriptors should not contain results, discussion,
-or analyses", and require an abstract that describes the data "without scientific claims" -- the
-stated rationale being that summary statistics reduce the incentive to download the data. So
-everything `RESULTS.md` exists to say is out of scope there. Splitting is what keeps both halves:
+**One paper, to *Scientific Reports*: the dataset and the analysis together.** The first plan here
+was two papers, a Data Descriptor for the corpus and an analysis paper for the findings. It was
+replaced the same day, and the reasoning against it is worth keeping because it is the reasoning
+that would bring it back.
 
-- **A Data Descriptor at *Scientific Data*** describing the corpus. Sections are fixed by the
-  journal: Background & Summary, Methods, Data Records, Technical Validation, Usage Notes.
-- **A separate analysis paper** carrying §7.3's scaling law, §7.5's photographer gap, §7.6's
-  re-ranking, §7.9's capacity result and §7.10's geometry-first result. Each paper cites the other.
-
-- **The pitch is photographer attribution, not statue count.** 1,691 images over 306 classes is
-  small for the venue, so the reuse case has to lead and it cannot be size. What this corpus has
-  that retrieval benchmarks generally lack is a **photographer per image**, which is what lets a
-  user run the disjoint protocol at all -- and §7.5 measured that running it changes the answer by
-  2.6 points for DINOv2 and 13.2 for CLIP. A benchmark that cannot detect how much of its score is
-  photographer identity is the gap this one fills. Derived geolocation for 294 of 306 classes and
-  the near-identical installation families are the second and third cards.
-- **Most of `RESULTS.md` is not Technical Validation and must not be dressed as it.** That section
-  is for evidence the data is what it claims to be: the headline re-deriving from the published
-  files with no project import (§5.13), perceptual hashing finding no cross-class near-duplicate,
-  and the derived coordinates validating at 9 m median against the 21 classes that also carry
-  `P625` (§5.7). Baseline retrieval numbers belong there as proof the corpus is usable, not as a
-  finding. The scaling law does not belong there at all.
-- **§5 is most of the Methods section already.** Discovery, the cross-label quarantine, the three
-  reversed approvals, the three-image threshold, coordinate derivation and the deterministic folds
-  are all recorded with their reasoning. This is the part of the paper the project is furthest
-  ahead on.
-- **Submitting on the corpus as it stands, with the field gap as a stated limitation.** The
-  fieldwork would add a genuine domain-shift split and more photographer diversity, and a reviewer
-  will raise the Commons-only reference set first -- but waiting blocks the paper on a trip. Field
-  photographs become a versioned dataset update and a second-paper result instead.
-- **Licensing is the biggest unresolved risk and is not yet checked.** The corpus spans ten
-  licences across four families including copyleft **CC BY-SA**, on photographs the author does not
-  own, and the sculptures are themselves in-copyright artworks photographed under Polish freedom of
-  panorama (§5.11). Journals generally want CC0 or CC BY for deposited data. *Scientific Data*'s
-  repository and licensing policy sits behind an authentication redirect and has not been read, so
-  **this is unverified rather than settled** -- resolve it with a presubmission enquiry before
-  writing.
+- **Why not *Scientific Data*.** Its submission guidelines state that "Data Descriptors should not
+  contain results, discussion, or analyses", and require an abstract describing the data "without
+  scientific claims" — the stated rationale being that summary statistics reduce the incentive to
+  download the data. Everything §7 exists to say is therefore out of scope for that article type.
+  This is a fact about the venue, not a judgement, and it is recorded so nobody re-proposes it.
+- **Why not split.** The analysis is the contribution; the corpus is modest. 1,691 images over 306
+  classes makes a thin Data Descriptor, while the analysis paper would have to describe the data
+  construction anyway — so splitting writes the Methods twice and yields two small papers instead
+  of one whole one, at two review cycles' cost.
+- **Why *Scientific Reports*.** Same portfolio, but it publishes primary research with results and
+  conclusions, which is the shape this work actually has. **Unverified**: its scope and
+  soundness-based acceptance criteria were not read, because the page sits behind an
+  authentication redirect. Confirm before committing.
+- **Lead on the photographer gap, not on the dwarves.** "Instance-retrieval benchmarks that do not
+  record who photographed each image systematically overestimate, and here is a corpus that
+  measures by how much" is a claim about other people's benchmarks — §7.5 puts it at 2.6 points
+  for DINOv2 and 13.2 for CLIP. "How well models identify Wrocław dwarves" is a case study with a
+  much smaller readership. Same evidence, different spine.
+- **The negative results are an asset here and would not be at a conference.** Rejection fails at
+  scale (§7.2, §7.3), geometry cannot reject (§7.8), capacity does not help (§7.9), geometry
+  cannot be a first stage (§7.10), and larger `top_k`, fusion and query expansion all fail (§7.7).
+  A journal accepting on soundness is a friendlier home for that than a venue rewarding positive
+  results, and §7.3's overturning of this project's own published conclusions is a point in its
+  favour rather than an embarrassment.
+- **Sections map onto what already exists.** `RESULTS.md` §1-§14 is the Results; `AGENTS.md` §5
+  and §6 are the Methods; §5.11-§5.13 and the three live deposits are Data Availability; §10
+  conventions and the DOI are Code Availability.
+- **The fieldwork is future work stated in the paper, not a prerequisite.** Every query is a
+  Commons upload, so the domain gap to a street photograph is unmeasured, and `RESULTS.md`
+  Limitations already calls it the largest untested gap. **Expect a reviewer to raise it first.**
+  The defence is that §7.7's camera-origin experiment puts a lower bound on it from the 51
+  references shot on phones (5.3 points for DINOv2, 15.6 for CLIP) and that the whole measuring
+  path is built and published — so it is a bounded, instrumented gap rather than an unexamined
+  one. Do not overclaim street performance anywhere in the paper.
+- **Licensing is a smaller risk than it was under the other plan.** A Data Descriptor *is* the
+  dataset publication, so its CC BY-SA heterogeneity went to the heart of the submission; a
+  research article only has to make the supporting data available, which three deposits and a DOI
+  already do. §5.11's per-file `LICENSES.md` and `ATTRIBUTION.md` carry the obligation. Still
+  disclose the licence families and the freedom-of-panorama position in Data Availability rather
+  than leaving a reviewer to discover them.
+- **Check the APC before submitting.** *Scientific Reports* is fully open access and charges an
+  article-processing fee. Whether a Springer Nature agreement covering UJ applies is unknown here
+  and is a question for the university library, not a detail to discover at acceptance.
 
 ## 12. Living documentation and handoffs
 - Treat this file as the authoritative project brief and decision record. Update it in the same change whenever implementation work introduces or changes architecture, scope, schemas, conventions, build order, or other decisions that future contributors must follow.
