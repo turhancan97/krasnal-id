@@ -10,6 +10,19 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** Two papers
+  rather than one, because *Scientific Data* states that "Data Descriptors should not contain
+  results, discussion, or analyses" — so the corpus gets a Data Descriptor there and the findings
+  get a separate analysis paper, each citing the other. The entry fixes what leads the pitch
+  (per-image photographer attribution, not the 306-class size), what counts as Technical
+  Validation and what must not be dressed as it, and records the unresolved blocker: the corpus
+  spans ten licences including copyleft CC BY-SA on photographs the author does not own, against
+  a journal that generally wants CC0 or CC BY. That policy page is behind an authentication
+  redirect and has not been read, so it is flagged unverified and routed to a presubmission
+  enquiry rather than guessed at.
+
 ## [0.17.0] - 2026-09-12
 
 Both branches §7.7 left open are closed, and both answers are negative.
