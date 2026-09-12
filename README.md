@@ -12,14 +12,14 @@ would help.
 
 ## Project status
 
-Current version **0.16.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.17.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
-DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and twelve experiments — the full-pool
+DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and thirteen experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
 comparison, confusion analysis, open-set rejection, geometric rejection, the camera-origin query
-gap, the photographer gap, geometric re-ranking, the first stage's recall, and the field-query
-gap that waits on photographs — plus embedding visualization, single-image retrieval, a local
-demo and a published in-browser one.
+gap, the photographer gap, geometric re-ranking, the first stage's recall, geometry as a first
+stage, and the field-query gap that waits on photographs — plus embedding visualization,
+single-image retrieval, a local demo and a published in-browser one.
 
 The v0.1-v0.3 build order finished at `0.3.0`; every release since closes one research question.
 `0.4.0` added open-set rejection. `0.5.0` rebuilt the dataset Commons-first at **306 classes and
@@ -42,7 +42,11 @@ about the site rather than the research: the findings move to their own page, th
 offers both backbones so the gap between them can be seen on a visitor's own photograph, and three
 defects that only a real browser could show turn up in the process. `0.16.0` publishes the dataset
 on Kaggle too, closing §5.11's last open question — and finds three more defects that only an
-external platform could reject.
+external platform could reject. `0.17.0` closes both branches section 11 left
+open, and both are negative: a DINOv2 at 3.5x the parameters moves the re-ranking ceiling by 0.17
+points, and local features promoted from re-ranker to *first* stage find the right statue in the
+top ten for 43.5% of cross-photographer queries where cosine similarity manages 90.8%. What scale
+buys is robustness to the photographer rather than recall.
 
 The dataset is published on
 [Hugging Face](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and
@@ -72,7 +76,12 @@ first stage's recall, and a larger candidate list, backbone fusion and query exp
 measured and all failed. Geometry does not rescue rejection either — 0.65 AUROC points for DINOv2
 and 2.3 for CLIP, with four-fifths of unknown statues still accepted — because a known query's 144
 average inliers collapse to 17 once its own photographer is withheld, making geometry *more*
-photographer-dependent than appearance rather than less.
+photographer-dependent than appearance rather than less. Neither of the two ways out works. A
+DINOv2 at 3.5x the parameters moves that first-stage ceiling by **0.17 points**, winning 22
+queries and losing 20 — what it does buy is 2.59 points of robustness to a change of photographer.
+And geometry promoted to the first stage, ranking all 1,690 references by inlier count with no
+embedding involved, reaches **43.5%** in the top ten where cosine reaches 90.8%, rescuing 12% of
+what cosine loses for seven seconds a photograph.
 
 ![One query photograph and the five dwarves each backbone ranks highest, for four queries: one both backbones identify, one only DINOv2 identifies, one only CLIP identifies, and one neither identifies. Correct statues are outlined in green and wrong ones in red.](docs/figures/retrieval-examples.jpg)
 
@@ -115,7 +124,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.16.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.17.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -161,7 +170,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.16.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.17.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

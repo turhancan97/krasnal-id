@@ -1101,7 +1101,11 @@ photographer-dependent than appearance rather than less. `0.15.0` is the first r
 site rather than the research (§6.6): two pages, a backbone switch offered as a comparison, and
 three defects that only loading the page in a browser could surface. `0.16.0` publishes the
 dataset to Kaggle (§5.13), which closes the last of §5.11's open questions and surfaces three
-more defects that only an external platform could reject.
+more defects that only an external platform could reject. `0.17.0` closes both branches §7.7 left
+open and both answers are negative: §7.9 finds the first stage's limit is not capacity, and §7.10
+finds local features cannot be the first stage. It is the release that exhausts this section's
+cheap ideas — what remains is blocked on photographs, on a gated checkpoint, or on a signal
+neither appearance nor geometry provides.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

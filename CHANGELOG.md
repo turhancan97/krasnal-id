@@ -10,6 +10,39 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-09-12
+
+Both branches §7.7 left open are closed, and both answers are negative.
+
+§7.7 concluded that the first stage's limit is the representation rather than the amount of it
+searched, which left two ways forward: a stronger embedding, or local features promoted from
+re-ranker to first stage. Neither works.
+
+A DINOv2 at 3.5x the parameters moves recall@10 — §7.6's re-ranking ceiling — by **0.17 points on
+22 queries won against 20 lost**, so the statues the first stage loses are not found by a bigger
+model of the same family. What scale does buy is 2.59 points at r@1 when the query's own
+photographer is withheld against 0.77 when it is not, which makes it a result about §7.5's
+photographer gap rather than about recall. Registers hurt at both sizes. And geometry ranking all
+1,690 references by inlier count with no appearance involved reaches **43.5% at disjoint r@10
+against appearance's 90.8%**, winning 13 queries and losing 560; it rescues 12.1% of what
+appearance misses, worth about one point of recall for seven seconds a photograph.
+
+Both results needed machinery that did not exist. Comparing two models on the same queries through
+their separate confidence intervals discards the pairing and calls a real difference undecided, so
+the recall experiment now reports discordant counts and an exact McNemar p-value. And the
+geometry sweep is two hours of matching that a memory watchdog killed at five minutes, on a
+machine with 1.8 TB free — so it journals every query and resumes where it stopped.
+
+Two mistakes worth recording because neither would have announced itself. Inlier counts tie
+constantly, so reading a rank off a sorted array would have resolved hundreds of ties by manifest
+order and could have put a statue inside k=50 on its position in the file; every figure is now
+published as a range and every conclusion holds at both ends. And how many comparisons you count
+decides whether §13's one significant gain survives correction, so `RESULTS.md` states all three
+families rather than the one that flatters the result.
+
+This is the release that exhausts §8's cheap ideas. What remains is blocked on photographs, on a
+gated checkpoint, or on a rejection signal neither appearance nor geometry provides.
+
 ### Added
 
 - **`RESULTS.md` section 14: local features cannot be the first stage.** Every reference ranked by
