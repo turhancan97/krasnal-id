@@ -1,0 +1,15 @@
+kind: matcher_rerank
+seed: ${seeds.primary}
+# SIFT first: it is the baseline every other matcher is paired against, and its
+# result is the one section 10 published.
+matchers: [sift, disk-lightglue]
+# Section 7.6's settings, unchanged, so the columns land against its 94.0%.
+top_k: 10
+max_keypoints: 800
+weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
+top_k_metrics: [1, 5]
+# The regime that matters: section 7.8 showed geometry leans on the photographer
+# harder than appearance does, so this is where a learned matcher has to prove
+# itself.
+photographer_disjoint: true
+device: auto

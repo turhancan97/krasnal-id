@@ -10,6 +10,29 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **`experiment matcher-rerank`: several local matchers through one re-ranking protocol.** §14
+  concluded that local features cannot retrieve, on the evidence of SIFT alone, and this is the
+  seam that lets the question be asked of something else. Every matcher sees the same queries, the
+  same candidate statues in the same order and the same blend weights, so a difference between
+  columns is a difference in correspondences rather than in procedure — and the matchers are
+  compared **paired per query** with the exact McNemar test rather than through separate intervals.
+  The first entry is the baseline the rest are paired against, so it is SIFT, whose result §10
+  published.
+- **A `LocalMatcher` interface, added rather than substituted.** `FeatureCache` gained `inliers()`
+  and a `name`, so SIFT satisfies the same contract a learned matcher does and `collect_evidence`
+  takes either. Nothing about §10's or §14's measured results changes: SIFT through the new path
+  reproduces §10's photographer-disjoint control **exactly**, 81.85% at weight zero and 82.28% at
+  its best, which is the check that makes any comparison against it meaningful.
+- **`disk-lightglue`, and DISK rather than SuperPoint on purpose.** SuperPoint's published weights
+  are research-only and §8 requires that whatever reaches `docs/` be licensed for it, so the
+  matcher being measured is one that could also ship in the browser demo. Kornia's DISK weights
+  are Apache-2.0. The new `match` extra pins `kornia==0.8.3`, deliberately outside the `rerank`
+  extra and outside CI, because it fetches weights at first use and the test suite must stay
+  offline. `kornia.io` is unusable against its pinned Rust backend, so images are read with
+  OpenCV like everywhere else in the pipeline.
+
 ### Changed
 
 - **§14's conclusion is qualified to SIFT, because that is all it measured.** It was written as

@@ -78,6 +78,7 @@ from krasnal_id.experiments.confusion_analysis import (
 from krasnal_id.experiments.field_gap import FieldGapError, run_field_gap
 from krasnal_id.experiments.geo_ablation import GeoAblationError, run_geo_ablation
 from krasnal_id.experiments.geometry_first import GeometryFirstError, run_geometry_first
+from krasnal_id.experiments.matcher_rerank import MatcherRerankError, run_matcher_rerank
 from krasnal_id.experiments.open_set import OpenSetExperimentError, run_open_set_rejection
 from krasnal_id.experiments.open_set_geometry import (
     OpenSetGeometryError,
@@ -1045,6 +1046,37 @@ def geometry_first_experiment(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Geometry-first complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:+.4f}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+
+
+@experiment_app.command("matcher-rerank")
+def matcher_rerank_experiment(override: OverrideOption = None) -> None:
+    """Compare local matchers through the geometric re-ranking protocol."""
+    config = load_config(["experiment=matcher_rerank", *(override or [])])
+    configure_logging(config.logging)
+    guard_result_path(config)
+    try:
+        result = run_matcher_rerank(config)
+        path = experiment_result_path(config.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        MatcherRerankError,
+        RerankAblationError,
+        RerankError,
+        EmbeddingStoreError,
+        ExperimentArtifactError,
+    ) as error:
+        typer.echo(f"Matcher re-rank error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Matcher re-rank complete: backbone={result.backbone} result={path}")
     for metric in result.metrics:
         if metric.lower_bound is None or metric.upper_bound is None:
             typer.echo(f"  {metric.name}: {metric.value:+.4f}")

@@ -347,6 +347,37 @@ class RecallCurveConfig(BaseModel):
         return self
 
 
+class MatcherRerankConfig(BaseModel):
+    """Several local matchers through the re-ranking protocol, side by side."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["matcher_rerank"]
+    seed: int
+    # The first entry is the baseline every other matcher is paired against, so
+    # it should be the one whose result is already published.
+    matchers: tuple[Literal["sift", "disk-lightglue"], ...] = Field(min_length=1)
+    top_k: int = Field(ge=2)
+    max_keypoints: int = Field(ge=16)
+    weights: tuple[float, ...] = Field(min_length=1)
+    top_k_metrics: tuple[int, ...] = Field(min_length=1)
+    photographer_disjoint: bool = False
+    device: Literal["auto", "cpu", "cuda"] = "auto"
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "MatcherRerankConfig":
+        """Require the control weight, distinct matchers and positive cut-offs."""
+        if any(weight < 0.0 for weight in self.weights):
+            raise ValueError("blend weights cannot be negative")
+        if 0.0 not in self.weights:
+            raise ValueError("the zero control weight is required")
+        if any(k <= 0 for k in self.top_k_metrics):
+            raise ValueError("top_k_metrics values must be positive")
+        if len(set(self.matchers)) != len(self.matchers):
+            raise ValueError("matchers cannot contain duplicates")
+        return self
+
+
 class GeometryFirstConfig(BaseModel):
     """Local features promoted from re-ranker to first stage."""
 
@@ -407,6 +438,7 @@ ExperimentConfig = Annotated[
     | RerankAblationConfig
     | RecallCurveConfig
     | GeometryFirstConfig
+    | MatcherRerankConfig
     | ConfusionExperimentConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),

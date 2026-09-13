@@ -46,7 +46,8 @@ from krasnal_id.photographers import (
     photographers_by_class,
 )
 from krasnal_id.retrieval.knn import cosine_knn
-from krasnal_id.retrieval.rerank import FeatureCache, blended_score, count_inliers
+from krasnal_id.retrieval.matchers import LocalMatcher
+from krasnal_id.retrieval.rerank import FeatureCache, blended_score
 
 
 class RerankAblationError(ValueError):
@@ -95,7 +96,9 @@ def collect_evidence(
     split: EvaluationSplit,
     manifest: DatasetManifest,
     matrix: EmbeddingMatrix,
-    cache: FeatureCache,
+    # Any matcher, not only SIFT: §7.11 asks §7.10's question of a learned one,
+    # and the protocol has to be identical for the columns to be comparable.
+    cache: LocalMatcher,
     top_k: int,
     *,
     photographer_disjoint: bool = False,
@@ -163,7 +166,7 @@ def collect_evidence(
                     Candidate(
                         dwarf_id=dwarf,
                         cosine=cosine,
-                        inliers=count_inliers(query_features, cache.get(image_id, paths[image_id])),
+                        inliers=cache.inliers(query_features, cache.get(image_id, paths[image_id])),
                         correct=dwarf == truth,
                     )
                     for dwarf, image_id, cosine in best

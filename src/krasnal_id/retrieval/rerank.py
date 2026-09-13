@@ -165,6 +165,20 @@ class FeatureCache:
             self._features[image_id] = cached
         return cached
 
+    def inliers(self, query: LocalFeatures, candidate: LocalFeatures) -> int:
+        """Return how many correspondences survive a RANSAC homography.
+
+        Present so SIFT satisfies the same interface as a learned matcher and the
+        sweep can be run with either. Section 14's conclusion was written from
+        SIFT alone, and this is the seam that lets it be asked again.
+        """
+        return count_inliers(query, candidate)
+
+    @property
+    def name(self) -> str:
+        """Return the matcher's artifact identity."""
+        return "sift"
+
     def __len__(self) -> int:
         """Return how many images have been described so far."""
         return len(self._features)

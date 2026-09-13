@@ -55,6 +55,12 @@ hf = [
 rerank = [
     "opencv-python-headless>=5.0.0.93",
 ]
+# Learned local matchers, for asking section 14's question of something other
+# than SIFT. Kept out of the rerank extra and out of CI: it pulls weights at
+# first use, which the offline test suite must never do.
+match = [
+    "kornia==0.8.3",
+]
 
 [project.scripts]
 krasnal-id = "krasnal_id.cli:app"
@@ -93,7 +99,7 @@ files = ["src/krasnal_id", "tests"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["cv2.*", "datasets.*", "huggingface_hub.*", "pyarrow.*"]
+module = ["cv2.*", "datasets.*", "huggingface_hub.*", "kornia.*", "pyarrow.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
