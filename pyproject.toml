@@ -99,7 +99,10 @@ files = ["src/krasnal_id", "tests"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["cv2.*", "datasets.*", "huggingface_hub.*", "kornia.*", "pyarrow.*"]
+# kornia and torch come from extras CI deliberately does not install -- the ml
+# extra would download model weights into an offline suite -- so mypy cannot
+# see them there even though it can locally. Everything else here lacks stubs.
+module = ["cv2.*", "datasets.*", "huggingface_hub.*", "kornia.*", "pyarrow.*", "torch.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

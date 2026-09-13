@@ -173,8 +173,12 @@ def test_packaged_defaults_compare_sift_against_a_learned_matcher() -> None:
 
 
 def test_the_learned_matcher_refuses_cuda_it_cannot_have() -> None:
-    """An explicit device request must fail loudly rather than fall back silently."""
-    import torch
+    """An explicit device request must fail loudly rather than fall back silently.
+
+    Skipped where torch is absent, which is CI: the suite runs without the ml
+    extra so that it never downloads model weights.
+    """
+    torch = pytest.importorskip("torch")
 
     if torch.cuda.is_available():  # pragma: no cover - depends on the host
         pytest.skip("CUDA is available, so the refusal cannot be exercised")

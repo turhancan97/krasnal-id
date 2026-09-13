@@ -71,6 +71,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **CI's type check could not see `torch`, and the local one could.** The matcher imports torch
+  directly rather than through `import_optional_ml`, so mypy resolved it here and failed on the
+  runner — CI deliberately omits the `ml` extra to keep the suite from downloading model weights.
+  `torch.*` joins `kornia.*` in the mypy overrides for that reason, and the one test that needs
+  torch at runtime now uses `pytest.importorskip` so it skips on the runner instead of erroring.
+  Verified against a scratch environment built with exactly CI's extras rather than against the
+  local one, which is what hid the failure in the first place.
+
 - **A GPU that reports available is not one that can run a kernel.** `torch.cuda.is_available()`
   answers whether a driver and device exist, not whether this build has kernels for that device —
   and a torch compiled for `sm_75` and up returns True on an `sm_70` V100, then raises `no kernel
