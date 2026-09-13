@@ -18,6 +18,8 @@ against section 14's 1,955,330, so this says whether a learned matcher is worth
 the expensive question before the expensive question is asked.
 """
 
+import hashlib
+import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -31,6 +33,7 @@ from krasnal_id.experiments.baseline_accuracy import (
 )
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.experiments.rerank_ablation import QueryEvidence, collect_evidence
+from krasnal_id.models import EvaluationSplit
 from krasnal_id.retrieval.matchers import create_matcher
 from krasnal_id.statistics import exact_mcnemar_p_value
 
@@ -45,6 +48,38 @@ class MatcherRun:
 
     name: str
     evidence: tuple[QueryEvidence, ...]
+
+
+def evidence_identity(
+    split: EvaluationSplit,
+    backbone_id: str,
+    matcher: str,
+    keypoints: int,
+    top_k: int,
+    photographer_disjoint: bool,
+) -> str:
+    """Digest everything the evidence depends on -- and nothing it does not.
+
+    The blend weights are deliberately absent. Inliers cost hours to compute and
+    the sweep over them costs milliseconds, so a new set of weights must be able
+    to reuse an old journal; including them would have thrown away 1.8 hours to
+    add a column. Everything that does change the evidence is here: the dataset,
+    the backbone that ranked the candidates, the matcher, its keypoint budget,
+    how many candidates were verified, and whether the photographer was withheld.
+    """
+    payload = json.dumps(
+        {
+            "manifest_sha256": split.manifest_sha256,
+            "backbone": backbone_id,
+            "matcher": matcher,
+            "keypoints": keypoints,
+            "top_k": top_k,
+            "photographer_disjoint": photographer_disjoint,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def best_weight(
@@ -148,25 +183,37 @@ def run_matcher_rerank(config: AppConfig) -> ExperimentResult:
     matrix = load_embedding_matrix(manifest, config.backbone, Path(config.paths.embeddings_dir))
     truths = {fold.query_image_id: fold.query_dwarf_id for fold in split.folds}
 
-    runs = tuple(
-        MatcherRun(
-            name=name,
-            evidence=collect_evidence(
-                split,
-                manifest,
-                matrix,
-                create_matcher(
-                    name,
-                    settings.max_keypoints if name == "sift" else settings.learned_keypoints,
-                    settings.device,
-                ),
-                settings.top_k,
-                photographer_disjoint=settings.photographer_disjoint,
-                only_answerable=True,
-            ),
+    runs = []
+    for name in settings.matchers:
+        keypoints = settings.max_keypoints if name == "sift" else settings.learned_keypoints
+        digest = evidence_identity(
+            split,
+            config.backbone.name,
+            name,
+            keypoints,
+            settings.top_k,
+            settings.photographer_disjoint,
         )
-        for name in settings.matchers
-    )
+        journal = (
+            Path(config.paths.results_dir)
+            / "journals"
+            / f"matcher_rerank-{config.backbone.name}-{name}-{digest[:16]}.jsonl"
+        )
+        runs.append(
+            MatcherRun(
+                name=name,
+                evidence=collect_evidence(
+                    split,
+                    manifest,
+                    matrix,
+                    create_matcher(name, keypoints, settings.device),
+                    settings.top_k,
+                    photographer_disjoint=settings.photographer_disjoint,
+                    only_answerable=True,
+                    journal=journal,
+                ),
+            )
+        )
 
     return ExperimentResult(
         experiment="matcher_rerank",
@@ -174,5 +221,5 @@ def run_matcher_rerank(config: AppConfig) -> ExperimentResult:
         created_at=datetime.now(UTC),
         seed=settings.seed,
         configuration=settings.model_dump(mode="json"),
-        metrics=summarize(runs, truths, settings.weights, settings.top_k_metrics),
+        metrics=summarize(tuple(runs), truths, settings.weights, settings.top_k_metrics),
     )

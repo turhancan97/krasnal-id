@@ -10,10 +10,16 @@ from krasnal_id.experiments.matcher_rerank import (
     MatcherRerankError,
     MatcherRun,
     best_weight,
+    evidence_identity,
     run_matcher_rerank,
     summarize,
 )
-from krasnal_id.experiments.rerank_ablation import Candidate, QueryEvidence
+from krasnal_id.experiments.rerank_ablation import (
+    Candidate,
+    QueryEvidence,
+    append_evidence_journal,
+    read_evidence_journal,
+)
 from krasnal_id.retrieval.matchers import (
     DiskLightGlueMatcher,
     create_matcher,
@@ -137,11 +143,13 @@ def test_packaged_defaults_compare_sift_against_a_learned_matcher() -> None:
     assert experiment.matchers[0] == "sift", "SIFT is the baseline others are paired against"
     assert len(experiment.matchers) >= 2
     assert experiment.photographer_disjoint, "section 7.8 says this is the regime that matters"
-    # Matched to the re-ranking sweep, or the columns do not land against its 94.0%.
+    # Section 7.6's candidate count and weights must both still be covered, or the
+    # columns stop landing against its published figures. The sweep may go beyond
+    # them -- and does, because the learned matcher peaks outside SIFT's range.
     rerank = load_config(["experiment=rerank_ablation"]).experiment
     assert isinstance(rerank, RerankAblationConfig)
     assert experiment.top_k == rerank.top_k
-    assert experiment.weights == rerank.weights
+    assert set(rerank.weights).issubset(set(experiment.weights))
 
     for broken, message in (
         ({"weights": (0.1,)}, "zero control weight"),
@@ -217,3 +225,70 @@ def test_the_learned_matcher_gets_its_own_keypoint_budget() -> None:
     learned = create_matcher("disk-lightglue", experiment.learned_keypoints)
     assert isinstance(learned, DiskLightGlueMatcher)
     assert learned.max_keypoints == experiment.learned_keypoints
+
+
+def test_the_weights_are_not_part_of_the_evidence_identity() -> None:
+    """The whole point of the journal: a new sweep must reuse an old one.
+
+    Inliers cost hours and the weight sweep over them costs milliseconds. The
+    first run's best weight sat at the edge of its range, and without this
+    property extending that range would have meant recomputing everything.
+    """
+    split = mock.Mock(manifest_sha256="a" * 64)
+    base = evidence_identity(split, "dinov2", "sift", 800, 10, True)
+
+    assert evidence_identity(split, "dinov2", "sift", 800, 10, True) == base
+    # Everything that changes the evidence changes the digest.
+    assert evidence_identity(split, "clip", "sift", 800, 10, True) != base
+    assert evidence_identity(split, "dinov2", "disk-lightglue", 800, 10, True) != base
+    assert evidence_identity(split, "dinov2", "sift", 1024, 10, True) != base
+    assert evidence_identity(split, "dinov2", "sift", 800, 20, True) != base
+    assert evidence_identity(split, "dinov2", "sift", 800, 10, False) != base
+    assert (
+        evidence_identity(mock.Mock(manifest_sha256="b" * 64), "dinov2", "sift", 800, 10, True)
+        != base
+    )
+
+
+def test_evidence_survives_a_round_trip_through_the_journal(tmp_path: Path) -> None:
+    """A resumed run must rebuild exactly what it would have recomputed."""
+    original = _evidence("commons-1", (0.9, 0.4), (30, 2))
+    journal = tmp_path / "evidence.jsonl"
+
+    append_evidence_journal(journal, original)
+    recovered = read_evidence_journal(journal)
+
+    assert set(recovered) == {"commons-1"}
+    assert recovered["commons-1"] == original
+
+
+def test_a_truncated_journal_line_is_a_miss_rather_than_a_crash(tmp_path: Path) -> None:
+    """A process killed mid-write leaves half a line; that query is recomputed."""
+    journal = tmp_path / "evidence.jsonl"
+    append_evidence_journal(journal, _evidence("commons-1", (0.9,), (5,)))
+    with journal.open("a", encoding="utf-8") as handle:
+        handle.write('{"query_image_id": "commons-2", "candi')
+
+    assert set(read_evidence_journal(journal)) == {"commons-1"}
+
+
+def test_a_missing_journal_is_an_empty_one(tmp_path: Path) -> None:
+    assert read_evidence_journal(tmp_path / "never-written.jsonl") == {}
+
+
+def test_the_weight_sweep_runs_past_where_sift_turns_over() -> None:
+    """The first run reported the learned matcher's best at the edge of its range.
+
+    SIFT peaks at 0.05 and declines; the learned matcher was still climbing at
+    0.2, so 84.62% was a lower bound rather than a peak. A best-at-the-edge
+    figure is what a reviewer flags, so the range now runs well past it.
+    """
+    experiment = load_config(["experiment=matcher_rerank"]).experiment
+    assert isinstance(experiment, MatcherRerankConfig)
+
+    assert max(experiment.weights) >= 1.0
+    assert 0.0 in experiment.weights, "the control is what makes the rest readable"
+    # Section 7.6's weights stay in the sweep so its column is still reproduced.
+    rerank = load_config(["experiment=rerank_ablation"]).experiment
+    assert isinstance(rerank, RerankAblationConfig)
+    assert set(rerank.weights).issubset(set(experiment.weights))

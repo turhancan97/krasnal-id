@@ -23,10 +23,14 @@ experiment rather than a tuning exercise:
   one that fixes two and breaks none, and the net accuracy hides the difference.
 """
 
+import json
+import logging
+import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -48,6 +52,11 @@ from krasnal_id.photographers import (
 from krasnal_id.retrieval.knn import cosine_knn
 from krasnal_id.retrieval.matchers import LocalMatcher
 from krasnal_id.retrieval.rerank import FeatureCache, blended_score
+
+# How often a long sweep says where it has got to.
+PROGRESS_EVERY = 50
+
+logger = logging.getLogger(__name__)
 
 
 class RerankAblationError(ValueError):
@@ -92,6 +101,63 @@ class QueryEvidence:
         return order.index(truth) + 1 if truth in order else 0
 
 
+def evidence_to_row(item: QueryEvidence) -> dict[str, object]:
+    """Serialize one query's evidence for the journal."""
+    return {
+        "query_image_id": item.query_image_id,
+        "baseline_rank": item.baseline_rank,
+        "candidates": [
+            {
+                "dwarf_id": c.dwarf_id,
+                "cosine": c.cosine,
+                "inliers": c.inliers,
+                "correct": c.correct,
+            }
+            for c in item.candidates
+        ],
+    }
+
+
+def evidence_from_row(row: dict[str, Any]) -> QueryEvidence:
+    """Rebuild one query's evidence from a journal row."""
+    return QueryEvidence(
+        query_image_id=str(row["query_image_id"]),
+        baseline_rank=int(row["baseline_rank"]),
+        candidates=tuple(
+            Candidate(
+                dwarf_id=str(c["dwarf_id"]),
+                cosine=float(c["cosine"]),
+                inliers=int(c["inliers"]),
+                correct=bool(c["correct"]),
+            )
+            for c in row["candidates"]
+        ),
+    )
+
+
+def read_evidence_journal(path: Path) -> dict[str, QueryEvidence]:
+    """Load the queries a previous run finished, tolerating a truncated tail."""
+    if not path.is_file():
+        return {}
+    done: dict[str, QueryEvidence] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            row = json.loads(line)
+            done[row["query_image_id"]] = evidence_from_row(row)
+        except (ValueError, KeyError, TypeError):
+            continue
+    return done
+
+
+def append_evidence_journal(path: Path, item: QueryEvidence) -> None:
+    """Record one finished query durably, before the next one starts."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(evidence_to_row(item), separators=(",", ":")) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def collect_evidence(
     split: EvaluationSplit,
     manifest: DatasetManifest,
@@ -103,6 +169,11 @@ def collect_evidence(
     *,
     photographer_disjoint: bool = False,
     only_answerable: bool = False,
+    # Where to record each query's evidence as it is computed. The inliers cost
+    # hours and the weight sweep over them costs milliseconds, so the evidence
+    # is what must survive -- and the weights are deliberately not part of its
+    # identity, which is what lets a new sweep reuse an old journal.
+    journal: Path | None = None,
 ) -> tuple[QueryEvidence, ...]:
     """Rank globally, then verify the geometry of the top candidates.
 
@@ -116,6 +187,9 @@ def collect_evidence(
     paths = {image.image_id: image.local_path for image in manifest.images}
     authors = authors_by_image(manifest)
     by_class = photographers_by_class(manifest)
+    done = read_evidence_journal(journal) if journal is not None else {}
+    if done:
+        logger.info("re-ranking resuming: %d queries already scored", len(done))
     evidence: list[QueryEvidence] = []
 
     for fold in split.folds:
@@ -123,6 +197,11 @@ def collect_evidence(
         # Both arms score the same queries, so the two columns are comparable:
         # the answerable subset is fixed by the dataset, not by the arm.
         if (only_answerable or photographer_disjoint) and not is_answerable(truth, by_class):
+            continue
+
+        finished = done.get(query)
+        if finished is not None:
+            evidence.append(finished)
             continue
 
         references = fold.reference_image_ids
@@ -158,21 +237,24 @@ def collect_evidence(
             0,
         )
         query_features = cache.get(query, paths[query])
-        evidence.append(
-            QueryEvidence(
-                query_image_id=query,
-                baseline_rank=baseline_rank,
-                candidates=tuple(
-                    Candidate(
-                        dwarf_id=dwarf,
-                        cosine=cosine,
-                        inliers=cache.inliers(query_features, cache.get(image_id, paths[image_id])),
-                        correct=dwarf == truth,
-                    )
-                    for dwarf, image_id, cosine in best
-                ),
-            )
+        item = QueryEvidence(
+            query_image_id=query,
+            baseline_rank=baseline_rank,
+            candidates=tuple(
+                Candidate(
+                    dwarf_id=dwarf,
+                    cosine=cosine,
+                    inliers=cache.inliers(query_features, cache.get(image_id, paths[image_id])),
+                    correct=dwarf == truth,
+                )
+                for dwarf, image_id, cosine in best
+            ),
         )
+        evidence.append(item)
+        if journal is not None:
+            append_evidence_journal(journal, item)
+        if len(evidence) % PROGRESS_EVERY == 0:
+            logger.info("re-ranking progress: %d queries scored", len(evidence))
     return tuple(evidence)
 
 

@@ -7,7 +7,11 @@ matchers: [sift, disk-lightglue]
 top_k: 10
 max_keypoints: 800
 learned_keypoints: 1024
-weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
+# Extended past §7.6's range: SIFT peaks at 0.05 and falls, but the learned
+# matcher was still climbing at 0.2, so its best sat at the edge of the sweep
+# and was a lower bound rather than a peak. Weights are free once the evidence
+# is journalled, so the range now runs until both matchers have turned over.
+weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0]
 top_k_metrics: [1, 5]
 # The regime that matters: section 7.8 showed geometry leans on the photographer
 # harder than appearance does, so this is where a learned matcher has to prove
