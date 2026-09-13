@@ -33,6 +33,22 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   offline. `kornia.io` is unusable against its pinned Rust backend, so images are read with
   OpenCV like everywhere else in the pipeline.
 
+### Fixed
+
+- **A GPU that reports available is not one that can run a kernel.** `torch.cuda.is_available()`
+  answers whether a driver and device exist, not whether this build has kernels for that device —
+  and a torch compiled for `sm_75` and up returns True on an `sm_70` V100, then raises `no kernel
+  image is available for execution on the device` at the first real operation. The matcher
+  comparison lost a completed SIFT arm to it, because the learned matcher only touches the GPU
+  when its weights load. `usable_cuda` now runs one tiny operation before anything is loaded: on
+  `auto` the matcher falls back to CPU, and an explicit `cuda` request fails naming the mismatch.
+- **The learned matcher gets its own keypoint budget, and 1024 costs nothing.** Holding a learned
+  detector to SIFT's 800 would handicap the thing under test, but LightGlue's usual 2048 is also
+  wrong here: `blended_score` caps inliers at `INLIER_CAP`, so any pair above 30 blends
+  identically. Measured on four pairs, 1024 gives 51/115/51 inliers where 2048 gives 96/208/155 —
+  all above the cap, all the same blended score — at 2.4x less compute, taking the sweep from 4.4
+  hours to 1.8 on CPU.
+
 ### Changed
 
 - **§14's conclusion is qualified to SIFT, because that is all it measured.** It was written as
