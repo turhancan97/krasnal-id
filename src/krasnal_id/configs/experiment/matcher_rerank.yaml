@@ -6,6 +6,7 @@ matchers: [sift, disk-lightglue]
 # Section 7.6's settings, unchanged, so the columns land against its 94.0%.
 top_k: 10
 max_keypoints: 800
+learned_keypoints: 1024
 weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
 top_k_metrics: [1, 5]
 # The regime that matters: section 7.8 showed geometry leans on the photographer

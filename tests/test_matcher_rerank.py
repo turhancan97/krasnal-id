@@ -1,6 +1,7 @@
 """Several local matchers through one re-ranking protocol."""
 
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -13,8 +14,12 @@ from krasnal_id.experiments.matcher_rerank import (
     summarize,
 )
 from krasnal_id.experiments.rerank_ablation import Candidate, QueryEvidence
-from krasnal_id.retrieval.matchers import DiskLightGlueMatcher, create_matcher
-from krasnal_id.retrieval.rerank import FeatureCache, RerankError
+from krasnal_id.retrieval.matchers import (
+    DiskLightGlueMatcher,
+    create_matcher,
+    usable_cuda,
+)
+from krasnal_id.retrieval.rerank import INLIER_CAP, FeatureCache, RerankError
 
 
 def _evidence(query: str, cosine: tuple[float, ...], inliers: tuple[int, ...]) -> QueryEvidence:
@@ -167,3 +172,48 @@ def test_the_learned_matcher_refuses_cuda_it_cannot_have() -> None:
         pytest.skip("CUDA is available, so the refusal cannot be exercised")
     with pytest.raises(RerankError, match="CUDA was requested"):
         DiskLightGlueMatcher(device="cuda").get("x", Path("nonexistent.jpg"))
+
+
+def test_an_unusable_gpu_is_not_a_usable_one() -> None:
+    """`cuda.is_available()` answers a weaker question than callers assume.
+
+    It reports a driver and a device, not whether this build has kernels for that
+    device. A torch compiled for sm_75 and up says True on an sm_70 card and then
+    raises at the first real operation -- which cost a run its completed SIFT arm
+    before the learned matcher had started. The probe runs one tiny operation.
+    """
+    absent = mock.Mock()
+    absent.cuda.is_available.return_value = False
+    assert usable_cuda(absent) is False
+
+    present_but_wrong = mock.Mock()
+    present_but_wrong.cuda.is_available.return_value = True
+    present_but_wrong.zeros.side_effect = RuntimeError(
+        "CUDA error: no kernel image is available for execution on the device"
+    )
+    assert usable_cuda(present_but_wrong) is False
+
+
+def test_a_working_gpu_passes_the_probe() -> None:
+    working = mock.Mock()
+    working.cuda.is_available.return_value = True
+
+    assert usable_cuda(working) is True
+
+
+def test_the_learned_matcher_gets_its_own_keypoint_budget() -> None:
+    """Holding a learned detector to SIFT's 800 would handicap what is under test.
+
+    1024 rather than LightGlue's usual 2048 costs nothing here: `blended_score`
+    caps inliers at `INLIER_CAP`, so every pair scoring above 30 blends
+    identically, and 1024 already clears it on the pairs that separate.
+    """
+    experiment = load_config(["experiment=matcher_rerank"]).experiment
+    assert isinstance(experiment, MatcherRerankConfig)
+
+    assert experiment.learned_keypoints != experiment.max_keypoints
+    assert experiment.learned_keypoints > INLIER_CAP
+
+    learned = create_matcher("disk-lightglue", experiment.learned_keypoints)
+    assert isinstance(learned, DiskLightGlueMatcher)
+    assert learned.max_keypoints == experiment.learned_keypoints

@@ -358,7 +358,16 @@ class MatcherRerankConfig(BaseModel):
     # it should be the one whose result is already published.
     matchers: tuple[Literal["sift", "disk-lightglue"], ...] = Field(min_length=1)
     top_k: int = Field(ge=2)
+    # SIFT's budget, matched to §7.6 so its column lands against the published
+    # 94.0%. A learned detector gets its own, because holding it to SIFT's would
+    # handicap the thing being tested.
     max_keypoints: int = Field(ge=16)
+    # The learned detector's budget. 1024 rather than the 2048 LightGlue's own
+    # evaluations use, and it costs nothing here: `blended_score` caps inliers at
+    # `INLIER_CAP`, so every pair scoring above 30 blends identically. Measured on
+    # four pairs, 1024 gives 51/115/51 inliers where 2048 gives 96/208/155 -- all
+    # above the cap, all the same score -- for 2.4x less compute.
+    learned_keypoints: int = Field(default=1024, ge=16)
     weights: tuple[float, ...] = Field(min_length=1)
     top_k_metrics: tuple[int, ...] = Field(min_length=1)
     photographer_disjoint: bool = False

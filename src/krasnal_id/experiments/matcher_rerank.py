@@ -155,7 +155,11 @@ def run_matcher_rerank(config: AppConfig) -> ExperimentResult:
                 split,
                 manifest,
                 matrix,
-                create_matcher(name, settings.max_keypoints, settings.device),
+                create_matcher(
+                    name,
+                    settings.max_keypoints if name == "sift" else settings.learned_keypoints,
+                    settings.device,
+                ),
                 settings.top_k,
                 photographer_disjoint=settings.photographer_disjoint,
                 only_answerable=True,

@@ -70,6 +70,28 @@ def _ransac_inliers(
     return 0 if mask is None else int(mask.sum())
 
 
+def usable_cuda(torch: Any) -> bool:
+    """Is there a GPU this build can actually run a kernel on?
+
+    `torch.cuda.is_available()` answers a different and weaker question: whether a
+    driver and a device exist. A build compiled for sm_75 and up reports True on
+    an sm_70 V100 and then raises `no kernel image is available for execution on
+    the device` at the first real operation -- which here meant losing the SIFT
+    arm's four minutes before the learned one had started. One tiny operation
+    settles it in milliseconds, so it is asked before any weights are loaded.
+    """
+    if not torch.cuda.is_available():
+        return False
+    try:
+        probe = torch.zeros(8, 8, device="cuda")
+        torch.nn.functional.pad(probe, (0, 1, 0, 1)).sum().item()
+    except Exception:
+        # Deliberately broad: the failure arrives as a driver-level error whose
+        # class varies by torch version, and any of them means the same thing.
+        return False
+    return True
+
+
 class DiskLightGlueMatcher:
     """DISK keypoints matched by LightGlue, via kornia.
 
@@ -107,9 +129,14 @@ class DiskLightGlueMatcher:
         self._torch = torch
         resolved = self._device_request
         if resolved == "auto":
-            resolved = "cuda" if torch.cuda.is_available() else "cpu"
+            resolved = "cuda" if usable_cuda(torch) else "cpu"
         if resolved == "cuda" and not torch.cuda.is_available():
             raise RerankError("CUDA was requested for the matcher but is not available")
+        if resolved == "cuda" and not usable_cuda(torch):
+            raise RerankError(
+                "CUDA is present but this torch build has no kernels for the device: "
+                f"{torch.cuda.get_device_capability(0)} against {torch.cuda.get_arch_list()}"
+            )
         self._device = torch.device(resolved)
         self._disk = DISK.from_pretrained("depth").to(self._device).eval()
         self._matcher = LightGlueMatcher("disk").to(self._device).eval()
@@ -193,5 +220,5 @@ def create_matcher(name: str, max_keypoints: int, device: str = "auto") -> Local
 
         return FeatureCache(max_keypoints)
     if name == "disk-lightglue":
-        return DiskLightGlueMatcher(device=device)
+        return DiskLightGlueMatcher(device=device, max_keypoints=max_keypoints)
     raise RerankError(f"unsupported matcher: {name}")
