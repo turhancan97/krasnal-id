@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Krasnal-ID — what the experiments found</title>
-<meta name="description" content="Results from a fine-grained visual instance retrieval study of Wrocław's dwarf statues: accuracy against candidate-pool size, geographic narrowing, trained classifiers, and where the errors are.">
+<meta name="description" content="Results from a fine-grained visual instance retrieval study of Wrocław's dwarf statues: accuracy against candidate-pool size, geographic narrowing, trained classifiers, where the errors are, and what raises accuracy — geometric verification, model capacity, and learned local matchers.">
 <link rel="icon" href="brand/krasnal-mark-light.svg">
 <meta property="og:title" content="Krasnal-ID">
 <meta property="og:description" content="What the experiments found: identifying 306 near-identical bronze statues from photographs.">
@@ -73,6 +73,13 @@
         <p class="body"><b>Training helps only the weaker backbone.</b> A linear probe gains CLIP
         3.1 points and DINOv2 nothing at all. A supervised layer can partly repair an embedding
         space not laid out for instance detail; it has nothing to add to one that is.</p>
+      </div>
+      <div class="finding">
+        <div class="n blue">94.0%</div><div class="u">with geometry checked</div>
+        <p class="body"><b>Checking geometry is the one thing that helped.</b> Matching keypoints on
+        the top ten candidates and fitting a homography lifts DINOv2 from 93.1% to 94.0% and CLIP
+        from 82.9% to 86.3% — the only accuracy gain here that came from method rather than from
+        more data. Replacing SIFT with a learned matcher widens it further.</p>
       </div>
       <div class="finding">
         <div class="n">116 / 1691</div><div class="u">errors, dinov2</div>
@@ -234,6 +241,80 @@
   </section>
 
   <section>
+    <h2>Can anything make it better?</h2>
+    <div class="prose">
+      <p>Everything above uses a frozen embedding and a cosine distance. Four things were tried on
+      top of that, and the pattern in which ones worked is more useful than any single number:
+      <strong>the wins come from adding a different kind of evidence, and the failures come from
+      adding more of the same kind.</strong></p>
+      <p>A cosine distance compares <em>appearance</em>, which near-identical statues share. Two
+      photographs of the same physical object additionally admit a consistent geometry between their
+      matched keypoints, and two photographs of different-but-similar statues do not. So the top ten
+      candidates get their keypoints matched and a homography fitted, and the surviving inlier count
+      is blended into the similarity.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <caption>Top-1 accuracy with geometric verification blended into the ranking.</caption>
+        <thead><tr><th>Method</th><th>DINOv2</th><th>CLIP</th></tr></thead>
+        <tbody>
+          <tr><td>Cosine only</td><td>93.1%</td><td>82.9%</td></tr>
+          <tr><td>+ geometric verification</td><td class="win">94.0%</td><td class="win">86.3%</td></tr>
+          <tr><td>Gain</td><td>+0.9</td><td>+3.4</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><b>This is the only accuracy gain here that came from method rather than from more data.</b>
+      It helps the weaker backbone more, which is the same asymmetry the trained classifier showed —
+      and 79% of the gain survives when the query&rsquo;s own photographer is withheld, so it is not
+      simply recognising near-duplicate shots from one visit.</p>
+      <p>It stops there for a reason that is worth stating plainly: <strong>re-ranking can only
+      reorder what the first stage proposed.</strong> With a query&rsquo;s own photographer withheld,
+      the correct statue is outside DINOv2&rsquo;s top ten for about one query in ten, and no amount
+      of verification rescues a statue that was never a candidate.</p>
+    </div>
+    <div class="callout">
+      <h3>A bigger model moves the first guess, not the ceiling</h3>
+      <p>The obvious way to raise that ceiling is a bigger embedding. DINOv2 at <strong>3.5&times;
+      the parameters</strong> moves recall at ten candidates by <strong>0.17 points</strong> —
+      22 queries won against 20 lost, which is as close to no difference as a paired comparison
+      gets. The statues the first stage loses are not found by a larger model of the same family.</p>
+      <p>What scale does buy is different and narrower: <strong>2.6 points</strong> at rank one when
+      the query&rsquo;s own photographer is withheld, against 0.8 when it is not. Capacity buys
+      robustness to <em>who took the photograph</em> rather than the ability to retrieve what was
+      missed. Adding the register fix that cleans DINOv2&rsquo;s feature maps costs accuracy at both
+      sizes.</p>
+    </div>
+    <div class="prose">
+      <p>The geometry itself, though, turned out to be under-measured. The verification above uses
+      SIFT — a hand-designed detector from 1999, on bronze, which is close to its worst case:
+      specular, low-texture, few stable corners. Swapping it for a learned matcher and changing
+      nothing else in the protocol:</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <caption>Top-1 accuracy with the query&rsquo;s own photographer withheld, 1,157 queries.</caption>
+        <thead><tr><th>Verification</th><th>Best top-1</th><th>vs. cosine alone</th></tr></thead>
+        <tbody>
+          <tr><td>None (cosine only)</td><td>81.9%</td><td>—</td></tr>
+          <tr><td>SIFT</td><td>82.3%</td><td>+0.4</td></tr>
+          <tr><td>DISK + LightGlue</td><td class="win">84.6%</td><td>+2.8</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><b>The learned matcher wins 34 queries and loses 7</b> against SIFT, which is decisive
+      rather than suggestive. It matters beyond the number: an earlier version of this page would
+      have said <em>local features cannot retrieve these statues</em>, when what had actually been
+      measured was that <em>SIFT</em> cannot. Push the blend until geometry almost entirely
+      overrides appearance and SIFT collapses to 64.0% while the learned matcher holds 80.1% —
+      barely under the unaided cosine baseline, on evidence that never looks at the embedding at
+      all.</p>
+    </div>
+  </section>
+
+  <section>
     <h2>What this does not show</h2>
     <div class="limits">
       <div class="limit"><span><b>306 classes is still not the whole city.</b> Extrapolated to
@@ -270,7 +351,11 @@
       statue outside the 306 still returns its nearest neighbours. Thresholding similarity to reject
       unknown statues worked at 23 classes and does not work at 306: DINOv2's false-acceptance rate
       rises from 4% to 38% at the same operating point, because an absent statue now has 305 chances
-      to find a lookalike instead of 22.</span></div>
+      to find a lookalike instead of 22. <strong>Geometry does not rescue it either</strong> — the
+      same inlier count that fixes accuracy buys rejection 0.65 AUROC points, and four-fifths of
+      unknown statues are still accepted. Both signals this project computes have now been measured
+      for it and both fail, so naming a statue for every photograph is a position rather than an
+      oversight.</span></div>
       <div class="limit"><span><b>Most positions are inferred, not stated.</b> 271 of the 294 placed
       statues are located from where photographers stood rather than from a Wikidata coordinate.
       Checked against the statues that have both, the median error is 9 m — but it is an inference,

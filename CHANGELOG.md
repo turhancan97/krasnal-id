@@ -12,6 +12,17 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **The published findings page covers §10 to §15, which it did not.** `docs/findings.html` stopped
+  at the error analysis, so everything about what *raises* accuracy existed only for a reader of
+  `RESULTS.md` — geometric verification, the recall ceiling, the capacity result and the matcher
+  comparison were all invisible on the site. A new section frames them by the pattern rather than
+  as a list: the wins come from adding a different *kind* of evidence, the failures from adding
+  more of the same kind. It also states the correction in its own words, that an earlier version of
+  the page would have said local features cannot retrieve these statues when what had been measured
+  was that SIFT cannot. The summary grid gains a card for the 94.0% geometric gain, and the
+  "no I don't know" limitation — written before §12 — now records that geometry fails at rejection
+  too.
+
 - **`RESULTS.md` section 15: §14's finding is about SIFT, not about local features.**
   `disk-lightglue` through §10's protocol unchanged reaches **84.62% against SIFT's 82.28%** at
   photographer-disjoint top-1, 34 queries won to 7 lost, p = 2.5 × 10⁻⁵. Weight zero is 81.85% for
