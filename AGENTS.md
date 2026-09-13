@@ -544,6 +544,21 @@ that survived the swap, not as the shipped figures.
 - Every number in `RESULTS.md` must be traceable to a committed command and a `results/` artifact.
   Extrapolations beyond the measured range are labeled as such, together with why they are
   optimistic.
+- **An experiment with genuinely separate arms names them in the filename**, as
+  `{kind}-{variant}-{backbone}.json`. Sharing one name left the overwrite guard as the only thing
+  keeping two measurements apart, and that guard is blind to an artifact written before it existed
+  — which is how `rerank_ablation-dinov2.json` came to hold a photographer-disjoint run while §10's
+  table cites the non-disjoint one, leaving a published number with no artifact behind it. The
+  variant comes from the configuration through `artifact_variant`, so the pre-flight guard and the
+  writer cannot disagree about where a run belongs.
+  - **Only where flipping the flag changes what an existing metric name means.** `rerank_ablation`
+    qualifies: without the flag its rows cover all 1,691 queries, with it the `all` arm is the
+    1,157-query answerable subset, so the same key means two things. `open_set_geometry` does not —
+    its flag *appends* a disjoint arm beside an unchanged standard one — and giving it a variant
+    would rename an artifact §12 cites for no protection.
+  - **An experiment the visualizations glob must never declare one.** `pool_size_ablation-*.json`
+    and `open_set-*.json` are globbed and expect exactly one file per backbone; a variant would
+    silently hand them two. A test pins that those groups declare none.
 - **Every result artifact records the experiment group that produced it**, in a `configuration`
   field. Before that, an artifact could not say which pool sizes, weights or cut-offs it used, and
   two runs of one experiment under different settings were indistinguishable — the filename carries

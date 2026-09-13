@@ -17,15 +17,32 @@ class ExperimentArtifactError(ValueError):
     """Raised when a result artifact cannot be written."""
 
 
+def result_variant(experiment: object) -> str | None:
+    """Return the artifact variant an experiment configuration declares, if any.
+
+    Read from the configuration rather than passed around, so the pre-flight guard
+    and the write path cannot disagree about which file a run belongs in.
+    """
+    variant = getattr(experiment, "artifact_variant", None)
+    return variant if isinstance(variant, str) and variant else None
+
+
 def experiment_result_path(results_dir: Path, result: ExperimentResult) -> Path:
     """Return the deterministic artifact path for one experiment run.
 
-    The name carries the experiment and the backbone and nothing else, because
-    the visualizations glob it — `pool_size_ablation-*.json` and
-    `open_set-*.json` — and expect one file per backbone. That is why differing
-    settings are refused at write time rather than given separate filenames.
+    The name carries the experiment, an optional variant and the backbone. The
+    variant exists because two genuinely different measurements — a re-ranking
+    sweep with the photographer withheld and one without — are not two settings of
+    one run, and making them share a filename left the overwrite guard as the only
+    thing keeping them apart. That guard is blind to an artifact written before it
+    existed, which is exactly how the run section 10 cites was lost.
+
+    **Only experiments the visualizations do not glob may declare a variant.**
+    `pool_size_ablation-*.json` and `open_set-*.json` are globbed and expect one
+    file per backbone, so those configurations declare none and a test pins it.
     """
-    return results_dir / f"{result.experiment}-{result.backbone}.json"
+    stem = "-".join(part for part in (result.experiment, result.variant, result.backbone) if part)
+    return results_dir / f"{stem}.json"
 
 
 def _recorded_configuration(path: Path) -> tuple[bool, dict[str, object] | None]:
@@ -84,7 +101,10 @@ def guard_result_path(config: "AppConfig") -> None:
     kind = getattr(config.experiment, "kind", None)
     if not isinstance(kind, str):  # pragma: no cover - every group declares one
         return
-    path = config.paths.results_dir / f"{kind}-{config.backbone.name}.json"
+    stem = "-".join(
+        part for part in (kind, result_variant(config.experiment), config.backbone.name) if part
+    )
+    path = config.paths.results_dir / f"{stem}.json"
     present, existing = _recorded_configuration(path)
     if not present or existing is None:
         return

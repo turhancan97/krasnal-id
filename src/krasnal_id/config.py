@@ -312,6 +312,15 @@ class RerankAblationConfig(BaseModel):
             raise ValueError("top_k_metrics values must be positive")
         return self
 
+    @property
+    def artifact_variant(self) -> str | None:
+        """Name the arm this run measures, so the two do not share a filename.
+
+        Withholding the query's own photographer is a different measurement, not a
+        different setting of one -- see §6.4.
+        """
+        return "disjoint" if self.photographer_disjoint else None
+
 
 class RecallCurveConfig(BaseModel):
     """First-stage recall diagnostic settings."""
@@ -385,6 +394,15 @@ class MatcherRerankConfig(BaseModel):
         if len(set(self.matchers)) != len(self.matchers):
             raise ValueError("matchers cannot contain duplicates")
         return self
+
+    @property
+    def artifact_variant(self) -> str | None:
+        """Name the arm this run measures, so the two do not share a filename.
+
+        Withholding the query's own photographer is a different measurement, not a
+        different setting of one -- see §6.4.
+        """
+        return "disjoint" if self.photographer_disjoint else None
 
 
 class GeometryFirstConfig(BaseModel):

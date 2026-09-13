@@ -406,6 +406,7 @@ def run_rerank_ablation(config: AppConfig) -> ExperimentResult:
 
     return ExperimentResult(
         experiment="rerank_ablation",
+        variant=config.experiment.artifact_variant,
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,

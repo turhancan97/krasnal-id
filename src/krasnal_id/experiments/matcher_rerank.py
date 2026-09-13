@@ -217,6 +217,7 @@ def run_matcher_rerank(config: AppConfig) -> ExperimentResult:
 
     return ExperimentResult(
         experiment="matcher_rerank",
+        variant=config.experiment.artifact_variant,
         backbone=config.backbone.name,
         created_at=datetime.now(UTC),
         seed=settings.seed,

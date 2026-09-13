@@ -33,6 +33,14 @@ class ExperimentResult(BaseModel):
     # how a k=50 sweep came within one command of overwriting a k=10 result.
     # Optional so artifacts written before this field remain readable.
     configuration: dict[str, Any] | None = None
+    # What distinguishes this run's artifact from another run of the same
+    # experiment on the same backbone. Only an experiment with genuinely separate
+    # arms sets it -- a re-ranking sweep is a different measurement with the
+    # photographer withheld than without, and section 6.4 used to make those two
+    # share a filename and rely on the overwrite guard to keep them apart. That
+    # guard cannot help an artifact written before it existed, which is how the
+    # non-disjoint run section 10 cites came to be overwritten by a disjoint one.
+    variant: str | None = Field(default=None, min_length=1)
 
 
 class ConfusionPair(BaseModel):

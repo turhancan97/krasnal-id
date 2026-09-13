@@ -82,6 +82,17 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **A result artifact names its arm, so two measurements stop sharing a filename (§6.4).**
+  `rerank_ablation-dinov2.json` held a photographer-disjoint run while `RESULTS.md` §10's table
+  cites the non-disjoint one, so a published number had no artifact behind it — the overwrite guard
+  was the only thing separating them, and it is blind to artifacts written before it existed.
+  Results now take an optional `variant` and land at `{kind}-{variant}-{backbone}.json`, derived
+  from the configuration through `artifact_variant` so the pre-flight guard and the writer agree.
+  Only `rerank_ablation` and `matcher_rerank` declare one, because only there does the flag change
+  what an existing metric name means; `open_set_geometry` merely appends an arm, and the globbed
+  experiments must declare none or `visualize` would find two files per backbone, which a test
+  pins.
+
 - **CI's type check could not see `torch`, and the local one could.** The matcher imports torch
   directly rather than through `import_optional_ml`, so mypy resolved it here and failed on the
   runner — CI deliberately omits the `ml` extra to keep the suite from downloading model weights.

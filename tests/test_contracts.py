@@ -17,6 +17,7 @@ from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.experiments.artifacts import (
     ExperimentArtifactError,
     experiment_result_path,
+    result_variant,
     write_experiment_result,
 )
 from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
@@ -194,3 +195,57 @@ def test_an_unreadable_file_is_not_mistaken_for_a_run(tmp_path: Path) -> None:
     write_experiment_result(path, _rerank_result(10))
 
     assert json.loads(path.read_text(encoding="utf-8"))["configuration"]["top_k"] == 10
+
+
+def test_an_arm_gets_its_own_artifact_rather_than_a_shared_one() -> None:
+    """Two measurements that share a filename rely on the guard to stay apart.
+
+    The guard is blind to an artifact written before it existed, which is how the
+    non-disjoint re-ranking run section 10 cites was overwritten by a disjoint one.
+    A variant in the name means both can exist at once.
+    """
+    plain = ExperimentResult(
+        experiment="rerank_ablation",
+        backbone="dinov2",
+        created_at=datetime.now(UTC),
+        seed=1,
+        metrics=(),
+    )
+    disjoint = plain.model_copy(update={"variant": "disjoint"})
+
+    assert experiment_result_path(Path("results"), plain).name == "rerank_ablation-dinov2.json"
+    assert (
+        experiment_result_path(Path("results"), disjoint).name
+        == "rerank_ablation-disjoint-dinov2.json"
+    )
+
+
+def test_the_guard_and_the_writer_agree_on_where_a_run_belongs() -> None:
+    """Derived from the configuration in both places, or the pre-flight is useless."""
+    for overrides, expected in (
+        (["experiment.photographer_disjoint=false"], "rerank_ablation-dinov2.json"),
+        (["experiment.photographer_disjoint=true"], "rerank_ablation-disjoint-dinov2.json"),
+    ):
+        config = load_config(["experiment=rerank_ablation", *overrides])
+        result = ExperimentResult(
+            experiment="rerank_ablation",
+            backbone=config.backbone.name,
+            created_at=datetime.now(UTC),
+            seed=1,
+            metrics=(),
+            variant=result_variant(config.experiment),
+        )
+
+        assert experiment_result_path(config.paths.results_dir, result).name == expected
+
+
+def test_a_globbed_experiment_never_declares_a_variant() -> None:
+    """`visualize` globs these and expects exactly one file per backbone.
+
+    A variant in those names would silently give it two, so the experiments whose
+    artifacts are globbed must not declare one.
+    """
+    for group in ("pool_size_ablation", "open_set"):
+        experiment = load_config([f"experiment={group}"]).experiment
+
+        assert result_variant(experiment) is None, group
