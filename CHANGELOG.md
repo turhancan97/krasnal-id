@@ -32,6 +32,30 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   extra and outside CI, because it fetches weights at first use and the test suite must stay
   offline. `kornia.io` is unusable against its pinned Rust backend, so images are read with
   OpenCV like everywhere else in the pipeline.
+- **The re-ranking sweep journals its evidence, and the weights are not part of its identity.**
+  Computing inliers costs hours; sweeping blend weights over them costs milliseconds. The journal's
+  digest therefore covers the dataset, the backbone that ranked the candidates, the matcher, its
+  keypoint budget, how many candidates were verified and whether the photographer was withheld —
+  and deliberately **not** the weights, so a new sweep reuses an old journal instead of
+  recomputing. It also makes the run resumable per query. This was learned by paying for it: the
+  first comparison reported the learned matcher's best at the edge of its weight range, and
+  extending that range meant recomputing 1.8 hours of evidence that had never been saved.
+- **The weight range now runs to 2.0, keeping §7.6's weights as a subset.** SIFT peaks at 0.05 and
+  declines, but `disk-lightglue` was still climbing at 0.2, so its reported best was a lower bound
+  rather than a peak — which is exactly the shape of result a reviewer flags.
+- **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** One paper to
+  *Scientific Reports* carrying the dataset and the analysis together. *Scientific Data* was
+  considered and rejected on a fact about the venue rather than a judgement: its guidelines state
+  that "Data Descriptors should not contain results, discussion, or analyses", which is most of
+  §7. Splitting into a Descriptor plus an analysis paper was the first plan and was dropped the
+  same day — the corpus is modest at 1,691 images and the analysis paper would describe its
+  construction anyway, so splitting writes the Methods twice for two review cycles. The entry
+  fixes the spine (the photographer gap as a claim about benchmark construction, not a case study
+  of Wrocław dwarves), maps the paper's sections onto material that already exists, records the
+  fieldwork as stated future work with the reviewer objection named and its defence, and flags
+  two things to confirm before writing: the venue's scope and acceptance criteria, which sit
+  behind an authentication redirect and were not read, and whether an article-processing charge
+  applies.
 
 ### Fixed
 
@@ -58,22 +82,6 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   exist for, and bronze is close to SIFT's worst case besides. `RESULTS.md` §14 now states its
   scope in the section itself, finding 9 says SIFT, and `AGENTS.md` §7.10 carries the same
   qualification with a pointer to the experiment that tests whether it generalises.
-
-### Added
-
-- **A publication plan, recorded before any writing (`AGENTS.md` §11.1 and §8).** One paper to
-  *Scientific Reports* carrying the dataset and the analysis together. *Scientific Data* was
-  considered and rejected on a fact about the venue rather than a judgement: its guidelines state
-  that "Data Descriptors should not contain results, discussion, or analyses", which is most of
-  §7. Splitting into a Descriptor plus an analysis paper was the first plan and was dropped the
-  same day — the corpus is modest at 1,691 images and the analysis paper would describe its
-  construction anyway, so splitting writes the Methods twice for two review cycles. The entry
-  fixes the spine (the photographer gap as a claim about benchmark construction, not a case study
-  of Wrocław dwarves), maps the paper's sections onto material that already exists, records the
-  fieldwork as stated future work with the reviewer objection named and its defence, and flags
-  two things to confirm before writing: the venue's scope and acceptance criteria, which sit
-  behind an authentication redirect and were not read, and whether an article-processing charge
-  applies.
 
 ## [0.17.0] - 2026-09-12
 
