@@ -1078,6 +1078,35 @@ candidates, 63.1%, is below appearance's at one.
   manifest, the backbone, `max_keypoints` **and a schema version** — without the last, changing
   what a row means would let a resume reinterpret old rows, which is silent corruption.
 
+### 7.11 Matcher comparison result (2026-09-13)
+
+**§7.10's finding is about SIFT, not about local features.** `disk-lightglue` through §7.6's
+protocol unchanged reaches **84.62% against SIFT's 82.28%** at photographer-disjoint top-1, winning
+34 queries and losing 7, p = 2.5 x 10^-5. The qualification committed to §7.10 before this ran was
+necessary rather than cautious.
+
+- **The peak is interior, because the first run's was not.** That run swept to 0.2 and reported
+  `disk-lightglue`'s best there with the curve still rising — a lower bound presented as a maximum,
+  and exactly what a reviewer of §11.1 would flag. Extending to 2.0 shows it turning over after
+  0.2, so 84.62% is real.
+- **The far end of the sweep is the more useful finding.** At weight 2.0 the blend is almost pure
+  geometry, so that column approximates ranking the shortlist by correspondences alone: SIFT falls
+  to 63.96%, `disk-lightglue` holds **80.12%**, barely under the unaided cosine baseline of 81.85%.
+  §7.10 measured SIFT retrieving at 43.5% against appearance's 90.8%. **Re-running §7.10's
+  first-stage question with a learned matcher is now motivated rather than speculative.**
+- **Top-5 moves 0.52 points and is not significant** (7 wins to 1, p = 0.07). Re-ranking reorders
+  within a shortlist, so its effect lives at rank one and is nearly gone by rank five. Reporting it
+  keeps the top-1 gain from reading as a general improvement.
+- **The control is what makes the comparison legible.** Weight zero is 81.85% for both matchers by
+  construction, and SIFT through the new code path reproduces §7.6's published disjoint figures
+  exactly — 81.85% and 82.28%. Without that check the comparison would be against a
+  reimplementation rather than against the published result.
+- **Four kills and one resume.** The run was stopped by a memory watchdog, twice by host moves, and
+  once by an unusable GPU. The journal added after the second of those is what let the fourth
+  restart compute only 234 of 1,157 queries instead of all of them. The evidence is journalled and
+  the **weights are deliberately excluded from its identity**, because inliers cost hours and the
+  sweep over them costs milliseconds.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1200,8 +1229,12 @@ neither appearance nor geometry provides.
   560, and rescues 12.1% of what appearance misses — about one point of recall for 1,690
   homographies a query. What it does **not** answer is whether a *learned* matcher does better,
   which is the next bullet.
-- **Does a learned matcher change §7.10's answer, and §7.6's?** — taken on 2026-09-12, in
-  progress. §7.10 tested SIFT and its conclusion was written as though it were about local
+- ~~**Does a learned matcher change §7.10's answer, and §7.6's?**~~ — answered on 2026-09-13,
+  **yes**; see §7.11. `disk-lightglue` re-ranks to 84.62% against SIFT's 82.28% disjoint top-1,
+  34 wins to 7, p = 2.5 x 10^-5, so §7.10's result is about SIFT. What it opens is the obvious
+  follow-up: at a near-pure-geometry blend weight the learned matcher holds 80.12% where SIFT falls
+  to 63.96%, so **§7.10's first-stage sweep should be re-run with it** — the evidence journal makes
+  that a matter of compute rather than of new code. §7.10 tested SIFT and its conclusion was written as though it were about local
   features generally, which is an overclaim a reviewer of the §11.1 paper would find immediately:
   SIFT is hand-designed, from 1999, and the regime where it collapsed — wide baseline, changed
   illumination, changed sensor — is precisely what SuperPoint+LightGlue and LoFTR were built for.

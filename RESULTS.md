@@ -766,6 +766,57 @@ krasnal-id experiment geometry-first
 The sweep is 1,955,330 homographies and takes about two hours; it journals each query as it
 finishes and resumes where it stopped.
 
+## 15. Is that a fact about local features, or about SIFT?
+
+Section 14 concluded that local features cannot retrieve, and it measured SIFT to get there. SIFT
+is a hand-designed detector from 1999; bronze is close to its worst case, being specular and
+low-texture; and the regime where it collapsed — wide baseline, changed illumination, changed
+sensor — is precisely what learned matchers were built for. So the qualification in section 14 is
+load-bearing, and this is the experiment that tests it.
+
+`disk-lightglue` replaces SIFT in section 10's protocol, unchanged. Same queries, same candidate
+statues in the same order, same blend weights, same RANSAC verification — the columns differ only
+in where the correspondences came from, and the two are compared **paired query by query**.
+
+| blend weight | 0 | 0.02 | 0.05 | 0.1 | **0.2** | 0.3 | 0.5 | 1.0 | 2.0 |
+|---|---|---|---|---|---|---|---|---|---|
+| SIFT | 81.85 | 82.20 | **82.28** | 82.20 | 81.33 | 79.95 | 77.44 | 72.08 | 63.96 |
+| DISK+LightGlue | 81.85 | 82.97 | 84.10 | 84.53 | **84.62** | 84.44 | 84.10 | 82.45 | 80.12 |
+
+*Top-1, photographer-disjoint, 1,157 queries. Weight zero is the control and is identical by
+construction, so every difference below it is the correspondences alone.*
+
+**The learned matcher is better, and not marginally.** Its best is **84.62% against SIFT's
+82.28%**, a gain of 2.33 points, winning 34 queries and losing 7 — p = 2.5 × 10⁻⁵. Section 14's
+finding is therefore about SIFT rather than about local features, and stating it the other way
+would have been wrong.
+
+**The peak is interior to the sweep, which is why the sweep was extended.** The first run stopped
+at 0.2 and reported the best there while the curve was still climbing, which is a lower bound
+wearing a peak's clothing. Running to 2.0 shows `disk-lightglue` turning over after 0.2, so 84.62%
+is the real maximum.
+
+**What the far end of the sweep shows is arguably the more interesting result.** At weight 2.0
+geometry dominates the blend almost entirely, so that column is close to ranking the top ten by
+correspondences alone. SIFT falls to **63.96%** there; `disk-lightglue` holds **80.12%** — barely
+below the *unaided* cosine baseline of 81.85%. Section 14 measured SIFT retrieving at 43.5% where
+appearance managed 90.8%; this suggests a learned matcher would not collapse nearly so far, and
+makes re-running section 14's first-stage question with `disk-lightglue` the obvious next
+experiment rather than a speculative one.
+
+**At top-5 the gain is small and not significant**: 89.63% against 89.11%, 7 wins to 1,
+p = 0.07. That is what re-ranking is: it reorders within a shortlist, so its effect concentrates at
+rank one and largely vanishes by rank five.
+
+Reproduce with:
+
+```bash
+krasnal-id experiment matcher-rerank
+```
+
+The evidence is journalled per query and the blend weights are deliberately not part of its
+identity, so re-sweeping weights over an existing run costs nothing.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,

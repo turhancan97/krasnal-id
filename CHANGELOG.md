@@ -12,6 +12,18 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`RESULTS.md` section 15: §14's finding is about SIFT, not about local features.**
+  `disk-lightglue` through §10's protocol unchanged reaches **84.62% against SIFT's 82.28%** at
+  photographer-disjoint top-1, 34 queries won to 7 lost, p = 2.5 × 10⁻⁵. Weight zero is 81.85% for
+  both by construction, and SIFT through the new path reproduces §10's published disjoint figures
+  exactly, so the difference is the correspondences alone. The sweep runs to 2.0 rather than
+  stopping at 0.2, which matters: the first run reported the learned matcher's best at the edge of
+  its range while the curve was still rising, and the extension shows it genuinely turning over
+  after 0.2. The far end is the more useful part — at weight 2.0 the blend is near-pure geometry,
+  where SIFT falls to 63.96% and `disk-lightglue` holds 80.12%, barely under the unaided cosine
+  baseline, which makes re-running §14's first-stage question with a learned matcher motivated
+  rather than speculative. Top-5 gains 0.52 points and is not significant, as re-ranking should be.
+
 - **`experiment matcher-rerank`: several local matchers through one re-ranking protocol.** §14
   concluded that local features cannot retrieve, on the evidence of SIFT alone, and this is the
   seam that lets the question be asked of something else. Every matcher sees the same queries, the
