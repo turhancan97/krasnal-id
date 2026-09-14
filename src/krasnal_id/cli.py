@@ -108,6 +108,7 @@ from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 from krasnal_id.viz.match_plot import MatchPlotError, draw_match_figure, match_pair
 from krasnal_id.viz.open_set_plot import create_open_set_plot
+from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, draw_all
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 
 
@@ -1188,6 +1189,30 @@ def visualize_open_set(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Open-set visualization complete: figure={path}")
+
+
+@visualize_app.command("paper-figures")
+def visualize_paper_figures(
+    output_dir: Annotated[Path, typer.Option(help="Where to write the figures.")] = Path(
+        "paper/figures"
+    ),
+    override: OverrideOption = None,
+) -> None:
+    """Draw the manuscript's data-derived figures at publication density.
+
+    The manuscript is untracked; this command is not. A figure nobody can
+    regenerate from a committed command is a figure nobody can check.
+    """
+    config = load_config(list(override or []))
+    configure_logging(config.logging)
+    try:
+        written = draw_all(Path(config.paths.results_dir), output_dir)
+    except PaperFigureError as error:
+        typer.echo(f"Paper figure error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for path in written:
+        typer.echo(f"  {path}")
+    typer.echo(f"Paper figures complete: {len(written)} written at {PUBLICATION_DPI} dpi")
 
 
 @visualize_app.command("matches")

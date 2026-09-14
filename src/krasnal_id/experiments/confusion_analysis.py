@@ -25,7 +25,11 @@ from krasnal_id.statistics import separability_auroc
 # One installation spans tens of metres; a neighbourhood spans hundreds. Reporting
 # both says whether co-location acts at the scale of a shared plinth or a shared
 # street, which the aggregate rank statistic cannot distinguish.
-SEPARATION_BANDS_METRES = (100.0, 300.0)
+# Distance bands the confused-versus-competing comparison is reported at. Two
+# bands state the effect; six show its shape, which is what §3a actually claims
+# -- that co-location acts at the scale of a shared plinth and has decayed to
+# nothing by a neighbourhood. The cost is a few array comparisons.
+SEPARATION_BANDS_METRES = (50.0, 100.0, 200.0, 300.0, 500.0, 1000.0)
 
 
 class ConfusionAnalysisError(ValueError):
