@@ -1457,20 +1457,39 @@ that would bring it back.
   conclusions, which is the shape this work actually has. **Unverified**: its scope and
   soundness-based acceptance criteria were not read, because the page sits behind an
   authentication redirect. Confirm before committing.
-- **Lead on the photographer gap, not on the dwarves.** "Instance-retrieval benchmarks that do not
-  record who photographed each image systematically overestimate, and here is a corpus that
-  measures by how much" is a claim about other people's benchmarks — §7.5 puts it at 2.6 points
-  for DINOv2 and 13.2 for CLIP. "How well models identify Wrocław dwarves" is a case study with a
-  much smaller readership. Same evidence, different spine.
+- **Lead on the identification result, not on the photographer gap** — reversed on 2026-09-14,
+  before any drafting. The rejected alternative was to lead on benchmark construction:
+  "instance-retrieval benchmarks that do not record who photographed each image systematically
+  overestimate, and here is a corpus that measures by how much", which §7.5 puts at 2.6 points for
+  DINOv2 and 13.2 for CLIP. That is a claim about other people's benchmarks and would reach further
+  — but it makes the corpus a vehicle for a methodological complaint rather than the contribution
+  it is, and the author's decision is that the work is the identification result. Kept here as a
+  rejected alternative, the way this section keeps *Scientific Data*, because it is a live option
+  if a reviewer asks what the paper generalises to.
+  - **The reversal has a register cost that must be paid in the writing.** Four sections read as
+    benchmark critique by default and have to be turned: §7.5 becomes *expected deployed accuracy*
+    rather than an indictment of the corpus; §7.9 is reported as a ceiling result with its
+    photographer reading moved to Supplementary; §7.10 gets two sentences; and §7.8's best
+    generalisable line belongs in the Discussion rather than buried in a rejection experiment.
+    `paper/SKELETON.md` carries these as explicit warnings.
 - **The negative results are an asset here and would not be at a conference.** Rejection fails at
   scale (§7.2, §7.3), geometry cannot reject (§7.8), capacity does not help (§7.9), geometry
   cannot be a first stage (§7.10), and larger `top_k`, fusion and query expansion all fail (§7.7).
   A journal accepting on soundness is a friendlier home for that than a venue rewarding positive
   results, and §7.3's overturning of this project's own published conclusions is a point in its
   favour rather than an embarrassment.
-- **Sections map onto what already exists.** `RESULTS.md` §1-§14 is the Results; `AGENTS.md` §5
+- **Sections map onto what already exists.** `RESULTS.md` §1-§15 is the Results; `AGENTS.md` §5
   and §6 are the Methods; §5.11-§5.13 and the three live deposits are Data Availability; §10
   conventions and the DOI are Code Availability.
+- **The material does not fit, and the selection is recorded rather than improvised.**
+  *Scientific Reports* allows 4,500 words of main text and **eight display items, figures and
+  tables combined**; `RESULTS.md` is ~9,112 words with 20 tables. `paper/SKELETON.md` fixes the
+  budget — Introduction 750, Results 2,900 over seven subheadings, Discussion 850 — names the eight
+  items, and lists what moves to Supplementary (S1-S14) against what is cut outright. §7 is cut:
+  it is a meta-result about this project's own earlier release with no home under this spine.
+- **`paper/` is deliberately untracked.** The manuscript is drafted outside this repository's
+  history and vendors the Springer Nature template, which is not ours to redistribute. It needs its
+  own backup; nothing here protects it.
 - **The fieldwork is future work stated in the paper, not a prerequisite.** Every query is a
   Commons upload, so the domain gap to a street photograph is unmeasured, and `RESULTS.md`
   Limitations already calls it the largest untested gap. **Expect a reviewer to raise it first.**

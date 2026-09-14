@@ -10,6 +10,32 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- **The manuscript scaffold, in an untracked `paper/` (`AGENTS.md` §11.1).** Springer Nature
+  template v3.1 with `\documentclass[pdflatex,sn-nature]{sn-jnl}`, the option their own sample
+  labels for Nature Portfolio journals, plus a vendored `tectonic` so the manuscript compiles
+  without a system TeX installation — there was none. `main.tex` compiles with **zero LaTeX
+  errors**; the two hyperref bookmark warnings that remain are emitted by Springer Nature's own
+  unmodified sample, so "no warnings" cannot be met using their template and chasing it is wasted
+  effort.
+- **`paper/SKELETON.md`, the plan the prose gets written from.** *Scientific Reports* allows 4,500
+  words and eight display items against `RESULTS.md`'s ~9,112 words and 20 tables, so the paper is
+  a selection problem: the file fixes the budget (Introduction 750, Results 2,900 over seven
+  subheadings, Discussion 850), names the eight items, and records what moves to Supplementary
+  against what is cut. Every number in it was extracted from a named `results/*.json` artifact
+  rather than quoted from `RESULTS.md` prose — §6.4's rule applied to the manuscript.
+
+### Changed
+
+- **§11.1's spine is reversed: the paper leads on the identification result, not the photographer
+  gap.** The benchmark-construction framing reaches further but makes the corpus a vehicle for a
+  methodological complaint rather than the contribution it is. It is kept as a rejected
+  alternative, and the reversal's register cost is recorded — four sections read as benchmark
+  critique by default and have to be turned in the writing. The section map also said
+  `RESULTS.md` §1-§14; §15 has existed since 2026-09-13.
+
+
 ## [0.18.0] - 2026-09-14
 
 §7.10's conclusion was a fact about SIFT, and this release is what finding that out cost and
