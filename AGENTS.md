@@ -1152,7 +1152,10 @@ more defects that only an external platform could reject. `0.17.0` closes both b
 open and both answers are negative: §7.9 finds the first stage's limit is not capacity, and §7.10
 finds SIFT cannot be the first stage. It is the release that exhausts this section's
 cheap ideas — what remains is blocked on photographs, on a gated checkpoint, or on a signal
-neither appearance nor geometry provides.
+neither appearance nor geometry provides. `0.18.0` then reopens one of them and answers it
+properly: §7.11 shows §7.10 was a fact about SIFT, since `disk-lightglue` re-ranks to 84.62%
+against its 82.28%. It also ships the first figure that shows *why* a match works rather than how
+much, and closes the browser version of it on measurement.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

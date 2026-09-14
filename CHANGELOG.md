@@ -10,6 +10,43 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-09-14
+
+§7.10's conclusion was a fact about SIFT, and this release is what finding that out cost and
+bought.
+
+That section concluded local features cannot retrieve, having measured one hand-designed detector
+from 1999 on bronze, which is close to its worst case. Swapping it for `disk-lightglue` through
+§7.6's protocol unchanged takes photographer-disjoint re-ranking from **82.28% to 84.62%**, 34
+queries won against 7 lost, p = 2.5 × 10⁻⁵. The claim is now stated as being about SIFT
+everywhere it appears, which it should have been from the start.
+
+Three pieces of machinery came out of it, each because something went wrong first. Matchers sit
+behind one interface, so the question can be asked of a third; the evidence is journalled per
+query with the blend weights deliberately outside its identity, because the first run reported a
+best at the edge of its sweep and extending that range cost 1.8 hours of recomputation that should
+have been free; and a run now probes whether the GPU can actually execute a kernel, because
+`torch.cuda.is_available()` returned True on a card this build has no kernels for and took a
+completed SIFT arm down with it.
+
+`visualize matches` draws what a matcher matched. It is the first figure here that shows *why* a
+statue was identified rather than how often, and it needs two image files and nothing else — no
+manifest, no embeddings, no dataset — which makes it the smallest way into this code. The
+published figure is chosen from §7.11's wins rather than by eye and lands on the family this
+project keeps failing: one Słupnik, two photographers, SIFT finding 5 correspondences where
+`disk-lightglue` finds 123.
+
+The same feature is closed in the browser, on two measurements rather than on a guess. The shipped
+thumbnails are ~300 px, where that 15× margin collapses to 1.7× and a visitor would be shown 39
+confident lines drawn to the wrong statue; and XFeat, the matcher small enough to ship, gives the
+correct statue more inliers than its best competitor 9 times in 20 against SIFT's 12.
+
+Two records were repaired. `docs/findings.html` had stopped at the error analysis, so everything
+about what *raises* accuracy was invisible to anyone not reading `RESULTS.md`. And a result
+artifact now names its arm, because `rerank_ablation-dinov2.json` held a photographer-disjoint run
+while §10's table cited the non-disjoint one — a published number with nothing behind it.
+
+
 ### Added
 
 - **`krasnal-id visualize matches`: draw what a matcher actually matched.** Every other number here

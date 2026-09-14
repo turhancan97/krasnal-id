@@ -12,14 +12,14 @@ would help.
 
 ## Project status
 
-Current version **0.17.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.18.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
-DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and thirteen experiments — the full-pool
+DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and fourteen experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
 comparison, confusion analysis, open-set rejection, geometric rejection, the camera-origin query
 gap, the photographer gap, geometric re-ranking, the first stage's recall, geometry as a first
-stage, and the field-query gap that waits on photographs — plus embedding visualization,
-single-image retrieval, a local demo and a published in-browser one.
+stage, the local-matcher comparison, and the field-query gap that waits on photographs — plus
+embedding visualization, single-image retrieval, a local demo and a published in-browser one.
 
 The v0.1-v0.3 build order finished at `0.3.0`; every release since closes one research question.
 `0.4.0` added open-set rejection. `0.5.0` rebuilt the dataset Commons-first at **306 classes and
@@ -46,7 +46,12 @@ external platform could reject. `0.17.0` closes both branches section 11 left
 open, and both are negative: a DINOv2 at 3.5x the parameters moves the re-ranking ceiling by 0.17
 points, and local features promoted from re-ranker to *first* stage find the right statue in the
 top ten for 43.5% of cross-photographer queries where cosine similarity manages 90.8%. What scale
-buys is robustness to the photographer rather than recall.
+buys is robustness to the photographer rather than recall. `0.18.0` finds that the second of those
+was a fact about SIFT: swapping it for a learned matcher takes re-ranking from 82.3% to **84.6%**
+cross-photographer, 34 queries won to 7 lost. It also draws what a matcher matched, which is the
+first figure here that shows *why* rather than how much — and closes the same feature in the
+browser, because the shipped thumbnails are too small to match on and the matcher small enough to
+ship is the one that fails on this corpus.
 
 The dataset is published on
 [Hugging Face](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and
@@ -134,7 +139,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.17.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.18.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -180,7 +185,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.17.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.18.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 
