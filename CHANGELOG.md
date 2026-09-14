@@ -12,6 +12,20 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`krasnal-id visualize matches`: draw what a matcher actually matched.** Every other number here
+  is an aggregate over 1,157 queries, and none of them shows *why* one matcher beats another. This
+  puts two photographs side by side and draws a line per verified correspondence. It needs **two
+  image files and nothing else** — no manifest, no cached embeddings, no dataset — which also makes
+  it the smallest entry point into this code, against §15's comparison that needs all three and
+  about two hours. Both matchers now report *where* they matched through `correspondences()`, not
+  only how many; `count_inliers` delegates to it, so the measured path is unchanged.
+- **`docs/figures/matcher-correspondences.jpg`, in the README and on the findings page.** The pair
+  is chosen from §15's 34 wins rather than by eye: one Słupnik photographed by two people from two
+  angles, where SIFT finds **5** verified correspondences and DISK+LightGlue finds **123** — and
+  puts them on the statue rather than the street behind it. Against the lookalike SIFT actually
+  chose, a different Słupnik, the counts are **4** and **8**. SIFT cannot separate the two statues
+  and the learned matcher can, which is §15's result in one picture.
+
 - **The published findings page covers §10 to §15, which it did not.** `docs/findings.html` stopped
   at the error analysis, so everything about what *raises* accuracy existed only for a reader of
   `RESULTS.md` — geometric verification, the recall ceiling, the capacity result and the matcher

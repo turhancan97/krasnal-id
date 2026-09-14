@@ -103,9 +103,10 @@ from krasnal_id.models import (
     FetchAuditDisposition,
 )
 from krasnal_id.retrieval.query import QueryError, retrieve_image
-from krasnal_id.retrieval.rerank import RerankError
+from krasnal_id.retrieval.rerank import DETECT_LONG_SIDE, RerankError
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
+from krasnal_id.viz.match_plot import MatchPlotError, draw_match_figure, match_pair
 from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 
@@ -1187,6 +1188,45 @@ def visualize_open_set(override: OverrideOption = None) -> None:
         raise typer.Exit(code=2) from error
 
     typer.echo(f"Open-set visualization complete: figure={path}")
+
+
+@visualize_app.command("matches")
+def visualize_matches(
+    query: Annotated[Path, typer.Option(help="The photograph to match from.")],
+    candidate: Annotated[Path, typer.Option(help="The photograph to match against.")],
+    output: Annotated[Path, typer.Option(help="Where to write the figure.")] = Path(
+        "results/matches.png"
+    ),
+    matcher: Annotated[
+        list[str] | None,
+        typer.Option("--matcher", "-m", help="Repeat to compare matchers side by side."),
+    ] = None,
+    keypoints: Annotated[int, typer.Option(help="Keypoint budget per image.")] = 1024,
+    device: Annotated[str, typer.Option(help="auto, cpu or cuda.")] = "auto",
+) -> None:
+    """Draw the correspondences two photographs share, per matcher.
+
+    The smallest way into this code: section 15's comparison needs a manifest,
+    cached embeddings and about two hours, and this needs two image files.
+    """
+    names = tuple(matcher or ("sift", "disk-lightglue"))
+    try:
+        panels = tuple(match_pair(query, candidate, name, keypoints, device) for name in names)
+        path = draw_match_figure(
+            query,
+            candidate,
+            panels,
+            output,
+            long_side=DETECT_LONG_SIDE,
+            caption=f"{query.name}  ·  {candidate.name}",
+        )
+    except (MatchPlotError, RerankError) as error:
+        typer.echo(f"Match figure error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    for panel in panels:
+        typer.echo(f"  {panel.matcher}: {panel.inliers} verified matches")
+    typer.echo(f"Match figure written: {path}")
 
 
 @visualize_app.command("retrieval-examples")

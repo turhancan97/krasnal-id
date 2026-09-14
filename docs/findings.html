@@ -303,6 +303,18 @@
         </tbody>
       </table>
     </div>
+    <figure class="bleed">
+      <div class="plate">
+        <img src="figures/matcher-correspondences.jpg" loading="lazy"
+             alt="Two photographs of the Słupniki Oławskie pillar dwarf, shot by different photographers from different angles, shown side by side twice. In the upper pair SIFT draws five scattered correspondence lines. In the lower pair DISK and LightGlue draw dozens, concentrated on the statue's face and body and absent from the background.">
+      </div>
+      <figcaption><b>The same two photographs, matched twice.</b> One statue, two photographers,
+      two angles. SIFT finds <strong>5</strong> verified correspondences; DISK+LightGlue finds
+      <strong>123</strong> — and puts them on the statue rather than on the street behind it.
+      Against the lookalike SIFT actually picked, a different Słupnik, the counts are
+      <strong>4</strong> and <strong>8</strong>: SIFT cannot separate the two statues and the
+      learned matcher can. That is the whole result in one pair.</figcaption>
+    </figure>
     <div class="prose">
       <p><b>The learned matcher wins 34 queries and loses 7</b> against SIFT, which is decisive
       rather than suggestive. It matters beyond the number: an earlier version of this page would

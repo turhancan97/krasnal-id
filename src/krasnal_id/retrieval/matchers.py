@@ -24,7 +24,9 @@ from krasnal_id.retrieval.rerank import (
     DETECT_LONG_SIDE,
     MINIMUM_CORRESPONDENCES,
     RANSAC_TOLERANCE,
+    Correspondences,
     RerankError,
+    empty_correspondences,
 )
 
 # Keypoints kept per image. Matched to SIFT's 800 would understate a learned
@@ -50,24 +52,31 @@ class LocalMatcher(Protocol):
         """Return how many correspondences survive a RANSAC homography."""
         ...
 
+    def correspondences(self, query: Any, candidate: Any) -> Correspondences:
+        """Return where the two images matched, and which matches a homography kept."""
+        ...
 
-def _ransac_inliers(
+
+def _verify(
     source: npt.NDArray[np.float32],
     target: npt.NDArray[np.float32],
-) -> int:
-    """Count correspondences consistent with one homography.
+) -> Correspondences:
+    """Mark the correspondences consistent with one homography.
 
-    Shared with SIFT rather than reimplemented, so a difference between matchers
-    is a difference in correspondences and not in how they were verified.
+    The same verification SIFT uses, at the same tolerance, so a difference
+    between matchers is a difference in correspondences and not in how they were
+    checked.
     """
     import cv2
 
     if source.shape[0] < MINIMUM_CORRESPONDENCES:
-        return 0
+        return empty_correspondences()
     _, mask = cv2.findHomography(
         source.reshape(-1, 1, 2), target.reshape(-1, 1, 2), cv2.RANSAC, RANSAC_TOLERANCE
     )
-    return 0 if mask is None else int(mask.sum())
+    if mask is None:
+        return empty_correspondences()  # type: ignore[unreachable]
+    return Correspondences(source=source, target=target, inlier_mask=mask.ravel().astype(bool))
 
 
 def usable_cuda(torch: Any) -> bool:
@@ -186,6 +195,12 @@ class DiskLightGlueMatcher:
 
     def inliers(self, query: tuple[Any, Any], candidate: tuple[Any, Any]) -> int:
         """Return how many LightGlue correspondences survive a RANSAC homography."""
+        return self.correspondences(query, candidate).inliers
+
+    def correspondences(
+        self, query: tuple[Any, Any], candidate: tuple[Any, Any]
+    ) -> Correspondences:
+        """Return where LightGlue matched, and which matches the homography kept."""
         self._ensure_loaded()
         assert self._matcher is not None
         assert self._torch is not None
@@ -193,7 +208,7 @@ class DiskLightGlueMatcher:
 
         (points_a, descriptors_a), (points_b, descriptors_b) = query, candidate
         if len(points_a) < MINIMUM_CORRESPONDENCES or len(points_b) < MINIMUM_CORRESPONDENCES:
-            return 0
+            return empty_correspondences()
         lafs_a = laf_from_center_scale_ori(
             points_a[None], self._torch.ones(1, len(points_a), 1, 1, device=self._device)
         )
@@ -203,10 +218,10 @@ class DiskLightGlueMatcher:
         with self._torch.inference_mode():
             _, indices = self._matcher(descriptors_a, descriptors_b, lafs_a, lafs_b)
         if indices.shape[0] < MINIMUM_CORRESPONDENCES:
-            return 0
+            return empty_correspondences()
         source = points_a[indices[:, 0]].cpu().numpy().astype(np.float32)
         target = points_b[indices[:, 1]].cpu().numpy().astype(np.float32)
-        return _ransac_inliers(source, target)
+        return _verify(source, target)
 
     def __len__(self) -> int:
         """Return how many images have been described so far."""

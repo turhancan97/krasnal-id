@@ -92,6 +92,15 @@ grouped by which backbones ranked the right statue first and the first query in 
 represents its group, so this is what the ordinary case, the gap between the backbones, and their
 shared failures actually look like. Regenerate with `krasnal-id visualize retrieval-examples`.*
 
+![Two photographs of the Słupniki Oławskie pillar dwarf, shot by different photographers from different angles, side by side twice. In the upper pair SIFT draws five scattered correspondence lines. In the lower pair DISK+LightGlue draws dozens, concentrated on the statue's face and body and absent from the background.](docs/figures/matcher-correspondences.jpg)
+
+*Why a learned matcher wins, in one pair. Both rows show the same two photographs of the same
+statue, taken by different people. SIFT finds **5** verified correspondences; DISK+LightGlue finds
+**123**, and puts them on the statue rather than the street behind it. Against the lookalike SIFT
+actually chose — a different Słupnik — the counts are **4** and **8**: SIFT cannot separate the two
+statues, and the learned matcher can. Redraw for any two photographs with
+`krasnal-id visualize matches --query A.jpg --candidate B.jpg`.*
+
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
 - [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eight
@@ -318,6 +327,25 @@ One query photograph beside the five dwarves each backbone ranks highest, writte
 `results/retrieval-examples.jpg`. The queries are chosen by rule, not by eye: every fold is scored
 under both backbones, folds are grouped by which backbones ranked the right statue first, and the
 first query in image-ID order represents its group. `experiment.backbones` names the arms to draw.
+
+Draw what a matcher actually matched, between any two photographs:
+
+    uv sync --extra match
+    uv run krasnal-id visualize matches --query A.jpg --candidate B.jpg
+
+This needs nothing but two image files — no manifest, no cached embeddings, no dataset. It runs
+both matchers by default and prints the verified match count for each; `-m disk-lightglue` selects
+one, `--keypoints` changes the budget and `--device` forces CPU or CUDA. It is the smallest entry
+point into this code, and the same call produced the figure above.
+
+The full comparison behind `RESULTS.md` section 15 is a longer road — it needs the manifest and
+cached embeddings, and takes about two hours:
+
+    uv run krasnal-id experiment matcher-rerank
+
+Its evidence is journalled per query under `results/journals/`, so a run that is interrupted
+resumes rather than restarting, and re-sweeping the blend weights over an existing run costs
+nothing.
 
 ## Identify a single photograph
 

@@ -25,7 +25,28 @@ from krasnal_id.retrieval.matchers import (
     create_matcher,
     usable_cuda,
 )
-from krasnal_id.retrieval.rerank import INLIER_CAP, FeatureCache, RerankError
+from krasnal_id.retrieval.rerank import (
+    INLIER_CAP,
+    FeatureCache,
+    RerankError,
+    empty_correspondences,
+)
+from krasnal_id.viz.match_plot import (
+    MatchPanel,
+    MatchPlotError,
+    draw_match_figure,
+    match_pair,
+)
+
+
+def _textured(path: Path, seed: int, size: int = 160) -> None:
+    """Write an image with enough texture for a keypoint detector to work on."""
+    import numpy as np
+    from PIL import Image
+
+    rng = np.random.default_rng(seed)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(rng.integers(0, 256, (size, size, 3), dtype=np.uint8)).save(path)
 
 
 def _evidence(query: str, cosine: tuple[float, ...], inliers: tuple[int, ...]) -> QueryEvidence:
@@ -296,3 +317,73 @@ def test_the_weight_sweep_runs_past_where_sift_turns_over() -> None:
     rerank = load_config(["experiment=rerank_ablation"]).experiment
     assert isinstance(rerank, RerankAblationConfig)
     assert set(rerank.weights).issubset(set(experiment.weights))
+
+
+def test_a_matcher_reports_where_it_matched_not_only_how_many(tmp_path: Path) -> None:
+    """A count cannot be drawn, and a figure is what shows *why* one matcher wins.
+
+    The count stays the experiments' unit; the positions are what let someone
+    check a match by eye rather than by trusting a number.
+    """
+    from krasnal_id.retrieval.rerank import extract_features
+
+    first = tmp_path / "a.png"
+    second = tmp_path / "b.png"
+    _textured(first, seed=7)
+    _textured(second, seed=7)
+
+    sift = create_matcher("sift", max_keypoints=200)
+    found = sift.correspondences(
+        extract_features(first, 200),
+        extract_features(second, 200),
+    )
+
+    # An image against a copy of itself matches, and every match is an inlier.
+    assert found.inliers > 0
+    assert found.inliers == sift.inliers(
+        extract_features(first, 200), extract_features(second, 200)
+    )
+    assert found.source.shape == found.target.shape
+    assert found.inlier_mask.shape[0] == found.source.shape[0]
+
+
+def test_no_evidence_is_an_empty_result_rather_than_a_special_case() -> None:
+    """Callers draw whatever comes back, so the failure shape must be drawable."""
+    empty = empty_correspondences()
+
+    assert empty.inliers == 0
+    assert empty.source.shape == (0, 2)
+    assert empty.target.shape == (0, 2)
+
+
+def test_the_figure_needs_at_least_one_matcher(tmp_path: Path) -> None:
+    with pytest.raises(MatchPlotError, match="at least one"):
+        draw_match_figure(tmp_path / "a.png", tmp_path / "b.png", (), tmp_path / "o.png", 512)
+
+
+def test_an_unreadable_photograph_is_refused_by_name(tmp_path: Path) -> None:
+    """A missing file must say which, not fail inside a drawing library."""
+    with pytest.raises(MatchPlotError, match="could not read"):
+        match_pair(tmp_path / "absent.jpg", tmp_path / "absent.jpg", "sift", 200, "cpu")
+
+
+def test_the_figure_draws_both_matchers_over_one_pair(tmp_path: Path) -> None:
+    """The end-to-end path a fork runs with two image files and nothing else."""
+    from krasnal_id.retrieval.rerank import extract_features
+
+    first, second = tmp_path / "a.png", tmp_path / "b.png"
+    _textured(first, seed=11)
+    _textured(second, seed=11)
+    panels = (
+        MatchPanel(
+            "sift",
+            create_matcher("sift", 200).correspondences(
+                extract_features(first, 200), extract_features(second, 200)
+            ),
+        ),
+    )
+
+    written = draw_match_figure(first, second, panels, tmp_path / "fig.png", 512, caption="pair")
+
+    assert written.is_file()
+    assert written.stat().st_size > 0

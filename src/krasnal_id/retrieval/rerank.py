@@ -103,18 +103,40 @@ def extract_features(path: Path, max_keypoints: int) -> LocalFeatures:
     )
 
 
-def count_inliers(query: LocalFeatures, candidate: LocalFeatures) -> int:
-    """Return how many correspondences survive a RANSAC homography.
+@dataclass(frozen=True, slots=True)
+class Correspondences:
+    """Where two images matched, and which of those a homography kept.
 
-    Zero means "no geometry consistent with the same object was found", which
-    covers both a genuine mismatch and an image too smooth or too small to
-    describe. The experiment therefore treats zero as absence of evidence rather
-    than evidence of absence.
+    The experiments only ever needed the count, but a count cannot be drawn. The
+    positions are what make a figure possible and what let someone check a match
+    by eye rather than by trusting a number.
     """
+
+    source: npt.NDArray[np.float32]
+    target: npt.NDArray[np.float32]
+    inlier_mask: npt.NDArray[np.bool_]
+
+    @property
+    def inliers(self) -> int:
+        """Return how many correspondences survived the homography."""
+        return int(self.inlier_mask.sum())
+
+
+def empty_correspondences() -> Correspondences:
+    """Return the no-evidence result, shaped so callers need no special case."""
+    return Correspondences(
+        source=np.zeros((0, 2), dtype=np.float32),
+        target=np.zeros((0, 2), dtype=np.float32),
+        inlier_mask=np.zeros(0, dtype=bool),
+    )
+
+
+def match_features(query: LocalFeatures, candidate: LocalFeatures) -> Correspondences:
+    """Match two images' keypoints and mark those consistent with one homography."""
     import cv2
 
     if len(query) < MINIMUM_CORRESPONDENCES or len(candidate) < MINIMUM_CORRESPONDENCES:
-        return 0
+        return empty_correspondences()
 
     pairs = cv2.BFMatcher().knnMatch(
         query.descriptors.astype(np.float32), candidate.descriptors.astype(np.float32), k=2
@@ -125,12 +147,34 @@ def count_inliers(query: LocalFeatures, candidate: LocalFeatures) -> int:
         if first.distance < RATIO * second.distance
     ]
     if len(good) < MINIMUM_CORRESPONDENCES:
-        return 0
+        return empty_correspondences()
 
-    source = query.points[[match.queryIdx for match in good]].reshape(-1, 1, 2)
-    target = candidate.points[[match.trainIdx for match in good]].reshape(-1, 1, 2)
-    _, mask = cv2.findHomography(source, target, cv2.RANSAC, RANSAC_TOLERANCE)
-    return 0 if mask is None else int(mask.sum())
+    source = query.points[[match.queryIdx for match in good]]
+    target = candidate.points[[match.trainIdx for match in good]]
+    _, mask = cv2.findHomography(
+        source.reshape(-1, 1, 2), target.reshape(-1, 1, 2), cv2.RANSAC, RANSAC_TOLERANCE
+    )
+    # OpenCV's own stubs type the mask as non-optional, so mypy calls this branch
+    # unreachable -- but `findHomography` really does return None when it cannot
+    # fit one, which is why the count it replaced guarded for it too.
+    if mask is None:
+        return empty_correspondences()  # type: ignore[unreachable]
+    return Correspondences(
+        source=source.astype(np.float32),
+        target=target.astype(np.float32),
+        inlier_mask=mask.ravel().astype(bool),
+    )
+
+
+def count_inliers(query: LocalFeatures, candidate: LocalFeatures) -> int:
+    """Return how many correspondences survive a RANSAC homography.
+
+    Zero means "no geometry consistent with the same object was found", which
+    covers both a genuine mismatch and an image too smooth or too small to
+    describe. The experiment therefore treats zero as absence of evidence rather
+    than evidence of absence.
+    """
+    return match_features(query, candidate).inliers
 
 
 def blended_score(cosine: float, inliers: int, weight: float) -> float:
@@ -173,6 +217,10 @@ class FeatureCache:
         SIFT alone, and this is the seam that lets it be asked again.
         """
         return count_inliers(query, candidate)
+
+    def correspondences(self, query: LocalFeatures, candidate: LocalFeatures) -> Correspondences:
+        """Return where the two images matched, and which matches the homography kept."""
+        return match_features(query, candidate)
 
     @property
     def name(self) -> str:
