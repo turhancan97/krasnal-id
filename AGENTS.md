@@ -1313,13 +1313,13 @@ much, and closes the browser version of it on measurement.
     worth building, and §7.8 predicts it is not: a known query's 144 inliers collapse to 17 once
     its own photographer is withheld, which is the regime this arm runs in.
 
-- **One paper to *Scientific Reports*, dataset and analysis together** — taken on 2026-09-12, not
-  started; see §11.1. *Scientific Data* was considered and rejected: its Data Descriptors "should
-  not contain results, discussion, or analyses", which is most of this project. The paper leads on
-  the photographer gap as a claim about benchmark construction rather than on the statues, and the
-  fieldwork is future work stated in it rather than a prerequisite. Two things to confirm before
-  writing: that *Scientific Reports*' scope and acceptance criteria are as assumed, and whether an
-  article-processing charge applies.
+- **One paper to *Scientific Reports*, dataset and analysis together** — taken on 2026-09-12,
+  drafted in full on 2026-09-14; see §11.1. *Scientific Data* was considered and rejected: its Data
+  Descriptors "should not contain results, discussion, or analyses", which is most of this project.
+  The spine was reversed on 2026-09-14 to lead on the identification result rather than on the
+  photographer gap, and the fieldwork is future work stated in the paper rather than a prerequisite.
+  Scope and acceptance criteria are now verified (§11.1). **What remains is the money**, and it is
+  §11.2.
 
 Any of these is a scope change. Record the decision here before implementing it.
 
@@ -1454,9 +1454,23 @@ that would bring it back.
   construction anyway — so splitting writes the Methods twice and yields two small papers instead
   of one whole one, at two review cycles' cost.
 - **Why *Scientific Reports*.** Same portfolio, but it publishes primary research with results and
-  conclusions, which is the shape this work actually has. **Unverified**: its scope and
-  soundness-based acceptance criteria were not read, because the page sits behind an
-  authentication redirect. Confirm before committing.
+  conclusions, which is the shape this work actually has. **Verified 2026-09-14** from the journal's
+  own Editorial Board handbook (`nature.com/documents/SREB.pdf`, public — the aims-and-scope page
+  itself redirects to `idp.nature.com`, but the handbook quotes it):
+  - Scope: "a multidisciplinary journal that publishes original research articles in all areas of
+    the natural sciences, medicine and engineering... we do not consider review articles or clinical
+    case reports." This work qualifies.
+  - Criteria: "Manuscripts must make an original contribution but they are not assessed based on
+    their perceived significance, importance or impact." And explicitly: "We welcome papers that
+    report negative results and scientifically-justified replication studies, provided they meet our
+    criteria for technical soundness. These results can be useful to the scientific community, but
+    are often rejected from other journals due to a perceived lack of impact."
+  - **This confirms the bet this section made.** Four of this paper's contributions are negative
+    results, which the venue names as welcome rather than tolerated.
+  - Two criteria are directly actionable in the drafting: "Conclusions must not be overstated, and
+    previous work must be cited", and "If authors are reporting repeat results, this must be made
+    clear, along with their contribution to the field" — which is what §S13's correction of the
+    0.4.0 rejection result already does, and is a reason to keep it rather than soften it.
 - **Lead on the identification result, not on the photographer gap** — reversed on 2026-09-14,
   before any drafting. The rejected alternative was to lead on benchmark construction:
   "instance-retrieval benchmarks that do not record who photographed each image systematically
@@ -1539,6 +1553,36 @@ that would bring it back.
 - **Check the APC before submitting.** *Scientific Reports* is fully open access and charges an
   article-processing fee. Whether a Springer Nature agreement covering UJ applies is unknown here
   and is a question for the university library, not a detail to discover at acceptance.
+
+### 11.2 Article-processing charge (2026-09-14)
+
+**Assume the APC is payable and budget for it.** This is the one open item on the paper that is not
+about the paper, and what can be checked without logging in looks unfavourable.
+
+- ***Scientific Reports* is fully open access**, so there is no subscription route. The charge is
+  reported as **£2,290 / \$2,850 / €2,490** plus local tax. That figure is second-hand: the journal's
+  own fees page redirects to `idp.nature.com`, so it was read from sources quoting it rather than
+  from the page itself. **Confirm it on the page the author can log into** — it is the only number
+  here that was not read at its source.
+- **Poland's national agreement almost certainly does not cover it.** Three independent sources
+  agree the ICM / Wirtualna Biblioteka Nauki deal with Springer Nature is **hybrid-only**: Springer
+  Nature's own ICM Poland page offers a list of eligible *hybrid* journals; the 2026 programme is
+  described as 1,913 hybrid titles plus 62 Springer Open and 20 ADIS hybrid titles, with no Nature
+  Portfolio; and UJ's own open-publishing page lists Springer as hybrid-only. *Scientific Reports*
+  is a fully-OA Nature Portfolio title and falls outside all three.
+- **UJ lists no Nature Portfolio programme.** Its individual agreements cover Cambridge University
+  Press, De Gruyter, ACM and Emerald. None reaches this journal.
+- **The actionable step is one email**, to the Jagiellonian University library's Sekcja Informacji
+  Naukowej at `oinka@uj.edu.pl`, asking whether any UJ or faculty fund covers a fully-OA Nature
+  Portfolio APC. That is the only question here a public web page cannot settle.
+- **A waiver is unlikely but has a deadline.** Automatic waivers apply only to corresponding authors
+  in the world's lowest-income countries, which does not include Poland. Case-by-case requests are
+  possible but **must be made at submission — not during review, and not after acceptance.** If a
+  waiver is to be asked for at all, it has to be asked for before the manuscript is sent.
+- **If the APC cannot be funded, that is a venue decision, not a drafting one.** Record it here
+  before switching, the way §11.1 records why *Scientific Data* was rejected. Nothing in the drafted
+  manuscript is specific to this journal beyond the template, the 4,500-word budget and the
+  eight-display-item limit.
 
 ## 12. Living documentation and handoffs
 - Treat this file as the authoritative project brief and decision record. Update it in the same change whenever implementation work introduces or changes architecture, scope, schemas, conventions, build order, or other decisions that future contributors must follow.

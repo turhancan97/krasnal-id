@@ -98,6 +98,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **The two venue checks are resolved as far as public sources allow (`AGENTS.md` §11.1, §11.2).**
+  Scope and acceptance criteria are verified from the journal's own Editorial Board handbook, which
+  is public even though the aims-and-scope page is not: *Scientific Reports* assesses soundness
+  rather than "perceived significance, importance or impact" and states it *welcomes* papers
+  reporting negative results, which confirms the bet §11.1 made in choosing it. The
+  article-processing charge is the item that does not resolve favourably — roughly €2,490, with
+  Poland's national agreement hybrid-only and no Nature Portfolio programme listed at UJ — and it
+  now has its own section rather than a line in the open-questions list.
 - **The manuscript's "roughly 1,400 dwarves" was wrong, and the extrapolation rested on it
   (`AGENTS.md` §11.1).** The figure traced to no source. Wrocław's count is genuinely unstable: the
   city's tourism portal still publishes about 360 for 2020, the thousandth statue went up in
