@@ -1487,6 +1487,17 @@ that would bring it back.
   budget — Introduction 750, Results 2,900 over seven subheadings, Discussion 850 — names the eight
   items, and lists what moves to Supplementary (S1-S14) against what is cut outright. §7 is cut:
   it is a meta-result about this project's own earlier release with no home under this spine.
+- **A citation is verified on title, first author *and* year — not on title alone.** Every entry in
+  `paper/references.bib` is fetched by resolving its DOI through content negotiation rather than
+  recalled, and the first pass checked only that the returned title matched what was wanted. That
+  is not enough. `he2020moco` passed it while pointing at a 2025 MDPI preprint by an unrelated
+  author that carries MoCo's exact title; the real paper is CVPR 2020,
+  `10.1109/CVPR42600.2020.00975`. A title match is the weakest of the three checks, because a
+  mirror, a plagiarised preprint or a later reprint all reproduce it. Re-resolving all 47 entries
+  against the CSL-JSON record on 2026-09-14 flagged only that one substantive error; two further
+  flags were the record truncating a title at its colon, which is not a mismatch. Keep the
+  three-field check for anything added later, and note that seven earlier candidates were already
+  rejected on the title check alone.
 - **`paper/` is deliberately untracked.** The manuscript is drafted outside this repository's
   history and vendors the Springer Nature template, which is not ours to redistribute. It needs its
   own backup; nothing here protects it.

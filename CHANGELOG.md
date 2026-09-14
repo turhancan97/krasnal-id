@@ -12,6 +12,12 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **All eight display items are complete: seven figure captions and Table 1.** Every number in a
+  caption or a table cell traces to a named `results/*.json` artifact, the rule §6.4 already
+  applies to `RESULTS.md`. Table 1 carries five dashes, and they are stated as protocols
+  deliberately not run rather than results omitted: the trained classifiers were measured only in
+  the full pool, and the learned matcher only on the photographer-disjoint arm, which is the one
+  where the first stage leaves re-ranking any headroom.
 - **The manuscript's remaining figures: the dataset, the pool-size curve, and a three-row
   retrieval sheet.** Figure 1 is the corpus's three standing difficulties in the order the Results
   meet them — statues sculpted alike, statues standing close together, and classes whose
@@ -73,6 +79,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   critique by default and have to be turned in the writing. The section map also said
   `RESULTS.md` §1-§14; §15 has existed since 2026-09-13.
 
+### Fixed
+
+- **A citation pointed at the wrong paper, and a title-only check had passed it (`AGENTS.md`
+  §11.1).** `he2020moco` resolved to a 2025 MDPI preprint by an unrelated author carrying MoCo's
+  exact title; the real paper is CVPR 2020. Every one of the 47 entries was re-resolved against its
+  CSL-JSON record and checked on **title, first author and year** — a title match is the weakest of
+  the three, because a mirror, a plagiarised preprint or a later reprint all reproduce it. That one
+  entry was the only substantive error; two further flags were records truncating a title at its
+  colon. BibTeX also runs clean now: Crossref emits full month names where BibTeX defines only the
+  three-letter macros.
 
 ## [0.18.0] - 2026-09-14
 
