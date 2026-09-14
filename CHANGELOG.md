@@ -98,6 +98,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **The manuscript's "roughly 1,400 dwarves" was wrong, and the extrapolation rested on it
+  (`AGENTS.md` §11.1).** The figure traced to no source. Wrocław's count is genuinely unstable: the
+  city's tourism portal still publishes about 360 for 2020, the thousandth statue went up in
+  September 2025, the 2026 public-space count is about 1,040, and 1,425 is reached only by
+  including works outside the city. The manuscript now extrapolates to 1,040 — DINOv2 **91.7%**,
+  CLIP **79.3%**, up from 91.4% and 78.4% — cites the municipal portal with an access date, and
+  reports that the projection moves only 0.4 points across every published count, which is narrower
+  than the interval on the measured 306-class figure. The Orange Alternative claim gained two
+  verified peer-reviewed references. `RESULTS.md` §2 still carries the old number.
 - **Twenty-four references were printing with no conference name (`AGENTS.md` §11.1).** Springer
   Nature's own `sn-nature.bst` opens `format.in.ed.booktitle` with `duplicate$` having pushed
   nothing, so every `@inproceedings` without an editor hit "You can't pop an empty literal stack"

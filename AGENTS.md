@@ -1498,6 +1498,17 @@ that would bring it back.
   flags were the record truncating a title at its colon, which is not a mismatch. Keep the
   three-field check for anything added later, and note that seven earlier candidates were already
   rejected on the title check alone.
+- **The "roughly 1,400 dwarves" figure was wrong, and `RESULTS.md` §2 carried it.** It traced to no
+  source. Wroc{\l}aw's statue count is genuinely unstable --- the city's own tourism portal still
+  publishes about 360 for 2020, the thousandth statue was installed in September 2025, the 2026
+  count for public space is about 1{,}040, and 1{,}425 is reached only by including works outside
+  the city, temporary installations and related art projects --- so the right response is a range
+  with a cited access date rather than a better single number. The manuscript now extrapolates to
+  1,040 (DINOv2 **91.7%**, CLIP **79.3%**, up from 91.4% and 78.4%) and states that the projection
+  moves only 0.4 points across every published count, which is narrower than the confidence
+  interval on the measured 306-class figure. **The general lesson is the §6.4 rule applied outward:
+  a number taken from the world needs a source the same way a number taken from an experiment needs
+  an artifact.** `RESULTS.md` §2 still says 1,400 and should be corrected when it is next touched.
 - **`sn-nature.bst` carries a local patch, and `paper/` being untracked means nothing protects it.**
   Springer Nature's own Nature-style BibTeX file begins `format.in.ed.booktitle` with `duplicate$`
   having pushed nothing, so every `@inproceedings` without an editor raises "You can't pop an empty
