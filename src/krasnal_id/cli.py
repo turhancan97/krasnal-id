@@ -109,6 +109,7 @@ from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_p
 from krasnal_id.viz.match_plot import MatchPlotError, draw_match_figure, match_pair
 from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
+from krasnal_id.viz.paper_tables import write_all as write_paper_tables
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 
 
@@ -1217,6 +1218,34 @@ def visualize_paper_figures(
     for path in written:
         typer.echo(f"  {path}")
     typer.echo(f"Paper figures complete: {len(written)} written at {PUBLICATION_DPI} dpi")
+
+
+@visualize_app.command("paper-tables")
+def visualize_paper_tables(
+    output_dir: Annotated[Path, typer.Option(help="Where to write the fragments.")] = Path(
+        "paper/tables"
+    ),
+    override: OverrideOption = None,
+) -> None:
+    """Emit the Supplementary Information's tables as LaTeX, from the artifacts.
+
+    Fourteen tables of numbers is exactly the material that acquires a wrong
+    digit in transcription, so none of them is transcribed.
+    """
+    config = load_config(list(override or []))
+    configure_logging(config.logging)
+    try:
+        sources = Sources(
+            results_dir=Path(config.paths.results_dir),
+            manifest=Path(config.paths.manifest_path),
+        )
+        written = write_paper_tables(sources, output_dir)
+    except PaperFigureError as error:
+        typer.echo(f"Paper table error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for path in written:
+        typer.echo(f"  {path}")
+    typer.echo(f"Paper tables complete: {len(written)} written")
 
 
 @visualize_app.command("matches")

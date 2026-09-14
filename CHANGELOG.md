@@ -12,6 +12,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`krasnal-id visualize paper-tables`: the Supplementary Information's fourteen tables, emitted
+  from the artifacts.** `si.tex` inputs LaTeX fragments that `results/*.json` generates; no number
+  in the Supplementary Information is typed. Fourteen tables of numbers is exactly the material
+  that acquires a wrong digit in transcription, and the two errors already caught in this
+  manuscript — a citation resolving to the wrong paper, and a mean similarity that existed in no
+  artifact — were both of that kind. Writing the generator also caught three presentation faults
+  that a typed table would have shipped: mean reciprocal rank printed as a percentage, which
+  invents a unit it does not have; an exact McNemar $p$ of 0.0026 rounded to `0.00`, which reads as
+  certainty; and an absent measurement rendering as a measured zero.
 - **All eight display items are complete: seven figure captions and Table 1.** Every number in a
   caption or a table cell traces to a named `results/*.json` artifact, the rule §6.4 already
   applies to `RESULTS.md`. Table 1 carries five dashes, and they are stated as protocols
