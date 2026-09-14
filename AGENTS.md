@@ -1268,10 +1268,26 @@ neither appearance nor geometry provides.
   - **Check the model's licence before anything reaches `docs/`.** vismatch is BSD-3 but the
     weights it wraps are not uniform and some are research-only — SuperGlue notably. Fine for a
     paper, not fine for a published demo, and §5.11's care about licensing applies to models too.
-  - **The match visualisation is the second deliverable, not the first.** Drawing correspondences
-    shows *why* a statue was identified rather than asserting a score, and it is tractable in the
-    browser by running the matcher on DINOv2's top five rather than on 1,690 references. It waits
-    on the measurement, so that whatever ships is whatever won.
+  - ~~**The match visualisation is the second deliverable, not the first.**~~ — the figure shipped
+    on 2026-09-14 as `krasnal-id visualize matches` and
+    `docs/figures/matcher-correspondences.jpg`, but **in the browser it is dropped**, on two
+    measurements taken before any front-end work:
+    - **The shipped thumbnails are too small to match on.** `docs/assets/thumbs` is ~300 px. On the
+      Słupniki pair that puts DISK+LightGlue at 68 inliers for the correct statue against 39 for
+      the lookalike — a 1.7x margin where 1024 px gives 15x (123 against 8). A visitor would see
+      39 confident lines drawn to the *wrong* statue, which is worse than showing nothing. The
+      margin recovers by 512 px, which would mean shipping ~21 KB per image, 35 MB for the corpus.
+    - **The browser-viable matcher is the one that does not work here.** XFeat is small and built
+      for edge inference, so it is the obvious candidate; over 20 photographer-disjoint queries it
+      gives the correct statue more inliers than the best competitor **9 times out of 20**, against
+      SIFT's 12 and `disk-lightglue`'s 16. On the Słupniki pair it prefers the lookalike, 7 to 13,
+      and `match_xfeat_star` returns nothing at all. Note for anyone retrying: kornia's XFeat
+      defaults to `detection_threshold=0.05`, which yields **zero keypoints** on this corpus
+      silently — read downstream as "no evidence" rather than as a misconfiguration. These numbers
+      used 0.01, and one tuned knob is not an exhaustive search.
+    - **What would be needed.** Exporting `disk-lightglue` through kornia's `OnnxLightGlue`,
+      512 px references, and RANSAC in JavaScript. Unverified and a real project; the static figure
+      already shows *why* a match works, and only loses the visitor's own photograph.
   - **Scored over every answerable query, not a sample.** SIFT matching costs 4.0 ms a pair with
     OpenCV's own threading, so all 1,157 answerable queries against all 1,690 references is 2.2
     hours rather than the ten it was assumed to be. A sample was the plan until it was measured;

@@ -131,6 +131,16 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- **In-browser match visualisation is dropped, on two measurements rather than on a guess
+  (`AGENTS.md` §8).** The shipped thumbnails are ~300 px, and at that size DISK+LightGlue's margin
+  on the Słupniki pair collapses from 15x to 1.7x — 68 inliers for the correct statue against 39
+  for the lookalike, so a visitor would see 39 confident lines drawn to the wrong one. And the
+  matcher that would actually fit a browser is the one that fails here: XFeat gives the correct
+  statue more inliers than its best competitor **9 times in 20** against SIFT's 12 and
+  `disk-lightglue`'s 16. Recorded with what recovery would cost — 512 px references at 35 MB, an
+  ONNX export, and RANSAC in JavaScript — and with a warning that kornia's XFeat returns zero
+  keypoints at its default threshold, silently.
+
 - **§14's conclusion is qualified to SIFT, because that is all it measured.** It was written as
   "local features cannot be the first stage" — a claim about a family of methods, from one 1999
   member of it, sitting in the README's findings list and the summary. The regime where SIFT
