@@ -1498,9 +1498,20 @@ that would bring it back.
   flags were the record truncating a title at its colon, which is not a mismatch. Keep the
   three-field check for anything added later, and note that seven earlier candidates were already
   rejected on the title check alone.
+- **`sn-nature.bst` carries a local patch, and `paper/` being untracked means nothing protects it.**
+  Springer Nature's own Nature-style BibTeX file begins `format.in.ed.booktitle` with `duplicate$`
+  having pushed nothing, so every `@inproceedings` without an editor raises "You can't pop an empty
+  literal stack" and prints with **no conference name** — 24 of the 47 references, reduced to a
+  title, pages and publisher. BibTeX still exits 0, so the only symptom is absent venues in a PDF
+  nobody thought to re-read. Every sibling style in the same distribution opens that function with
+  `format.booktitle duplicate$ empty$`; the patch adds that push and drops the now-redundant copy
+  inside the editor branch, and is verified against all three entry shapes. Re-downloading the
+  template reverts it silently. **The general lesson: a clean exit status is not evidence a
+  bibliography rendered** — read the output, the same way §6.4 requires a published number to trace
+  to an artifact rather than to a command that did not complain.
 - **`paper/` is deliberately untracked.** The manuscript is drafted outside this repository's
   history and vendors the Springer Nature template, which is not ours to redistribute. It needs its
-  own backup; nothing here protects it.
+  own backup; nothing here protects it, the `.bst` patch above included.
 - **The fieldwork is future work stated in the paper, not a prerequisite.** Every query is a
   Commons upload, so the domain gap to a street photograph is unmeasured, and `RESULTS.md`
   Limitations already calls it the largest untested gap. **Expect a reviewer to raise it first.**

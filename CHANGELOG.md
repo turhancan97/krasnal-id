@@ -81,6 +81,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Fixed
 
+- **Twenty-four references were printing with no conference name (`AGENTS.md` §11.1).** Springer
+  Nature's own `sn-nature.bst` opens `format.in.ed.booktitle` with `duplicate$` having pushed
+  nothing, so every `@inproceedings` without an editor hit "You can't pop an empty literal stack"
+  and lost its booktitle — CVPR, ICCV, NeurIPS and the rest reduced to a title, page range and
+  publisher. **BibTeX exits 0 throughout**, which is how it survived a compile that was checked for
+  errors and found none. Every sibling style in the same distribution opens that function with
+  `format.booktitle duplicate$ empty$`, so the fix is theirs; it is applied with a comment block
+  and verified on a scratch document covering `@inproceedings` with and without editors and
+  `@incollection`.
 - **A citation pointed at the wrong paper, and a title-only check had passed it (`AGENTS.md`
   §11.1).** `he2020moco` resolved to a 2025 MDPI preprint by an unrelated author carrying MoCo's
   exact title; the real paper is CVPR 2020. Every one of the 47 entries was re-resolved against its
