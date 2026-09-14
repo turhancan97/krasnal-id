@@ -12,6 +12,19 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **`krasnal-id visualize paper-figures`: four of the manuscript's eight display items.**
+  Geography, the photographer decomposition, the matcher sweep with its recall ceiling, and
+  rejection — each consolidating several `RESULTS.md` tables into one panel set, at 300 dpi in a
+  sans-serif face as the journal requires. The manuscript is untracked; this code is not, because a
+  figure nobody can regenerate from a committed command is a figure nobody can check. Drawing them
+  and then *looking* at them caught a figure titled "neither signal separates them" over bars
+  showing AUROC 0.90 — retitled to what §12 actually found, that geometry adds nothing over
+  appearance.
+- **The confusion experiment reports six separation bands rather than two.** §3a claims co-location
+  acts at the scale of a shared plinth and is gone by a neighbourhood, and two bands cannot show a
+  decay. Six can: confused pairs are **2.27×** more likely than merely-competing ones to stand
+  within 50 m, falling through 1.55× at 200 m to **1.06×** at a kilometre. The prose already said
+  "1.1× by a kilometre" without any artifact behind it; it is now measured.
 - **The manuscript scaffold, in an untracked `paper/` (`AGENTS.md` §11.1).** Springer Nature
   template v3.1 with `\documentclass[pdflatex,sn-nature]{sn-jnl}`, the option their own sample
   labels for Nature Portfolio journals, plus a vendored `tectonic` so the manuscript compiles
