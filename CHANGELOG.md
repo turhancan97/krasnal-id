@@ -19,6 +19,12 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   errors**; the two hyperref bookmark warnings that remain are emitted by Springer Nature's own
   unmodified sample, so "no warnings" cannot be met using their template and chasing it is wasted
   effort.
+- **27 verified bibliography entries, none of them recalled.** Each DOI was resolved through
+  content negotiation and the returned title checked against what was wanted, so the BibTeX is the
+  publisher's own rather than hand-typed. The check earned itself three times: a Crossref search
+  for RANSAC returned a 1987 reprint rather than the 1981 CACM original, "Toward Open Set
+  Recognition" returned an unrelated face-recognition paper, and UMAP returned an R package. All
+  three were rejected rather than cited.
 - **`paper/SKELETON.md`, the plan the prose gets written from.** *Scientific Reports* allows 4,500
   words and eight display items against `RESULTS.md`'s ~9,112 words and 20 tables, so the paper is
   a selection problem: the file fixes the budget (Introduction 750, Results 2,900 over seven
