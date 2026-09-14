@@ -12,6 +12,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **Figure density is a parameter, not a constant, in the projection and match figures.** Both now
+  take `--dpi` and `--output` like the contact sheet already did, so the repository's 200-dpi
+  copies and the manuscript's 300-dpi copies come from one code path. Rendering the match figure
+  for the Supplementary Information produced the sharpest illustration in the paper, and not the
+  one intended: two *different* Słupniki photographed by the same contributor on one walk survive
+  **38** correspondences through RANSAC, where the same statue photographed by two different people
+  survives **five**. That is §10a's eightfold inlier collapse in a single image, and it is why
+  geometric evidence is blended as a tie-breaker rather than trusted as a signal.
 - **`krasnal-id visualize paper-tables`: the Supplementary Information's fourteen tables, emitted
   from the artifacts.** `si.tex` inputs LaTeX fragments that `results/*.json` generates; no number
   in the Supplementary Information is typed. Fourteen tables of numbers is exactly the material

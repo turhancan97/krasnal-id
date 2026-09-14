@@ -132,6 +132,7 @@ def render_projection(
     title: str,
     path: Path,
     label_budget: int = _LABEL_BUDGET,
+    dpi: int = 200,
 ) -> Path:
     """Draw and save the projection, labeling the classes worth reading.
 
@@ -218,7 +219,7 @@ def render_projection(
 
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
-        figure.savefig(path, dpi=200)
+        figure.savefig(path, dpi=dpi)
     except OSError as error:
         raise VisualizationError(f"could not write figure {path}: {error}") from error
     finally:
@@ -231,6 +232,11 @@ def figure_path(results_dir: Path, method: str, backbone: str) -> Path:
     return results_dir / f"embeddings-{method}-{backbone}.png"
 
 
+# What the repository's own copies are drawn at. The manuscript's copies are
+# drawn at PUBLICATION_DPI from the same code, so the two cannot drift.
+WEB_DPI = 200
+
+
 def build_plot(
     manifest: DatasetManifest,
     matrix: EmbeddingMatrix,
@@ -238,8 +244,15 @@ def build_plot(
     seed: int,
     backbone: str,
     results_dir: Path,
+    output: Path | None = None,
+    dpi: int = WEB_DPI,
 ) -> Path:
-    """Project and render the cached vectors for one backbone."""
+    """Project and render the cached vectors for one backbone.
+
+    The density is a parameter because this figure has two readers: the
+    repository's copy is read on a screen, and Supplementary S6's is the same
+    projection at the density the journal asks for. One code path, two outputs.
+    """
     projected = project_embeddings(matrix.vectors, method, seed)
     display_names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
     classes = len(set(matrix.dwarf_ids))
@@ -252,11 +265,16 @@ def build_plot(
         matrix.dwarf_ids,
         display_names,
         title,
-        figure_path(results_dir, method, backbone),
+        output or figure_path(results_dir, method, backbone),
+        dpi=dpi,
     )
 
 
-def create_embedding_plot(config: AppConfig) -> Path:
+def create_embedding_plot(
+    config: AppConfig,
+    output: Path | None = None,
+    dpi: int = WEB_DPI,
+) -> Path:
     """Create and save the configured two-dimensional embedding projection."""
     if not isinstance(config.experiment, VisualizationExperimentConfig):
         raise VisualizationError(
@@ -279,4 +297,6 @@ def create_embedding_plot(config: AppConfig) -> Path:
         config.experiment.seed,
         config.backbone.name,
         config.paths.results_dir,
+        output,
+        dpi,
     )

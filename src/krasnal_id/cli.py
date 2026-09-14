@@ -1151,12 +1151,16 @@ def confusion_experiment(override: OverrideOption = None) -> None:
 
 
 @visualize_app.command("embeddings")
-def visualize_embeddings(override: OverrideOption = None) -> None:
+def visualize_embeddings(
+    output: Annotated[Path | None, typer.Option(help="Where to write the figure.")] = None,
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 200,
+    override: OverrideOption = None,
+) -> None:
     """Project cached embeddings into a saved two-dimensional figure."""
     config = load_config(["experiment=visualization", *(override or [])])
     configure_logging(config.logging)
     try:
-        path = create_embedding_plot(config)
+        path = create_embedding_plot(config, output, dpi)
     except (VisualizationError, EmbeddingStoreError) as error:
         typer.echo(f"Embedding visualization error: {error}", err=True)
         raise typer.Exit(code=2) from error
@@ -1261,6 +1265,7 @@ def visualize_matches(
     ] = None,
     keypoints: Annotated[int, typer.Option(help="Keypoint budget per image.")] = 1024,
     device: Annotated[str, typer.Option(help="auto, cpu or cuda.")] = "auto",
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 150,
 ) -> None:
     """Draw the correspondences two photographs share, per matcher.
 
@@ -1277,6 +1282,7 @@ def visualize_matches(
             output,
             long_side=DETECT_LONG_SIDE,
             caption=f"{query.name}  ·  {candidate.name}",
+            dpi=dpi,
         )
     except (MatchPlotError, RerankError) as error:
         typer.echo(f"Match figure error: {error}", err=True)

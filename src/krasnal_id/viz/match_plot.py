@@ -132,8 +132,14 @@ def draw_match_figure(
     output_path: Path,
     long_side: int,
     caption: str | None = None,
+    dpi: int = 150,
 ) -> Path:
-    """Write a figure comparing what each matcher found on one pair."""
+    """Write a figure comparing what each matcher found on one pair.
+
+    The density is a parameter for the same reason the contact sheet's is: the
+    repository reads this on a screen and Supplementary S12 needs it at the
+    density the journal asks for.
+    """
     if not panels:
         raise MatchPlotError("at least one matcher panel is required")
     try:
@@ -154,6 +160,6 @@ def draw_match_figure(
         figure.suptitle(caption, fontsize=12, y=0.995)
     figure.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    figure.savefig(output_path, dpi=150, bbox_inches="tight")
+    figure.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(figure)
     return output_path
