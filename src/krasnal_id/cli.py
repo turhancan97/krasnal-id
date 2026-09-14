@@ -108,7 +108,7 @@ from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
 from krasnal_id.viz.match_plot import MatchPlotError, draw_match_figure, match_pair
 from krasnal_id.viz.open_set_plot import create_open_set_plot
-from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, draw_all
+from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 
 
@@ -1206,7 +1206,11 @@ def visualize_paper_figures(
     config = load_config(list(override or []))
     configure_logging(config.logging)
     try:
-        written = draw_all(Path(config.paths.results_dir), output_dir)
+        sources = Sources(
+            results_dir=Path(config.paths.results_dir),
+            manifest=Path(config.paths.manifest_path),
+        )
+        written = draw_all(sources, output_dir)
     except PaperFigureError as error:
         typer.echo(f"Paper figure error: {error}", err=True)
         raise typer.Exit(code=2) from error
@@ -1255,12 +1259,25 @@ def visualize_matches(
 
 
 @visualize_app.command("retrieval-examples")
-def visualize_retrieval_examples(override: OverrideOption = None) -> None:
-    """Draw query photographs beside the five dwarves each backbone ranks highest."""
+def visualize_retrieval_examples(
+    group: Annotated[
+        list[str] | None,
+        typer.Option("--group", help="Repeat to keep only these agreement groups."),
+    ] = None,
+    output: Annotated[Path | None, typer.Option(help="Where to write the sheet.")] = None,
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 150,
+    override: OverrideOption = None,
+) -> None:
+    """Draw query photographs beside the five dwarves each backbone ranks highest.
+
+    The manuscript's figure 4 is this sheet at three rows and publication
+    density, which is why the groups and the density are options rather than
+    constants.
+    """
     config = load_config(["experiment=visualization", *(override or [])])
     configure_logging(config.logging)
     try:
-        path = create_retrieval_examples_plot(config)
+        path = create_retrieval_examples_plot(config, group, output, dpi)
     except (VisualizationError, EmbeddingStoreError) as error:
         typer.echo(f"Retrieval example visualization error: {error}", err=True)
         raise typer.Exit(code=2) from error

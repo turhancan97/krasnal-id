@@ -221,8 +221,17 @@ def _load_cell(local_path: Path) -> object:
         raise VisualizationError(f"could not read {local_path}: {error}") from error
 
 
-def render_examples(examples: Sequence[RetrievalExample], path: Path) -> Path:
-    """Draw every example as a query column beside one row per backbone."""
+def render_examples(
+    examples: Sequence[RetrievalExample],
+    path: Path,
+    dpi: int = 150,
+) -> Path:
+    """Draw every example as a query column beside one row per backbone.
+
+    The density is a parameter because this sheet has two readers. The
+    repository's copy is read on a screen at 150 dpi; the manuscript's is the
+    same selection at the 300 dpi the journal asks for.
+    """
     if not examples:
         raise VisualizationError("no retrieval examples to draw")
 
@@ -289,12 +298,14 @@ def render_examples(examples: Sequence[RetrievalExample], path: Path) -> Path:
     )
 
     path.parent.mkdir(parents=True, exist_ok=True)
+    # JPEG, where every other figure here is a PNG. The others are line plots,
+    # which PNG stores exactly and small; this one is dozens of photographs,
+    # which PNG stores exactly and at 3.7 MB. At quality 88 it is under a tenth
+    # of that and the difference is invisible at this cell size. A caller asking
+    # for another suffix -- the manuscript asks for PNG -- gets that instead.
+    options = {"quality": 88, "optimize": True} if path.suffix.lower() in {".jpg", ".jpeg"} else {}
     try:
-        # JPEG, where every other figure here is a PNG. The others are line
-        # plots, which PNG stores exactly and small; this one is 44 photographs,
-        # which PNG stores exactly and at 3.7 MB. At quality 88 it is under a
-        # tenth of that and the difference is invisible at this cell size.
-        figure.savefig(path, dpi=150, pil_kwargs={"quality": 88, "optimize": True})
+        figure.savefig(path, dpi=dpi, pil_kwargs=options)
     except OSError as error:
         raise VisualizationError(f"could not write figure {path}: {error}") from error
     finally:
@@ -302,8 +313,19 @@ def render_examples(examples: Sequence[RetrievalExample], path: Path) -> Path:
     return path
 
 
-def create_retrieval_examples_plot(config: AppConfig) -> Path:
-    """Draw one contact sheet covering every backbone the config names."""
+def create_retrieval_examples_plot(
+    config: AppConfig,
+    groups: Sequence[str] | None = None,
+    output: Path | None = None,
+    dpi: int = 150,
+) -> Path:
+    """Draw one contact sheet covering every backbone the config names.
+
+    `groups` keeps only the named agreement groups, in the order the selection
+    rule already puts them. The manuscript has room for three rows where the
+    repository shows four, and dropping one there rather than cropping the image
+    keeps the figure regenerable.
+    """
     if not isinstance(config.experiment, VisualizationExperimentConfig):
         raise VisualizationError(
             f"visualization requires experiment=visualization, got {config.experiment.kind}"
@@ -334,4 +356,17 @@ def create_retrieval_examples_plot(config: AppConfig) -> Path:
             )
 
     examples = select_examples(manifest, split, matrices, config.backbone.name)
-    return render_examples(examples, config.paths.results_dir / "retrieval-examples.jpg")
+    if groups is not None:
+        wanted_groups = set(groups)
+        unknown = wanted_groups - {example.group for example in examples}
+        if unknown:
+            raise VisualizationError(
+                f"no query fell into {sorted(unknown)}; the groups that occurred are "
+                f"{sorted(example.group for example in examples)}"
+            )
+        examples = tuple(example for example in examples if example.group in wanted_groups)
+    return render_examples(
+        examples,
+        output or config.paths.results_dir / "retrieval-examples.jpg",
+        dpi,
+    )

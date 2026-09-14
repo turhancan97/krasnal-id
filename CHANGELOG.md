@@ -12,6 +12,23 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **The manuscript's remaining figures: the dataset, the pool-size curve, and a three-row
+  retrieval sheet.** Figure 1 is the corpus's three standing difficulties in the order the Results
+  meet them — statues sculpted alike, statues standing close together, and classes whose
+  photographs mostly come from one person. All three panels are rules rather than picks: the pairs
+  shown are the three the confusion analysis ranks highest, each class is represented by its
+  widest-framed photograph (a centre crop of a portrait frame returns the pillar a Słupnik sits on,
+  not the dwarf), and the neighbourhood the map magnifies is the densest 300 m circle in the
+  corpus. Panel (c) is the photographer-disjoint experiment's motivation as one line: a class with
+  three photographs draws **83%** of them from one person, falling to **52%** for classes with
+  twelve or more.
+- **Figure 2 shows the spread across seeds, which nearly did not survive the loader.** The
+  ablation records it as `lower_bound`/`upper_bound` on each metric rather than as separate metric
+  names, and the artifact reader kept only `value` — a band of zero width, drawn without complaint.
+  It now keeps the bounds, and a test holds the contract.
+- **`visualize retrieval-examples` takes `--group`, `--output` and `--dpi`.** The manuscript has
+  room for three rows where the repository shows four, so figure 4 drops the "dinov2 missed" row by
+  regenerating rather than by cropping, and stays reproducible from a committed command.
 - **`krasnal-id visualize paper-figures`: four of the manuscript's eight display items.**
   Geography, the photographer decomposition, the matcher sweep with its recall ceiling, and
   rejection — each consolidating several `RESULTS.md` tables into one panel set, at 300 dpi in a
