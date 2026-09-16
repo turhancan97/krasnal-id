@@ -232,7 +232,11 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   CLIP **79.3%**, up from 91.4% and 78.4% — cites the municipal portal with an access date, and
   reports that the projection moves only 0.4 points across every published count, which is narrower
   than the interval on the measured 306-class figure. The Orange Alternative claim gained two
-  verified peer-reviewed references. `RESULTS.md` §2 still carries the old number.
+  verified peer-reviewed references. **`RESULTS.md` §2 now carries the corrected figures too**, so
+  the repository no longer contradicts the manuscript: 1,040 dwarves, DINOv2 **91.7%**, CLIP
+  **79.3%**, with the municipal portal cited and an access date, the 0.4-point insensitivity across
+  every published count stated, and the superseded "roughly 1,400" named as having traced to no
+  source.
 - **Twenty-four references were printing with no conference name (`AGENTS.md` §11.1).** Springer
   Nature's own `sn-nature.bst` opens `format.in.ed.booktitle` with `duplicate$` having pushed
   nothing, so every `@inproceedings` without an editor hit "You can't pop an empty literal stack"

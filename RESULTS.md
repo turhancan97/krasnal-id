@@ -152,11 +152,23 @@ backbone choice is most of the battle; if you can, it matters much less.
 
 ### What this implies at city scale
 
-Extrapolating to the roughly 1,400 dwarves in the city gives 91.4% top-1 for DINOv2 and 78.4% for
-CLIP. The DINOv2 figure is now a reasonably supported extrapolation rather than a guess: it is
-two doublings past measured data, over a range where the rate has been constant for seven
-doublings. **The CLIP figure remains an optimistic bound**, because its rate is still worsening at
-the edge of the measured range, so a log-linear fit understates the loss.
+Extrapolating to the **roughly 1,040** dwarves standing in public space in 2026 gives **91.7%**
+top-1 for DINOv2 and **79.3%** for CLIP. The DINOv2 figure is a reasonably supported extrapolation
+rather than a guess: it is under two doublings past measured data, over a range where the rate has
+been constant for seven doublings. **The CLIP figure remains an optimistic bound**, because its
+rate is still worsening at the edge of the measured range — 2.53 points per doubling over the last
+decade against 2.06 fitted overall — so a log-linear fit understates the loss.
+
+**The count is the unstable half of that sentence, not the rate.** There is no agreed number of
+dwarves: the city's own tourism portal still carries about 360 for 2020, the thousandth statue was
+installed in September 2025, the same portal gives about 1,040 in public space for 2026, and
+counts reach about 1,425 once works outside the city, temporary installations and related art
+projects are counted. An earlier version of this section said "roughly 1,400" and that figure
+traced to no source. Fortunately the projection barely depends on it: 91.8% at 1,000 candidates,
+91.7% at 1,040 and 91.4% at 1,425, so **the whole range of published counts spans 0.4 points** —
+narrower than the confidence interval on the measured 306-class figure. The number quoted above is
+the 2026 public-space count, [visitWroclaw](https://visitwroclaw.eu/wroclawskie-krasnale),
+accessed 14 September 2026.
 
 ## 3. Does narrowing by location actually help?
 
@@ -313,7 +325,7 @@ moves. The two distributions slide together.
 
 This is a **correction to a previously published result of this project**, not a new caveat on it.
 The 0.4.0 release reported open-set rejection as working at a modest cost. It worked on 23 classes
-and does not work on 306, and there is no reason to expect it to improve at 1,400.
+and does not work on 306, and there is no reason to expect it to improve at 1,040.
 
 ## 7. What the small pool got wrong
 
