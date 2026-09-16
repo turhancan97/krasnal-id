@@ -722,8 +722,8 @@ def rejection_figure(sources: Sources, output: Path) -> Path:
 
 FIGURES = {
     "fig1-dataset": dataset_figure,
-    "fig2-pool-size": pool_size_figure,
-    "fig3-geography": geography_figure,
+    "fig3-pool-size": pool_size_figure,
+    "fig4-geography": geography_figure,
     "fig5-photographer": photographer_figure,
     "fig6-matcher": matcher_figure,
     "fig7-rejection": rejection_figure,

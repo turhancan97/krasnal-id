@@ -1523,6 +1523,106 @@ that would bring it back.
   interval on the measured 306-class figure. **The general lesson is the §6.4 rule applied outward:
   a number taken from the world needs a source the same way a number taken from an experiment needs
   an artifact.** `RESULTS.md` §2 still says 1,400 and should be corrected when it is next touched.
+- **The manuscript carries a Related Work section, which *Scientific Reports* does not normally
+  have (2026-09-15).** Nature Portfolio research articles run Introduction, Results, Discussion,
+  Methods, and `sn-jnl` is built for exactly that; a separate numbered section 2 is a
+  CS-conference convention and a desk editor will notice it. It is the author's decision, taken
+  knowingly, and it is recorded here for the same reason *Scientific Data*'s rejection is: so
+  nobody reads it later as an oversight and silently "fixes" it. Results, Discussion and Methods
+  are now sections 3, 4 and 5. Nothing broke in the renumber because `main.tex` never
+  cross-references its own sections — the `\label{sec:*}` anchors exist but are unused.
+  - **The Introduction was deliberately not trimmed to pay for it.** That makes Related Work's job
+    to go *deeper* than the threads the Introduction names in a clause, rather than to relocate
+    them, and accepts some overlap as the price. Six threads, 896 words, each closing with an
+    explicit statement of what this paper does differently.
+  - **It puts the paper 442 words over budget, and that is deliberate for now.** 669 + 896 + 2,652
+    + 725 = 4,942 against 4,500 counted words. The section was written at its natural length on the
+    principle that trimming a written section is easier than padding a compressed one;
+    `paper/SKELETON.md` carries four ranked trim candidates for when that is taken up.
+  - **The heritage thread had zero bibliography support before this**, which the earlier note that
+    the bibliography was "thin on heritage imaging" understated — it was not thin, it was empty.
+    Ten new entries were added, six of them heritage, each resolved by DOI and checked on title,
+    first author and year. The closest prior work turns out to be **The Met dataset**
+    (`ypsilantis2022met`): instance-level recognition over artworks where references are studio
+    captures and queries are visitor photographs, so it shares both this paper's photographer
+    distribution shift *and* its unsolved out-of-distribution problem. Its absence from a paper on
+    instance-level recognition of near-identical objects would have been the first thing a
+    reviewer named.
+  - **Three candidates were rejected because no DOI resolved for them**, and are named in a comment
+    block in `references.bib` so nobody re-proposes them from memory: DeVries "Does Object
+    Recognition Work for Everyone?", Shankar "No Classification without Representation", and
+    CUB-200-2011. For the first two Crossref returned confidently *wrong* matches — an object
+    tracking paper and a blockmodeling chapter — which is the same failure that once pointed
+    `he2020moco` at an unrelated MDPI preprint.
+  - **A second silent-venue bug exists, with a different cause from the `.bst` one.** Crossref
+    serves LNCS workshop papers as `@inbook`, and BibTeX's `@inbook` is for an *untitled* part of a
+    book, so it ignores `booktitle` entirely: Seguin and Ufer first rendered as a bare title, page
+    range and publisher with **no ECCV Workshops anywhere**, while the compile reported zero errors
+    and BibTeX zero warnings. Both are now `@incollection`, which is the correct type for a titled
+    contribution in a collection. **The general rule stands and now has two instances: read the
+    rendered bibliography for every new entry, because neither the log nor the exit status will
+    tell you a venue vanished.**
+  - **Supplementary S15 is appended rather than inserted, and is the only typed table in the SI.**
+    Its figures come from other people's papers, so there is no artifact for a generator to read
+    and it must not enter the `TABLES` registry in `paper_tables.py`. The rule that replaces §6.4's
+    artifact rule for it: every figure in its Scale column is quoted from the cited work's **own
+    abstract** rather than recalled, and anything unverifiable that way was omitted rather than
+    approximated. It sits after S14 because `main.tex` points at Supplementary sections with
+    hardcoded strings rather than `\ref`, so inserting it anywhere earlier would have silently
+    misdirected eleven pointers.
+
+- **Methods is section 3, ahead of Results (2026-09-15).** The order is now Introduction, Related
+  work, Methods, Results, Discussion. This is the manuscript's *second* deliberate deviation from
+  the Nature Portfolio structure, which puts Methods last, and it was taken at the author's request
+  after the trade-off was put to them.
+  - **The word-count objection was checked and does not hold.** The tempting argument against
+    moving Methods is that it would lose its exemption from the 4,500-word budget. It does not: the
+    rule recorded at the head of `main.tex` exempts "Abstract, Methods, References and figure
+    legends", which follows the *section*, not its position. The reorder is free in budget terms
+    and the paper is 442 words over either way. Recorded because it is the first argument anyone
+    will reach for, and it is wrong.
+  - **The real cost is that two deviations compound.** One reads as a considered choice; two read
+    as not having consulted the guide, and invite a reformatting request from the editorial office
+    before a reviewer sees the manuscript. That was the recommendation against, the author decided
+    otherwise, and the decision is theirs.
+  - **The real benefit is that Results stops forward-referencing its own protocol.** §R5's
+    "2.61 points attributable to the photographer" is meaningless without the size-matched control,
+    and §R6 leans on the answerable subset of 1,157 queries; both were defined 30 pages later.
+    In IMRaD order the reader has them before they are used.
+  - **Nothing broke, and the reason is worth keeping.** `main.tex` never cross-references its own
+    section numbers, so the renumber was free. Two `\ref`s inside Methods point *into* Results
+    (`res:photographer`, `res:geometry}`); both renumbered to 4.5 and 4.6 and now read as ordinary
+    forward references. The rendered PDF carries zero unresolved `??`. **Check that count after any
+    future reorder** — an unresolved reference prints as `??` and raises no error.
+  - **Methods is 2,883 words against the ~1,600 `paper/SKELETON.md` planned**, which the move made
+    visible: it is now the largest section in the paper and sits between Related Work and Results.
+    It stays uncounted, so nothing forces a trim, but a Methods section at that length usually
+    means material that belongs in the Supplementary, and S1–S15 already carry that kind of detail.
+
+- **The display items are interleaved, not collected at the end, and doing it exposed a numbering
+  defect (2026-09-15).** All eight floats had been declared in one block after the Discussion. **A
+  LaTeX float can only travel forward from its declaration**, so the earliest page any of them
+  could reach was 14, and every item sat 7 to 16 pages from the paragraph discussing it. Each float
+  now sits immediately after the paragraph that first cites it.
+  - **`[t]` alone was not enough, and the failure mode is worth knowing.** With top-only placement
+    the tall figures would not fit, LaTeX deferred them, and because floats must emerge in order
+    every later figure queued behind the first deferred one — so after interleaving, figure 1
+    moved to page 6 and figures 2 to 7 were still stranded at the back. `[tbp]` fixed it. Every
+    display item now lands on its citation's page or the next, and the manuscript lost two pages.
+  - **The old numbering was not citation order, which is a defect a reviewer would flag.** Figures
+    are numbered by declaration order, and collecting them at the end had frozen an order in which
+    old Fig. 4 was first cited *before* old Figs. 2 and 3. Journals require figures be numbered in
+    order of first mention. Interleaving renumbers them correctly as a side effect: retrieval
+    examples 4 to 2, pool size 2 to 3, geography 3 to 4.
+  - **Three figure files were renamed so filename and number still agree**, and
+    `src/krasnal_id/viz/paper_figures.py`'s registry plus `tests/test_paper_figures.py`'s pins were
+    renamed with them — the only tracked code this manuscript work has touched.
+  - **`si.tex` carried the one hardcoded main-text figure number and the renumber silently broke
+    it.** "every value Fig.~2 of the main text plots" meant the pool-size curve, which is now
+    Fig. 3. `main.tex` uses `\ref` throughout and needed nothing. **A wrong figure number is still
+    a valid document**, so it raises no error and the compile stays clean — grep both files for a
+    literal `Fig.~N` whenever a float is added, moved or removed.
+
 - **`sn-nature.bst` carries a local patch, and `paper/` being untracked means nothing protects it.**
   Springer Nature's own Nature-style BibTeX file begins `format.in.ed.booktitle` with `duplicate$`
   having pushed nothing, so every `@inproceedings` without an editor raises "You can't pop an empty

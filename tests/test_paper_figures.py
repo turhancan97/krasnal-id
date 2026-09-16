@@ -72,8 +72,8 @@ def test_every_figure_is_named_for_its_position_in_the_manuscript() -> None:
     """The filenames are what main.tex includes, so they cannot drift silently."""
     assert set(FIGURES) == {
         "fig1-dataset",
-        "fig2-pool-size",
-        "fig3-geography",
+        "fig3-pool-size",
+        "fig4-geography",
         "fig5-photographer",
         "fig6-matcher",
         "fig7-rejection",

@@ -12,6 +12,115 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- **Both reference lists contained works the text never cites, and the SI discussed six methods
+  without citing any of them.** Each document carried a `\nocite` scaffolding block marked "delete
+  once the prose carries real citations" — and the prose now does, so the blocks were padding.
+  `main.tex` cited 58 works but printed 60; removing its block dropped `efron1979bootstrap` and
+  `mcinnes2018umap` (the latter correctly stays in the SI, which does cite it). The SI was the
+  worse case and the block was hiding it: its prose names **SIFT 11 times, DISK and LightGlue 7
+  each, RANSAC 4**, plus Wilson intervals — and cited none of them, while `\nocite` put them in
+  the reference list so it looked complete. Deleting the block naively would have left those
+  methods discussed with no citation anywhere, so each was cited at first mention first. `kornia`
+  and McNemar turned out to appear only in source comments and correctly drop. Both lists now
+  match their citations exactly: 58 and 12.
+
+- **Four Supplementary figures and one table were never cited from the prose.** Running the
+  main-text float audit against `si.tex` found the opposite problem: the SI's floats were already
+  interleaved and well placed, but nothing directed a reader to them. Figs. S1 and S3 were
+  referenced only from *another figure's caption*, and Fig. S2, Fig. S4 and Table S12 carried no
+  `\ref` at all — so S6 described the embedding projection without sending anyone to it, and S12
+  quoted every number in its own table while never citing it. Each now has a reference at the
+  sentence that already described what the float shows. **A plain `\ref` scan misses this**: float
+  environments have to be masked first, or a caption's cross-reference counts as a citation.
+
+- **The figures are interleaved with the text instead of collected at the end, and were numbered
+  out of citation order (`AGENTS.md` §11.1).** All eight display items had been declared in one
+  block after the Discussion, and **a LaTeX float can only travel forward from its declaration** —
+  so the earliest page any figure could reach was 14, and every item sat 7 to 16 pages from the
+  paragraph discussing it. Each float now follows the paragraph that first cites it, at `[tbp]`
+  rather than `[t]`: top-only placement deferred the tall figures and queued the rest behind them,
+  which left figures 2 to 7 stranded at the back even after interleaving. Every display item now
+  lands on its citation's page or the next, and the manuscript is two pages shorter.
+- **Interleaving exposed a defect rather than causing one: the figures were not numbered in
+  citation order.** Numbering follows declaration order, and the end-block had frozen an order in
+  which Figure 4 was first cited before Figures 2 and 3 — which journals require against. The
+  correct order falls out of placing each float at its citation: retrieval examples 4 → 2, pool
+  size 2 → 3, geography 3 → 4. Three figure files were renamed to match, along with
+  `paper_figures.py`'s registry and `test_paper_figures.py`'s pins. **`si.tex` held the only
+  hardcoded main-text figure number** — "every value Fig. 2 of the main text plots", the pool-size
+  curve — and the renumber silently invalidated it; it now reads Fig. 3. A wrong figure number is
+  still a valid document, so nothing in the build would have reported it.
+
+- **Data availability and Code availability are written, and the abstract carries the project
+  page.** Both sections were empty stubs with TODO comments. Data availability names the two
+  deposits, the concept DOI and `turhancan97.github.io/krasnal-id/`, then the licence families —
+  **counted from `data/manifest.json` rather than summarised**, which is the §6.4 rule applied to
+  the back matter: ten distinct terms, CC BY-SA 4.0 (896) and 3.0 (668) covering 1,564 of 1,691 —
+  then the two disclosures §11.1 asked for, that the sculptures are copyrighted works Commons hosts
+  under Poland's freedom of panorama while both deposits sit in a jurisdiction with no equivalent
+  exemption, and that removal runs through `data/image-review.json`. Code availability names the
+  repository under MIT, the archive DOI, and leaves the pinned revisions to S14 rather than
+  repeating them. The abstract's closing sentence gains the project page for one word, at 195 of
+  the 200 allowed.
+- **Two typesetting warnings deliberately left standing, after both fixes for them made the page
+  worse.** The deposit URLs are long and nearly unbreakable, so justified setting stretches the
+  space around them and TeX reports underfull hboxes. `\sloppy` does nothing — it raises tolerance,
+  and the stretch rather than the tolerance is the problem, so the badness came back identical.
+  `\setlength{\Urlmuskip}{0mu plus 3mu}` does clear both, by letting the URLs stretch instead — and
+  the rendered page then reads `https : / / www . kaggle . com / datasets /`, which is a visible
+  defect traded for an invisible one. The warnings stay; loose interword spacing is the lesser
+  fault and the URLs break cleanly at `/`. **Neither state was distinguishable from the log** —
+  both were found by rendering the page and looking at it, the same lesson as the bibliography
+  losing 24 venues while BibTeX exited 0. `main.tex` carries the rationale so neither fix is
+  retried.
+- **The archive DOI is written as a DOI, not as a resolver URL.** `10.5281/zenodo.22548023` in both
+  availability sections, hyperlinked through `\href` so it stays clickable without printing
+  `https://doi.org/` in front of it.
+
+- **Methods moves ahead of Results, making the order Introduction, Related work, Methods, Results,
+  Discussion (`AGENTS.md` §11.1).** The manuscript's second deliberate deviation from the Nature
+  Portfolio structure, taken at the author's request. **The objection that it would cost Methods its
+  exemption from the 4,500-word budget was checked and is wrong** — the rule exempts the section,
+  not the position, so the reorder is free and the paper is 442 words over either way. What it buys
+  is that Results stops forward-referencing its own protocol: §R5's photographer attribution is
+  meaningless without the size-matched control, and §R6 leans on the 1,157-query answerable subset,
+  both of which were defined thirty pages later. What it costs is that two structural deviations
+  compound into a reformatting request from the editorial office. Nothing broke in the renumber
+  because `main.tex` never cross-references its own section numbers; the two `\ref`s pointing from
+  Methods into Results renumbered to 4.5 and 4.6 and read as ordinary forward references, with zero
+  unresolved `??` in the rendered PDF.
+- **Methods is 2,883 words against the ~1,600 planned**, which the move made visible by putting the
+  paper's largest section between Related Work and Results. It stays uncounted so nothing forces a
+  trim, but a Methods section that long usually means material that belongs in the Supplementary.
+
+- **The manuscript gains a Related Work section, and the bibliography gains ten verified entries
+  (`AGENTS.md` §11.1).** Six threads, 896 words, each closing with what this paper does
+  differently: instance retrieval and its benchmarks, frozen self-supervised representations, local
+  features and geometric verification, fine-grained recognition, cultural-heritage recognition, and
+  community-contributed corpora. Results, Discussion and Methods become sections 3, 4 and 5; the
+  renumber broke nothing because `main.tex` never cross-references its own sections. **This is a
+  deliberate deviation from the Nature Portfolio structure** and is recorded as a decision rather
+  than left to look like an oversight. It puts the paper 442 counted words over budget, which was
+  the accepted trade: a written section is easier to trim than a compressed one is to expand.
+- **The heritage literature was not thin, it was absent.** No entry among the previous 50 touched
+  museum, artwork or monument recognition, and the closest prior work to this paper turns out to be
+  **The Met dataset** — instance-level recognition over artworks whose references are studio
+  captures and whose queries are visitor photographs, sharing both this paper's photographer
+  distribution shift and its unsolved out-of-distribution problem. Its absence would have been the
+  first thing a reviewer named. Three further candidates were **rejected** because no DOI resolved
+  for them, and are named in `references.bib` so nobody re-proposes them from memory; for two of
+  them Crossref returned confidently wrong matches — an object-tracking paper and a blockmodeling
+  chapter.
+- **Supplementary S15, the one typed table in the SI.** It positions this corpus against prior
+  benchmarks, and it cannot be generated because its figures come from other people's papers rather
+  than this project's artifacts, so it stays out of the `TABLES` registry. The rule that replaces
+  the artifact rule: every figure in its Scale column is quoted from the cited work's **own
+  abstract**, and anything unverifiable that way was omitted rather than approximated — which is
+  why Stanford Cars is discussed in the prose but absent from the table. Verifying rather than
+  recalling those figures caught that Oxford Flowers' own paper says **103** classes, not the 102
+  the dataset is usually cited as, and that Google Landmarks v2 is drawn from Wikimedia Commons —
+  the same source as this corpus, which turns that row from a scale contrast into a subject one.
+
 - **Figure density is a parameter, not a constant, in the projection and match figures.** Both now
   take `--dpi` and `--output` like the contact sheet already did, so the repository's 200-dpi
   copies and the manuscript's 300-dpi copies come from one code path. Rendering the match figure
@@ -97,6 +206,15 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   `RESULTS.md` §1-§14; §15 has existed since 2026-09-13.
 
 ### Fixed
+
+- **Two references printed with no venue, from a different cause than the `.bst` bug.** Crossref
+  serves LNCS workshop papers as `@inbook`, and BibTeX's `@inbook` is for an *untitled* part of a
+  book, so it discards `booktitle` outright: Seguin and Ufer rendered as a bare title, page range
+  and publisher with no "Computer Vision -- ECCV Workshops" anywhere, while the compile reported
+  zero errors and BibTeX zero warnings. Both are now `@incollection`. **That is the second distinct
+  way this manuscript has silently lost venues**, and it confirms the rule the first one produced:
+  read the rendered bibliography for every new entry, because neither the log nor the exit status
+  will report it.
 
 - **The two venue checks are resolved as far as public sources allow (`AGENTS.md` §11.1, §11.2).**
   Scope and acceptance criteria are verified from the journal's own Editorial Board handbook, which
