@@ -1155,7 +1155,12 @@ cheap ideas — what remains is blocked on photographs, on a gated checkpoint, o
 neither appearance nor geometry provides. `0.18.0` then reopens one of them and answers it
 properly: §7.11 shows §7.10 was a fact about SIFT, since `disk-lightglue` re-ranks to 84.62%
 against its 82.28%. It also ships the first figure that shows *why* a match works rather than how
-much, and closes the browser version of it on measurement.
+much, and closes the browser version of it on measurement. `0.19.0` changes no result: it is the
+release that writes the paper, and the only one whose findings are about the manuscript rather
+than the corpus. Every display item and all fourteen supplementary tables are generated from
+`results/*.json`; the manuscript gains a Related Work section (§11.1) and written availability
+sections; and six defects surface that a clean build reported as success, each found by rendering
+the output and reading it rather than by reading a log.
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a

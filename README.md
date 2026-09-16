@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.18.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.19.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and fourteen experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -51,7 +51,12 @@ was a fact about SIFT: swapping it for a learned matcher takes re-ranking from 8
 cross-photographer, 34 queries won to 7 lost. It also draws what a matcher matched, which is the
 first figure here that shows *why* rather than how much — and closes the same feature in the
 browser, because the shipped thumbnails are too small to match on and the matcher small enough to
-ship is the one that fails on this corpus.
+ship is the one that fails on this corpus. `0.19.0` changes no result: it is the release
+that writes the paper. Every display item and all fourteen supplementary tables are generated from
+`results/*.json` rather than typed, the manuscript gains a Related Work section and written
+availability sections, and a run of defects surfaces that every build had reported as success — 24
+references printing with no conference name while BibTeX exited 0, four Supplementary figures that
+nothing in the prose pointed at, and display items numbered out of citation order.
 
 The dataset is published on
 [Hugging Face](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and
@@ -139,7 +144,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.18.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.19.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -185,7 +190,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.18.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.19.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

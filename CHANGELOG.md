@@ -10,6 +10,40 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-09-16
+
+The research stopped changing and the paper started, which turned out to be its own kind of
+experiment.
+
+Every number in the manuscript and its Supplementary Information is now generated rather than
+typed. `visualize paper-figures` draws seven of the eight display items and `visualize
+paper-tables` emits fourteen supplementary tables from `results/*.json`, so `si.tex` inputs
+fragments and no figure in the paper can drift from the repository that produced it.
+
+What the release actually cost was a run of defects that every build reported as success. Springer
+Nature's own `sn-nature.bst` dropped the conference name from **24 of 47** references while BibTeX
+exited 0. Crossref serves LNCS workshop papers as `@inbook`, where BibTeX ignores `booktitle`, so
+two more printed with no venue. A citation checked on title alone pointed at an unrelated 2025
+preprint carrying MoCo's exact title. Four Supplementary figures were referenced only from *other
+figures' captions*, so no sentence sent a reader to them. Both reference lists were padded by
+`\nocite` scaffolding standing over prose that named SIFT, DISK, LightGlue and RANSAC without
+citing any of them. The display items were numbered out of citation order, which only became
+visible when they were interleaved — a LaTeX float travels forward only, so collecting them at the
+end had put the earliest possible figure on page 14 and left every item 7 to 16 pages from its
+discussion. And a fix for stretched URLs cleared its warnings by letting the URLs stretch instead,
+rendering `https : / / www . kaggle . com`.
+
+None of those appeared in a log. Every one was found by rendering the output and reading it, which
+is the same lesson §6.4 already draws about numbers: a clean exit is not evidence.
+
+The manuscript itself gained a Related Work section at the author's decision — six threads, ten
+DOI-verified references, and a cultural-heritage literature the bibliography had not covered at
+all, whose closest prior work turns out to be The Met dataset, instance-level recognition over
+artworks that shares both this paper's photographer distribution shift and its unsolved
+out-of-distribution problem. Methods moved ahead of Results. Data and code availability are
+written, with the licence families counted from the manifest rather than summarised and the
+freedom-of-panorama position stated rather than left for a reviewer to find.
+
 ### Added
 
 - **Both reference lists contained works the text never cites, and the SI discussed six methods
