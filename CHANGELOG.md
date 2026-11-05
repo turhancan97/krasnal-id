@@ -47,6 +47,10 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- Recorded the author's priority of an archival workshop publication in `AGENTS.md` sections 8
+  and 11.3, with CVWW 2027's contributed papers track as the leading candidate. The earlier
+  *Scientific Reports* plan and APC investigation remain as a fallback and historical record.
+  This records the venue priority only; the manuscript has not been reformatted or submitted.
 - `data/field-guide.md` asks for JPEG, a photographer with no Commons uploads of these statues, and
   transfer by cable or full-quality backup rather than a messaging app, and describes the sorting
   step. The README's field-query section describes both comparators and the intervals.
