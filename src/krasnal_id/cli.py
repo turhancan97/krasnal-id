@@ -1,6 +1,7 @@
 """Unified command-line interface for all Krasnal-ID pipeline stages."""
 
 import json
+import shlex
 from pathlib import Path
 from typing import Annotated
 
@@ -39,6 +40,13 @@ from krasnal_id.data_pipeline.field_queries import (
     queries_by_cohort,
     stage_field_queries,
     write_field_query_manifest,
+)
+from krasnal_id.data_pipeline.field_sort import (
+    FieldSortError,
+    SortStatus,
+    field_sort_report_path,
+    sort_field_inbox,
+    write_sort_report,
 )
 from krasnal_id.data_pipeline.license_templates import (
     LicenseTemplateError,
@@ -428,6 +436,60 @@ def build_split(override: OverrideOption = None) -> None:
         f"strategy={split.strategy} folds={len(split.folds)} "
         f"output={config.paths.evaluation_split_path}"
     )
+
+
+@data_app.command("field-sort")
+def propose_field_sort(override: OverrideOption = None) -> None:
+    """Propose a route statue for each unsorted field photograph from its GPS.
+
+    Nothing is moved. The commands printed for unambiguous photographs are
+    suggestions to run after looking at each one; the directory a photograph ends
+    up in is what ties it to a statue, never this proposal.
+    """
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    try:
+        route = load_field_route(config.paths.field_route_path)
+        manifest = _read_manifest(config.paths.manifest_path)
+        report = sort_field_inbox(
+            config.paths.field_inbox_dir,
+            route,
+            manifest,
+            config.thresholds.field_sort_max_distance_m,
+            config.thresholds.field_sort_ambiguity_m,
+        )
+        path = field_sort_report_path(config.paths.data_dir)
+        write_sort_report(path, report)
+    except (FieldQueryError, FieldSortError, ManifestConfigurationError) as error:
+        typer.echo(f"Field sort error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    counts = " ".join(f"{status}={report.count(status)}" for status in SortStatus)
+    typer.echo(f"Field sort proposal: photographs={len(report.proposals)} {counts} output={path}")
+    typer.echo("  Nothing was moved. Look at each photograph before filing it.")
+    for proposal in report.proposals:
+        nearest = proposal.candidates[0] if proposal.candidates else None
+        if proposal.status == SortStatus.PROPOSED and nearest is not None:
+            target = config.paths.field_queries_dir / nearest.dwarf_id
+            typer.echo(
+                f"  # {proposal.path.name}: {nearest.display_name} at "
+                f"{nearest.distance_m:.0f} m\n"
+                f"  mkdir -p {shlex.quote(str(target))} && "
+                f"mv -n {shlex.quote(str(proposal.path))} {shlex.quote(str(target))}/"
+            )
+        elif proposal.status == SortStatus.AMBIGUOUS:
+            options = ", ".join(
+                f"{candidate.display_name} [{candidate.dwarf_id}] {candidate.distance_m:.0f} m"
+                for candidate in proposal.candidates
+            )
+            typer.echo(f"  # {proposal.path.name}: ambiguous, decide by eye between {options}")
+        elif proposal.status == SortStatus.OFF_ROUTE and nearest is not None:
+            typer.echo(
+                f"  # {proposal.path.name}: off the route, nearest is "
+                f"{nearest.display_name} at {nearest.distance_m:.0f} m"
+            )
+        else:
+            typer.echo(f"  # {proposal.path.name}: {proposal.status}, {proposal.detail}")
 
 
 @data_app.command("field-queries")
@@ -966,8 +1028,9 @@ def field_gap_experiment(override: OverrideOption = None) -> None:
         typer.echo(
             f"    {row.display_name} ({row.cohort}): {row.field_top_1_hits} of "
             f"{row.field_queries} field photographs identified, against "
-            f"{row.commons_top_1_hits} of {row.commons_queries} Commons queries, "
-            f"mean rank {row.field_mean_rank:.1f}"
+            f"{row.commons_top_1_hits} of {row.commons_queries} Commons queries "
+            f"({row.commons_disjoint_top_1_hits} of {row.commons_disjoint_queries} "
+            f"photographer-disjoint), mean rank {row.field_mean_rank:.1f}"
         )
 
 

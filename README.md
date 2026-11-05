@@ -556,12 +556,21 @@ path that scores it.
 
 Photographs taken in the street are **queries, never references**: the manifest is not rebuilt to
 include them, because admitting them as references would destroy the comparison they exist to make.
-Drop three to five phone photographs of a statue into `data/field-queries/<dwarf_id>/`, following
-`data/field-guide.md`, then:
+Shoot JPEG, not HEIC, following `data/field-guide.md`. Copy the phone's files unsorted into
+`data/field-inbox/`, then:
 
+    uv run krasnal-id data field-sort                       # GPS proposes a statue per photograph
+    # look at each photograph, then file it into data/field-queries/<dwarf_id>/
     uv run krasnal-id data field-queries                    # stage them into a query manifest
     uv run krasnal-id embeddings extract --field-queries    # embed them with the pinned backbone
     uv run krasnal-id experiment field-gap                  # score them against the references
+
+`data field-sort` **moves nothing**. It reads each photograph's GPS, names the nearest route statue
+when exactly one lies within 25 m of the nearest fix, and otherwise lists every candidate, because
+several statues share a plinth and no phone can tell them apart. It prints `mv` commands for the
+unambiguous ones to run after looking; the directory a photograph sits in is what decides its
+statue. Images are read upright: a phone's EXIF rotation tag is applied before embedding, which
+the references never needed, so it changes none of their vectors.
 
 Staging is offline and needs no ML extra. It refuses a directory that names no statue in the
 dataset, a statue absent from the reviewed route, a file that will not decode, and any photograph
@@ -573,9 +582,16 @@ the **leave-one-out folds of the same statues**, so pool size and class difficul
 and only the query's origin varies, and it writes overall, per-cohort and per-statue rows to
 `results/field_gap-<backbone>.json`. Which statues are members of a confused family and which are
 controls is fixed in tracked `data/field-route.json` before anything is scored, so the split cannot
-be chosen after seeing the result. One asymmetry is reported rather than hidden: a leave-one-out
-query is withheld from its own class and so sees one fewer reference of the right statue than a
-field query does, which favours the field queries and understates the gap.
+be chosen after seeing the result.
+
+It compares twice, because a field photograph is new in two ways. `top_1_gap` is against the folds
+as published; `disjoint_top_1_gap` is against the same folds with every reference by the query's
+own photographer withheld, which removes the photographer effect `RESULTS.md` section 9 measured
+and leaves the phone and the street. The disjoint gap is a lower bound on that remainder: both
+comparators see fewer correct references than a field query does. Every gap, and the
+confusable-minus-control contrast, carries a 95% interval bootstrapped over **statues**, since
+several photographs of one statue are not independent; the per-arm Wilson intervals are per
+photograph and too narrow for the field arm.
 
 ## Use the published dataset
 

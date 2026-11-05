@@ -25,6 +25,9 @@ data/images
 data/field-queries
 # The staged query manifest is generated; data/field-route.json is reviewed and tracked.
 data/field-queries.json
+# The unsorted phone dump and what GPS proposes for it, before a person files them.
+data/field-inbox
+data/field-sort-proposal.json
 data/embeddings
 data/splits
 data/discovery

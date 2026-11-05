@@ -20,6 +20,7 @@ from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.embeddings.store import cache_key_for
+from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest
 
 
@@ -112,7 +113,9 @@ def _load_and_validate_image(record: ExtractableImage) -> Image.Image:
                     f"image {record.image_id} dimensions mismatch: expected "
                     f"{record.width}x{record.height}, got {image.width}x{image.height}"
                 )
-            return image.convert("RGB")
+            # Sizes are checked as stored, before rotation, because that is what
+            # staging recorded; the model then sees the photograph upright.
+            return upright_rgb(image)
     except (OSError, UnidentifiedImageError) as error:
         raise EmbeddingExtractionError(
             f"image {record.image_id} cannot be decoded: {path}: {error}"

@@ -156,6 +156,22 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+# iPhones save HEIC by default and Pillow cannot read it without a plugin this
+# project deliberately does not depend on: the guide asks for JPEG instead, which
+# keeps the decoder that reads a field photograph the one that read the references.
+HEIC_SUFFIXES = frozenset({".heic", ".heif"})
+
+
+def decode_hint(path: Path) -> str:
+    """Say how to fix an undecodable photograph, when the suffix says why."""
+    if path.suffix.lower() in HEIC_SUFFIXES:
+        return (
+            "; HEIC is not supported, so shoot JPEG (iPhone: Settings > Camera > Formats > "
+            "Most Compatible) or export the photographs as JPEG, as data/field-guide.md asks"
+        )
+    return ""
+
+
 def _photograph_files(directory: Path) -> tuple[Path, ...]:
     """Return the candidate photographs in one statue's directory.
 
@@ -220,7 +236,7 @@ def stage_field_queries(
                     width, height = image.size
             except (OSError, UnidentifiedImageError) as error:
                 raise FieldQueryError(
-                    f"field photograph cannot be decoded: {path}: {error}"
+                    f"field photograph cannot be decoded: {path}: {error}{decode_hint(path)}"
                 ) from error
             records.append(
                 FieldQueryRecord(

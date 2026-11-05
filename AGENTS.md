@@ -443,6 +443,67 @@ photographer.
   makes a dataset release worth making, and it is checkable in twenty lines by anyone who
   downloads it.
 
+### 5.14 Field-walk readiness decision (2026-11-05)
+
+Section 5.10 built the measuring path and tested it on stand-ins derived from references. Preparing
+for an actual walk exposed what that could not: a Commons derivative is already upright, already
+JPEG, and was never sorted by hand. Five changes follow, each recorded because it either fixes a
+measurement that would have been wrong or changes what the experiment reports.
+
+- **EXIF orientation is applied before embedding, everywhere.** A phone stores a portrait
+  photograph as landscape pixels plus an `Orientation` tag, and nothing here honoured it, so every
+  portrait field photograph would have reached the model lying on its side. `image_io.upright_rgb`
+  is now the one loader for extraction and single-image retrieval. **It invalidates nothing**:
+  measured on 2026-11-05, all 1,691 references carry `Orientation = 1` (1,657) or no tag (34), so
+  the transpose is an identity on every cached vector. Staging and extraction still check the
+  dimensions *as stored*, before rotation, because that is what staging records. The rehearsal
+  below priced the bug at 13.2 top-1 points for DINOv2 and 28.9 for CLIP — the size of the effect
+  being measured, which is why it had to be fixed rather than noted.
+- **HEIC is refused with the fix in the message, not supported.** Adding `pillow-heif` would put
+  a second decoder in front of the field photographs only, so the two sides of a difference would
+  be decoded differently. The guide asks for JPEG ("Most Compatible" on an iPhone) and the error
+  names that setting. The guide also forbids transfer through messaging apps, which recompress and
+  strip both GPS and the rotation tag.
+- **`data field-sort` implements §5.8's GPS proposal, and moves nothing.** It reads an unsorted
+  `data/field-inbox/`, ranks the *whole* route (core and extended) by distance from each fix, and
+  proposes one statue only when no other lies within `field_sort_ambiguity_m` (25 m) of the
+  nearest; beyond `field_sort_max_distance_m` (100 m) a photograph is off the route. Both are
+  `thresholds` config. 25 m is phone error (~10 m in the Old Town) plus §5.7's ~9 m coordinate
+  error, rounded up, because a wrong single proposal is worse than an honest list. Expect most
+  photographs to be ambiguous: three route groups share one coordinate and WrocLovek and Śpioch
+  stand 5 m apart. On the rehearsal, 9 of 38 were proposed, all correctly, and all 29 ambiguous
+  lists contained the right statue. It prints `mv` commands for proposals and never runs them;
+  the directory stays authoritative.
+- **The field gap is reported against two comparators.** A field photograph is new in two ways —
+  phone and street, and photographer — and §7.5 already measured the second. `top_k_gap` is against
+  the published folds; `disjoint_top_k_gap` against the same statues' folds with the query
+  photographer withheld, through the same `photographers` helpers §7.5 uses. Both comparators see
+  fewer correct references than a field query, so the disjoint gap is a **lower bound** on the
+  phone-and-street component; the standard gap has no bound in either direction, since leakage
+  inflates its comparator and the withheld reference deflates it. A statue documented by one
+  photographer drops out of the disjoint comparison *on both sides*, and `disjoint_classes`
+  counts what remains. No core statue is affected; four extended ones are (Wierzbownik, Tescoma,
+  Golasek, Rozkwietnik). No size-matched control is run here: §7.5's control answers a question
+  about the comparator's pool, which this comparison inherits rather than re-asks.
+- **Gap intervals are a bootstrap over statues; per-arm intervals stay Wilson.** A walk yields
+  three to five photographs of each of a few dozen statues, and they are not independent draws,
+  so a per-photograph interval on the gap would overstate precision several-fold. Each gap — and
+  the confusable-minus-control contrast that §5.8's cohorts exist for — carries a 95% percentile
+  interval from `bootstrap_resamples` (10,000) resamples of whole statues, pairing each statue's
+  field and Commons queries. The generator is keyed by seed and group name, not position, so adding
+  a cohort or cut-off never moves an existing interval. §6.2's Wilson convention is kept on the
+  per-arm accuracies, which therefore remain per photograph: **quote the gap's interval, never the
+  field arm's Wilson interval**. With eight control statues the contrast's interval is coarse, and
+  that is the honest width.
+
+Rehearsed end to end on 2026-11-05 in a scratch directory, never under `data/` or `results/`: 38
+phone-style stand-ins (two references per core statue, rotated with `Orientation = 6`, re-encoded,
+GPS scattered by up to 8 m) went through sort, filing, staging, extraction and both experiments on
+both backbones, against a symlinked copy of the cache so no vector entered the shared one. Every
+stand-in scored top-1, as near-duplicates must; **that number is plumbing, not a finding**, and
+nothing from the rehearsal is published. The same stand-ins with the tag stripped — what the old
+loaders saw — scored 86.8% (DINOv2) and 71.1% (CLIP).
+
 ## 6. Technical architecture
 
 ### 6.1 Embedding backbone
@@ -1169,8 +1230,10 @@ the output and reading it rather than by reading a log.
 - **Real query photographs** — the reference set is Commons uploads, so the domain gap to a phone
   camera is unmeasured. `experiment camera-gap` (§5.9) puts a lower bound on it from the 51
   references shot on phones, and does not retire the question. The protocol (§5.8), the route and
-  cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested;
-  what is missing is the photographs, which need a day in Wrocław.
+  cohorts (`data/field-route.json`), and the whole measuring path (§5.10) are built and tested,
+  and §5.14 made it walk-ready: phone rotation, HEIC, GPS sorting, a photographer-disjoint
+  comparator and statue-level intervals, rehearsed end to end. What is missing is the photographs,
+  which need a day in Wrocław.
 - ~~**Publishing the dataset to Hugging Face**~~ — done on 2026-09-06 as
   `krasnal-id data export-hf`; §5.11 records the decision and §5.12 the implementation.
 - ~~**Publishing the dataset to Kaggle**~~ — done on 2026-09-10 as `krasnal-id data
@@ -1348,6 +1411,7 @@ krasnal-id/
 │   ├── image-review.json      # tracked image-level exclusions and overrides
 │   ├── field-route.json       # tracked route and cohort per statue, fixed before scoring
 │   ├── field-guide.md         # the shooting protocol for the field queries
+│   ├── field-inbox/           # ignored unsorted phone dump, before GPS proposals are checked
 │   ├── field-queries/         # ignored field photographs, one directory per statue
 │   ├── discovery/             # ignored Wikidata/Commons caches, staging, and audits
 │   ├── images/                # ignored cached research copies
@@ -1368,6 +1432,7 @@ krasnal-id/
 │   ├── models.py              # manifest, split, review, and attribution schemas
 │   ├── atomic.py              # shared atomic file replacement
 │   ├── geometry.py            # distance on the ground, shared by pipeline and experiments
+│   ├── image_io.py            # decoding upright: the EXIF rotation every loader applies
 │   ├── statistics.py          # the rank statistic two experiments share
 │   ├── logging.py             # structured run logging
 │   ├── configs/               # packaged Hydra configuration groups
@@ -1378,6 +1443,7 @@ krasnal-id/
 │   │   ├── camera_metadata.py    # EXIF cameras, deliberately outside the staging chain
 │   │   ├── license_templates.py  # the public-domain basis, also outside the chain
 │   │   ├── field_queries.py      # field photographs staged as queries, never references
+│   │   ├── field_sort.py         # GPS proposals for unsorted field photographs; moves nothing
 │   │   ├── build_manifest.py
 │   │   └── build_split.py        # deterministic leave-one-out folds
 │   ├── embeddings/
@@ -1776,6 +1842,7 @@ Implementation state:
   the per-stage record.
 - The field-query path of §5.10 is implemented and its stages have been exercised end to end
   against this dataset, but only on stand-in photographs derived from references — enough to prove
-  the plumbing, worth nothing as a finding. Since there are no photographs,
-  `results/field_gap-*.json` does not exist and no field-gap number is published anywhere. The
-  first real run is the fieldwork.
+  the plumbing, worth nothing as a finding. §5.14's rehearsal on 2026-11-05 repeated that with
+  phone-style stand-ins after the walk-readiness fixes, again outside `data/` and `results/`. Since
+  there are no photographs, `results/field_gap-*.json` does not exist and no field-gap number is
+  published anywhere. The first real run is the fieldwork.
