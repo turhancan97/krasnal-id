@@ -78,6 +78,9 @@ class ConditionOutcome:
     condition: str
     ranks: tuple[int, ...]
     candidate_classes: tuple[int, ...]
+    # Aligned with `ranks`. The control repeats each query once per seed, stacked
+    # seed after seed, which is how its pooled rate is the mean over seeds.
+    query_image_ids: tuple[str, ...] = ()
 
     def top_k_hits(self, k: int) -> int:
         """Count queries whose correct statue ranked within the first k."""
@@ -134,6 +137,7 @@ def evaluate_conditions(
 
     standard: list[tuple[int, int]] = []
     disjoint: list[tuple[int, int]] = []
+    answered: list[str] = []
     # One list of ranks per seed, so the control's spread across seeds is visible
     # rather than averaged away before anyone can see it.
     control: list[list[tuple[int, int]]] = [[] for _ in seeds]
@@ -150,6 +154,7 @@ def evaluate_conditions(
             # Unanswerable, not hard: nobody else photographed this statue.
             continue
 
+        answered.append(query)
         standard.append(
             (
                 evaluate_fold(query, truth, fold.reference_image_ids, matrix).dwarf_rank,
@@ -187,10 +192,10 @@ def evaluate_conditions(
 
     outcomes = {
         STANDARD: ConditionOutcome(
-            STANDARD, tuple(r for r, _ in standard), tuple(c for _, c in standard)
+            STANDARD, tuple(r for r, _ in standard), tuple(c for _, c in standard), tuple(answered)
         ),
         DISJOINT: ConditionOutcome(
-            DISJOINT, tuple(r for r, _ in disjoint), tuple(c for _, c in disjoint)
+            DISJOINT, tuple(r for r, _ in disjoint), tuple(c for _, c in disjoint), tuple(answered)
         ),
     }
     # The control's per-seed runs are pooled: every seed scores the same queries,
@@ -199,6 +204,7 @@ def evaluate_conditions(
         CONTROL,
         tuple(rank for run in control for rank, _ in run),
         tuple(count for run in control for _, count in run),
+        tuple(answered) * len(seeds),
     )
     return outcomes, coverage
 

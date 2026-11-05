@@ -290,3 +290,34 @@ def test_cli_writes_the_contact_sheet(tmp_path: Path) -> None:
 
     assert result.exit_code == 0, result.output
     assert (tmp_path / "results" / "retrieval-examples.jpg").is_file()
+
+
+def test_the_compact_sheet_shows_the_same_queries_at_top_one(tmp_path: Path) -> None:
+    from PIL import Image
+
+    from krasnal_id.viz.retrieval_examples import render_top_one
+
+    manifest = materialise_images(
+        synthetic_manifest(dwarf_count=4, per_dwarf=3), tmp_path / "images"
+    )
+    seed_embedding_cache(tmp_path / "vectors", manifest)
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    examples = select_examples(
+        manifest, split, {"dinov2": _matrix(manifest, tmp_path / "vectors")}, "dinov2"
+    )
+
+    full = render_examples(examples, tmp_path / "full.png")
+    compact = render_top_one(examples, tmp_path / "compact.png")
+
+    # One row per example and one column per backbone plus the query: much
+    # narrower than the five-candidate sheet built from the same selection.
+    with Image.open(full) as wide, Image.open(compact) as narrow:
+        assert narrow.width < wide.width / 2
+    with pytest.raises(VisualizationError, match="no retrieval examples"):
+        render_top_one((), tmp_path / "none.png")
+
+
+def test_only_the_full_or_the_compact_sheet_is_offered() -> None:
+    config = load_config(["experiment=visualization"])
+    with pytest.raises(VisualizationError, match="top 5 or the top 1"):
+        create_retrieval_examples_plot(config, top_k=3)

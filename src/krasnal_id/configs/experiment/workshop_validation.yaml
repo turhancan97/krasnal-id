@@ -1,0 +1,18 @@
+kind: workshop_validation
+seed: ${seeds.primary}
+folds: 5
+bootstrap_resamples: 10000
+# The journals' identity: must equal matcher_rerank.yaml (pinned by a test).
+matchers: [sift, disk-lightglue]
+rerank_top_k: 10
+max_keypoints: 800
+learned_keypoints: 1024
+# The same grid the published sweep explored, so held-out selection chooses from
+# exactly the options the in-sample result chose from.
+weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0]
+top_k_metrics: [1, 5]
+output_subdir: cvww_revision
+parts: [rerank, photographer, baseline, geography, pool]
+# DINOv2 is the reference; every re-ranking journal holds DINOv2 candidates.
+backbones: [dinov2, clip, dinov3]
+separate_results: [dinov3]

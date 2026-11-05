@@ -7,7 +7,7 @@ from typing import Annotated
 
 import typer
 
-from krasnal_id.config import backbone_config, load_config
+from krasnal_id.config import WorkshopValidationConfig, backbone_config, load_config
 from krasnal_id.data_pipeline.build_manifest import (
     ManifestConfigurationError,
     build_manifest_from_artifacts,
@@ -100,6 +100,10 @@ from krasnal_id.experiments.pool_size_ablation import PoolAblationError, run_poo
 from krasnal_id.experiments.probe_baseline import ProbeExperimentError, run_probe_comparison
 from krasnal_id.experiments.recall_curve import RecallCurveError, run_recall_curve
 from krasnal_id.experiments.rerank_ablation import RerankAblationError, run_rerank_ablation
+from krasnal_id.experiments.workshop_validation import (
+    WorkshopValidationError,
+    run_workshop_validation,
+)
 from krasnal_id.export.huggingface import HuggingFaceExportError, build_export
 from krasnal_id.export.kaggle import KaggleExportError, build_kaggle_export
 from krasnal_id.export.push import PushConfigurationError, PushError, push_export
@@ -119,6 +123,7 @@ from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
 from krasnal_id.viz.paper_tables import write_all as write_paper_tables
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
+from krasnal_id.viz.workshop_tables import WorkshopTableError, write_workshop_outputs
 
 
 def _read_manifest(path: Path) -> DatasetManifest:
@@ -1034,6 +1039,57 @@ def field_gap_experiment(override: OverrideOption = None) -> None:
         )
 
 
+@experiment_app.command("workshop-validation")
+def workshop_validation_experiment(override: OverrideOption = None) -> None:
+    """Re-check published results from evidence on disk, with no model or matcher.
+
+    Results go to `paths.results_dir/<output_subdir>`, so no released artifact can
+    be overwritten; the matcher journals are read from `paths.results_dir/journals`.
+    """
+    config = load_config(["experiment=workshop_validation", *(override or [])])
+    configure_logging(config.logging)
+    assert isinstance(config.experiment, WorkshopValidationConfig)
+    journals_dir = Path(config.paths.results_dir) / "journals"
+    output = config.model_copy(
+        update={
+            "paths": config.paths.model_copy(
+                update={
+                    "results_dir": Path(config.paths.results_dir) / config.experiment.output_subdir
+                }
+            )
+        }
+    )
+    guard_result_path(output)
+    try:
+        result = run_workshop_validation(output, journals_dir)
+        path = experiment_result_path(output.paths.results_dir, result)
+        write_experiment_result(path, result)
+    except (
+        WorkshopValidationError,
+        ExperimentArtifactError,
+        ManifestConfigurationError,
+    ) as error:
+        typer.echo(f"Workshop validation error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(f"Workshop validation complete: backbone={result.backbone} result={path}")
+    for metric in result.metrics:
+        if metric.lower_bound is None or metric.upper_bound is None:
+            typer.echo(f"  {metric.name}: {metric.value:g}")
+        else:
+            typer.echo(
+                f"  {metric.name}: {metric.value:.4f} "
+                f"[95% CI {metric.lower_bound:.4f}-{metric.upper_bound:.4f}]"
+            )
+    typer.echo("  weights chosen on the other folds:")
+    for row in result.fold_weights:
+        typer.echo(
+            f"    {row.matcher} fold {row.fold}: weight {row.weight:g} "
+            f"(selection top-1 {row.selection_top_1:.4f}; held out "
+            f"{row.held_out_queries} queries of {row.held_out_statues} statues)"
+        )
+
+
 @experiment_app.command("photographer-gap")
 def photographer_gap_experiment(override: OverrideOption = None) -> None:
     """Measure how much accuracy survives changing the photographer."""
@@ -1315,6 +1371,36 @@ def visualize_paper_tables(
     typer.echo(f"Paper tables complete: {len(written)} written")
 
 
+@visualize_app.command("workshop-tables")
+def visualize_workshop_tables(
+    output_dir: Annotated[Path, typer.Option(help="Where to write the fragments.")] = Path(
+        "paper-cvww/generated"
+    ),
+    override: OverrideOption = None,
+) -> None:
+    """Emit the CVWW manuscript's numbers and tables from the validation artifact.
+
+    The prose cites intervals by metric name through the macro file this writes,
+    so none of them is transcribed.
+    """
+    config = load_config(["experiment=workshop_validation", *(override or [])])
+    configure_logging(config.logging)
+    assert isinstance(config.experiment, WorkshopValidationConfig)
+    validation = (
+        Path(config.paths.results_dir)
+        / config.experiment.output_subdir
+        / f"workshop_validation-{config.backbone.name}.json"
+    )
+    try:
+        written = write_workshop_outputs(validation, output_dir)
+    except WorkshopTableError as error:
+        typer.echo(f"Workshop table error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for path in written:
+        typer.echo(f"  {path}")
+    typer.echo(f"Workshop tables complete: {len(written)} written")
+
+
 @visualize_app.command("matches")
 def visualize_matches(
     query: Annotated[Path, typer.Option(help="The photograph to match from.")],
@@ -1364,6 +1450,9 @@ def visualize_retrieval_examples(
     ] = None,
     output: Annotated[Path | None, typer.Option(help="Where to write the sheet.")] = None,
     dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 150,
+    top_k: Annotated[
+        int, typer.Option("--top-k", help="5 for the full sheet, 1 for the compact one.")
+    ] = 5,
     override: OverrideOption = None,
 ) -> None:
     """Draw query photographs beside the five dwarves each backbone ranks highest.
@@ -1375,7 +1464,7 @@ def visualize_retrieval_examples(
     config = load_config(["experiment=visualization", *(override or [])])
     configure_logging(config.logging)
     try:
-        path = create_retrieval_examples_plot(config, group, output, dpi)
+        path = create_retrieval_examples_plot(config, group, output, dpi, top_k)
     except (VisualizationError, EmbeddingStoreError) as error:
         typer.echo(f"Retrieval example visualization error: {error}", err=True)
         raise typer.Exit(code=2) from error

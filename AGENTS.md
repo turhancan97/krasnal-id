@@ -1183,6 +1183,145 @@ necessary rather than cautious.
   the **weights are deliberately excluded from its identity**, because inliers cost hours and the
   sweep over them costs milliseconds.
 
+### 7.12 Workshop runs: DINOv3 and a learned first stage (2026-11-05)
+
+Two runs the CVWW paper needs (§11.3). Both completed on 2026-11-05 in Slurm job 562714;
+results are below the design bullets.
+
+- **DINOv3 ViT-B/16 enters as an experiment-only backbone, reversing §7.9's exclusion of it.** The
+  exclusion rested on the checkpoint being gated; the author's Hugging Face token already holds
+  access, and `huggingface_hub` resolves it from the environment, so no credential path enters the
+  repository and §5.13's rule holds. ViT-B/16 rather than ViT-L, so the comparison with
+  `dinov2-base` is about pretraining and not size. Like §7.9's checkpoints it is named in no
+  export or visualisation list.
+- **It reuses the DINOv2 adapter, after a measurement rather than an assumption.** DINOv3 puts its
+  CLS token at sequence position 0 with four register tokens after it, and on the pinned revision
+  `last_hidden_state[:, 0]` equals the model's own `pooler_output` exactly. `CLS_TOKEN_FAMILIES`
+  names both families, so the adapter's family guard still rejects CLIP.
+- **Each model keeps the processor it was released with.** DINOv3's squashes straight to 224x224;
+  DINOv2's resizes the short edge to 256 and centre-crops. Matching them would measure a
+  preprocessing choice, not the released features.
+- **DINOv3's experiments write to `results/dinov3/`, never `results/`.** `visualize ablation` globs
+  `pool_size_ablation-*.json`, so a third file there would silently become a third curve in a
+  published figure (§6.4).
+- **`geometry_first` gains `matcher` and `only_appearance_misses_at`.** The learned matcher runs
+  through `create_matcher`, the same `LocalMatcher` interface SIFT's `FeatureCache` satisfies, so
+  verification is identical. The restriction scores only the queries cosine misses at k in the
+  photographer-disjoint arm, selected from cosine alone before any matching — the 107 queries the
+  rescue rate is defined over, an hour instead of ten.
+- **SIFT's journal identity is unchanged on purpose**, so the 2.2-hour §7.10 journal stays
+  resumable; a learned matcher adds its name and keypoint budget, and the restriction is not part
+  of the identity because it selects rows rather than changing what one means. Verified on the
+  real corpus: a restricted SIFT run resumed all 1,157 rows, created no journal, and reproduced
+  §7.10 exactly — 13 of 107 rescued, 12.15%.
+- **Two bugs in the new path were caught on that first real run, and both now have tests.** The
+  result object did not carry the variant the pre-flight guard used, so a restricted run aimed at
+  §7.10's published artifact; §6.4's write-time backstop refused it. And journal rows resumed
+  before the restriction applied, so the run reported 1,157 queries instead of 107 while its
+  rescue rate — which counts misses itself — looked right. The second is the instructive one: a
+  correct headline number concealed a wrong denominator in every other metric.
+- **Neither DINOv3 extraction nor the sweep can run on `trzmiel`.** Its memory watchdog killed the
+  extraction with exit 137 and no output, as it once killed §7.10's sweep; both run as one Slurm job
+  (`/shared/results/common/kargin/projects/krasnal-id/runs/cvww-gpu/job.sh`).
+
+**Results.**
+
+- **DINOv3 is the strongest backbone measured, but it does not change the paper's shape.**
+  - Top-1 94.44% / top-5 96.87% / MRR 0.956, against DINOv2's 93.14%. The paired difference is
+    1.3 points, statue interval 0.4 to 2.2 (§7.13).
+  - Unseen-photographer top-1 85.22% against 81.85%, and disjoint recall at ten 92.83% against
+    90.75%. A different *pretraining* does lift the first stage's ceiling where §7.9's capacity did
+    not, and the paper says exactly that.
+  - Decay 0.67 points per doubling (interval 0.52 to 0.83), against 0.79.
+  - Rejection AUROC 0.926, with false acceptance 21.6% at 90% known acceptance: better than
+    DINOv2's 0.896 / 38.3% and still no operating point.
+  - Its photographer-attributable gap is 1.68 points with an interval that **includes zero**
+    (−0.26 to 3.70). Do not report a DINOv3 photographer effect as established.
+  - **Its geographic penalty is larger than DINOv2's** (worst −1.60 at a pool of 20, against
+    −0.89 at 5), with every interval below zero. That argues against "location narrowing only
+    hurts weak models", and it is why the geography contribution is stated for all three backbones.
+  - Artifacts are in `results/dinov3/` (baseline, pool size, geography, photographer gap, open set,
+    recall).
+- **DISK+LightGlue as a first stage rescues 36 of the 107 statues cosine misses at ten, 33 under
+  the pessimistic tie-break**, against SIFT's 13 (12.1%). §7.10's negative was about SIFT, as
+  §7.11 predicted; but two-thirds stay lost at 1,690 matches a query, so it is reported as partial
+  recovery, not a working first stage. Artifact: `results/geometry_first-disk-lightglue-misses10-dinov2.json`.
+  It came in before the 1 December cut-off, so it is in the paper.
+
+### 7.13 Workshop evaluation revision: held-out weights and statue intervals (2026-11-05)
+
+An external review of the first CVWW draft found real defects, the most important being that the
+published re-ranking numbers were best-of-sweep, chosen and scored on the same queries. The author
+adopted that review's plan with five changes; this records what was built and what it measured.
+
+- **`experiment workshop-validation` re-checks published results without loading a model or
+  matching an image.**
+  - The `rerank` part reads the two matcher journals and nothing else, and refuses a journal
+    that is missing, partial, duplicated, malformed or written for another split. Every such case
+    names `experiment matcher-rerank` as the command that rebuilds it.
+  - The other parts recompute cosine rankings from cached vectors. Cosine recomputation was
+    allowed and only model loading and matching forbidden, because the pool, geography and
+    photographer artifacts are aggregate-only and a statue bootstrap needs per-query ranks.
+  - Outputs go to `results/<output_subdir>` (`cvww_revision`), so no released artifact can be
+    overwritten.
+  - Heavy parts run as a Slurm CPU job; the login node's watchdog kills them.
+- **Weights are chosen on held-out statues.**
+  - Statues are sorted, permuted with the seed and split into five near-equal folds.
+  - The weight is chosen on four folds with `matcher_rerank.best_weight` (ties to the smaller
+    weight) and scored on the fifth. Every query is scored exactly once, and the gallery is
+    unchanged.
+  - The two journals must agree on every query's cosine ranking, or they are not paired.
+  - It is described as a validation check on an explored benchmark, not a confirmatory test.
+- **What it found.**
+  - **Cosine reproduces at 81.85%.**
+  - DISK+LightGlue reaches **84.36%**, a gain of **2.51 points [1.25, 3.93]** (37 won / 8 lost,
+    McNemar p = 1.5×10⁻⁵). That is barely below its in-sample 84.62%.
+  - **SIFT reaches 82.11%, a gain of 0.26 [−0.36, 0.93] (8/5, p = 0.58): not established.**
+    §7.6's disjoint SIFT gain does not survive held-out selection.
+  - DISK+LightGlue against SIFT: +2.25 [1.03, 3.51].
+  - Chosen weights are stable: SIFT 0.02–0.05 and DISK 0.1–0.2 across folds.
+  - The full-pool SIFT sweep (93.1→94.0) has no journal, so it stays exploratory.
+- **Every interval is a paired bootstrap over whole statues.**
+  - `krasnal_id/bootstrap.py`: 10,000 resamples, 95% percentile intervals, matching draws
+    across compared arms, generator keyed by seed and label. Point estimates stay per photograph.
+  - `field_gap` was migrated onto it, with a test proving its draws are bit-identical to before.
+  - Wilson intervals and seed spreads move to the supplement, labelled with what they measure.
+  - McNemar stays beside the bootstrap for paired comparisons. It is the test reviewers expect,
+    and it is per photograph, so it complements the statue interval rather than replacing it.
+- **A recomputation must reproduce the released number to 1e-9, or nothing is reported.** Baseline
+  top-1, every pool-size and geographic point, the slope and all three photographer arms were
+  checked for all three backbones before any interval was computed. All reproduced exactly, which
+  also proves the packaged pool and geography configs are what produced the released artifacts —
+  something those artifacts, predating the `configuration` field, could not say themselves.
+- **Per-query outcomes are additive fields, not a rewrite.** `PoolMeasurement`, `GeoMeasurement`
+  and `ConditionOutcome` gain `query_image_ids` and per-query hits computed beside the existing
+  counters from the same draws, so no released number can move; the existing tests pass unchanged.
+- **What the intervals changed in the text.**
+  - DINOv3's photographer effect is not established (see §7.12).
+  - DINOv2's geographic penalty excludes zero at 8 of 10 pool sizes, the exceptions being pools
+    of 2 and 100. CLIP's and DINOv3's exclude zero at every size.
+  - DINOv2's slope is −0.79 [−0.95, −0.64], CLIP's −2.06 [−2.35, −1.79].
+- **The manuscript cites intervals by metric name, never by typed number.** `visualize
+  workshop-tables` writes `paper-cvww/generated/numbers.tex` (`\wv{name}`, `\wvci{name}`) and the
+  fold-weight table. A name missing from the artifact renders as a red MISSING, which the build
+  check counts. Intervals print as "lo to hi", because between two negative numbers an en dash
+  rendered as one ambiguous run.
+- **Fonts: TeX Gyre Termes via `fontspec`, not T1.**
+  - Tectonic is XeTeX-based, and its TU encoding has no Times, so `cvww.sty`'s `times` silently
+    fell back to Latin Modern.
+  - `[T1]{fontenc}` restored Times but **silently dropped every en dash, ć and č** — 144
+    "could not represent" warnings, including every bibliography page range.
+  - Verified from the embedded font list and the rendered text, not the log. `cvww.sty` is
+    unmodified.
+- **Supplement in one column.** The journal-generated tables are page-width. `cvww.sty` forces
+  two columns and `\maketitlesupplementary` opens a two-column page, so switching after it left
+  page 1 blank; the supplement sets its own title. `[H]` and `placeins` keep floats in their
+  sections. The two journal tables whose captions cite the journal's figure numbers (`s10-recall`,
+  `s13-open-set-geometry`) are left out.
+- **A process lesson, recorded because it cost a false report.** A quality-gate command that ran
+  `mypy … | tail -1` reported success while mypy had failed. The pipe discards the exit status, and
+  only the pytest tail was read. Every gate step is now run with its own exit code echoed.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1430,6 +1569,7 @@ krasnal-id/
 │   ├── atomic.py              # shared atomic file replacement
 │   ├── geometry.py            # distance on the ground, shared by pipeline and experiments
 │   ├── image_io.py            # decoding upright: the EXIF rotation every loader applies
+│   ├── bootstrap.py           # paired whole-statue bootstrap, shared by every interval
 │   ├── statistics.py          # the rank statistic two experiments share
 │   ├── logging.py             # structured run logging
 │   ├── configs/               # packaged Hydra configuration groups
@@ -1468,6 +1608,7 @@ krasnal-id/
 │   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
 │   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
 │   │   ├── recall_curve.py     # the first stage's ceiling, and three rejected fixes
+│   │   ├── workshop_validation.py # held-out weights and statue intervals, from evidence on disk
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan
@@ -1481,7 +1622,8 @@ krasnal-id/
 │   └── viz/
 │       ├── embedding_plot.py
 │       ├── ablation_plot.py
-│       └── open_set_plot.py
+│       ├── open_set_plot.py
+│       └── workshop_tables.py # the CVWW manuscript's numbers and tables, by metric name
 ├── results/                   # ignored generated results
 └── tests/                     # schemas, configs, CLI, experiments, and interface contracts
 ```
@@ -1779,6 +1921,30 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
 - **This decision changes the submission priority, not the research results or manuscript.**
   The existing journal draft remains in the deliberately untracked `paper/` directory. Workshop
   reformatting and submission have not yet been done; do not describe either as completed.
+- **Positioning, fixed on 2026-11-05 from the author's answers to thirty yes/no questions.**
+  Audience is computer vision; sole author; spending these results on the workshop is accepted.
+  The three headline contributions are the attributed corpus, the pool-size curve and "location
+  narrowing is harder than random narrowing"; lookalike families are the thread through every
+  result, which are ordered by system stage — retrieve, narrow, verify, reject. Supporting: the
+  photographer control as expected deployed accuracy, learned-matcher re-ranking, and one table of
+  negative results. Out: the browser demo, fine-tuning, and the story of the project overturning
+  its own 23-class conclusions. **There is no fieldwork before the deadline**, so the street gap
+  is stated as §5.9's camera-origin lower bound. New runs (§7.12) have a hard cut-off of
+  1 December 2026; after it the paper goes in with what exists.
+- **The draft is in untracked `paper-cvww/`, built from the official 2027 kit.** The kit's header
+  comment says 2025 but `cvww.sty` declares `\confYear{2027}` and the zip is the one the 2027
+  site serves, dated September 2026; an unmodified copy is kept in `paper-cvww/_kit/`. It builds
+  with `paper/bin/tectonic`. The corpus is called "ours" and never by the project name, which is
+  searchable; the kit's own guidance allows third-person self-citation but that does not make a
+  link to a named repository anonymous.
+- **The rendered bibliography exposed a wrong citation that the journal draft also carries.**
+  `chen2020simclr` resolves to an unrelated 2022 *Geophysics* paper on seismic denoising whose
+  title contains SimCLR's — the `he2020moco` failure again, missed because only that one key was
+  re-checked. Corrected in `paper-cvww/references.bib` to the ICML 2020 paper, verified on title,
+  first author and year; `paper/references.bib` still has it, and `paper/main.tex` cites it twice.
+  The same read found `sivic2003videogoogle` without first names, three arXiv-only entries for
+  papers published at ICLR, NeurIPS and TMLR, and The Met without its NeurIPS venue — and that
+  `ieeenat_fullname` lowercases titles, so every title is braced in the workshop copy.
 
 ## 12. Living documentation and handoffs
 - Treat this file as the authoritative project brief and decision record. Update it in the same change whenever implementation work introduces or changes architecture, scope, schemas, conventions, build order, or other decisions that future contributors must follow.
@@ -1850,9 +2016,10 @@ Implementation state:
   DINOv2 checkpoints are configuration rather than code. `BackboneName` is declared once in
   `config.py` and reused by every experiment field that names backbones in a list, because
   `fuse_backbones` having its own copy meant it could reject a checkpoint the pipeline could run.
-- **Five backbones are packaged; two are first-class.** `dinov2` and `clip` are exported,
+- **Six backbones are packaged; two are first-class.** `dinov2` and `clip` are exported,
   visualized and shipped to the browser. `dinov2-large`, `dinov2-registers` and
-  `dinov2-registers-large` exist for §7.9 and are named in no export or visualization list, so they
+  `dinov2-registers-large` exist for §7.9, and `dinov3` for §7.12; none is named in any export or
+  visualization list, so they
   cost the published artifacts nothing. Their vectors sit in the same content-addressed cache; the
   key includes the model id and revision, so no checkpoint can read another's vectors.
 - `embeddings extract` is implemented for the pinned DINOv2 and CLIP configurations. It validates

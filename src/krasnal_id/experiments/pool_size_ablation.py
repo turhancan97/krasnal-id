@@ -30,6 +30,11 @@ class PoolMeasurement:
     pool_size: int
     top_1_per_seed: tuple[float, ...]
     mrr_per_seed: tuple[float, ...]
+    # Per query, in split order: the fraction of seeds whose pool ranked the correct
+    # statue first. What a statue-level bootstrap resamples; computed beside the
+    # aggregates from the same draws, so no published number can move.
+    query_image_ids: tuple[str, ...] = ()
+    query_top_1: tuple[float, ...] = ()
 
     @property
     def top_1(self) -> float:
@@ -81,13 +86,14 @@ def measure_pool_size(
     # cover the whole matrix: the geographic arm passes only the located subset.
     top_1_per_seed: list[float] = []
     mrr_per_seed: list[float] = []
+    query_hits = np.zeros(len(split.folds), dtype=np.float64)
     for seed in seeds:
         # One generator per (pool size, seed) keeps a run reproducible regardless of
         # how many pool sizes were requested or in which order.
         rng = np.random.default_rng(seed)
         hits = 0
         reciprocal_rank = 0.0
-        for fold in split.folds:
+        for position, fold in enumerate(split.folds):
             available = [dwarf_id for dwarf_id in dwarf_ids if dwarf_id != fold.query_dwarf_id]
             distractors = rng.choice(
                 np.asarray(available), size=pool_size - 1, replace=False
@@ -100,6 +106,7 @@ def measure_pool_size(
             )
             outcome = evaluate_fold(fold.query_image_id, fold.query_dwarf_id, references, matrix)
             hits += int(outcome.dwarf_rank == 1)
+            query_hits[position] += float(outcome.dwarf_rank == 1)
             reciprocal_rank += 1.0 / outcome.dwarf_rank
         total = len(split.folds)
         top_1_per_seed.append(hits / total)
@@ -109,6 +116,8 @@ def measure_pool_size(
         pool_size=pool_size,
         top_1_per_seed=tuple(top_1_per_seed),
         mrr_per_seed=tuple(mrr_per_seed),
+        query_image_ids=tuple(fold.query_image_id for fold in split.folds),
+        query_top_1=tuple(float(hit) for hit in query_hits / max(len(seeds), 1)),
     )
 
 

@@ -213,6 +213,26 @@ class FieldClassOutcome(BaseModel):
         return self
 
 
+class FoldWeight(BaseModel):
+    """The blend weight chosen for one matcher on one statue fold, without its queries."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    matcher: str = Field(min_length=1)
+    fold: int = Field(ge=0)
+    weight: float = Field(ge=0.0)
+    # Top-1 on the other folds at that weight: what the choice was made on.
+    selection_top_1: float = Field(ge=0.0, le=1.0)
+    held_out_queries: int = Field(gt=0)
+    held_out_statues: int = Field(gt=0)
+
+
+class WorkshopValidationResult(ExperimentResult):
+    """Workshop re-checks, with the per-fold weight choices behind them."""
+
+    fold_weights: tuple[FoldWeight, ...]
+
+
 class FieldGapResult(ExperimentResult):
     """Experiment result carrying the per-statue rows behind its metrics."""
 

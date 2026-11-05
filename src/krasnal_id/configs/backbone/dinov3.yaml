@@ -1,0 +1,12 @@
+# Pretraining, holding the size class fixed: DINOv3 ViT-B/16 against dinov2's
+# ViT-B/14. Gated on the Hub (manual licence acceptance); the token is resolved by
+# huggingface_hub from the environment and never stored here. Its own processor
+# resizes straight to 224x224 with no crop, unlike DINOv2's 256-then-crop; each
+# model keeps the preprocessing it was released with.
+name: dinov3
+family: dinov3
+model_id: facebook/dinov3-vitb16-pretrain-lvd1689m
+revision: 5931719e67bbdb9737e363e781fb0c67687896bc
+preprocessing_id: transformers-auto-image-processor
+device: auto
+batch_size: 16

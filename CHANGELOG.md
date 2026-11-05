@@ -34,6 +34,36 @@ No result changes and no number is published: the photographs still need a day i
   per-photograph interval would have overstated precision; the per-arm Wilson intervals remain and
   are per photograph.
 
+- **DINOv3 ViT-B/16 is packaged as an experiment-only backbone** (`backbone=dinov3`, pinned to
+  revision `5931719e`), reusing the CLS-token adapter after measuring that its position-0 token
+  equals the model's own pooled output. It is named in no export or visualization list.
+  `AGENTS.md` section 7.12. Its vectors and six experiments are computed: 94.44% top-1 against
+  DINOv2's 93.14%, 85.22% with the photographer withheld, recall at ten 92.83%, and a geographic
+  penalty larger than DINOv2's. Results are in `results/dinov3/`, kept out of every figure glob.
+- **`experiment geometry-first` can use DISK+LightGlue and can score only appearance's misses.**
+  `experiment.matcher=disk-lightglue` and `experiment.only_appearance_misses_at=10` select the
+  learned matcher and the 107 photographer-disjoint queries cosine misses at ten. A restricted or
+  learned run writes its own artifact (`geometry_first-disk-lightglue-misses10-dinov2.json`), and
+  SIFT's journal identity is unchanged: a restricted SIFT run reproduces section 7.10's 13 of 107
+  rescued from the existing journal without recomputing a pair. The learned matcher rescues 36
+  (33 under the pessimistic tie-break). `AGENTS.md` section 7.12.
+- **`krasnal-id experiment workshop-validation` re-checks published results from evidence on
+  disk, with no model and no matcher.** Re-ranking weights are chosen on four statue folds and
+  scored on the fifth, from the two matcher journals: DISK+LightGlue gains 2.51 points
+  [1.25, 3.93] over cosine with held-out weights, and SIFT's gain, 0.26 [−0.36, 0.93], is not
+  established. Its other parts recompute cosine rankings from cached vectors, refuse to continue
+  unless they reproduce the released artifact to 1e-9, and then put statue-level intervals on
+  baseline differences, photographer gaps, geographic-minus-random differences and pool slopes.
+  Results go to `results/cvww_revision/`. `AGENTS.md` section 7.13.
+- **`krasnal_id.bootstrap`: a paired bootstrap over whole statues**, shared by the validation and
+  the field gap. `field_gap` now uses it, with a test that its draws are bit-identical to before.
+- **`PoolMeasurement`, `GeoMeasurement` and photographer `ConditionOutcome` carry per-query
+  outcomes** beside their aggregates, computed from the same draws, so no released number moves.
+- **`visualize retrieval-examples --top-k 1`** draws a compact sheet of the same deterministic
+  queries, one row each with every backbone's first answer.
+- **`visualize workshop-tables`** writes the CVWW manuscript's numbers as named macros and its
+  fold-weight table, from the validation artifact, so no interval in the paper is typed by hand.
+
 ### Fixed
 
 - **Phone portrait photographs reached the model on their side.** No loader applied the EXIF
@@ -47,6 +77,10 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- `paper-cvww/`, the workshop manuscript, is ignored like `paper/`, which it draws on; it vendors
+  the CVWW author kit. A complete anonymous draft and supplement now build from it: 8 pages with
+  references from page 7, Times via TeX Gyre Termes, and every interval generated. `AGENTS.md` section 11.3 records the paper's positioning and a wrong
+  `chen2020simclr` citation found in the journal draft's bibliography.
 - Recorded the author's priority of an archival workshop publication in `AGENTS.md` sections 8
   and 11.3, with CVWW 2027's contributed papers track as the leading candidate. The earlier
   *Scientific Reports* plan and APC investigation remain as a fallback and historical record.

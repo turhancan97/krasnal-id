@@ -242,7 +242,7 @@ def test_create_backbone_dispatches_on_family_not_name() -> None:
     and not new adapters. Dispatching on `name` would have made each of them an
     "unsupported backbone" until someone remembered to extend the branch.
     """
-    for name in ("dinov2", "dinov2-large", "dinov2-registers", "dinov2-registers-large"):
+    for name in ("dinov2", "dinov2-large", "dinov2-registers", "dinov2-registers-large", "dinov3"):
         backbone = create_backbone(backbone_config(name))
 
         assert isinstance(backbone, DinoV2Backbone)
@@ -251,9 +251,19 @@ def test_create_backbone_dispatches_on_family_not_name() -> None:
     assert isinstance(create_backbone(backbone_config("clip")), ClipBackbone)
 
 
+def test_dinov3_is_pinned_and_kept_out_of_the_published_artifacts() -> None:
+    """DINOv3 is an experiment-only backbone, like section 7.9's extra checkpoints."""
+    config = backbone_config("dinov3")
+    assert config.family == "dinov3"
+    assert config.model_id == "facebook/dinov3-vitb16-pretrain-lvd1689m"
+    # An immutable commit, never a branch name (section 6.1).
+    assert len(config.revision) == 40
+    assert "dinov3" not in load_config().export.backbones
+
+
 def test_an_adapter_refuses_a_configuration_from_another_family() -> None:
     """The guard is what keeps CLIP's pooling off a DINOv2 checkpoint."""
-    with pytest.raises(ValueError, match="dinov2-family"):
+    with pytest.raises(ValueError, match="dinov2- or dinov3-family"):
         DinoV2Backbone(backbone_config("clip"))
 
     with pytest.raises(ValueError, match="clip-family"):
