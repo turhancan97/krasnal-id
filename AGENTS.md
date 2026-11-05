@@ -1322,6 +1322,38 @@ adopted that review's plan with five changes; this records what was built and wh
   `mypy … | tail -1` reported success while mypy had failed. The pipe discards the exit status, and
   only the pytest tail was read. Every gate step is now run with its own exit code echoed.
 
+### 7.14 Publication figure system (2026-11-06)
+
+The workshop figures had been styled one function at a time, so each picked its own width, red
+and in-image sentence title. `viz/figure_style.py` is now the one place those choices live, and
+every paper figure and both retrieval sheets read from it.
+
+- **The palette is the author's, and only validated subsets of it are used.** The full
+  eight-colour set fails the dataviz validator: mustard and yellow are too light for lines on
+  white, and orange and green collide under deuteranopia. Backbones are blue, orange and teal;
+  matchers pink and purple; each subset passes every check. Teal is `#2EA28F`, one step deeper than
+  the author's `#55A398`, which fails the chroma floor and reads grey on paper.
+- **Colour follows the entity, never the figure.** DINOv2 is the same blue everywhere it appears.
+  Data that is not an entity — corpus statistics, statues on a map — wears neutral ink. Text
+  wears ink colours, never series colours. Correctness is green plus a check mark and a heavier
+  frame, never hue alone; the mark is set in DejaVu Sans because TeX Gyre Heros has no check-mark
+  glyph and matplotlib silently substituted a wrong one.
+- **Figures are drawn at the size they print and placed unscaled.** The CVWW kit's column is
+  8.1 cm and its text block 17 cm; `save` never uses `bbox_inches="tight"`, which crops and so gets
+  rescaled by `\linewidth`. So 7 pt ticks are 7 pt on the page in every figure. The top-5 sheet
+  is drawn at 13.6 cm through `--width-cm` because at 17 cm it is taller than the page; a narrower
+  sheet is drawn narrower, never scaled.
+- **One typeface: TeX Gyre Heros, vendored** in `viz/fonts/` under the GUST Font License, so a
+  render does not depend on what the machine has installed (here, only DejaVu).
+- **Panel letters replace in-image titles**, which belong in captions. Figure 1(c)'s second y-axis
+  was removed: a dual-axis chart was the one form the method forbids, and the share now labels
+  each bar.
+- **`--layout journal` keeps the *Scientific Reports* draft's two backbones and sizes.** Its
+  figures in `paper/figures/` were not regenerated in this change.
+- **Every layout defect was found by looking at the render, not from a log.** A clipped name, an
+  arrow that constrained layout shrank the photographs to make room for, a caption over the pool
+  circles, a legend on a line, and colliding operating-point labels all rendered without a warning.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1623,6 +1655,8 @@ krasnal-id/
 │       ├── embedding_plot.py
 │       ├── ablation_plot.py
 │       ├── open_set_plot.py
+│       ├── figure_style.py    # one palette, typeface, type scale and print width for every figure
+│       ├── fonts/             # vendored TeX Gyre Heros, GUST Font License
 │       └── workshop_tables.py # the CVWW manuscript's numbers and tables, by metric name
 ├── results/                   # ignored generated results
 └── tests/                     # schemas, configs, CLI, experiments, and interface contracts

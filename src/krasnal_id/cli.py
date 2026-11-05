@@ -118,6 +118,7 @@ from krasnal_id.retrieval.query import QueryError, retrieve_image
 from krasnal_id.retrieval.rerank import DETECT_LONG_SIDE, RerankError
 from krasnal_id.viz.ablation_plot import create_ablation_plot
 from krasnal_id.viz.embedding_plot import VisualizationError, create_embedding_plot
+from krasnal_id.viz.figure_style import FigureStyleError, layout_named
 from krasnal_id.viz.match_plot import MatchPlotError, draw_match_figure, match_pair
 from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
@@ -1320,6 +1321,9 @@ def visualize_paper_figures(
     output_dir: Annotated[Path, typer.Option(help="Where to write the figures.")] = Path(
         "paper/figures"
     ),
+    layout: Annotated[
+        str, typer.Option(help="Figure sizes and backbones: journal or cvww.")
+    ] = "journal",
     override: OverrideOption = None,
 ) -> None:
     """Draw the manuscript's data-derived figures at publication density.
@@ -1334,8 +1338,8 @@ def visualize_paper_figures(
             results_dir=Path(config.paths.results_dir),
             manifest=Path(config.paths.manifest_path),
         )
-        written = draw_all(sources, output_dir)
-    except PaperFigureError as error:
+        written = draw_all(sources, output_dir, layout_named(layout))
+    except (PaperFigureError, FigureStyleError) as error:
         typer.echo(f"Paper figure error: {error}", err=True)
         raise typer.Exit(code=2) from error
     for path in written:
@@ -1453,6 +1457,12 @@ def visualize_retrieval_examples(
     top_k: Annotated[
         int, typer.Option("--top-k", help="5 for the full sheet, 1 for the compact one.")
     ] = 5,
+    width_cm: Annotated[
+        float | None,
+        typer.Option(
+            "--width-cm", help="Printed width; defaults to a CVWW column (top 1) or page (top 5)."
+        ),
+    ] = None,
     override: OverrideOption = None,
 ) -> None:
     """Draw query photographs beside the five dwarves each backbone ranks highest.
@@ -1464,7 +1474,7 @@ def visualize_retrieval_examples(
     config = load_config(["experiment=visualization", *(override or [])])
     configure_logging(config.logging)
     try:
-        path = create_retrieval_examples_plot(config, group, output, dpi, top_k)
+        path = create_retrieval_examples_plot(config, group, output, dpi, top_k, width_cm)
     except (VisualizationError, EmbeddingStoreError) as error:
         typer.echo(f"Retrieval example visualization error: {error}", err=True)
         raise typer.Exit(code=2) from error

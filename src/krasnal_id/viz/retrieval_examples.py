@@ -25,15 +25,14 @@ from krasnal_id.experiments.baseline_accuracy import (
 )
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.retrieval.knn import cosine_knn
+from krasnal_id.viz import figure_style as style
 from krasnal_id.viz.embedding_plot import VisualizationError, import_optional_analysis
 
 # Five, because that is what top-5 accuracy measures and what the demo shows.
 _TOP_K = 5
 # Long side of each rendered cell, in pixels. Large enough to tell two dwarves
 # apart in a README at full width, small enough that the figure stays portable.
-_CELL_PIXELS = 320
-_CORRECT = "#1f7a5c"
-_WRONG = "#cf4832"
+_CELL_PIXELS = 360
 # Longest display name a cell label can hold before it runs into the next cell.
 _NAME_LIMIT = 22
 
@@ -210,164 +209,217 @@ def _short(name: str, limit: int = _NAME_LIMIT) -> str:
 
 
 def _load_cell(local_path: Path) -> object:
-    """Read one photograph, downscaled to the cell size before it is drawn."""
+    """Read one photograph and letterbox it into a square cell.
+
+    Letterboxed rather than cropped: a centre crop of a portrait frame can cut the
+    statue off, and a sheet whose cells differ in shape reads as untidy. The pad
+    is a near-white neutral, so it reads as the cell rather than as the photograph.
+    """
     image_module = import_optional_analysis("PIL.Image")
     try:
         with image_module.open(local_path) as handle:
             image = handle.convert("RGB")
             image.thumbnail((_CELL_PIXELS, _CELL_PIXELS))
-            return image.copy()
+            cell = image_module.new("RGB", (_CELL_PIXELS, _CELL_PIXELS), (246, 248, 250))
+            cell.paste(
+                image, ((_CELL_PIXELS - image.width) // 2, (_CELL_PIXELS - image.height) // 2)
+            )
+            return cell
     except OSError as error:
         raise VisualizationError(f"could not read {local_path}: {error}") from error
+
+
+def _backbone_name(backbone: str) -> str:
+    return style.BACKBONE_LABEL.get(backbone, backbone)
+
+
+def _group_name(group: str, primary: str) -> str:
+    """The agreement group as a reader-facing phrase."""
+    named = {
+        "both right": "Both right",
+        "both wrong": "Both wrong",
+        f"{primary} only": f"Only {_backbone_name(primary)} right",
+        f"{primary} missed": f"{_backbone_name(primary)} wrong",
+    }
+    return named.get(group, group)
+
+
+def _frame(axes: object, correct: bool | None) -> None:
+    """Frame one cell: green and heavier when correct, grey when wrong, ink for the query."""
+    colour = style.INK if correct is None else (style.CORRECT if correct else style.WRONG)
+    width = 1.0 if correct is None else (1.8 if correct else 0.8)
+    for spine in axes.spines.values():  # type: ignore[attr-defined]
+        spine.set_visible(True)
+        spine.set_color(colour)
+        spine.set_linewidth(width)
+    axes.set_xticks([])  # type: ignore[attr-defined]
+    axes.set_yticks([])  # type: ignore[attr-defined]
+    axes.grid(False)  # type: ignore[attr-defined]
+
+
+def _badge(axes: object, correct: bool) -> None:
+    """A check or cross in the cell's corner, beside the frame colour.
+
+    Correctness never rests on hue alone. Set in DejaVu Sans because TeX Gyre
+    Heros has no check-mark glyph, and matplotlib substitutes a wrong one rather
+    than falling back -- the first render showed a boxed aeroplane instead.
+    """
+    axes.text(  # type: ignore[attr-defined]
+        0.95,
+        0.95,
+        "\N{CHECK MARK}" if correct else "\N{BALLOT X}",
+        transform=axes.transAxes,  # type: ignore[attr-defined]
+        ha="right",
+        va="top",
+        fontsize=style.SIZE_LABEL,
+        fontweight="bold",
+        fontfamily="DejaVu Sans",
+        color="white",
+        bbox={
+            "boxstyle": "circle,pad=0.18",
+            "facecolor": style.CORRECT if correct else style.WRONG,
+            "edgecolor": "none",
+        },
+    )
+
+
+def _setup() -> object:
+    matplotlib = import_optional_analysis("matplotlib")
+    matplotlib.use("Agg")
+    pyplot = import_optional_analysis("matplotlib.pyplot")
+    style.apply(pyplot)
+    return pyplot
+
+
+def _write(pyplot: object, figure: object, path: Path, dpi: int) -> Path:
+    try:
+        style.save(figure, path, dpi)
+    except OSError as error:
+        raise VisualizationError(f"could not write figure {path}: {error}") from error
+    finally:
+        pyplot.close(figure)  # type: ignore[attr-defined]
+    return path
 
 
 def render_examples(
     examples: Sequence[RetrievalExample],
     path: Path,
     dpi: int = 150,
+    width: float = style.CVWW.full,
 ) -> Path:
     """Draw every example as a query column beside one row per backbone.
 
-    The density is a parameter because this sheet has two readers. The
-    repository's copy is read on a screen at 150 dpi; the manuscript's is the
-    same selection at the 300 dpi the journal asks for.
+    Drawn at `width` inches -- the CVWW full text width by default -- in the shared
+    figure style. The density is a parameter because the sheet has two readers: the
+    repository's copy is read on a screen at 150 dpi, the manuscript's at 300.
     """
     if not examples:
         raise VisualizationError("no retrieval examples to draw")
+    pyplot = _setup()
 
-    matplotlib = import_optional_analysis("matplotlib")
-    matplotlib.use("Agg")
-    pyplot = import_optional_analysis("matplotlib.pyplot")
-
+    primary = examples[0].rows[0].backbone
     rows_per_example = len(examples[0].rows)
     total_rows = rows_per_example * len(examples)
-    figure = pyplot.figure(figsize=(2.05 * (_TOP_K + 1), 2.35 * total_rows))
-    # The query spans its example's rows; the candidates get one row each.
-    grid = figure.add_gridspec(
-        total_rows,
-        _TOP_K + 1,
-        hspace=0.52,
-        # Wide enough that the rotated backbone label clears the query
-        # image on its left and the long names clear each other.
-        wspace=0.17,
-        left=0.012,
-        right=0.988,
-        top=0.93,
-        bottom=0.02,
+    cell = width / (_TOP_K + 1)
+    figure = pyplot.figure(  # type: ignore[attr-defined]
+        figsize=(width, cell * 1.32 * total_rows + 0.1), layout="constrained"
     )
+    grid = figure.add_gridspec(total_rows, _TOP_K + 1, hspace=0.02, wspace=0.02)
 
     for index, example in enumerate(examples):
         top = index * rows_per_example
         query_axes = figure.add_subplot(grid[top : top + rows_per_example, 0])
         query_axes.imshow(_load_cell(example.query_local_path))
-        # Group above, subject below: as one two-line title it ran past the
-        # column and collided with the first candidate's label.
-        query_axes.set_title(example.group, fontsize=11, fontweight="bold")
-        query_axes.set_xlabel(
-            f"query · {_short(example.query_display_name)}", fontsize=9.5, labelpad=6
+        _frame(query_axes, None)
+        query_axes.set_title(
+            _group_name(example.group, primary),
+            fontsize=style.SIZE_LABEL,
+            fontweight="bold",
+            color=style.INK,
         )
-        for spine in query_axes.spines.values():
-            spine.set_linewidth(1.6)
-        query_axes.set_xticks([])
-        query_axes.set_yticks([])
-
+        query_axes.set_xlabel(
+            f"Query\n{_short(example.query_display_name)}",
+            fontsize=style.SIZE_ANNOTATION,
+            color=style.INK_SECONDARY,
+            labelpad=3,
+        )
         for offset, row in enumerate(example.rows):
             for column, match in enumerate(row.matches, start=1):
                 axes = figure.add_subplot(grid[top + offset, column])
                 axes.imshow(_load_cell(match.local_path))
-                colour = _CORRECT if match.correct else _WRONG
+                _frame(axes, match.correct)
+                _badge(axes, match.correct)
                 axes.set_title(
-                    f"{match.rank}. {_short(match.display_name)}\n{match.cosine_similarity:.3f}",
-                    fontsize=8.5,
-                    color=colour,
+                    f"{match.rank}. {_short(match.display_name, 18)}\n"
+                    f"{match.cosine_similarity:.3f}",
+                    fontsize=style.SIZE_ANNOTATION - 0.5,
+                    color=style.INK if match.correct else style.INK_SECONDARY,
                     loc="left",
+                    pad=2,
                 )
-                for spine in axes.spines.values():
-                    spine.set_color(colour)
-                    spine.set_linewidth(2.0 if match.correct else 1.0)
-                axes.set_xticks([])
-                axes.set_yticks([])
                 if column == 1:
-                    axes.set_ylabel(row.backbone, fontsize=10, fontweight="bold", labelpad=3)
-
-    figure.suptitle(
-        "Query photograph and the five dwarves each backbone ranks highest\n"
-        "green is the correct statue, red is a wrong one",
-        fontsize=12,
-        y=0.985,
-    )
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    # JPEG, where every other figure here is a PNG. The others are line plots,
-    # which PNG stores exactly and small; this one is dozens of photographs,
-    # which PNG stores exactly and at 3.7 MB. At quality 88 it is under a tenth
-    # of that and the difference is invisible at this cell size. A caller asking
-    # for another suffix -- the manuscript asks for PNG -- gets that instead.
-    options = {"quality": 88, "optimize": True} if path.suffix.lower() in {".jpg", ".jpeg"} else {}
-    try:
-        figure.savefig(path, dpi=dpi, pil_kwargs=options)
-    except OSError as error:
-        raise VisualizationError(f"could not write figure {path}: {error}") from error
-    finally:
-        pyplot.close(figure)
-    return path
+                    axes.set_ylabel(
+                        _backbone_name(row.backbone),
+                        fontsize=style.SIZE_LABEL,
+                        fontweight="bold",
+                        color=style.INK,
+                        labelpad=3,
+                    )
+    return _write(pyplot, figure, path, dpi)
 
 
 def render_top_one(
     examples: Sequence[RetrievalExample],
     path: Path,
     dpi: int = 150,
+    width: float = style.CVWW.column,
 ) -> Path:
     """Draw each example as one row: the query, then each backbone's first answer.
 
-    The compact form a two-column paper has room for. The examples are the ones
-    `select_examples` chose, so the sheet shows the same queries as the top-five
-    version and differs only in how much of each ranking it shows.
+    The compact form a two-column paper has room for, drawn at one column's width.
+    The examples are the ones `select_examples` chose, so the sheet shows the same
+    queries as the top-five version and differs only in how much of each ranking.
     """
     if not examples:
         raise VisualizationError("no retrieval examples to draw")
+    pyplot = _setup()
 
-    matplotlib = import_optional_analysis("matplotlib")
-    matplotlib.use("Agg")
-    pyplot = import_optional_analysis("matplotlib.pyplot")
-
-    backbones = [row.backbone for row in examples[0].rows]
-    columns = 1 + len(backbones)
-    figure, axes_grid = pyplot.subplots(
+    primary = examples[0].rows[0].backbone
+    columns = 1 + len(examples[0].rows)
+    cell = width / columns
+    figure, axes_grid = pyplot.subplots(  # type: ignore[attr-defined]
         len(examples),
         columns,
-        figsize=(1.75 * columns, 1.95 * len(examples)),
+        figsize=(width, cell * 1.22 * len(examples) + 0.05),
         squeeze=False,
-        gridspec_kw={"wspace": 0.08, "hspace": 0.42},
+        layout="constrained",
+        gridspec_kw={"wspace": 0.02, "hspace": 0.02},
     )
     for index, example in enumerate(examples):
-        cells: list[tuple[Path, str, bool | None]] = [(example.query_local_path, "query", None)]
-        for row in example.rows:
+        query = axes_grid[index][0]
+        query.imshow(_load_cell(example.query_local_path))
+        _frame(query, None)
+        query.set_title("Query", fontsize=style.SIZE_ANNOTATION, color=style.INK, pad=2)
+        query.set_ylabel(
+            _group_name(example.group, primary),
+            fontsize=style.SIZE_ANNOTATION,
+            fontweight="bold",
+            color=style.INK,
+            labelpad=2,
+        )
+        for column, row in enumerate(example.rows, start=1):
             first = row.matches[0]
-            cells.append(
-                (first.local_path, f"{row.backbone}\n{_short(first.display_name)}", first.correct)
-            )
-        for column, (local_path, label, correct) in enumerate(cells):
             axes = axes_grid[index][column]
-            axes.imshow(_load_cell(local_path))
-            colour = "black" if correct is None else (_CORRECT if correct else _WRONG)
-            axes.set_title(label, fontsize=7.5, color=colour)
-            for spine in axes.spines.values():
-                spine.set_color(colour)
-                spine.set_linewidth(1.0 if correct is None else 2.0)
-            axes.set_xticks([])
-            axes.set_yticks([])
-        axes_grid[index][0].set_ylabel(example.group, fontsize=8, fontweight="bold")
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    options = {"quality": 90, "optimize": True} if path.suffix.lower() in {".jpg", ".jpeg"} else {}
-    try:
-        figure.savefig(path, dpi=dpi, bbox_inches="tight", pil_kwargs=options)
-    except OSError as error:
-        raise VisualizationError(f"could not write figure {path}: {error}") from error
-    finally:
-        pyplot.close(figure)
-    return path
+            axes.imshow(_load_cell(first.local_path))
+            _frame(axes, first.correct)
+            _badge(axes, first.correct)
+            axes.set_title(
+                f"{_backbone_name(row.backbone)}\n{_short(first.display_name, 16)}",
+                fontsize=style.SIZE_ANNOTATION - 0.5,
+                color=style.INK if first.correct else style.INK_SECONDARY,
+                pad=2,
+            )
+    return _write(pyplot, figure, path, dpi)
 
 
 def create_retrieval_examples_plot(
@@ -376,8 +428,14 @@ def create_retrieval_examples_plot(
     output: Path | None = None,
     dpi: int = 150,
     top_k: int = _TOP_K,
+    width_cm: float | None = None,
 ) -> Path:
     """Draw one contact sheet covering every backbone the config names.
+
+    `width_cm` is the width the sheet will be printed at. It defaults to one CVWW
+    column for the top-1 sheet and the full text width for the top-5 one; a
+    narrower width is drawn narrower rather than scaled, so its type stays the
+    size every other figure uses.
 
     `groups` keeps only the named agreement groups, in the order the selection
     rule already puts them. The manuscript has room for three rows where the
@@ -392,6 +450,8 @@ def create_retrieval_examples_plot(
     # without a dataset on disk.
     if top_k not in (1, _TOP_K):
         raise VisualizationError(f"the sheet draws the top {_TOP_K} or the top 1, not {top_k}")
+    if width_cm is not None and width_cm <= 0:
+        raise VisualizationError(f"the sheet width must be positive, got {width_cm} cm")
 
     try:
         manifest, split = load_evaluation_inputs(
@@ -429,10 +489,14 @@ def create_retrieval_examples_plot(
         examples = tuple(example for example in examples if example.group in wanted_groups)
     if top_k == 1:
         return render_top_one(
-            examples, output or config.paths.results_dir / "retrieval-examples-top1.jpg", dpi
+            examples,
+            output or config.paths.results_dir / "retrieval-examples-top1.jpg",
+            dpi,
+            width=style.CVWW.column if width_cm is None else width_cm / 2.54,
         )
     return render_examples(
         examples,
         output or config.paths.results_dir / "retrieval-examples.jpg",
         dpi,
+        width=style.CVWW.full if width_cm is None else width_cm / 2.54,
     )

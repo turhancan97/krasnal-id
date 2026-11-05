@@ -220,6 +220,12 @@ def test_the_visualization_experiment_group_is_required() -> None:
         create_retrieval_examples_plot(load_config(["experiment=baseline"]))
 
 
+def test_a_non_positive_print_width_is_refused_before_any_data_is_read() -> None:
+    config = load_config(["experiment=visualization"])
+    with pytest.raises(VisualizationError, match="width must be positive"):
+        create_retrieval_examples_plot(config, width_cm=0.0)
+
+
 def test_packaged_defaults_compare_both_backbones() -> None:
     experiment = load_config(["experiment=visualization"]).experiment
     assert isinstance(experiment, VisualizationExperimentConfig)

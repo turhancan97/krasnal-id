@@ -16,6 +16,14 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- **One visual system for the publication figures, `krasnal_id.viz.figure_style`** (AGENTS.md
+  §7.14). The author's palette, restricted to the validated subsets (backbones blue, orange and
+  teal; matchers pink and purple), one vendored typeface (TeX Gyre Heros, GUST Font License), one
+  type scale, and the CVWW kit's 8.1 cm and 17 cm print widths. `visualize paper-figures` takes
+  `--layout cvww|journal`; `journal` keeps the old two-backbone sizes.
+- `visualize retrieval-examples --width-cm` draws a sheet at its printed width rather than
+  scaling it, so the top-5 sheet fits a page at 13.6 cm with the same type size as every other
+  figure.
 - **`krasnal-id data field-sort` proposes a statue for each unsorted field photograph from its
   GPS, and moves nothing.** It reads `data/field-inbox/`, ranks the whole route by distance, and
   names one statue only when no other lies within 25 m of the nearest; otherwise it lists every
@@ -77,6 +85,13 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- **The paper figures are redrawn under that system.** Panel letters replace in-image titles;
+  Figure 1(c)'s second y-axis is gone, with the photographer share labelling each bar; statue
+  names in Figure 1(a) wrap instead of truncating; map points and the pool radii are ink rather
+  than a backbone's colour; the geography legend sits above the plot and the rejection curve's
+  operating points are labelled by the axis instead of by colliding annotations. Correct
+  retrievals carry a check-mark badge beside the green frame, so correctness never rests on
+  colour.
 - `paper-cvww/`, the workshop manuscript, is ignored like `paper/`, which it draws on; it vendors
   the CVWW author kit. A complete anonymous draft and supplement now build from it: 8 pages with
   references from page 7, Times via TeX Gyre Termes, and every interval generated. `AGENTS.md` section 11.3 records the paper's positioning and a wrong
