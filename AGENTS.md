@@ -1941,7 +1941,8 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
   `chen2020simclr` resolves to an unrelated 2022 *Geophysics* paper on seismic denoising whose
   title contains SimCLR's — the `he2020moco` failure again, missed because only that one key was
   re-checked. Corrected in `paper-cvww/references.bib` to the ICML 2020 paper, verified on title,
-  first author and year; `paper/references.bib` still has it, and `paper/main.tex` cites it twice.
+  first author and year. `paper/references.bib` carried it too, cited twice by `paper/main.tex`;
+  it was replaced with the same verified entry on 2026-11-05 and the rendered journal PDF re-read.
   The same read found `sivic2003videogoogle` without first names, three arXiv-only entries for
   papers published at ICLR, NeurIPS and TMLR, and The Met without its NeurIPS venue — and that
   `ieeenat_fullname` lowercases titles, so every title is braced in the workshop copy.
