@@ -196,6 +196,10 @@ class FieldClassOutcome(BaseModel):
     field_mean_rank: float = Field(ge=1.0)
     commons_queries: int = Field(ge=0)
     commons_top_1_hits: int = Field(ge=0)
+    # The same folds with the query's own photographer withheld. Zero queries for
+    # a statue documented by one photographer, which cannot be asked that way.
+    commons_disjoint_queries: int = Field(ge=0)
+    commons_disjoint_top_1_hits: int = Field(ge=0)
 
     @model_validator(mode="after")
     def validate_counts(self) -> "FieldClassOutcome":
@@ -204,6 +208,8 @@ class FieldClassOutcome(BaseModel):
             raise ValueError("field hits cannot exceed the queries they came from")
         if self.commons_top_1_hits > self.commons_queries:
             raise ValueError("Commons hits cannot exceed the queries they came from")
+        if self.commons_disjoint_top_1_hits > self.commons_disjoint_queries:
+            raise ValueError("disjoint hits cannot exceed the queries they came from")
         return self
 
 

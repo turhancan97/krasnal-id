@@ -19,6 +19,7 @@ class PathsConfig(BaseModel):
     evaluation_split_path: Path
     discovery_dir: Path
     field_queries_dir: Path
+    field_inbox_dir: Path
     field_route_path: Path
     category_review_path: Path
     image_review_path: Path
@@ -70,6 +71,11 @@ class ThresholdsConfig(BaseModel):
     confusion_top_pairs: int = Field(gt=0)
     open_set_top_rejections: int = Field(gt=0)
     max_coordinate_drift_km: float = Field(gt=0)
+    # GPS sorting of field photographs (`data field-sort`). A fix further than the
+    # first from every route statue is off the route; any statue within the second
+    # of the nearest makes the proposal ambiguous rather than a single guess.
+    field_sort_max_distance_m: float = Field(gt=0)
+    field_sort_ambiguity_m: float = Field(ge=0)
 
 
 class SeedsConfig(BaseModel):
@@ -250,6 +256,9 @@ class FieldGapExperimentConfig(BaseModel):
     kind: Literal["field_gap"]
     seed: int
     top_k: tuple[int, ...] = Field(min_length=1)
+    # Percentile bootstrap over statues for every gap's interval. Statues, not
+    # photographs, because a walk's photographs of one statue are not independent.
+    bootstrap_resamples: int = Field(ge=100)
 
     @model_validator(mode="after")
     def validate_top_k(self) -> "FieldGapExperimentConfig":

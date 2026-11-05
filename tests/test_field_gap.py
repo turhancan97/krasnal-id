@@ -31,9 +31,12 @@ from krasnal_id.embeddings.cache import EmbeddingCache
 from krasnal_id.embeddings.store import cache_key_for, load_embedding_matrix
 from krasnal_id.experiments.field_gap import (
     FieldGapError,
-    OriginOutcome,
-    group_outcomes,
+    StatueRanks,
+    bootstrap_gaps,
+    collect_statue_ranks,
+    gap,
     run_field_gap,
+    score_commons_disjoint_queries,
     score_commons_queries,
     score_field_queries,
     summarize_classes,
@@ -286,64 +289,184 @@ def test_the_commons_side_covers_only_the_statues_that_were_photographed(
         score_commons_queries(split, matrix, frozenset({"Q9"}))
 
 
-def test_the_gap_is_reported_per_cohort_in_the_direction_that_reads_correctly() -> None:
-    outcomes = (
-        OriginOutcome(origin="field", cohort="all", ranks=(1, 4, 1, 6)),
-        OriginOutcome(origin="commons", cohort="all", ranks=(1, 1, 1, 2)),
-        OriginOutcome(origin="field", cohort="confusable", ranks=(4, 6)),
-        OriginOutcome(origin="commons", cohort="confusable", ranks=(1, 2)),
-        OriginOutcome(origin="field", cohort="control", ranks=(1, 1)),
-        OriginOutcome(origin="commons", cohort="control", ranks=(1, 1)),
+def _statue(
+    dwarf_id: str,
+    cohort: FieldCohort,
+    field: tuple[int, ...],
+    commons: tuple[int, ...],
+    disjoint: tuple[int, ...] = (),
+) -> StatueRanks:
+    return StatueRanks(
+        dwarf_id=dwarf_id, cohort=cohort, field=field, commons=commons, commons_disjoint=disjoint
     )
 
-    metrics = {metric.name: metric.value for metric in summarize_field_gap(outcomes, (1, 5), 2)}
 
-    assert metrics["field_top_1"] == pytest.approx(0.5)
-    assert metrics["commons_top_1"] == pytest.approx(0.75)
+def test_the_gap_is_reported_per_cohort_in_the_direction_that_reads_correctly() -> None:
+    statues = (
+        _statue("Q1", FieldCohort.CONFUSABLE, (4, 6), (1, 2), (2, 3)),
+        _statue("Q2", FieldCohort.CONTROL, (1, 1), (1, 1), (1, 1)),
+    )
+
+    metrics = {metric.name: metric for metric in summarize_field_gap(statues, (1, 5), 200, 7)}
+
+    assert metrics["field_top_1"].value == pytest.approx(0.5)
+    assert metrics["commons_top_1"].value == pytest.approx(0.75)
     # Positive means the field photographs did worse, which is the expected direction.
-    assert metrics["top_1_gap"] == pytest.approx(0.25)
+    assert metrics["top_1_gap"].value == pytest.approx(0.25)
     # A drop concentrated on the confusable clusters is a different finding from a
     # uniform one, and only the cohorts make the difference visible.
-    assert metrics["confusable_top_1_gap"] == pytest.approx(0.5)
-    assert metrics["control_top_1_gap"] == pytest.approx(0.0)
-    assert metrics["field_confusable_top_5"] == pytest.approx(0.5)
-    assert metrics["field_queries"] == pytest.approx(4.0)
-    assert metrics["field_classes"] == pytest.approx(2.0)
+    assert metrics["confusable_top_1_gap"].value == pytest.approx(0.5)
+    assert metrics["control_top_1_gap"].value == pytest.approx(0.0)
+    assert metrics["cohort_top_1_gap_difference"].value == pytest.approx(0.5)
+    assert metrics["field_confusable_top_5"].value == pytest.approx(0.5)
+    assert metrics["field_queries"].value == pytest.approx(4.0)
+    assert metrics["field_classes"].value == pytest.approx(2.0)
+    # Against the photographer-disjoint folds: Q1 drops to 0 of 2 there too.
+    assert metrics["commons_disjoint_top_1"].value == pytest.approx(0.5)
+    assert metrics["disjoint_top_1_gap"].value == pytest.approx(0.0)
+    assert metrics["disjoint_classes"].value == pytest.approx(2.0)
 
-    with pytest.raises(FieldGapError, match="no queries were grouped"):
-        summarize_field_gap((), (1,), 0)
+    with pytest.raises(FieldGapError, match="no photographed statues"):
+        summarize_field_gap((), (1,), 200, 7)
     with pytest.raises(FieldGapError, match="must be positive"):
-        summarize_field_gap(outcomes, (0,), 2)
+        summarize_field_gap(statues, (0,), 200, 7)
+    with pytest.raises(FieldGapError, match="resamples must be positive"):
+        summarize_field_gap(statues, (1,), 0, 7)
 
 
-def test_a_cohort_with_no_queries_reports_no_gap(tmp_path: Path) -> None:
-    manifest = synthetic_manifest(dwarf_count=3)
-    staged = _stage(tmp_path, {"Q1": 2}, manifest)
-    scored = {query.image_id: (query, 1 + index) for index, query in enumerate(staged.queries)}
-    outcomes = group_outcomes(scored, {"Q1": [1, 1, 2]}, {"Q1": FieldCohort.CONFUSABLE})
+def test_a_cohort_with_no_queries_reports_no_gap() -> None:
+    statues = (_statue("Q1", FieldCohort.CONFUSABLE, (1, 2), (1, 1, 2)),)
 
-    labels = {(outcome.origin, outcome.cohort) for outcome in outcomes}
+    names = {metric.name for metric in summarize_field_gap(statues, (1,), 200, 7)}
 
-    assert ("field", "control") not in labels
-    names = {metric.name for metric in summarize_field_gap(outcomes, (1,), 1)}
     assert "confusable_top_1_gap" in names
     assert "control_top_1_gap" not in names
+    assert "cohort_top_1_gap_difference" not in names
+    # A statue nobody else photographed cannot be asked cross-photographer at all.
+    assert "disjoint_top_1_gap" not in names
 
 
-def test_every_photographed_statue_is_reported_worst_first(tmp_path: Path) -> None:
+def test_the_disjoint_gap_covers_only_statues_answerable_without_their_photographer() -> None:
+    statues = (
+        _statue("Q1", FieldCohort.CONTROL, (1, 1), (1, 1), (1, 1)),
+        # Single photographer: in the standard gap, absent from the disjoint one.
+        _statue("Q2", FieldCohort.CONTROL, (2, 2), (1, 1), ()),
+    )
+
+    metrics = {metric.name: metric.value for metric in summarize_field_gap(statues, (1,), 200, 7)}
+
+    assert metrics["top_1_gap"] == pytest.approx(0.5)
+    # Field side restricted to Q1 as well, so both sides cover one set of statues.
+    assert metrics["disjoint_top_1_gap"] == pytest.approx(0.0)
+    assert metrics["disjoint_classes"] == pytest.approx(1.0)
+    assert metrics["commons_disjoint_queries"] == pytest.approx(2.0)
+
+
+def test_intervals_resample_statues_not_photographs() -> None:
+    # Two statues, each perfectly consistent within itself: one the field arm
+    # always gets, one it always misses. Photographs of one statue are not
+    # independent, so the interval has to reach both extremes.
+    statues = (
+        _statue("Q1", FieldCohort.CONTROL, (1,) * 5, (1,) * 5),
+        _statue("Q2", FieldCohort.CONTROL, (9,) * 5, (1,) * 5),
+    )
+
+    draws = bootstrap_gaps(statues, "commons", 1, 2000, np.random.default_rng(3))
+    metric = next(
+        metric
+        for metric in summarize_field_gap(statues, (1,), 2000, 3)
+        if metric.name == "top_1_gap"
+    )
+
+    assert gap(statues, "commons", 1) == pytest.approx(0.5)
+    assert set(np.unique(draws)) == {0.0, 0.5, 1.0}
+    assert metric.lower_bound == pytest.approx(0.0)
+    assert metric.upper_bound == pytest.approx(1.0)
+    # Reproducible from the configured seed.
+    again = next(
+        metric
+        for metric in summarize_field_gap(statues, (1,), 2000, 3)
+        if metric.name == "top_1_gap"
+    )
+    assert again == metric
+
+
+def test_every_photographed_statue_is_reported_worst_first() -> None:
     manifest = synthetic_manifest(dwarf_count=3)
-    staged = _stage(tmp_path, {"Q1": 2, "Q2": 2}, manifest)
-    ranks = {"Q1/IMG_0.png": 3, "Q1/IMG_1.png": 5, "Q2/IMG_0.png": 1, "Q2/IMG_1.png": 1}
-    scored = {query.image_id: (query, ranks[query.image_id]) for query in staged.queries}
+    statues = (
+        _statue("Q1", FieldCohort.CONFUSABLE, (3, 5), (1, 1, 1), (1, 2)),
+        _statue("Q2", FieldCohort.CONTROL, (1, 1), (1, 2, 1)),
+    )
 
-    rows = summarize_classes(scored, {"Q1": [1, 1, 1], "Q2": [1, 2, 1]}, manifest)
+    rows = summarize_classes(statues, manifest)
 
     assert [row.dwarf_id for row in rows] == ["Q1", "Q2"]
     assert rows[0].field_top_1_hits == 0
     assert rows[0].field_mean_rank == pytest.approx(4.0)
     assert rows[0].commons_top_1_hits == 3
+    assert rows[0].commons_disjoint_queries == 2
+    assert rows[0].commons_disjoint_top_1_hits == 1
     assert rows[0].cohort == "confusable"
     assert rows[1].field_top_1_hits == 2
+    assert rows[1].commons_disjoint_queries == 0
+
+
+def test_statue_ranks_are_collected_and_a_missing_fold_is_refused(tmp_path: Path) -> None:
+    manifest = synthetic_manifest(dwarf_count=3)
+    staged = _stage(tmp_path, {"Q1": 2, "Q2": 1}, manifest)
+    scored = {query.image_id: (query, 1 + index) for index, query in enumerate(staged.queries)}
+
+    statues = collect_statue_ranks(scored, {"Q1": [1, 1], "Q2": [2]}, {"Q1": [1]})
+
+    assert [statue.dwarf_id for statue in statues] == ["Q1", "Q2"]
+    assert statues[0].field == (1, 2)
+    assert statues[0].commons_disjoint == (1,)
+    assert statues[1].commons_disjoint == ()
+    assert statues[1].cohort == FieldCohort.CONTROL
+    with pytest.raises(FieldGapError, match="no leave-one-out fold"):
+        collect_statue_ranks(scored, {"Q1": [1, 1]}, {})
+    with pytest.raises(FieldGapError, match="unknown query origin"):
+        statues[0].ranks("elsewhere")
+
+
+def test_the_disjoint_folds_withhold_the_query_photographer(tmp_path: Path) -> None:
+    manifest = synthetic_manifest(dwarf_count=3)
+    # Q1 and Q2 each have two photographers; Q3 has only one.
+    authors = {
+        "image-1-0": "Ada",
+        "image-1-1": "Ada",
+        "image-1-2": "Ben",
+        "image-2-0": "Ada",
+        "image-2-1": "Cy",
+        "image-2-2": "Cy",
+    }
+    manifest = manifest.model_copy(
+        update={
+            "images": tuple(
+                image.model_copy(update={"author": authors.get(image.image_id, "Dee")})
+                for image in manifest.images
+            )
+        }
+    )
+    seed_embedding_cache(tmp_path, manifest)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path)
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+
+    ranks = score_commons_disjoint_queries(split, matrix, manifest, frozenset({"Q1", "Q2", "Q3"}))
+
+    # Every fold of an answerable statue is scored; the single-photographer one is not.
+    assert set(ranks) == {"Q1", "Q2"}
+    assert len(ranks["Q1"]) == 3
+    assert len(ranks["Q2"]) == 3
+
+
+def test_a_heic_photograph_is_refused_with_the_fix(tmp_path: Path) -> None:
+    root = tmp_path / "field-queries"
+    (root / "Q1").mkdir(parents=True)
+    (root / "Q1" / "IMG_0001.HEIC").write_bytes(b"ftypheic not decodable here")
+
+    with pytest.raises(FieldQueryError, match="Most Compatible"):
+        stage_field_queries(root, synthetic_manifest(dwarf_count=3), _route())
 
 
 def test_run_requires_the_field_gap_experiment_group(tmp_path: Path) -> None:
@@ -359,8 +482,11 @@ def test_packaged_field_gap_defaults_are_usable() -> None:
     assert 1 in config.experiment.top_k
     assert config.paths.field_route_path == Path("data/field-route.json")
     assert config.paths.field_queries_dir == Path("data/field-queries")
+    assert config.experiment.bootstrap_resamples >= 1000
     with pytest.raises(ValueError, match="top_k values must be positive"):
-        FieldGapExperimentConfig.model_validate({"kind": "field_gap", "seed": 1, "top_k": (0,)})
+        FieldGapExperimentConfig.model_validate(
+            {"kind": "field_gap", "seed": 1, "top_k": (0,), "bootstrap_resamples": 1000}
+        )
 
 
 def test_cli_stages_embeds_and_scores_the_field_photographs(tmp_path: Path) -> None:
@@ -417,6 +543,11 @@ def test_cli_stages_embeds_and_scores_the_field_photographs(tmp_path: Path) -> N
     assert "commons_top_1" in result.output
     assert "top_1_gap" in result.output
     assert "confusable_top_1_gap" in result.output
+    # One photographer behind every synthetic reference: nothing can be asked
+    # cross-photographer, which is reported as a count rather than a fake gap.
+    assert "disjoint_classes: +0.0000" in result.output
+    assert "disjoint_top_1_gap" not in result.output
+    assert "photographer-disjoint" in result.output
 
     written = json.loads((tmp_path / "results" / "field_gap-dinov2.json").read_text())
     assert written["experiment"] == "field_gap"

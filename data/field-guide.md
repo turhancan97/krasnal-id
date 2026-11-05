@@ -6,8 +6,10 @@ gap to a casual phone photo as the largest untested thing in the project. This i
 
 **What gets measured.** Your photographs become *queries* against the existing 1,691 reference
 images. Nothing about the reference set changes. The number we want is how far top-1 accuracy falls
-below the 93.1% the leave-one-out protocol reports — that difference is the domain gap, and right
-now nobody knows if it is two points or thirty.
+below what the same statues' own Commons photographs score — that difference is the domain gap, and
+right now nobody knows if it is two points or thirty. It is measured twice: against the published
+leave-one-out folds, and against the same folds with each photographer's own references withheld,
+because your photographs are new in two ways and only the second comparison separates them.
 
 ## How to shoot
 
@@ -20,11 +22,31 @@ now nobody knows if it is two points or thirty.
 - **Leave GPS on** if you are willing. Every one of these statues is now geolocated, so photo
   coordinates let the pipeline propose which statue each photo belongs to instead of you sorting
   144 files by hand.
-- Portrait or landscape, either is fine. Do not crop or filter afterwards.
+- Portrait or landscape, either is fine. Do not crop or filter afterwards. Portrait photographs are
+  stored sideways with a rotation tag; the pipeline applies it, so do not "fix" them by hand.
+- **Shoot JPEG, not HEIC.** iPhones save HEIC by default and the pipeline will refuse it. Before
+  the walk: Settings > Camera > Formats > **Most Compatible**. Android phones save JPEG already.
+- **Use your own phone, and nobody who has uploaded these statues to Commons.** The experiment
+  assumes the photographer is new to the reference set; a Commons contributor's photographs would
+  quietly re-admit the photographer effect it exists to separate.
 
 ## Where the files go
 
-One directory per statue, named by its dataset ID. The directories already exist:
+Copy the files off the phone **by cable or a cloud backup at original quality**. Messaging apps
+(WhatsApp, Messenger, Signal) recompress photographs and strip their GPS and rotation tags, which
+changes the very thing being measured. Put them, unsorted, in `data/field-inbox/`, then:
+
+```bash
+uv run krasnal-id data field-sort
+```
+
+It moves nothing. For each photograph it reads the GPS and either names one statue, with a
+`mv` command to run after you have looked at the photograph, or lists every statue the fix could be
+— Grajek, Meloman and Grajek i Meloman share a plinth, so do Ślepak and Głuchak and the water
+installation, and WrocLovek and Śpioch stand 5 m apart. Those you sort by eye. The report is also
+written to `data/field-sort-proposal.json`.
+
+One directory per statue, named by its dataset ID. The core directories already exist:
 
 ```
 data/field-queries/
@@ -37,8 +59,8 @@ data/field-queries/
 ```
 
 Filenames do not matter — keep whatever the phone assigns. The directory name is what links a
-photo to its statue, and the IDs below are exactly the directory names. `data/field-queries/` is
-git-ignored, like every other image directory.
+photo to its statue, never the GPS proposal, and the IDs below are exactly the directory names.
+`data/field-inbox/` and `data/field-queries/` are git-ignored, like every other image directory.
 
 ## The route
 
@@ -292,10 +314,12 @@ after seeing the result.
 
 ## When you get back
 
-Copy the directories across. Everything after that is already built and takes about a minute:
+Copy the photographs into `data/field-inbox/`, sort them as above, and the rest is already built
+and takes a few minutes on a CPU:
 
 ```bash
-uv run krasnal-id data field-queries                          # stage the photographs
+uv run krasnal-id data field-sort                             # propose statues from GPS
+uv run krasnal-id data field-queries                          # stage the sorted photographs
 uv run krasnal-id embeddings extract --field-queries          # embed them, DINOv2
 uv run krasnal-id embeddings extract --field-queries --override backbone=clip
 uv run krasnal-id experiment field-gap                        # the gap, DINOv2
@@ -305,4 +329,6 @@ uv run krasnal-id experiment field-gap --override backbone=clip
 Staging refuses a directory that names no statue in the dataset, a statue that is not on the
 reviewed route, and any photograph byte-identical to a reference — so a mis-named directory or a
 Commons file copied in by accident is caught before it reaches a result. The experiment reports the
-gap overall and separately for the confused families against the controls, plus a row per statue.
+gap overall and separately for the confused families against the controls, the difference between
+those two, and a row per statue — each gap with an interval resampled over statues rather than
+photographs, because five photographs of one statue are not five independent observations.

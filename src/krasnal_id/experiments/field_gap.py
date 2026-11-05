@@ -18,12 +18,34 @@ section 5.8:
   a cluster both backbones already confuse or as a control, so a drop concentrated
   on the hard cases is distinguishable from a uniform one.
 
-One asymmetry is unavoidable and is reported rather than hidden: a leave-one-out
-query is withheld from its own class, so it sees one fewer reference of the right
-statue than a field query does. That favours the field queries, so it understates
-the gap rather than inventing one.
+Two comparators, because a field photograph differs from a Commons query in two
+ways at once. It comes from a phone in the street, and it comes from a photographer
+who is not in the reference set. Section 7.5 measured the second on its own, so the
+experiment scores the same statues' folds twice: as published, and with every
+reference by the query's own photographer withheld (`AGENTS.md` section 5.14).
+
+* ``top_k_gap`` against the standard folds is the whole gap a reader would see.
+* ``disjoint_top_k_gap`` against the photographer-disjoint folds is the part a new
+  photographer does not explain, which is the phone and the street.
+
+Both comparators see *fewer* correct references than a field query: one fewer in
+the standard folds, every one by the query's photographer in the disjoint folds.
+Section 7.5 found that losing references costs accuracy, so both favour the field
+side and the disjoint gap is a lower bound on the phone-and-street component. The
+standard gap is not bounded either way, because the photographer leakage pushes it
+up while the withheld reference pushes it down.
+
+Uncertainty is resampled by statue, not by photograph. A walk yields three to five
+photographs of each of a few dozen statues, and photographs of one statue are not
+independent draws, so a per-photograph Wilson interval on the gap would be far too
+narrow. Each gap's interval is a percentile bootstrap over statues, pairing a
+statue's field and Commons queries in every resample. The per-arm accuracies keep
+their Wilson intervals by section 6.2's convention, and those *are* per photograph:
+quote the gap's interval, not theirs, for anything about the field arm.
 """
 
+import zlib
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
@@ -46,10 +68,19 @@ from krasnal_id.experiments.baseline_accuracy import (
 )
 from krasnal_id.experiments.contracts import FieldClassOutcome, FieldGapResult, MetricSummary
 from krasnal_id.models import DatasetManifest, EvaluationSplit
+from krasnal_id.photographers import (
+    authors_by_image,
+    disjoint_references,
+    is_answerable,
+    photographers_by_class,
+)
 from krasnal_id.retrieval.knn import cosine_knn
 
 # The whole-route figures, reported under names without a cohort in them.
 OVERALL = "all"
+# The two Commons comparators, by the name each arm is reported under.
+STANDARD = "commons"
+DISJOINT = "commons_disjoint"
 
 
 class FieldGapError(ValueError):
@@ -57,21 +88,30 @@ class FieldGapError(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
-class OriginOutcome:
-    """Where the correct statue ranked for one origin and cohort of queries."""
+class StatueRanks:
+    """Where the correct statue ranked, per origin, for one photographed statue.
 
-    origin: str
-    cohort: str
-    ranks: tuple[int, ...]
+    The statue is the unit the bootstrap resamples, so everything known about it
+    travels together. `commons_disjoint` is empty for a statue documented by a
+    single photographer: withholding that photographer leaves no correct
+    reference, so the statue cannot be asked cross-photographer at all.
+    """
 
-    def top_k_hits(self, k: int) -> int:
-        """Count queries whose correct dwarf ranked within the first k candidates."""
-        return sum(1 for rank in self.ranks if rank <= k)
+    dwarf_id: str
+    cohort: FieldCohort
+    field: tuple[int, ...]
+    commons: tuple[int, ...]
+    commons_disjoint: tuple[int, ...]
 
-    @property
-    def label(self) -> str:
-        """Return the metric-name prefix for this group."""
-        return self.origin if self.cohort == OVERALL else f"{self.origin}_{self.cohort}"
+    def ranks(self, origin: str) -> tuple[int, ...]:
+        """Return this statue's ranks for one origin."""
+        if origin == "field":
+            return self.field
+        if origin == STANDARD:
+            return self.commons
+        if origin == DISJOINT:
+            return self.commons_disjoint
+        raise FieldGapError(f"unknown query origin {origin}")
 
 
 def rank_field_query(
@@ -175,115 +215,229 @@ def score_commons_queries(
     return ranks
 
 
-def group_outcomes(
+def score_commons_disjoint_queries(
+    split: EvaluationSplit,
+    matrix: EmbeddingMatrix,
+    manifest: DatasetManifest,
+    photographed: frozenset[str],
+) -> dict[str, list[int]]:
+    """Rank the same folds with every reference by the query's photographer withheld.
+
+    A field photograph is by definition by someone the reference set has never
+    seen, so this is the comparator that holds the photographer fixed as well as
+    the statue. Statues with a single photographer are left out rather than scored
+    as failures; section 7.5 gives the reason, and the result counts them.
+    """
+    authors = authors_by_image(manifest)
+    by_class = photographers_by_class(manifest)
+    ranks: dict[str, list[int]] = {}
+    for fold in split.folds:
+        dwarf_id = fold.query_dwarf_id
+        if dwarf_id not in photographed or not is_answerable(dwarf_id, by_class):
+            continue
+        kept = disjoint_references(fold.reference_image_ids, authors, authors[fold.query_image_id])
+        outcome = evaluate_fold(fold.query_image_id, dwarf_id, kept, matrix)
+        ranks.setdefault(dwarf_id, []).append(outcome.dwarf_rank)
+    return ranks
+
+
+def collect_statue_ranks(
     field_scores: dict[str, tuple[FieldQueryRecord, int]],
     commons_ranks: dict[str, list[int]],
-    cohort_by_dwarf: dict[str, FieldCohort],
-) -> tuple[OriginOutcome, ...]:
-    """Collect ranks by query origin, whole-route first and then by cohort."""
-    field_by_cohort: dict[str, list[int]] = {}
-    commons_by_cohort: dict[str, list[int]] = {}
+    disjoint_ranks: dict[str, list[int]],
+) -> tuple[StatueRanks, ...]:
+    """Gather every origin's ranks by statue, in a stable order."""
+    by_dwarf: dict[str, list[tuple[FieldQueryRecord, int]]] = {}
     for query, rank in field_scores.values():
-        field_by_cohort.setdefault(str(query.cohort), []).append(rank)
-    for dwarf_id, ranks in commons_ranks.items():
-        commons_by_cohort.setdefault(str(cohort_by_dwarf[dwarf_id]), []).extend(ranks)
+        by_dwarf.setdefault(query.dwarf_id, []).append((query, rank))
+    statues: list[StatueRanks] = []
+    for dwarf_id in sorted(by_dwarf):
+        scored = by_dwarf[dwarf_id]
+        commons = commons_ranks.get(dwarf_id)
+        if not commons:
+            raise FieldGapError(
+                f"statue {dwarf_id} was photographed but has no leave-one-out fold to "
+                "compare against"
+            )
+        statues.append(
+            StatueRanks(
+                dwarf_id=dwarf_id,
+                cohort=scored[0][0].cohort,
+                field=tuple(rank for _, rank in scored),
+                commons=tuple(commons),
+                commons_disjoint=tuple(disjoint_ranks.get(dwarf_id, ())),
+            )
+        )
+    return tuple(statues)
 
-    outcomes = [
-        OriginOutcome(
-            origin="field",
-            cohort=OVERALL,
-            ranks=tuple(rank for _, rank in field_scores.values()),
-        ),
-        OriginOutcome(
-            origin="commons",
-            cohort=OVERALL,
-            ranks=tuple(rank for ranks in commons_ranks.values() for rank in ranks),
-        ),
-    ]
-    for cohort in FieldCohort:
-        for origin, grouped in (("field", field_by_cohort), ("commons", commons_by_cohort)):
-            cohort_ranks = grouped.get(str(cohort))
-            if cohort_ranks:
-                outcomes.append(
-                    OriginOutcome(origin=origin, cohort=str(cohort), ranks=tuple(cohort_ranks))
-                )
-    return tuple(outcomes)
+
+def _hits(ranks: Sequence[int], k: int) -> int:
+    return sum(1 for rank in ranks if rank <= k)
+
+
+def _pooled(statues: Sequence[StatueRanks], origin: str) -> tuple[int, ...]:
+    return tuple(rank for statue in statues for rank in statue.ranks(origin))
+
+
+def gap(statues: Sequence[StatueRanks], comparator: str, k: int) -> float:
+    """Comparator accuracy minus field accuracy at k, pooled over the statues.
+
+    Positive means the field photographs did worse, which is the expected
+    direction and the one the finding is stated in.
+    """
+    commons, field = _pooled(statues, comparator), _pooled(statues, "field")
+    return _hits(commons, k) / len(commons) - _hits(field, k) / len(field)
+
+
+def bootstrap_gaps(
+    statues: Sequence[StatueRanks],
+    comparator: str,
+    k: int,
+    resamples: int,
+    generator: np.random.Generator,
+) -> npt.NDArray[np.float64]:
+    """Resample whole statues with replacement and recompute the gap each time.
+
+    A statue's field and Commons queries are drawn together, which pairs the two
+    sides exactly as the point estimate does.
+    """
+    field_hits = np.array([_hits(statue.field, k) for statue in statues], dtype=np.float64)
+    field_n = np.array([len(statue.field) for statue in statues], dtype=np.float64)
+    comparator_ranks = [statue.ranks(comparator) for statue in statues]
+    comparator_hits = np.array([_hits(ranks, k) for ranks in comparator_ranks], dtype=np.float64)
+    comparator_n = np.array([len(ranks) for ranks in comparator_ranks], dtype=np.float64)
+    draws = generator.integers(0, len(statues), size=(resamples, len(statues)))
+    comparator_accuracy = comparator_hits[draws].sum(axis=1) / comparator_n[draws].sum(axis=1)
+    field_accuracy = field_hits[draws].sum(axis=1) / field_n[draws].sum(axis=1)
+    return np.asarray(comparator_accuracy - field_accuracy, dtype=np.float64)
+
+
+def _generator(seed: int, label: str) -> np.random.Generator:
+    """One generator per resampled group, independent of which other groups exist.
+
+    Keyed by the group's name rather than its position, so adding a cohort or a
+    cut-off never changes the draws behind an existing interval.
+    """
+    return np.random.default_rng([seed, zlib.crc32(label.encode("utf-8"))])
+
+
+def _interval(name: str, value: float, samples: npt.NDArray[np.float64]) -> MetricSummary:
+    lower, upper = np.percentile(samples, [2.5, 97.5])
+    return MetricSummary(name=name, value=value, lower_bound=float(lower), upper_bound=float(upper))
+
+
+def _arm_metrics(label: str, ranks: tuple[int, ...], cut_offs: list[int]) -> list[MetricSummary]:
+    metrics = [accuracy_metric(f"{label}_top_{k}", _hits(ranks, k), len(ranks)) for k in cut_offs]
+    metrics.append(MetricSummary(name=f"{label}_queries", value=float(len(ranks))))
+    metrics.append(
+        MetricSummary(name=f"{label}_mrr", value=sum(1.0 / rank for rank in ranks) / len(ranks))
+    )
+    return metrics
 
 
 def summarize_field_gap(
-    outcomes: tuple[OriginOutcome, ...],
+    statues: Sequence[StatueRanks],
     top_k: tuple[int, ...],
-    classes: int,
+    resamples: int,
+    seed: int,
 ) -> tuple[MetricSummary, ...]:
-    """Report each group, then the gap between the two origins within each cohort."""
-    if not outcomes:
-        raise FieldGapError("no queries were grouped")
+    """Report each arm, each gap with its by-statue interval, and the cohort contrast."""
+    if not statues:
+        raise FieldGapError("no photographed statues to summarize")
     if any(k <= 0 for k in top_k):
         raise FieldGapError(f"top_k values must be positive: {top_k}")
+    if resamples <= 0:
+        raise FieldGapError(f"bootstrap resamples must be positive: {resamples}")
 
     cut_offs = sorted(set(top_k))
+    scopes: dict[str, tuple[StatueRanks, ...]] = {OVERALL: tuple(statues)}
+    for cohort in FieldCohort:
+        members = tuple(statue for statue in statues if statue.cohort == cohort)
+        if members:
+            scopes[str(cohort)] = members
+
     metrics: list[MetricSummary] = []
-    for outcome in outcomes:
-        total = len(outcome.ranks)
+    # The comparator's statues per scope: every one for the standard folds, and
+    # only those answerable cross-photographer for the disjoint ones, with the
+    # field side restricted to the same statues so both sides cover one set.
+    covered: dict[tuple[str, str], tuple[StatueRanks, ...]] = {}
+    for scope, members in scopes.items():
+        covered[(scope, STANDARD)] = members
+        answerable = tuple(statue for statue in members if statue.commons_disjoint)
+        if answerable:
+            covered[(scope, DISJOINT)] = answerable
+
+    for scope, members in scopes.items():
+        suffix = "" if scope == OVERALL else f"_{scope}"
+        metrics.extend(_arm_metrics(f"field{suffix}", _pooled(members, "field"), cut_offs))
+        for comparator in (STANDARD, DISJOINT):
+            subset = covered.get((scope, comparator))
+            if subset:
+                metrics.extend(
+                    _arm_metrics(f"{comparator}{suffix}", _pooled(subset, comparator), cut_offs)
+                )
+
+    samples: dict[tuple[str, str, int], npt.NDArray[np.float64]] = {}
+    for (scope, comparator), subset in covered.items():
+        prefix = "" if scope == OVERALL else f"{scope}_"
+        kind = "" if comparator == STANDARD else "disjoint_"
         for k in cut_offs:
+            draws = bootstrap_gaps(
+                subset, comparator, k, resamples, _generator(seed, f"{scope}/{comparator}")
+            )
+            samples[(scope, comparator, k)] = draws
             metrics.append(
-                accuracy_metric(f"{outcome.label}_top_{k}", outcome.top_k_hits(k), total)
+                _interval(f"{prefix}{kind}top_{k}_gap", gap(subset, comparator, k), draws)
             )
-        metrics.append(MetricSummary(name=f"{outcome.label}_queries", value=float(total)))
-        metrics.append(
-            MetricSummary(
-                name=f"{outcome.label}_mrr",
-                value=sum(1.0 / rank for rank in outcome.ranks) / total,
-            )
-        )
 
-    by_group = {(outcome.origin, outcome.cohort): outcome for outcome in outcomes}
-    for cohort in (OVERALL, *(str(cohort) for cohort in FieldCohort)):
-        field, commons = by_group.get(("field", cohort)), by_group.get(("commons", cohort))
-        if field is None or commons is None:
+    # The finding section 5.8 is built for: is the drop concentrated on the
+    # families both backbones already confuse? Confusable gap minus control gap,
+    # each cohort resampled on its own, so the contrast carries its own interval.
+    confusable, control = str(FieldCohort.CONFUSABLE), str(FieldCohort.CONTROL)
+    for comparator in (STANDARD, DISJOINT):
+        if (confusable, comparator) not in covered or (control, comparator) not in covered:
             continue
-        prefix = "" if cohort == OVERALL else f"{cohort}_"
+        kind = "" if comparator == STANDARD else "disjoint_"
         for k in cut_offs:
-            # Positive means the field photographs did worse, which is the
-            # expected direction and the one the finding is stated in.
-            gap = commons.top_k_hits(k) / len(commons.ranks) - field.top_k_hits(k) / len(
-                field.ranks
+            contrast = gap(covered[(confusable, comparator)], comparator, k) - gap(
+                covered[(control, comparator)], comparator, k
             )
-            metrics.append(MetricSummary(name=f"{prefix}top_{k}_gap", value=gap))
+            difference = samples[(confusable, comparator, k)] - samples[(control, comparator, k)]
+            metrics.append(_interval(f"cohort_{kind}top_{k}_gap_difference", contrast, difference))
 
-    metrics.append(MetricSummary(name="field_classes", value=float(classes)))
+    metrics.append(MetricSummary(name="field_classes", value=float(len(statues))))
+    metrics.append(
+        MetricSummary(
+            name="disjoint_classes", value=float(len(covered.get((OVERALL, DISJOINT), ())))
+        )
+    )
+    metrics.append(MetricSummary(name="bootstrap_resamples", value=float(resamples)))
     return tuple(metrics)
 
 
 def summarize_classes(
-    field_scores: dict[str, tuple[FieldQueryRecord, int]],
-    commons_ranks: dict[str, list[int]],
+    statues: Sequence[StatueRanks],
     manifest: DatasetManifest,
 ) -> tuple[FieldClassOutcome, ...]:
     """Report every photographed statue, worst field accuracy first."""
     display_names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
-    by_dwarf: dict[str, list[tuple[FieldQueryRecord, int]]] = {}
-    for query, rank in field_scores.values():
-        by_dwarf.setdefault(query.dwarf_id, []).append((query, rank))
-
     rows = tuple(
         FieldClassOutcome(
-            dwarf_id=dwarf_id,
-            display_name=display_names.get(dwarf_id, dwarf_id),
-            cohort=str(scored[0][0].cohort),
-            field_queries=len(scored),
-            field_top_1_hits=sum(1 for _, rank in scored if rank == 1),
-            field_mean_rank=sum(rank for _, rank in scored) / len(scored),
-            commons_queries=len(commons_ranks.get(dwarf_id, [])),
-            commons_top_1_hits=sum(1 for rank in commons_ranks.get(dwarf_id, []) if rank == 1),
+            dwarf_id=statue.dwarf_id,
+            display_name=display_names.get(statue.dwarf_id, statue.dwarf_id),
+            cohort=str(statue.cohort),
+            field_queries=len(statue.field),
+            field_top_1_hits=_hits(statue.field, 1),
+            field_mean_rank=sum(statue.field) / len(statue.field),
+            commons_queries=len(statue.commons),
+            commons_top_1_hits=_hits(statue.commons, 1),
+            commons_disjoint_queries=len(statue.commons_disjoint),
+            commons_disjoint_top_1_hits=_hits(statue.commons_disjoint, 1),
         )
-        for dwarf_id, scored in by_dwarf.items()
+        for statue in statues
     )
     return tuple(
-        sorted(
-            rows,
-            key=lambda row: (row.field_top_1_hits / row.field_queries, row.dwarf_id),
-        )
+        sorted(rows, key=lambda row: (row.field_top_1_hits / row.field_queries, row.dwarf_id))
     )
 
 
@@ -303,9 +457,12 @@ def run_field_gap(config: AppConfig, staged: FieldQueryManifest) -> FieldGapResu
 
     matrix = load_embedding_matrix(manifest, config.backbone, config.paths.embeddings_dir)
     field_scores = score_field_queries(staged, matrix, load_field_vectors(staged, config))
-    cohort_by_dwarf = {query.dwarf_id: query.cohort for query in staged.queries}
-    commons_ranks = score_commons_queries(split, matrix, frozenset(cohort_by_dwarf))
-    outcomes = group_outcomes(field_scores, commons_ranks, cohort_by_dwarf)
+    photographed = frozenset(query.dwarf_id for query in staged.queries)
+    statues = collect_statue_ranks(
+        field_scores,
+        score_commons_queries(split, matrix, photographed),
+        score_commons_disjoint_queries(split, matrix, manifest, photographed),
+    )
 
     return FieldGapResult(
         experiment="field_gap",
@@ -313,6 +470,11 @@ def run_field_gap(config: AppConfig, staged: FieldQueryManifest) -> FieldGapResu
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
         configuration=config.experiment.model_dump(mode="json"),
-        metrics=summarize_field_gap(outcomes, config.experiment.top_k, len(cohort_by_dwarf)),
-        classes=summarize_classes(field_scores, commons_ranks, manifest),
+        metrics=summarize_field_gap(
+            statues,
+            config.experiment.top_k,
+            config.experiment.bootstrap_resamples,
+            config.experiment.seed,
+        ),
+        classes=summarize_classes(statues, manifest),
     )

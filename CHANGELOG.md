@@ -10,6 +10,47 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+The field-query path is walk-ready. Section 5.10 had only ever seen stand-ins cut from Commons
+derivatives, which are upright, JPEG and never sorted by hand; a real phone dump is none of those.
+No result changes and no number is published: the photographs still need a day in Wrocław.
+
+### Added
+
+- **`krasnal-id data field-sort` proposes a statue for each unsorted field photograph from its
+  GPS, and moves nothing.** It reads `data/field-inbox/`, ranks the whole route by distance, and
+  names one statue only when no other lies within 25 m of the nearest; otherwise it lists every
+  candidate, because three route groups share one coordinate. It prints `mv` commands for the
+  single proposals and writes `data/field-sort-proposal.json`. Both distances are `thresholds`
+  config, and `paths.field_inbox_dir` is new. `AGENTS.md` section 5.14.
+- **`experiment field-gap` reports a photographer-disjoint comparator beside the standard one.**
+  `disjoint_top_k_gap` scores the same statues' folds with the query photographer withheld, so the
+  gap separates into what a new photographer explains and what the phone and street do; it is a
+  lower bound on the latter. Statues with one photographer drop out of that comparison on both
+  sides and `disjoint_classes` counts what remains. Per-statue rows gain
+  `commons_disjoint_queries` and `commons_disjoint_top_1_hits`.
+- **Every field gap carries a 95% interval bootstrapped over statues**, as does the new
+  `cohort_top_k_gap_difference` (confusable gap minus control gap), from
+  `experiment.bootstrap_resamples` (10,000). Photographs of one statue are not independent, so a
+  per-photograph interval would have overstated precision; the per-arm Wilson intervals remain and
+  are per photograph.
+
+### Fixed
+
+- **Phone portrait photographs reached the model on their side.** No loader applied the EXIF
+  `Orientation` tag, which is how every phone stores a portrait shot. Extraction and single-image
+  retrieval now go through `image_io.upright_rgb`. All 1,691 references carry `Orientation = 1` or
+  no tag, so no cached vector and no published result changes. On rehearsal stand-ins, ignoring the
+  tag cost 13.2 top-1 points for DINOv2 and 28.9 for CLIP — a fake domain gap the size of a real one.
+- **A HEIC photograph was refused without saying how to fix it.** Staging and sorting now name
+  the iPhone setting that produces JPEG. HEIC stays unsupported by design: a second decoder for the
+  field side only would decode the two sides of a difference differently.
+
+### Changed
+
+- `data/field-guide.md` asks for JPEG, a photographer with no Commons uploads of these statues, and
+  transfer by cable or full-quality backup rather than a messaging app, and describes the sorting
+  step. The README's field-query section describes both comparators and the intervals.
+
 ## [0.19.0] - 2026-09-16
 
 The research stopped changing and the paper started, which turned out to be its own kind of

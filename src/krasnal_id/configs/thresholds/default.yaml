@@ -2,3 +2,9 @@ minimum_images_per_dwarf: 3
 confusion_top_pairs: 20
 open_set_top_rejections: 20
 max_coordinate_drift_km: 25.0
+# A phone fix in the Old Town is good to roughly 10 m and the route's derived
+# coordinates to about 9 m (AGENTS.md 5.7), so two statues closer than ~25 m are
+# not separable by GPS: the margin says so instead of guessing. Most of the route
+# stands within 100 m of its neighbours, so a fix beyond that is not at a statue.
+field_sort_max_distance_m: 100.0
+field_sort_ambiguity_m: 25.0

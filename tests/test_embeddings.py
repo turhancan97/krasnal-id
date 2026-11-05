@@ -20,8 +20,10 @@ from krasnal_id.embeddings.dinov2 import DinoV2Backbone
 from krasnal_id.embeddings.extract import (
     EmbeddingExtractionError,
     create_backbone,
+    extract_embeddings,
     extract_manifest_embeddings,
 )
+from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
 
 
@@ -256,3 +258,41 @@ def test_an_adapter_refuses_a_configuration_from_another_family() -> None:
 
     with pytest.raises(ValueError, match="clip-family"):
         ClipBackbone(backbone_config("dinov2-large"))
+
+
+def test_extraction_embeds_what_a_viewer_sees_and_checks_what_is_stored(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "portrait.jpg"
+    exif = Image.Exif()
+    exif[0x0112] = 6
+    Image.new("RGB", (6, 4), (90, 60, 30)).save(path, exif=exif)
+    # Recorded dimensions are the stored ones, which is what staging reads.
+    record = _image_record(tmp_path, "unused", "Q1", (1, 2, 3)).model_copy(
+        update={
+            "image_id": "portrait",
+            "local_path": path,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "width": 6,
+            "height": 4,
+        }
+    )
+    received: list[tuple[int, int]] = []
+
+    class RecordingBackbone(FakeBackbone):
+        def get_embeddings(self, images: tuple[Image.Image, ...]) -> np.ndarray:
+            received.extend(image.size for image in images)
+            return super().get_embeddings(images)
+
+    extract_embeddings(
+        (record,), RecordingBackbone(), EmbeddingCache(tmp_path / "cache"), batch_size=1
+    )
+
+    assert received == [(4, 6)]
+
+
+def test_an_image_without_a_rotation_tag_is_embedded_unchanged() -> None:
+    plain = Image.new("RGB", (6, 4), (1, 2, 3))
+    upright = upright_rgb(plain)
+    assert upright.size == (6, 4)
+    assert upright.tobytes() == plain.tobytes()

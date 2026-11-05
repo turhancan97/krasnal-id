@@ -322,3 +322,26 @@ def test_query_and_manifest_stay_consistent_for_a_real_manifest() -> None:
     manifest = read_manifest(manifest_path)
     assert isinstance(manifest, DatasetManifest)
     assert manifest.images
+
+
+def test_a_phone_rotation_tag_is_applied_before_embedding(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A phone stores a portrait photograph as landscape pixels plus Orientation=6.
+    path = tmp_path / "portrait.jpg"
+    exif = Image.Exif()
+    exif[0x0112] = 6
+    Image.new("RGB", (6, 4), (90, 60, 30)).save(path, exif=exif)
+    received: list[tuple[int, int]] = []
+
+    class FakeBackbone:
+        def get_embedding(self, image: Image.Image) -> np.ndarray:
+            received.append(image.size)
+            return _unit(0.0, 1.0)
+
+    monkeypatch.setattr(extract_module, "create_backbone", lambda config: FakeBackbone())
+
+    load_query_vector(path, FAKE_BACKBONE, tmp_path / "empty-cache")
+
+    # The model sees the statue the way the photographer did: upright, 4 wide by 6 tall.
+    assert received == [(4, 6)]

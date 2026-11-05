@@ -17,6 +17,7 @@ from krasnal_id.embeddings.store import (
     cache_key_for_digest,
     load_embedding_matrix,
 )
+from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest
 from krasnal_id.retrieval.knn import RetrievalResult, cosine_knn
 
@@ -88,7 +89,7 @@ def load_query_vector(
     try:
         with Image.open(image_path) as image:
             image.load()
-            rgb = image.convert("RGB")
+            rgb = upright_rgb(image)
     except (OSError, UnidentifiedImageError) as error:
         raise QueryError(f"query image cannot be decoded: {image_path}: {error}") from error
 
