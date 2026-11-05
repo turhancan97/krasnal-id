@@ -601,3 +601,31 @@ def test_cli_extract_can_target_the_field_queries(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     assert "source=field-queries" in result.output
     assert "reused=2 computed=0" in result.output
+
+
+def test_the_shared_bootstrap_reproduces_the_original_field_gap_draws() -> None:
+    """Moving the resampling into `krasnal_id.bootstrap` must not move one interval."""
+    import zlib
+
+    statues = (
+        _statue("Q1", FieldCohort.CONFUSABLE, (1, 4, 2), (1, 1, 2, 1)),
+        _statue("Q2", FieldCohort.CONTROL, (1, 1), (1, 3)),
+        _statue("Q3", FieldCohort.CONTROL, (7,), (1, 1, 1)),
+    )
+    seed, label = 42, "all/commons"
+
+    # The formula exactly as field_gap.py computed it before the move.
+    rng = np.random.default_rng([seed, zlib.crc32(label.encode("utf-8"))])
+    field_hits = np.array([sum(r <= 1 for r in s.field) for s in statues], dtype=np.float64)
+    field_n = np.array([len(s.field) for s in statues], dtype=np.float64)
+    commons_hits = np.array([sum(r <= 1 for r in s.commons) for s in statues], dtype=np.float64)
+    commons_n = np.array([len(s.commons) for s in statues], dtype=np.float64)
+    draws = rng.integers(0, len(statues), size=(500, len(statues)))
+    expected = commons_hits[draws].sum(axis=1) / commons_n[draws].sum(axis=1) - field_hits[
+        draws
+    ].sum(axis=1) / field_n[draws].sum(axis=1)
+
+    from krasnal_id.experiments.field_gap import _generator
+
+    actual = bootstrap_gaps(statues, "commons", 1, 500, _generator(seed, label))
+    np.testing.assert_array_equal(actual, expected)

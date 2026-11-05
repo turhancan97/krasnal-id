@@ -117,7 +117,7 @@ def test_the_four_dinov2_checkpoints_are_one_family_and_four_identities() -> Non
 
 def test_a_backbone_cannot_declare_a_family_with_no_adapter() -> None:
     raw_config = backbone_config("dinov2").model_dump()
-    raw_config["family"] = "dinov3"
+    raw_config["family"] = "siglip"
 
     with pytest.raises(ValidationError):
         BackboneConfig.model_validate(raw_config)

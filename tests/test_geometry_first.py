@@ -26,7 +26,9 @@ from krasnal_id.experiments.geometry_first import (
     QueryRanks,
     append_journal,
     journal_identity,
+    matcher_for,
     measure,
+    misses_in_disjoint_arm,
     rank_one_query,
     read_journal,
     run_geometry_first,
@@ -449,3 +451,156 @@ def test_changing_what_a_row_means_starts_a_new_journal(tmp_path: Path) -> None:
         second = journal_identity(split, FAKE_BACKBONE, config)
 
     assert first != second
+
+
+def test_sift_keeps_the_published_journal_identity(tmp_path: Path) -> None:
+    """The 2.2-hour SIFT journal must stay resumable after the matcher option."""
+    import hashlib
+
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path))
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    config = _experiment(max_keypoints=200)
+    # The digest exactly as it was computed before a matcher could be chosen.
+    before = json.dumps(
+        {
+            "journal_schema": geometry_first.JOURNAL_SCHEMA,
+            "manifest_sha256": split.manifest_sha256,
+            "model_id": FAKE_BACKBONE.model_id,
+            "revision": FAKE_BACKBONE.revision,
+            "preprocessing_id": FAKE_BACKBONE.preprocessing_id,
+            "max_keypoints": 200,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+    assert journal_identity(split, FAKE_BACKBONE, config) == (
+        hashlib.sha256(before.encode("utf-8")).hexdigest()
+    )
+    # Restricting the queries selects rows; it never changes what a row means.
+    restricted = _experiment(max_keypoints=200, only_appearance_misses_at=10)
+    assert journal_identity(split, FAKE_BACKBONE, restricted) == journal_identity(
+        split, FAKE_BACKBONE, config
+    )
+    # A learned matcher is a different geometry column, and so is its budget.
+    learned = _experiment(max_keypoints=200, matcher="disk-lightglue")
+    assert journal_identity(split, FAKE_BACKBONE, learned) != journal_identity(
+        split, FAKE_BACKBONE, config
+    )
+    assert journal_identity(
+        split,
+        FAKE_BACKBONE,
+        _experiment(max_keypoints=200, matcher="disk-lightglue", learned_keypoints=512),
+    ) != journal_identity(split, FAKE_BACKBONE, learned)
+
+
+def test_each_matcher_gets_its_own_keypoint_budget() -> None:
+    from krasnal_id.retrieval.matchers import DiskLightGlueMatcher
+    from krasnal_id.retrieval.rerank import FeatureCache
+
+    sift = matcher_for(_experiment(max_keypoints=300))
+    learned = matcher_for(_experiment(matcher="disk-lightglue", learned_keypoints=512))
+
+    assert isinstance(sift, FeatureCache)
+    # Built lazily: no weights are loaded until the first image is described.
+    assert isinstance(learned, DiskLightGlueMatcher)
+    assert learned.max_keypoints == 512
+
+
+def test_a_miss_is_decided_by_appearance_with_the_photographer_withheld() -> None:
+    cosine = np.asarray([0.9, 0.8, 0.7, 0.6], dtype=np.float32)
+    dwarfs = np.asarray(["Q2", "Q3", "Q1", "Q1"])
+    # True keeps a reference. The truth's closest photograph (0.7) is by the
+    # query's own photographer, so it is withheld and Q1 falls to third.
+    kept = np.asarray([True, True, False, True], dtype=np.bool_)
+
+    assert misses_in_disjoint_arm(cosine, dwarfs, "Q1", kept, 2)
+    assert not misses_in_disjoint_arm(cosine, dwarfs, "Q1", kept, 3)
+    # Nothing kept at all is not a query a first stage could be asked, so it is
+    # not selected; answerable statues never reach this branch.
+    assert not misses_in_disjoint_arm(cosine, dwarfs, "Q1", np.zeros(4, dtype=bool), 10)
+
+
+def test_a_restricted_sweep_scores_exactly_the_queries_appearance_misses(
+    tmp_path: Path,
+) -> None:
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path, dwarfs=4))
+    seed_embedding_cache(tmp_path / "embeddings", manifest, vector_for=_lookalike)
+    matrix = load_embedding_matrix(manifest, FAKE_BACKBONE, tmp_path / "embeddings")
+    split = build_evaluation_split(manifest, datetime.now(UTC))
+    everything = measure(split, manifest, matrix, _experiment(max_keypoints=200))
+    expected = [query for query in everything if query.disjoint[APPEARANCE] > 1]
+    assert 0 < len(expected) < len(everything)
+
+    restricted = measure(
+        split, manifest, matrix, _experiment(max_keypoints=200, only_appearance_misses_at=1)
+    )
+
+    assert list(restricted) == expected
+
+    # Resumed from a journal of the full sweep, the same restriction still holds:
+    # a recorded row is filtered by the appearance rank it recorded.
+    journal = tmp_path / "journal.jsonl"
+    full = _experiment(max_keypoints=200)
+    measure(split, manifest, matrix, full, journal)
+    resumed = measure(
+        split,
+        manifest,
+        matrix,
+        _experiment(max_keypoints=200, only_appearance_misses_at=1),
+        journal,
+    )
+    assert list(resumed) == expected
+
+
+def test_a_run_that_is_not_section_7_10_gets_its_own_artifact_name() -> None:
+    assert _experiment().artifact_variant is None
+    assert _experiment(matcher="disk-lightglue").artifact_variant == "disk-lightglue"
+    assert (
+        _experiment(matcher="disk-lightglue", only_appearance_misses_at=10).artifact_variant
+        == "disk-lightglue-misses10"
+    )
+    assert _experiment(only_appearance_misses_at=10).artifact_variant == "misses10"
+
+
+def _lookalike(dwarf: int, position: int, dwarfs: int) -> np.ndarray:
+    """Class 0's first two photographs sit on class 1's axis, as a lookalike's would."""
+    vector = np.zeros(dwarfs + 1, dtype=np.float32)
+    vector[1 if dwarf == 0 and position < 2 else dwarf] = 1.0
+    vector[dwarfs] = 0.1 * (position + 1)
+    return vector / np.linalg.norm(vector)
+
+
+def test_a_restricted_run_names_its_own_artifact(tmp_path: Path) -> None:
+    """The guard reads the variant from the config and the writer from the result.
+
+    They disagreed once: a restricted run was sent at section 7.10's published
+    artifact, and only the write-time backstop stopped it.
+    """
+    from krasnal_id.experiments.artifacts import experiment_result_path
+
+    manifest = _by_two_photographers(_manifest_with_images(tmp_path, dwarfs=4))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest.model_dump(mode="json")), encoding="utf-8")
+    split_path = tmp_path / "split.json"
+    write_evaluation_split(split_path, build_evaluation_split(manifest, datetime.now(UTC)))
+    seed_embedding_cache(tmp_path / "embeddings", manifest, vector_for=_lookalike)
+    config = load_config(
+        [
+            "experiment=geometry_first",
+            "experiment.max_keypoints=200",
+            "experiment.only_appearance_misses_at=1",
+            f"paths.manifest_path={manifest_path}",
+            f"paths.evaluation_split_path={split_path}",
+            f"paths.embeddings_dir={tmp_path / 'embeddings'}",
+            f"paths.results_dir={tmp_path / 'results'}",
+            f"backbone.model_id={FAKE_BACKBONE.model_id}",
+            f"backbone.revision={FAKE_BACKBONE.revision}",
+            f"backbone.preprocessing_id={FAKE_BACKBONE.preprocessing_id}",
+        ]
+    )
+
+    result = run_geometry_first(config)
+
+    assert result.variant == "misses1"
+    assert experiment_result_path(tmp_path, result).name == "geometry_first-misses1-dinov2.json"

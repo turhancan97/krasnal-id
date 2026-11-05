@@ -6,3 +6,10 @@ max_keypoints: 800
 # Every answerable query. A full sweep is 1,157 queries against 1,690
 # references; set a small value to exercise the path without paying for it.
 max_queries: 0
+# Declared here because Hydra refuses to override a key the composed config does
+# not carry (the lesson of section 7.9). SIFT, every answerable query: section 7.10.
+matcher: sift
+learned_keypoints: 1024
+device: auto
+# Set to 10 to score only the queries appearance misses at k=10, cross-photographer.
+only_appearance_misses_at: 0

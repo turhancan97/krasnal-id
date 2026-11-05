@@ -35,6 +35,10 @@ class GeoMeasurement:
     mrr: float
     median_radius_metres: float
     max_radius_metres: float
+    # Per query, in split order, whether the correct statue ranked first: what a
+    # statue-level bootstrap resamples. Exact, like the aggregate beside it.
+    query_image_ids: tuple[str, ...] = ()
+    query_top_1: tuple[float, ...] = ()
 
 
 def dwarf_locations(manifest: DatasetManifest) -> dict[str, tuple[float, float]]:
@@ -116,6 +120,7 @@ def measure_geographic_pool(
     hits = 0
     reciprocal = 0.0
     radii: list[float] = []
+    query_hits: list[float] = []
     for fold in split.folds:
         pooled, radius = nearest_pool(fold.query_dwarf_id, pool_size, locations)
         radii.append(radius)
@@ -127,6 +132,7 @@ def measure_geographic_pool(
         )
         outcome = evaluate_fold(fold.query_image_id, fold.query_dwarf_id, references, matrix)
         hits += int(outcome.dwarf_rank == 1)
+        query_hits.append(float(outcome.dwarf_rank == 1))
         reciprocal += 1.0 / outcome.dwarf_rank
 
     total = len(split.folds)
@@ -136,6 +142,8 @@ def measure_geographic_pool(
         mrr=reciprocal / total,
         median_radius_metres=float(np.median(radii)),
         max_radius_metres=float(np.max(radii)),
+        query_image_ids=tuple(fold.query_image_id for fold in split.folds),
+        query_top_1=tuple(query_hits),
     )
 
 
@@ -204,6 +212,28 @@ def summarize_geo(
     return tuple(metrics)
 
 
+def located_inputs(
+    manifest: DatasetManifest, split: EvaluationSplit, matrix: EmbeddingMatrix
+) -> tuple[EvaluationSplit, tuple[str, ...], tuple[str, ...], dict[str, tuple[float, float]]]:
+    """Restrict both arms to the statues that carry coordinates.
+
+    Returns the located split, the located statue ids, every statue id, and the
+    coordinates. Shared with the workshop validation so the two cannot disagree
+    about which queries the geographic comparison covers.
+    """
+    locations = dwarf_locations(manifest)
+    all_dwarf_ids = tuple(sorted(set(matrix.dwarf_ids)))
+    dwarf_ids = tuple(dwarf_id for dwarf_id in all_dwarf_ids if dwarf_id in locations)
+    # Both arms are restricted to the located subset so they compare like with like:
+    # a random pool drawn from the whole manifest would be a different experiment.
+    located_split = split.model_copy(
+        update={"folds": tuple(fold for fold in split.folds if fold.query_dwarf_id in locations)}
+    )
+    if not located_split.folds:
+        raise GeoAblationError("no evaluation fold belongs to a dwarf with coordinates")
+    return located_split, dwarf_ids, all_dwarf_ids, locations
+
+
 def run_geo_ablation(config: AppConfig) -> ExperimentResult:
     """Compare real proximity-based candidate pools against randomly sampled ones."""
     if not isinstance(config.experiment, GeoAblationConfig):
@@ -221,17 +251,7 @@ def run_geo_ablation(config: AppConfig) -> ExperimentResult:
         raise GeoAblationError(str(error)) from error
 
     matrix = load_embedding_matrix(manifest, config.backbone, config.paths.embeddings_dir)
-    locations = dwarf_locations(manifest)
-    all_dwarf_ids = tuple(sorted(set(matrix.dwarf_ids)))
-    dwarf_ids = tuple(dwarf_id for dwarf_id in all_dwarf_ids if dwarf_id in locations)
-
-    # Both arms are restricted to the located subset so they compare like with like:
-    # a random pool drawn from the whole manifest would be a different experiment.
-    located_split = split.model_copy(
-        update={"folds": tuple(fold for fold in split.folds if fold.query_dwarf_id in locations)}
-    )
-    if not located_split.folds:
-        raise GeoAblationError("no evaluation fold belongs to a dwarf with coordinates")
+    located_split, dwarf_ids, all_dwarf_ids, locations = located_inputs(manifest, split, matrix)
 
     try:
         pool_sizes = resolve_pool_sizes(config.experiment.pool_sizes, len(dwarf_ids))

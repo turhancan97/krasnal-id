@@ -14,13 +14,18 @@ from krasnal_id.embeddings.backbone import (
     single_embedding,
 )
 
+# Families this adapter runs: both put the CLS token at sequence position 0, with
+# any register tokens after it. Verified for DINOv3 ViT-B/16 on 2026-11-05: its
+# `last_hidden_state[:, 0]` equals the model's own `pooler_output` exactly.
+CLS_TOKEN_FAMILIES = frozenset({"dinov2", "dinov3"})
+
 
 class DinoV2Backbone:
-    """Extract normalized DINOv2 CLS-token image embeddings."""
+    """Extract normalized CLS-token image embeddings from a DINOv2 or DINOv3 checkpoint."""
 
     def __init__(self, config: BackboneConfig) -> None:
-        if config.family != "dinov2":
-            raise ValueError("DinoV2Backbone requires a dinov2-family configuration")
+        if config.family not in CLS_TOKEN_FAMILIES:
+            raise ValueError("DinoV2Backbone requires a dinov2- or dinov3-family configuration")
         self._config = config
         self._processor: Any | None = None
         self._model: Any | None = None

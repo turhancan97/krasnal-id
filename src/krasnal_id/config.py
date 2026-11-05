@@ -97,6 +97,7 @@ BackboneName = Literal[
     "dinov2-large",
     "dinov2-registers",
     "dinov2-registers-large",
+    "dinov3",
 ]
 
 
@@ -114,7 +115,7 @@ class BackboneConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     name: BackboneName
-    family: Literal["dinov2", "clip"]
+    family: Literal["dinov2", "dinov3", "clip"]
     model_id: str = Field(min_length=1)
     revision: str = Field(min_length=1)
     preprocessing_id: str = Field(min_length=1)
@@ -429,12 +430,91 @@ class GeometryFirstConfig(BaseModel):
     # the published run; a small value is for exercising the path, since a full
     # sweep is 1,955,330 homographies.
     max_queries: int = Field(default=0, ge=0)
+    # Which local matcher ranks the references. SIFT is §7.10's published run;
+    # `disk-lightglue` asks §7.11's follow-up -- whether the matcher that wins at
+    # re-ranking can also retrieve.
+    matcher: Literal["sift", "disk-lightglue"] = "sift"
+    # The learned detector's own budget, as in `MatcherRerankConfig`; SIFT keeps
+    # `max_keypoints` so its rows stay comparable with §7.10's journal.
+    learned_keypoints: int = Field(default=1024, ge=16)
+    device: Literal["auto", "cpu", "cuda"] = "auto"
+    # Score only the queries whose statue appearance leaves outside its top k in
+    # the photographer-disjoint arm. Zero scores every answerable query. The
+    # rescue rate is defined over exactly those queries, so a learned matcher at
+    # 5-25x SIFT's cost per pair can answer it in an hour rather than ten.
+    only_appearance_misses_at: int = Field(default=0, ge=0)
 
     @model_validator(mode="after")
     def validate_settings(self) -> "GeometryFirstConfig":
         """Require positive cut-offs."""
         if any(k <= 0 for k in self.top_k):
             raise ValueError("top_k values must be positive")
+        return self
+
+    @property
+    def artifact_variant(self) -> str | None:
+        """Name a run that is not §7.10's, so it never overwrites that artifact.
+
+        A different matcher measures something else, and a restricted query set
+        changes what every `answerable` metric means -- both are §6.4's case for a
+        separate filename. The default SIFT sweep keeps the published name.
+        """
+        parts: list[str] = []
+        if self.matcher != "sift":
+            parts.append(self.matcher)
+        if self.only_appearance_misses_at:
+            parts.append(f"misses{self.only_appearance_misses_at}")
+        return "-".join(parts) or None
+
+
+class WorkshopValidationConfig(BaseModel):
+    """Re-checks of published results for the CVWW paper, from evidence already on disk.
+
+    Nothing here loads a model or matches an image. The re-ranking part reads the
+    two matcher journals; it never constructs a matcher. The identity settings
+    below (`rerank_top_k`, `max_keypoints`, `learned_keypoints`) are the ones those
+    journals were written under and must equal `matcher_rerank.yaml`'s, or the
+    journals will not be found -- a test pins the equality.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal["workshop_validation"]
+    seed: int
+    # Statue-level folds for choosing the blend weight on queries it does not judge.
+    folds: int = Field(ge=2)
+    bootstrap_resamples: int = Field(ge=100)
+    matchers: tuple[Literal["sift", "disk-lightglue"], ...] = Field(min_length=1)
+    weights: tuple[float, ...] = Field(min_length=1)
+    top_k_metrics: tuple[int, ...] = Field(min_length=1)
+    rerank_top_k: int = Field(ge=2)
+    max_keypoints: int = Field(ge=16)
+    learned_keypoints: int = Field(ge=16)
+    # Written below `paths.results_dir`, so nothing here can overwrite a released
+    # artifact; the journals are still read from `paths.results_dir/journals`.
+    output_subdir: str = Field(min_length=1, pattern=r"^[A-Za-z0-9_.-]+$")
+    # Which re-checks to run. `rerank` reads journals only; the rest recompute cosine
+    # rankings from cached vectors (no model) and refuse to report an interval
+    # unless they first reproduce the released artifact exactly.
+    parts: tuple[Literal["rerank", "photographer", "baseline", "geography", "pool"], ...] = Field(
+        min_length=1
+    )
+    backbones: tuple[BackboneName, ...] = Field(min_length=1)
+    # Backbones whose released artifacts live in `results_dir/<name>/` rather than
+    # `results_dir/`, so no figure glob picks them up (section 7.12).
+    separate_results: tuple[BackboneName, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_settings(self) -> "WorkshopValidationConfig":
+        """Require the control weight, distinct matchers and positive cut-offs."""
+        if any(weight < 0.0 for weight in self.weights):
+            raise ValueError("blend weights cannot be negative")
+        if 0.0 not in self.weights:
+            raise ValueError("the zero control weight is required")
+        if any(k <= 0 for k in self.top_k_metrics):
+            raise ValueError("top_k_metrics values must be positive")
+        if len(set(self.matchers)) != len(self.matchers):
+            raise ValueError("matchers cannot contain duplicates")
         return self
 
 
@@ -476,6 +556,7 @@ ExperimentConfig = Annotated[
     | GeometryFirstConfig
     | MatcherRerankConfig
     | ConfusionExperimentConfig
+    | WorkshopValidationConfig
     | VisualizationExperimentConfig,
     Field(discriminator="kind"),
 ]

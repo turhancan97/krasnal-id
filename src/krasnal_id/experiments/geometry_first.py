@@ -45,7 +45,7 @@ from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.experiments.recall_curve import ABSENT, class_rank
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.photographers import authors_by_image, photographers_by_class
-from krasnal_id.retrieval.rerank import FeatureCache
+from krasnal_id.retrieval.matchers import LocalMatcher, create_matcher
 from krasnal_id.statistics import exact_mcnemar_p_value
 
 # The two regimes, named as in the recall curve so the columns line up. `full` is
@@ -103,19 +103,28 @@ class QueryRanks:
 
 
 def _inliers_against(
-    cache: FeatureCache,
+    matcher: LocalMatcher,
     query_image: str,
     query_path: Path,
     candidates: tuple[tuple[str, Path], ...],
 ) -> npt.NDArray[np.float32]:
-    """Count RANSAC inliers between one query and every candidate photograph."""
-    from krasnal_id.retrieval.rerank import count_inliers
+    """Count RANSAC inliers between one query and every candidate photograph.
 
-    query = cache.get(query_image, query_path)
+    Through the `LocalMatcher` interface, which SIFT's `FeatureCache` satisfies
+    with the same `count_inliers` this called directly before, so a SIFT run is
+    unchanged and a learned matcher is verified by the same homography.
+    """
+    query = matcher.get(query_image, query_path)
     return np.asarray(
-        [count_inliers(query, cache.get(image_id, path)) for image_id, path in candidates],
+        [matcher.inliers(query, matcher.get(image_id, path)) for image_id, path in candidates],
         dtype=np.float32,
     )
+
+
+def matcher_for(config: GeometryFirstConfig) -> LocalMatcher:
+    """Build the configured matcher with the keypoint budget that belongs to it."""
+    keypoints = config.max_keypoints if config.matcher == "sift" else config.learned_keypoints
+    return create_matcher(config.matcher, keypoints, config.device)
 
 
 def tied_class_rank(
@@ -184,6 +193,32 @@ def rank_one_query(
     return QueryRanks(answerable=ranks[ANSWERABLE], disjoint=ranks[DISJOINT])
 
 
+def misses_in_disjoint_arm(
+    cosine: npt.NDArray[np.float32],
+    dwarf_ids: npt.NDArray[np.str_],
+    truth: str,
+    disjoint_mask: npt.NDArray[np.bool_],
+    k: int,
+) -> bool:
+    """Does appearance leave the statue outside its top k, photographer withheld?
+
+    Decided from cosine alone, before any matching, so restricting a sweep to the
+    queries a first stage would have to rescue costs nothing to select. It is the
+    same rank `rank_one_query` records as the disjoint arm's `appearance`.
+    """
+    indices = np.flatnonzero(disjoint_mask)
+    if indices.size == 0:
+        return False
+    rank = class_rank(cosine[indices], dwarf_ids[indices], truth)
+    return rank == ABSENT or rank > k
+
+
+def _recorded_miss(ranks: QueryRanks, k: int) -> bool:
+    """Did appearance miss at k in the disjoint arm, as a journal row recorded it?"""
+    rank = ranks.disjoint[APPEARANCE]
+    return rank == ABSENT or rank > k
+
+
 def journal_identity(
     split: EvaluationSplit,
     backbone: BackboneIdentity,
@@ -196,19 +231,24 @@ def journal_identity(
     one; `JOURNAL_SCHEMA` covers what a row is. Change any of them and the digest
     changes, which starts a fresh journal rather than resuming onto rows that mean
     something else.
+
+    A learned matcher adds its name and keypoint budget. SIFT deliberately does
+    not, so the digest of §7.10's run -- and with it the 2.2-hour journal behind
+    it -- is unchanged. The query restriction is not part of the identity: it
+    selects which rows are computed, never what a row means.
     """
-    payload = json.dumps(
-        {
-            "journal_schema": JOURNAL_SCHEMA,
-            "manifest_sha256": split.manifest_sha256,
-            "model_id": backbone.model_id,
-            "revision": backbone.revision,
-            "preprocessing_id": backbone.preprocessing_id,
-            "max_keypoints": config.max_keypoints,
-        },
-        sort_keys=True,
-        separators=(",", ":"),
-    )
+    identity: dict[str, object] = {
+        "journal_schema": JOURNAL_SCHEMA,
+        "manifest_sha256": split.manifest_sha256,
+        "model_id": backbone.model_id,
+        "revision": backbone.revision,
+        "preprocessing_id": backbone.preprocessing_id,
+        "max_keypoints": config.max_keypoints,
+    }
+    if config.matcher != "sift":
+        identity["matcher"] = config.matcher
+        identity["learned_keypoints"] = config.learned_keypoints
+    payload = json.dumps(identity, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -267,7 +307,7 @@ def measure(
     rows = {image_id: index for index, image_id in enumerate(matrix.image_ids)}
     dwarf_ids = np.asarray(matrix.dwarf_ids)
     author_of = np.asarray([authors[image_id] for image_id in matrix.image_ids])
-    cache = FeatureCache(config.max_keypoints)
+    matcher = matcher_for(config)
     done = read_journal(journal) if journal is not None else {}
     if done:
         logger.info("geometry-first resuming: %d queries already scored", len(done))
@@ -282,6 +322,13 @@ def measure(
 
         finished = done.get(fold.query_image_id)
         if finished is not None:
+            # A resumed row is filtered by the rank it recorded, which is the same
+            # quantity `misses_in_disjoint_arm` computes. Skipping this once let a
+            # restricted run report all 1,157 journal rows as its query set.
+            if config.only_appearance_misses_at and not _recorded_miss(
+                finished, config.only_appearance_misses_at
+            ):
+                continue
             measured.append(finished)
             continue
 
@@ -291,14 +338,22 @@ def measure(
         indices = np.flatnonzero(keep)
         if indices.size == 0:
             continue
+        cosine = np.asarray(matrix.vectors[indices] @ matrix.vectors[query], dtype=np.float32)
+        if config.only_appearance_misses_at and not misses_in_disjoint_arm(
+            cosine,
+            dwarf_ids[indices],
+            truth,
+            author_of[indices] != author_of[query],
+            config.only_appearance_misses_at,
+        ):
+            continue
 
         candidates = tuple(
             (matrix.image_ids[index], paths[matrix.image_ids[index]]) for index in indices
         )
         inliers = _inliers_against(
-            cache, fold.query_image_id, paths[fold.query_image_id], candidates
+            matcher, fold.query_image_id, paths[fold.query_image_id], candidates
         )
-        cosine = np.asarray(matrix.vectors[indices] @ matrix.vectors[query], dtype=np.float32)
         ranks = rank_one_query(
             inliers,
             cosine,
@@ -419,5 +474,9 @@ def run_geometry_first(config: AppConfig) -> ExperimentResult:
         created_at=datetime.now(UTC),
         seed=config.experiment.seed,
         configuration=config.experiment.model_dump(mode="json"),
+        # The pre-flight guard reads the variant from the configuration; the
+        # writer reads it from here. Omitting it once sent a restricted run at
+        # section 7.10's published artifact, and only the backstop stopped it.
+        variant=config.experiment.artifact_variant,
         metrics=summarize(measured, config.experiment.top_k),
     )

@@ -313,11 +313,69 @@ def render_examples(
     return path
 
 
+def render_top_one(
+    examples: Sequence[RetrievalExample],
+    path: Path,
+    dpi: int = 150,
+) -> Path:
+    """Draw each example as one row: the query, then each backbone's first answer.
+
+    The compact form a two-column paper has room for. The examples are the ones
+    `select_examples` chose, so the sheet shows the same queries as the top-five
+    version and differs only in how much of each ranking it shows.
+    """
+    if not examples:
+        raise VisualizationError("no retrieval examples to draw")
+
+    matplotlib = import_optional_analysis("matplotlib")
+    matplotlib.use("Agg")
+    pyplot = import_optional_analysis("matplotlib.pyplot")
+
+    backbones = [row.backbone for row in examples[0].rows]
+    columns = 1 + len(backbones)
+    figure, axes_grid = pyplot.subplots(
+        len(examples),
+        columns,
+        figsize=(1.75 * columns, 1.95 * len(examples)),
+        squeeze=False,
+        gridspec_kw={"wspace": 0.08, "hspace": 0.42},
+    )
+    for index, example in enumerate(examples):
+        cells: list[tuple[Path, str, bool | None]] = [(example.query_local_path, "query", None)]
+        for row in example.rows:
+            first = row.matches[0]
+            cells.append(
+                (first.local_path, f"{row.backbone}\n{_short(first.display_name)}", first.correct)
+            )
+        for column, (local_path, label, correct) in enumerate(cells):
+            axes = axes_grid[index][column]
+            axes.imshow(_load_cell(local_path))
+            colour = "black" if correct is None else (_CORRECT if correct else _WRONG)
+            axes.set_title(label, fontsize=7.5, color=colour)
+            for spine in axes.spines.values():
+                spine.set_color(colour)
+                spine.set_linewidth(1.0 if correct is None else 2.0)
+            axes.set_xticks([])
+            axes.set_yticks([])
+        axes_grid[index][0].set_ylabel(example.group, fontsize=8, fontweight="bold")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    options = {"quality": 90, "optimize": True} if path.suffix.lower() in {".jpg", ".jpeg"} else {}
+    try:
+        figure.savefig(path, dpi=dpi, bbox_inches="tight", pil_kwargs=options)
+    except OSError as error:
+        raise VisualizationError(f"could not write figure {path}: {error}") from error
+    finally:
+        pyplot.close(figure)
+    return path
+
+
 def create_retrieval_examples_plot(
     config: AppConfig,
     groups: Sequence[str] | None = None,
     output: Path | None = None,
     dpi: int = 150,
+    top_k: int = _TOP_K,
 ) -> Path:
     """Draw one contact sheet covering every backbone the config names.
 
@@ -330,6 +388,10 @@ def create_retrieval_examples_plot(
         raise VisualizationError(
             f"visualization requires experiment=visualization, got {config.experiment.kind}"
         )
+    # Checked before any data is read, so a bad request fails the same way with or
+    # without a dataset on disk.
+    if top_k not in (1, _TOP_K):
+        raise VisualizationError(f"the sheet draws the top {_TOP_K} or the top 1, not {top_k}")
 
     try:
         manifest, split = load_evaluation_inputs(
@@ -365,6 +427,10 @@ def create_retrieval_examples_plot(
                 f"{sorted(example.group for example in examples)}"
             )
         examples = tuple(example for example in examples if example.group in wanted_groups)
+    if top_k == 1:
+        return render_top_one(
+            examples, output or config.paths.results_dir / "retrieval-examples-top1.jpg", dpi
+        )
     return render_examples(
         examples,
         output or config.paths.results_dir / "retrieval-examples.jpg",

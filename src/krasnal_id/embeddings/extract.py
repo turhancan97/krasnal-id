@@ -18,7 +18,7 @@ from krasnal_id.embeddings.backbone import (
 )
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
-from krasnal_id.embeddings.dinov2 import DinoV2Backbone
+from krasnal_id.embeddings.dinov2 import CLS_TOKEN_FAMILIES, DinoV2Backbone
 from krasnal_id.embeddings.store import cache_key_for
 from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest
@@ -78,7 +78,7 @@ def create_backbone(config: BackboneConfig) -> EmbeddingBackbone:
     Dispatch is on the family rather than the name, because §8's capacity question
     runs four DINOv2 checkpoints through one adapter.
     """
-    if config.family == "dinov2":
+    if config.family in CLS_TOKEN_FAMILIES:
         return DinoV2Backbone(config)
     if config.family == "clip":
         return ClipBackbone(config)

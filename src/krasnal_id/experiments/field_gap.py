@@ -44,7 +44,6 @@ their Wilson intervals by section 6.2's convention, and those *are* per photogra
 quote the gap's interval, not theirs, for anything about the field arm.
 """
 
-import zlib
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -52,6 +51,8 @@ from datetime import UTC, datetime
 import numpy as np
 import numpy.typing as npt
 
+from krasnal_id.bootstrap import generator as bootstrap_generator
+from krasnal_id.bootstrap import interval_metric, resampled_rate, statue_draws
 from krasnal_id.config import AppConfig, FieldGapExperimentConfig
 from krasnal_id.data_pipeline.field_queries import (
     FieldCohort,
@@ -299,31 +300,26 @@ def bootstrap_gaps(
     """Resample whole statues with replacement and recompute the gap each time.
 
     A statue's field and Commons queries are drawn together, which pairs the two
-    sides exactly as the point estimate does.
+    sides exactly as the point estimate does. The resampling itself lives in
+    `krasnal_id.bootstrap`, shared with the workshop validation.
     """
     field_hits = np.array([_hits(statue.field, k) for statue in statues], dtype=np.float64)
     field_n = np.array([len(statue.field) for statue in statues], dtype=np.float64)
     comparator_ranks = [statue.ranks(comparator) for statue in statues]
     comparator_hits = np.array([_hits(ranks, k) for ranks in comparator_ranks], dtype=np.float64)
     comparator_n = np.array([len(ranks) for ranks in comparator_ranks], dtype=np.float64)
-    draws = generator.integers(0, len(statues), size=(resamples, len(statues)))
-    comparator_accuracy = comparator_hits[draws].sum(axis=1) / comparator_n[draws].sum(axis=1)
-    field_accuracy = field_hits[draws].sum(axis=1) / field_n[draws].sum(axis=1)
-    return np.asarray(comparator_accuracy - field_accuracy, dtype=np.float64)
+    draws = statue_draws(len(statues), resamples, generator)
+    return np.asarray(
+        resampled_rate(comparator_hits, comparator_n, draws)
+        - resampled_rate(field_hits, field_n, draws),
+        dtype=np.float64,
+    )
 
 
-def _generator(seed: int, label: str) -> np.random.Generator:
-    """One generator per resampled group, independent of which other groups exist.
-
-    Keyed by the group's name rather than its position, so adding a cohort or a
-    cut-off never changes the draws behind an existing interval.
-    """
-    return np.random.default_rng([seed, zlib.crc32(label.encode("utf-8"))])
-
-
-def _interval(name: str, value: float, samples: npt.NDArray[np.float64]) -> MetricSummary:
-    lower, upper = np.percentile(samples, [2.5, 97.5])
-    return MetricSummary(name=name, value=value, lower_bound=float(lower), upper_bound=float(upper))
+# Kept under their original names: the field gap's intervals are now built by the
+# shared module, with identical draws.
+_generator = bootstrap_generator
+_interval = interval_metric
 
 
 def _arm_metrics(label: str, ranks: tuple[int, ...], cut_offs: list[int]) -> list[MetricSummary]:
