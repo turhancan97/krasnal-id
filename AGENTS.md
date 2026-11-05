@@ -1381,13 +1381,10 @@ the output and reading it rather than by reading a log.
     worth building, and §7.8 predicts it is not: a known query's 144 inliers collapse to 17 once
     its own photographer is withheld, which is the regime this arm runs in.
 
-- **One paper to *Scientific Reports*, dataset and analysis together** — taken on 2026-09-12,
-  drafted in full on 2026-09-14; see §11.1. *Scientific Data* was considered and rejected: its Data
-  Descriptors "should not contain results, discussion, or analyses", which is most of this project.
-  The spine was reversed on 2026-09-14 to lead on the identification result rather than on the
-  photographer gap, and the fieldwork is future work stated in the paper rather than a prerequisite.
-  Scope and acceptance criteria are now verified (§11.1). **What remains is the money**, and it is
-  §11.2.
+- **An archival workshop publication takes priority** — decided by the author on 2026-11-05;
+  see §11.3. CVWW 2027's contributed papers track is the leading candidate. Travel is unrestricted.
+  The *Scientific Reports* plan of §11.1 and its APC investigation in §11.2 remain as a fallback
+  and historical record; journal submission and APC funding are no longer the next step.
 
 Any of these is a scope change. Record the decision here before implementing it.
 
@@ -1509,6 +1506,9 @@ krasnal-id/
 - Optional: a small live demo (Gradio) for anyone reviewing the portfolio to try it themselves.
 
 ### 11.1 Publication plan decision (2026-09-12)
+
+**Historical journal plan.** Section 11.3 supersedes this as the first submission priority on
+2026-11-05. Preserve the manuscript decisions below when preparing a workshop version.
 
 **One paper, to *Scientific Reports*: the dataset and the analysis together.** The first plan here
 was two papers, a Data Descriptor for the corpus and an analysis paper for the findings. It was
@@ -1727,6 +1727,8 @@ that would bring it back.
 
 ### 11.2 Article-processing charge (2026-09-14)
 
+This investigation applies only if the journal route is resumed; §11.3 now takes priority.
+
 **Assume the APC is payable and budget for it.** This is the one open item on the paper that is not
 about the paper, and what can be checked without logging in looks unfavourable.
 
@@ -1754,6 +1756,29 @@ about the paper, and what can be checked without logging in looks unfavourable.
   before switching, the way §11.1 records why *Scientific Data* was rejected. Nothing in the drafted
   manuscript is specific to this journal beyond the template, the 4,500-word budget and the
   eight-display-item limit.
+
+### 11.3 Workshop publication priority (2026-11-05)
+
+**Prioritize an archival workshop publication over the earlier journal-first plan.** The author
+made this choice explicitly and has no geographic restriction on travel. *Scientific Reports*
+remains a fallback, with §11.1 and §11.2 retained as the record of that earlier route.
+
+- **CVWW 2027's contributed papers track is the leading candidate.** It reviews original work
+  and publishes accepted papers through TU Wien's reposiTUm repository under CC BY 4.0, with
+  authors retaining copyright. Its feedback track does not publish papers and does not meet the
+  publication goal. Source: [official submission guidelines](https://cvww2027.cvl.tuwien.ac.at/submission-guidelines/),
+  checked 2026-11-05.
+- **The current submission deadline is 21 December 2026 at 23:59:59 CET.** Notification is
+  18 January 2027, camera-ready is 25 January, and the workshop runs 8–10 February in Rust,
+  Austria. Submissions use the current author kit, double-blind review, and 6–8 pages excluding
+  references. Sources: [official dates](https://cvww2027.cvl.tuwien.ac.at/) and the submission
+  guidelines above, checked 2026-11-05. Recheck before submitting; this record is dated evidence.
+- **Scholar visibility is expected, not guaranteed.** The author checked example CVWW papers
+  from 2025 and 2026 and confirmed they appear in Google Scholar. That is evidence for choosing
+  the venue, not a guarantee that a future paper will be indexed or a claim about other indexes.
+- **This decision changes the submission priority, not the research results or manuscript.**
+  The existing journal draft remains in the deliberately untracked `paper/` directory. Workshop
+  reformatting and submission have not yet been done; do not describe either as completed.
 
 ## 12. Living documentation and handoffs
 - Treat this file as the authoritative project brief and decision record. Update it in the same change whenever implementation work introduces or changes architecture, scope, schemas, conventions, build order, or other decisions that future contributors must follow.
