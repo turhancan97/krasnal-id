@@ -98,7 +98,14 @@ BackboneName = Literal[
     "dinov2-registers",
     "dinov2-registers-large",
     "dinov3",
+    "siglip2",
 ]
+
+
+# Every local matcher `create_matcher` can build. Declared once for the same reason
+# as `BackboneName`: three experiments name matchers, and a copy per experiment
+# lets one of them reject a matcher the others can run.
+MatcherName = Literal["sift", "disk-lightglue", "loftr"]
 
 
 class BackboneConfig(BaseModel):
@@ -115,7 +122,7 @@ class BackboneConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     name: BackboneName
-    family: Literal["dinov2", "dinov3", "clip"]
+    family: Literal["dinov2", "dinov3", "clip", "siglip"]
     model_id: str = Field(min_length=1)
     revision: str = Field(min_length=1)
     preprocessing_id: str = Field(min_length=1)
@@ -375,7 +382,7 @@ class MatcherRerankConfig(BaseModel):
     seed: int
     # The first entry is the baseline every other matcher is paired against, so
     # it should be the one whose result is already published.
-    matchers: tuple[Literal["sift", "disk-lightglue"], ...] = Field(min_length=1)
+    matchers: tuple[MatcherName, ...] = Field(min_length=1)
     top_k: int = Field(ge=2)
     # SIFT's budget, matched to §7.6 so its column lands against the published
     # 94.0%. A learned detector gets its own, because holding it to SIFT's would
@@ -433,7 +440,7 @@ class GeometryFirstConfig(BaseModel):
     # Which local matcher ranks the references. SIFT is §7.10's published run;
     # `disk-lightglue` asks §7.11's follow-up -- whether the matcher that wins at
     # re-ranking can also retrieve.
-    matcher: Literal["sift", "disk-lightglue"] = "sift"
+    matcher: MatcherName = "sift"
     # The learned detector's own budget, as in `MatcherRerankConfig`; SIFT keeps
     # `max_keypoints` so its rows stay comparable with §7.10's journal.
     learned_keypoints: int = Field(default=1024, ge=16)
@@ -484,7 +491,7 @@ class WorkshopValidationConfig(BaseModel):
     # Statue-level folds for choosing the blend weight on queries it does not judge.
     folds: int = Field(ge=2)
     bootstrap_resamples: int = Field(ge=100)
-    matchers: tuple[Literal["sift", "disk-lightglue"], ...] = Field(min_length=1)
+    matchers: tuple[MatcherName, ...] = Field(min_length=1)
     weights: tuple[float, ...] = Field(min_length=1)
     top_k_metrics: tuple[int, ...] = Field(min_length=1)
     rerank_top_k: int = Field(ge=2)
@@ -496,13 +503,55 @@ class WorkshopValidationConfig(BaseModel):
     # Which re-checks to run. `rerank` reads journals only; the rest recompute cosine
     # rankings from cached vectors (no model) and refuse to report an interval
     # unless they first reproduce the released artifact exactly.
-    parts: tuple[Literal["rerank", "photographer", "baseline", "geography", "pool"], ...] = Field(
-        min_length=1
-    )
+    parts: tuple[
+        Literal[
+            "rerank",
+            "photographer",
+            "baseline",
+            "geography",
+            "pool",
+            "soft_prior",
+            "geo_noise",
+            "rejection_signals",
+            "groups",
+            "geo_permutation",
+            "families",
+            "null_bounds",
+        ],
+        ...,
+    ] = Field(min_length=1)
     backbones: tuple[BackboneName, ...] = Field(min_length=1)
     # Backbones whose released artifacts live in `results_dir/<name>/` rather than
     # `results_dir/`, so no figure glob picks them up (section 7.12).
     separate_results: tuple[BackboneName, ...] = ()
+    # Section 7.15. A second, wider shortlist re-ranked by a subset of the matchers;
+    # its metrics carry a `cv_k<k>_` prefix so they never collide with the main ones.
+    wide_top_k: int | None = Field(default=None, ge=2)
+    wide_matchers: tuple[MatcherName, ...] = ()
+    # Pairs reported beside the standard ones (each matcher against cosine, each
+    # later matcher against the first), as (better, base).
+    extra_pairs: tuple[tuple[MatcherName, MatcherName], ...] = ()
+    # Soft geographic prior: candidate score = cosine + w * exp(-distance / scale).
+    soft_prior_weights: tuple[float, ...] = (0.0,)
+    soft_prior_scale_m: float = Field(default=200.0, gt=0.0)
+    # Where the simulated user stands, metres from the statue in a seeded direction.
+    # Never zero alone: at zero a strong prior just names the statue under the user.
+    gps_error_m: tuple[float, ...] = (25.0,)
+    # Statue coordinates moved by these distances to test the geographic result.
+    noise_metres: tuple[float, ...] = ()
+    noise_seeds: tuple[int, ...] = (0,)
+    # Rejection signal: similarity to the k-th nearest reference image.
+    knn_k: int = Field(default=5, ge=2)
+    # Group classes and the member classes they overlap (section 7.3).
+    groups: dict[str, tuple[str, ...]] = Field(default_factory=dict)
+    # Section 7.16. Shuffled statue layouts for the co-location permutation test.
+    permutation_count: int = Field(default=200, ge=19)
+    permutation_pool_sizes: tuple[int, ...] = (5, 10, 20)
+    # How many of the *other* backbones must call a pair mutual nearest neighbours.
+    family_votes: int = Field(default=2, ge=1)
+    # Checkpoints whose null result against dinov2 gets an upper bound.
+    null_bound_backbones: tuple[BackboneName, ...] = ()
+    null_bound_cutoffs: tuple[int, ...] = (1, 10)
 
     @model_validator(mode="after")
     def validate_settings(self) -> "WorkshopValidationConfig":
@@ -515,6 +564,19 @@ class WorkshopValidationConfig(BaseModel):
             raise ValueError("top_k_metrics values must be positive")
         if len(set(self.matchers)) != len(self.matchers):
             raise ValueError("matchers cannot contain duplicates")
+        if 0.0 not in self.soft_prior_weights or any(w < 0 for w in self.soft_prior_weights):
+            raise ValueError("soft prior weights must be non-negative and include zero")
+        if any(error <= 0 for error in self.gps_error_m):
+            raise ValueError("gps_error_m must be positive; zero error measures nothing")
+        if any(metres <= 0 for metres in self.noise_metres):
+            raise ValueError("noise_metres must be positive; the released arm is the zero")
+        if not set(self.wide_matchers) <= set(self.matchers):
+            raise ValueError("wide_matchers must be a subset of matchers")
+        if self.wide_matchers and self.wide_top_k is None:
+            raise ValueError("wide_matchers needs wide_top_k")
+        for better, base in self.extra_pairs:
+            if better == base or not {better, base} <= set(self.matchers):
+                raise ValueError(f"extra pair {better} vs {base} must name two configured matchers")
         return self
 
 

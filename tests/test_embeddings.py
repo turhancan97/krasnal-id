@@ -23,6 +23,7 @@ from krasnal_id.embeddings.extract import (
     extract_embeddings,
     extract_manifest_embeddings,
 )
+from krasnal_id.embeddings.siglip import SiglipBackbone
 from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest, DwarfRecord, ImageRecord
 
@@ -249,6 +250,7 @@ def test_create_backbone_dispatches_on_family_not_name() -> None:
         assert backbone.model_id == backbone_config(name).model_id
 
     assert isinstance(create_backbone(backbone_config("clip")), ClipBackbone)
+    assert isinstance(create_backbone(backbone_config("siglip2")), SiglipBackbone)
 
 
 def test_dinov3_is_pinned_and_kept_out_of_the_published_artifacts() -> None:
@@ -261,6 +263,36 @@ def test_dinov3_is_pinned_and_kept_out_of_the_published_artifacts() -> None:
     assert "dinov3" not in load_config().export.backbones
 
 
+def test_siglip2_is_pinned_and_kept_out_of_the_published_artifacts() -> None:
+    """SigLIP 2 is experiment-only, like DINOv3 (AGENTS.md section 7.15)."""
+    config = backbone_config("siglip2")
+    assert config.family == "siglip"
+    assert config.model_id == "google/siglip2-base-patch16-224"
+    assert len(config.revision) == 40
+    assert "siglip2" not in load_config().export.backbones
+
+
+def test_siglip_accepts_tensor_or_output_object() -> None:
+    torch = pytest.importorskip("torch")
+    backbone = SiglipBackbone(backbone_config("siglip2"))
+    tensor = torch.tensor([[3.0, 4.0]])
+
+    backbone._processor = _FakeProcessor(torch)
+    backbone._torch = torch
+    backbone._device = "cpu"
+
+    for features in (tensor, _FakeVisionOutput(tensor)):
+        backbone._model = _FakeClipModel(features)
+        vectors = backbone.get_embeddings((Image.new("RGB", (2, 2)),))
+        np.testing.assert_allclose(vectors, np.array([[0.6, 0.8]], dtype=np.float32), atol=1e-6)
+
+    backbone._model = _FakeClipModel(_FakeVisionOutput(None))
+    with pytest.raises(ValueError, match="unsupported image features"):
+        backbone.get_embeddings((Image.new("RGB", (2, 2)),))
+    with pytest.raises(ValueError, match="at least one image"):
+        backbone.get_embeddings(())
+
+
 def test_an_adapter_refuses_a_configuration_from_another_family() -> None:
     """The guard is what keeps CLIP's pooling off a DINOv2 checkpoint."""
     with pytest.raises(ValueError, match="dinov2- or dinov3-family"):
@@ -268,6 +300,9 @@ def test_an_adapter_refuses_a_configuration_from_another_family() -> None:
 
     with pytest.raises(ValueError, match="clip-family"):
         ClipBackbone(backbone_config("dinov2-large"))
+
+    with pytest.raises(ValueError, match="siglip-family"):
+        SiglipBackbone(backbone_config("clip"))
 
 
 def test_extraction_embeds_what_a_viewer_sees_and_checks_what_is_stored(

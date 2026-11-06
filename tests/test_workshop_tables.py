@@ -89,7 +89,7 @@ def test_fold_weights_become_a_table_and_absent_ones_are_refused(tmp_path: Path)
 
 
 def test_the_cli_writes_both_fragments(tmp_path: Path) -> None:
-    _artifact(tmp_path / "results" / "cvww_revision" / "workshop_validation-dinov2.json")
+    _artifact(tmp_path / "results" / "cvww_revision2" / "workshop_validation-dinov2.json")
 
     result = runner.invoke(
         app,

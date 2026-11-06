@@ -98,11 +98,16 @@ def journal_path(
     backbone: str,
     matcher: str,
     settings: WorkshopValidationConfig,
+    top_k: int | None = None,
 ) -> Path:
-    """Where `experiment matcher-rerank` wrote this matcher's disjoint evidence."""
+    """Where `experiment matcher-rerank` wrote this matcher's disjoint evidence.
+
+    `top_k` defaults to the main shortlist; section 7.15's wider one passes its own.
+    """
     keypoints = settings.max_keypoints if matcher == "sift" else settings.learned_keypoints
+    shortlist = settings.rerank_top_k if top_k is None else top_k
     digest = evidence_identity(
-        split, backbone, matcher, keypoints, settings.rerank_top_k, photographer_disjoint=True
+        split, backbone, matcher, keypoints, shortlist, photographer_disjoint=True
     )
     return journals_dir / f"matcher_rerank-{backbone}-{matcher}-{digest[:16]}.jsonl"
 
@@ -227,11 +232,14 @@ def summarize_held_out(
     cut_offs: Sequence[int],
     resamples: int,
     seed: int,
+    prefix: str = "cv",
+    extra_pairs: Sequence[tuple[str, str]] = (),
 ) -> tuple[MetricSummary, ...]:
     """Per-method accuracy, then every pairwise gain with McNemar and a statue interval.
 
     Pairs are each matcher against cosine, and each later matcher against the first,
-    which is the comparison the published table makes.
+    which is the comparison the published table makes; `extra_pairs` adds more
+    without renaming any of those. `prefix` keeps a second shortlist's metrics apart.
     """
     if not held_out:
         raise WorkshopValidationError("no held-out queries to summarize")
@@ -241,15 +249,16 @@ def summarize_held_out(
     for method in methods:
         for k in cut_offs:
             hits = sum(_hit(item.ranks[method], k) for item in held_out)
-            metrics.append(accuracy_metric(f"cv_{method}_top_{k}", hits, len(held_out)))
-    metrics.append(MetricSummary(name="cv_queries", value=float(len(held_out))))
-    metrics.append(MetricSummary(name="cv_statues", value=float(len(statues))))
+            metrics.append(accuracy_metric(f"{prefix}_{method}_top_{k}", hits, len(held_out)))
+    metrics.append(MetricSummary(name=f"{prefix}_queries", value=float(len(held_out))))
+    metrics.append(MetricSummary(name=f"{prefix}_statues", value=float(len(statues))))
 
     matchers = [method for method in methods if method != COSINE]
     pairs = [(matcher, COSINE) for matcher in matchers]
     pairs += [(later, matchers[0]) for later in matchers[1:]]
+    pairs += [pair for pair in extra_pairs if pair not in pairs]
     for better, base in pairs:
-        label = f"cv_{better}_vs_{base}"
+        label = f"{prefix}_{better}_vs_{base}"
         draws = statue_draws(len(statues), resamples, generator(seed, label))
         for k in cut_offs:
             a = {item.query_image_id: float(_hit(item.ranks[better], k)) for item in held_out}
@@ -389,7 +398,7 @@ def photographer_part(
     seed: int,
 ) -> list[MetricSummary]:
     """The three photographer arms, the two effects between them, with statue intervals."""
-    seeds = _packaged(PhotographerGapConfig, "photographer_gap").seeds
+    seeds = packaged(PhotographerGapConfig, "photographer_gap").seeds
     outcomes, _ = evaluate_conditions(split, manifest, matrix, seeds)
     statue_of = {fold.query_image_id: fold.query_dwarf_id for fold in split.folds}
     arms = {
@@ -475,7 +484,7 @@ def geography_part(
     published. The interval therefore covers which statues were asked about, not
     which random pools were drawn -- the seed spread stays a separate quantity.
     """
-    settings = _packaged(GeoAblationConfig, "geo_ablation")
+    settings = packaged(GeoAblationConfig, "geo_ablation")
     located, dwarf_ids, _, locations = located_inputs(manifest, split, matrix)
     statue_of = {fold.query_image_id: fold.query_dwarf_id for fold in located.folds}
     metrics: list[MetricSummary] = []
@@ -510,7 +519,7 @@ def pool_part(
     seed: int,
 ) -> list[MetricSummary]:
     """The decay rate per doubling of the candidate pool, with a statue interval."""
-    settings = _packaged(PoolSizeAblationConfig, "pool_size_ablation")
+    settings = packaged(PoolSizeAblationConfig, "pool_size_ablation")
     dwarf_ids = tuple(sorted(set(matrix.dwarf_ids)))
     sizes = resolve_pool_sizes(settings.pool_sizes, len(dwarf_ids))
     measurements = [
@@ -529,7 +538,7 @@ def pool_part(
     return [slope]
 
 
-def _packaged[ConfigT](kind: type[ConfigT], name: str) -> ConfigT:
+def packaged[ConfigT](kind: type[ConfigT], name: str) -> ConfigT:
     """The packaged settings another experiment was published with."""
     experiment = load_config([f"experiment={name}"]).experiment
     if not isinstance(experiment, kind):
@@ -573,11 +582,55 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
         fold_of_statue = statue_folds([truths[q] for q in expected], settings.folds, seed)
         held_out, fold_weights = cross_validate(evidence, truths, fold_of_statue, settings.weights)
         metrics += summarize_held_out(
-            held_out, (COSINE, *settings.matchers), settings.top_k_metrics, resamples, seed
+            held_out,
+            (COSINE, *settings.matchers),
+            settings.top_k_metrics,
+            resamples,
+            seed,
+            extra_pairs=settings.extra_pairs,
         )
+        if settings.wide_top_k is not None and settings.wide_matchers:
+            # Section 7.15: the same held-out selection over a wider shortlist.
+            wide = settings.wide_top_k
+            wide_evidence: dict[str, dict[str, QueryEvidence]] = {
+                matcher: load_journal_strictly(
+                    journal_path(
+                        journals_dir, split, config.backbone.name, matcher, settings, wide
+                    ),
+                    expected,
+                )
+                for matcher in settings.wide_matchers
+            }
+            wide_held, wide_weights = cross_validate(
+                wide_evidence, truths, fold_of_statue, settings.weights
+            )
+            metrics += summarize_held_out(
+                wide_held,
+                (COSINE, *settings.wide_matchers),
+                settings.top_k_metrics,
+                resamples,
+                seed,
+                prefix=f"cv_k{wide}",
+            )
+            metrics += [
+                MetricSummary(
+                    name=f"cv_k{wide}_{row.matcher}_fold_{row.fold}_weight", value=row.weight
+                )
+                for row in wide_weights
+            ]
 
     recomputed = [part for part in settings.parts if part != "rerank"]
     if recomputed:
+        # Imported here: the reviewer checks build on this module's helpers.
+        from krasnal_id.experiments.reviewer_checks import (
+            families_part,
+            geo_noise_part,
+            geo_permutation_part,
+            groups_part,
+            null_bounds_part,
+            rejection_signals_part,
+            soft_prior_part,
+        )
 
         def released_dir(backbone: str) -> Path:
             return (
@@ -617,6 +670,49 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
                     resamples,
                     seed,
                 )
+            if "geo_permutation" in recomputed:
+                metrics += geo_permutation_part(
+                    name,
+                    split,
+                    manifest,
+                    matrix,
+                    released_metrics(released_dir(name), f"geo_ablation-{name}"),
+                    settings,
+                )
+            if "soft_prior" in recomputed:
+                metrics += soft_prior_part(
+                    name,
+                    split,
+                    manifest,
+                    matrix,
+                    released_metrics(released_dir(name), f"geo_ablation-{name}"),
+                    settings,
+                )
+            if "geo_noise" in recomputed:
+                metrics += geo_noise_part(
+                    name,
+                    split,
+                    manifest,
+                    matrix,
+                    released_metrics(released_dir(name), f"geo_ablation-{name}"),
+                    settings,
+                )
+            if "rejection_signals" in recomputed:
+                metrics += rejection_signals_part(
+                    name,
+                    split,
+                    matrix,
+                    released_metrics(released_dir(name), f"open_set-{name}"),
+                    settings,
+                )
+            if "groups" in recomputed:
+                metrics += groups_part(
+                    name,
+                    split,
+                    matrix,
+                    released_metrics(released_dir(name), f"baseline-{name}"),
+                    settings,
+                )
             if "pool" in recomputed:
                 metrics += pool_part(
                     name,
@@ -626,6 +722,23 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
                     resamples,
                     seed,
                 )
+
+        if "families" in recomputed:
+            metrics += families_part(split, matrices, settings)
+        if "null_bounds" in recomputed:
+            capacity: dict[str, EmbeddingMatrix] = {
+                name: load_embedding_matrix(
+                    manifest, backbone_config(name), Path(config.paths.embeddings_dir)
+                )
+                for name in ("dinov2", *settings.null_bound_backbones)
+            }
+            metrics += null_bounds_part(
+                split,
+                manifest,
+                capacity,
+                released_metrics(released_root, "recall_curve-dinov2"),
+                settings,
+            )
 
     return WorkshopValidationResult(
         experiment="workshop_validation",

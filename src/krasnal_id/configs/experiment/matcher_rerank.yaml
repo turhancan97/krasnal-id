@@ -2,7 +2,7 @@ kind: matcher_rerank
 seed: ${seeds.primary}
 # SIFT first: it is the baseline every other matcher is paired against, and its
 # result is the one section 10 published.
-matchers: [sift, disk-lightglue]
+matchers: [sift, disk-lightglue, loftr]
 # Section 7.6's settings, unchanged, so the columns land against its 94.0%.
 top_k: 10
 max_keypoints: 800

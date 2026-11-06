@@ -21,7 +21,10 @@ from krasnal_id.experiments.rerank_ablation import (
     read_evidence_journal,
 )
 from krasnal_id.retrieval.matchers import (
+    LOFTR_LONG_SIDE,
+    LOFTR_MIN_CONFIDENCE,
     DiskLightGlueMatcher,
+    LoftrMatcher,
     create_matcher,
     usable_cuda,
 )
@@ -90,6 +93,79 @@ def test_the_learned_matcher_loads_nothing_until_a_pair_is_scored() -> None:
 
     assert len(matcher) == 0
     assert matcher.name == "disk-lightglue"
+
+
+def test_loftr_shares_the_interface_and_loads_nothing_until_used() -> None:
+    matcher = create_matcher("loftr", max_keypoints=300)
+
+    assert isinstance(matcher, LoftrMatcher)
+    assert matcher.name == "loftr"
+    assert matcher.max_keypoints == 300
+    assert len(matcher) == 0
+    # The evidence settings are part of what "loftr" means in a journal identity.
+    assert (LOFTR_LONG_SIDE, LOFTR_MIN_CONFIDENCE) == (840, 0.2)
+    assert "loftr" in load_config(["experiment=matcher_rerank"]).experiment.matchers  # type: ignore[union-attr]
+
+
+class _FakeLoftr:
+    """Stands in for kornia's LoFTR: fixed matches with chosen confidences."""
+
+    def __init__(self, torch: object, confidence: list[float]) -> None:
+        import numpy as np
+
+        self._torch = torch
+        count = len(confidence)
+        index = np.arange(count)
+        # Scattered, not collinear: a homography through collinear points is degenerate.
+        grid = np.stack([index * 7.0 % 50, index * index * 3.0 % 41], axis=1)
+        self.points = grid.astype("float32")
+        self.confidence = confidence
+
+    def __call__(self, batch: dict[str, object]) -> dict[str, object]:
+        torch = self._torch
+        points = torch.tensor(self.points)  # type: ignore[attr-defined]
+        return {
+            "keypoints0": points,
+            "keypoints1": points + 5.0,  # a pure translation: every match is an inlier
+            "confidence": torch.tensor(self.confidence),  # type: ignore[attr-defined]
+        }
+
+
+def test_loftr_keeps_confident_matches_up_to_the_budget(tmp_path: Path) -> None:
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("cv2")
+    from PIL import Image
+
+    path = tmp_path / "statue.png"
+    Image.new("L", (100, 61), 128).save(path)
+    matcher = LoftrMatcher(device="cpu", max_keypoints=6)
+    matcher._torch = torch
+    matcher._device = torch.device("cpu")
+    matcher._model = _FakeLoftr(torch, [0.9] * 8 + [0.1] * 8)
+
+    prepared = matcher.get("a", path)
+    # Sides are multiples of 8, the coarse level LoFTR needs.
+    assert prepared.shape[-2] % 8 == 0 and prepared.shape[-1] % 8 == 0
+    assert matcher.get("a", path) is prepared
+    # Eight confident matches, capped at six; the low-confidence eight never count.
+    assert matcher.inliers(prepared, prepared) == 6
+
+    matcher._model = _FakeLoftr(torch, [0.9] * 3 + [0.1] * 10)
+    assert matcher.inliers(prepared, prepared) == 0
+
+
+def test_loftr_refuses_an_unreadable_image(tmp_path: Path) -> None:
+    pytest.importorskip("torch")
+    pytest.importorskip("cv2")
+    path = tmp_path / "broken.jpg"
+    path.write_bytes(b"not an image")
+    matcher = LoftrMatcher(device="cpu")
+    matcher._model = object()
+    import torch
+
+    matcher._torch = torch
+    with pytest.raises(RerankError, match="could not read"):
+        matcher.get("broken", path)
 
 
 def test_the_best_weight_breaks_ties_toward_the_control() -> None:

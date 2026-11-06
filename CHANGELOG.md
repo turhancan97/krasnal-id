@@ -16,6 +16,31 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- **SigLIP 2 as an experiment-only backbone** (`backbone=siglip2`, `google/siglip2-base-patch16-224`
+  pinned by revision; AGENTS.md §7.15): a `siglip` family adapter in `embeddings/siglip.py` that
+  loads only the image processor. Like DINOv3 it is in no export or visualisation list, and its
+  runs write to `results/siglip2/`.
+- **LoFTR as a third local matcher** (`matcher=loftr`): dense, detector-free matching through
+  kornia's "outdoor" weights, verified by the same RANSAC homography as SIFT and DISK. Its long side
+  (840) and confidence floor (0.2, kornia's own) are constants, part of what an inlier count means.
+  Matcher names are declared once, as `MatcherName` in `config.py`.
+- **Seven new parts in `experiment workshop-validation`**, each refusing to report unless it first
+  reproduces a released number to 1e-9 (AGENTS.md §7.15–7.16):
+  - `soft_prior`: location as a weight, chosen on held-out statue folds, with the simulated user
+    10, 25 or 50 m from the statue, and a location-only baseline beside it.
+  - `geo_noise`: the geographic comparison with every coordinate moved 9, 50 or 150 m.
+  - `rejection_signals`: margin and k-th-neighbour scores beside cosine, scored by `open_set`'s own
+    calibration code.
+  - `groups`: top-1 with group classes merged into their members.
+  - `geo_permutation`: a permutation test of whether lookalikes standing together cause the
+    geographic penalty.
+  - `families`: the share of each backbone's errors inside lookalike families, the families drawn
+    by the *other* backbones.
+  - `null_bounds`: paired upper bounds on the capacity and register null results.
+
+  The run also validates LoFTR, a second `wide_top_k` shortlist (k=50) and any `extra_pairs`, and
+  writes to `results/cvww_revision2/`, leaving the first revision's artifact as its record.
+- `geometry.offset_metres`, the inverse of `haversine_metres` at street scale.
 - **One visual system for the publication figures, `krasnal_id.viz.figure_style`** (AGENTS.md
   §7.14). The author's palette, restricted to the validated subsets (backbones blue, orange and
   teal; matchers pink and purple), one vendored typeface (TeX Gyre Heros, GUST Font License), one
@@ -74,6 +99,11 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Fixed
 
+- **`results/open_set-dinov2.json` and `-clip.json` were regenerated**, because the new rejection
+  check's 1e-9 gate found that the files written on 2026-09-05 do not reproduce. Every cited number
+  is unchanged. DINOv2's AUROC moved by 3.5e-7, and one unknown query of 1,691 crossed the 99%
+  threshold (96.51% → 96.57%). The cause was not found (AGENTS.md §7.15). The September files are
+  kept in `results/superseded/2026-09-05/`.
 - **Phone portrait photographs reached the model on their side.** No loader applied the EXIF
   `Orientation` tag, which is how every phone stores a portrait shot. Extraction and single-image
   retrieval now go through `image_io.upright_rgb`. All 1,691 references carry `Orientation = 1` or

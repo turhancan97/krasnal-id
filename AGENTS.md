@@ -1354,6 +1354,110 @@ every paper figure and both retrieval sheets read from it.
   arrow that constrained layout shrank the photographs to make room for, a caption over the pool
   circles, a legend on a line, and colliding operating-point labels all rendered without a warning.
 
+### 7.15 Reviewer checks (2026-11-06)
+
+A colleague's review of the CVWW draft asked for more than the paper measured. Each request was
+sorted by cost and by whether its answer could change what the paper claims. Answered, all before
+the 1 December cut-off of §11.3:
+
+- **A soft geographic prior.** §7.4 shows a hard filter to nearby statues loses to random
+  narrowing. The obvious follow-up is location as a *weight*. Each candidate scores its best-image
+  cosine plus `w·exp(−d/200 m)`. `w` is chosen on held-out statue folds exactly as §7.13 chooses
+  re-ranking weights. A gain turns the third headline into "a weight, not a filter"; no gain makes
+  it unconditional.
+- **Coordinate noise.** Every coordinate is moved a fixed 9, 50 or 150 m in a seeded direction and
+  the geographic comparison re-run. This turns §5.7's 9 m validation into a statement about the
+  result rather than about the coordinates.
+- **Rejection beyond a cosine threshold.** The margin between the best and the best *other*
+  statue, and the k-th nearest neighbour's similarity, are scored beside cosine. Both are
+  training-free and vector-only.
+- **Group and member classes**, the defect §7.3 recorded, scored once with each group merged into
+  its members.
+- **Re-ranking at k=50.** §7.7's "50 candidates buys 0.18 points" exists only as prose, so under
+  §6.4 the paper cannot cite it. SIFT and DISK+LightGlue are journalled at k=50.
+- **A third matcher, LoFTR**, dense and detector-free, through kornia's Apache-2.0 "outdoor"
+  weights. Same homography check, same held-out weight selection.
+- **SigLIP 2 base** (`google/siglip2-base-patch16-224`), a current language-aligned backbone at
+  ViT-B size. The paper attributes CLIP's weakness to language alignment, and our CLIP is a 2021
+  ViT-B/32, so without it the attribution could equally be about an old checkpoint.
+  **Experiment-only, like DINOv3 (§7.12):** in no export or visualisation list, and its results
+  go to `results/siglip2/`. Tables, not figures.
+
+Declined, with the reason given in the paper:
+
+- Learned re-rankers (RRT), dense verification networks (DGC-NC) and training-based feature
+  augmentation (FUNGI) all train, and the paper's claim is about frozen features.
+- A detection or cropping stage is a pipeline change, not a check.
+- Alternative pooling would re-extract every backbone for a question no result depends on.
+
+How it is built:
+
+- **One artifact, extended.** `experiment workshop-validation` gains the four vector-only parts, a
+  third matcher, a second `rerank_top_k` and a fourth backbone, and writes to
+  `results/cvww_revision2/`. `cvww_revision` stays as the record of the first revision; the
+  overwrite guard would refuse to replace it anyway.
+- **Metric names do not change**, so the manuscript's `\wv{}` citations keep resolving.
+- **Every new part reproduces a released number to 1e-9 before computing anything new**, as §7.13
+  requires: weight zero is the released full-pool geographic top-1, zero metres is the released
+  geographic arm, the cosine signal is the released rejection result, unmerged is the released
+  baseline.
+- **Matcher names are declared once**, as `MatcherName` in `config.py`, for the reason
+  `BackboneName` is.
+- **LoFTR's evidence settings are constants, not options**: long side 840, confidence floor 0.2,
+  which is kornia's own coarse-match threshold, so the matcher runs as released. On the one
+  Słupniki smoke-test pair a stricter 0.5 separated better (5 inliers to 0, against 15 to 11);
+  choosing it on that evidence would have been tuning on a test query.
+  They define what an inlier count means, so changing one must change the matcher's name and with
+  it the journal identity. LoFTR does not fit "describe once, score many": its network runs per
+  pair, so only the prepared image is cached.
+- **The rejection check's 1e-9 gate caught a stale released artifact, and it was regenerated.**
+  `open_set-dinov2.json` and `open_set-clip.json`, written on 2026-09-05 at 09:02, do not
+  reproduce under today's pipeline. DINOv2 AUROC is 0.8959103 against a recomputed 0.8959100, and
+  one unknown query of 1,691 crosses the 99% threshold (96.51% to 96.57%). CLIP moves two values in
+  the eighth decimal place. **Every cited number is unchanged** — 0.896 AUROC, 38.3% false
+  acceptance at 90%, and the whole 90% row to 1e-12.
+  - **The cause was not found, and these were ruled out:** the vectors (written on 4 September,
+    untouched since), numpy (2.5.2 then and now), and that afternoon's AUROC refactor, which moved
+    identical code.
+  - **Most likely** BLAS summation order, or code uncommitted at 09:02.
+  - **What was done:** both artifacts were re-run with identical settings, as §6.4 permits, and
+    the September files kept in `results/superseded/2026-09-05/`. The gate stayed at 1e-9 rather
+    than being loosened for the one check that tripped it.
+- **This shell runs inside a Slurm allocation**, so `srun` tries to add a step to it and fails
+  with a GRES error. Submit with `sbatch`, unsetting `SLURM_JOB_ID`.
+
+### 7.16 Strengthening the claims (2026-11-06)
+
+§7.15 answered "you didn't try X". This answers "why should I believe the explanation", and it was
+taken on the author's request after the options were ranked by value against cost. Three parts,
+all computed on cached vectors inside `experiment workshop-validation`, each gated on a released
+number like every other part:
+
+- **`geo_permutation`: a permutation test of the co-location mechanism.** The paper says location
+  narrowing loses because lookalikes stand together. That was a correlation, about 2× enrichment
+  within 100 m. The test: statue positions are permuted among the located statues, which keeps the
+  set of positions and the random arm and breaks only who stands next to whom; the geographic arm
+  is then re-run. The p-value is the share of permutations at least as harmful as the real layout.
+  If the penalty survives shuffling, the explanation is wrong, and the paper must say so.
+- **`families`: lookalike families defined objectively.** A family is a connected component of
+  statue pairs that are mutual nearest neighbours by centroid. A pair counts only if at least two
+  backbones agree. **For each backbone, families are defined by the *other* backbones**, so the
+  share of its errors that fall inside a family is never scored on the embedding that drew the
+  families. This turns the paper's thread from named examples into a number.
+- **`null_bounds`: what the null results rule out.** "Capacity and registers do not help" is only
+  as informative as the effect it could have detected. Each comparison's paired statue interval on
+  the photographer-disjoint queries is reported, so the claim becomes "no gain larger than the
+  upper bound". It reuses `recall_curve.measure_arm` and is gated on the released
+  `recall_curve-dinov2.json`.
+
+A fourth item, **queries uploaded to Commons after the 4 September fetch**, was counted before
+anything was built, and **dropped**. On 2026-11-06 only 2 files had been added to any of the 306
+manifest categories since the snapshot, both in one category (*Googlak*), and their titles read as
+junk uploads, not statue photographs. Commons is not growing fast enough to supply a prospective
+test set before the deadline. Re-count with the scratch script's method (`list=categorymembers`,
+`cmprop=timestamp`, 1.5 s between requests; Commons answered 0.3 s with HTTP 429) if the question
+returns.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1619,6 +1723,7 @@ krasnal-id/
 │   │   ├── backbone.py        # the adapter contract and its pinned identity
 │   │   ├── dinov2.py
 │   │   ├── clip.py
+│   │   ├── siglip.py          # SigLIP 2, experiment-only (§7.15)
 │   │   ├── extract.py         # resumable extraction for any local image record
 │   │   ├── cache.py           # atomic, validated, content-addressed vector cache
 │   │   └── store.py           # manifest-ordered access for evaluation code
@@ -1641,6 +1746,7 @@ krasnal-id/
 │   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
 │   │   ├── recall_curve.py     # the first stage's ceiling, and three rejected fixes
 │   │   ├── workshop_validation.py # held-out weights and statue intervals, from evidence on disk
+│   │   ├── reviewer_checks.py # §7.15–7.16 parts, each gated on a released number
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan

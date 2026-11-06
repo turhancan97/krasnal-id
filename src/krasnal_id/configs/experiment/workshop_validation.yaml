@@ -3,7 +3,7 @@ seed: ${seeds.primary}
 folds: 5
 bootstrap_resamples: 10000
 # The journals' identity: must equal matcher_rerank.yaml (pinned by a test).
-matchers: [sift, disk-lightglue]
+matchers: [sift, disk-lightglue, loftr]
 rerank_top_k: 10
 max_keypoints: 800
 learned_keypoints: 1024
@@ -11,8 +11,41 @@ learned_keypoints: 1024
 # exactly the options the in-sample result chose from.
 weights: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0]
 top_k_metrics: [1, 5]
-output_subdir: cvww_revision
-parts: [rerank, photographer, baseline, geography, pool]
+# cvww_revision holds the first revision and stays as its record (section 7.15).
+output_subdir: cvww_revision2
+parts:
+  - rerank
+  - photographer
+  - baseline
+  - geography
+  - pool
+  - soft_prior
+  - geo_noise
+  - rejection_signals
+  - groups
+  - geo_permutation
+  - families
+  - null_bounds
 # DINOv2 is the reference; every re-ranking journal holds DINOv2 candidates.
-backbones: [dinov2, clip, dinov3]
-separate_results: [dinov3]
+backbones: [dinov2, clip, dinov3, siglip2]
+separate_results: [dinov3, siglip2]
+# Section 7.15: the reviewer checks.
+wide_top_k: 50
+wide_matchers: [sift, disk-lightglue]
+extra_pairs: [[loftr, disk-lightglue]]
+soft_prior_weights: [0.0, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
+soft_prior_scale_m: 200
+gps_error_m: [10, 25, 50]
+noise_metres: [9, 50, 150]
+noise_seeds: [0, 1, 2, 3, 4]
+knn_k: 5
+groups:
+  C-grajek-i-meloman-dwarves-wroclaw: [C-grajek-dwarf-wroclaw, C-meloman-dwarf-wroclaw]
+  Q136006129: [Q136277457]
+
+# Section 7.16: tests of the explanations.
+permutation_count: 200
+permutation_pool_sizes: [5, 10, 20]
+family_votes: 2
+null_bound_backbones: [dinov2-large, dinov2-registers, dinov2-registers-large]
+null_bound_cutoffs: [1, 10]
