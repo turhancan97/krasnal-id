@@ -589,26 +589,34 @@ def statue_centroids(matrix: EmbeddingMatrix) -> tuple[tuple[str, ...], npt.NDAr
     return statues, sums / np.linalg.norm(sums, axis=1, keepdims=True)
 
 
-def mutual_pairs(matrix: EmbeddingMatrix) -> set[tuple[str, str]]:
-    """Statue pairs that are each other's nearest neighbour by centroid."""
+def mutual_pairs(matrix: EmbeddingMatrix, neighbours: int = 3) -> set[tuple[str, str]]:
+    """Statue pairs each within the other's `neighbours` nearest by centroid.
+
+    With `neighbours = 1` this is mutual nearest neighbours, which can only ever
+    pair statues: each has one nearest neighbour, so three lookalikes are split
+    into a pair and a leftover. The first run used exactly that and found every
+    family a pair (AGENTS.md section 7.16); three neighbours let a trio link up.
+    """
     statues, centroids = statue_centroids(matrix)
     similarity = centroids @ centroids.T
     np.fill_diagonal(similarity, -np.inf)
-    nearest = similarity.argmax(axis=1)
+    count = min(neighbours, len(statues) - 1)
+    nearest = [set(np.argsort(-row, kind="stable")[:count].tolist()) for row in similarity]
     return {
         (statues[a], statues[b])
-        for a, b in enumerate(nearest)
-        if nearest[b] == a and statues[a] < statues[b]
+        for a, close in enumerate(nearest)
+        for b in close
+        if a in nearest[b] and statues[a] < statues[b]
     }
 
 
 def lookalike_families(
-    matrices: Mapping[str, EmbeddingMatrix], minimum_votes: int
+    matrices: Mapping[str, EmbeddingMatrix], minimum_votes: int, neighbours: int = 3
 ) -> dict[str, int]:
     """Connected components of pairs that at least `minimum_votes` backbones agree on."""
     votes: dict[tuple[str, str], int] = {}
     for matrix in matrices.values():
-        for pair in mutual_pairs(matrix):
+        for pair in mutual_pairs(matrix, neighbours):
             votes[pair] = votes.get(pair, 0) + 1
     parent: dict[str, str] = {}
 
@@ -643,7 +651,7 @@ def families_part(
     metrics: list[MetricSummary] = []
     for name, matrix in matrices.items():
         others = {other: m for other, m in matrices.items() if other != name}
-        family_of = lookalike_families(others, settings.family_votes)
+        family_of = lookalike_families(others, settings.family_votes, settings.family_neighbours)
         in_family = {s for s in statues if s in family_of}
         wrong: dict[str, float] = {}
         within: dict[str, float] = {}
@@ -686,6 +694,9 @@ def families_part(
             ({q for q in wrong if statue_of[q] in in_family}, "inside"),
             ({q for q in wrong if statue_of[q] not in in_family}, "outside"),
         ):
+            # An empty side has no rate; reporting one would be an interval around nothing.
+            if not subset:
+                continue
             metrics.append(
                 rate_interval(
                     f"{label}_{tag}_error_rate",

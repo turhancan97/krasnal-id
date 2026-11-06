@@ -278,14 +278,28 @@ def test_families_need_enough_backbones_to_agree() -> None:
     paired = _matrix(("A", "B", "C", "D"), [[1, 0.1, 0], [1, 0, 0.1], [0, 1, 0], [0.1, 1, 0]])
     # Here A pairs with C instead, and B with D.
     crossed = _matrix(("A", "B", "C", "D"), [[1, 0, 0], [0, 1, 0], [1, 0.1, 0], [0, 1, 0.1]])
-    assert mutual_pairs(paired) == {("A", "B"), ("C", "D")}
+    assert mutual_pairs(paired, 1) == {("A", "B"), ("C", "D")}
 
-    agreed = lookalike_families({"x": paired, "y": paired, "z": crossed}, minimum_votes=2)
+    agreed = lookalike_families(
+        {"x": paired, "y": paired, "z": crossed}, minimum_votes=2, neighbours=1
+    )
     assert agreed["A"] == agreed["B"] != agreed["C"] == agreed["D"]
     # With one vote each pairing counts, and the two chains join all four statues.
-    chained = lookalike_families({"x": paired, "z": crossed}, minimum_votes=1)
+    chained = lookalike_families({"x": paired, "z": crossed}, minimum_votes=1, neighbours=1)
     assert len(set(chained.values())) == 1
-    assert lookalike_families({"x": paired, "z": crossed}, minimum_votes=3) == {}
+    assert lookalike_families({"x": paired, "z": crossed}, minimum_votes=3, neighbours=1) == {}
+
+
+def test_three_neighbours_let_a_trio_form_one_family() -> None:
+    """The defect the first run hit: mutual nearest neighbours split a trio."""
+    # A, B and C are three lookalikes; D stands apart.
+    trio = _matrix(
+        ("A", "B", "C", "D"), [[1, 0.1, 0.05], [1, 0.05, 0.1], [1, 0.12, 0.12], [0, 0, 1]]
+    )
+    split = lookalike_families({"x": trio, "y": trio}, minimum_votes=2, neighbours=1)
+    assert len({split.get(s) for s in "ABC"}) > 1  # one pair and a leftover
+    joined = lookalike_families({"x": trio, "y": trio}, minimum_votes=2, neighbours=2)
+    assert joined["A"] == joined["B"] == joined["C"]
 
 
 def test_family_errors_are_scored_against_the_other_backbones(tmp_path: Path) -> None:

@@ -549,6 +549,9 @@ class WorkshopValidationConfig(BaseModel):
     permutation_pool_sizes: tuple[int, ...] = (5, 10, 20)
     # How many of the *other* backbones must call a pair mutual nearest neighbours.
     family_votes: int = Field(default=2, ge=1)
+    # Each statue must be within the other's this-many nearest; 1 is mutual nearest
+    # neighbours, which can only form pairs (section 7.16).
+    family_neighbours: int = Field(default=3, ge=1)
     # Checkpoints whose null result against dinov2 gets an upper bound.
     null_bound_backbones: tuple[BackboneName, ...] = ()
     null_bound_cutoffs: tuple[int, ...] = (1, 10)

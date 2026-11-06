@@ -354,7 +354,7 @@ def test_the_validation_never_builds_a_matcher_or_loads_a_model(
 
     assert result.exit_code == 0, result.output
     assert "cv_disk-lightglue_vs_cosine_top_1_gain" in result.output
-    written = tmp_path / "cvww_revision2" / "workshop_validation-dinov2.json"
+    written = tmp_path / "cvww_revision3" / "workshop_validation-dinov2.json"
     payload = json.loads(written.read_text(encoding="utf-8"))
     assert len(payload["fold_weights"]) == 2 * 3
     # Nothing is written beside the released artifacts.
@@ -379,7 +379,7 @@ def test_a_third_matcher_and_a_wider_shortlist_are_validated_the_same_way(
 
     assert result.exit_code == 0, result.output
     payload = json.loads(
-        (tmp_path / "cvww_revision2" / "workshop_validation-dinov2.json").read_text("utf-8")
+        (tmp_path / "cvww_revision3" / "workshop_validation-dinov2.json").read_text("utf-8")
     )
     metrics = {m["name"]: m["value"] for m in payload["metrics"]}
     # LoFTR here carries DISK's evidence, so the extra pair shows no difference.

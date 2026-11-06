@@ -1416,13 +1416,20 @@ How it is built:
   one unknown query of 1,691 crosses the 99% threshold (96.51% to 96.57%). CLIP moves two values in
   the eighth decimal place. **Every cited number is unchanged** — 0.896 AUROC, 38.3% false
   acceptance at 90%, and the whole 90% row to 1e-12.
-  - **The cause was not found, and these were ruled out:** the vectors (written on 4 September,
-    untouched since), numpy (2.5.2 then and now), and that afternoon's AUROC refactor, which moved
-    identical code.
-  - **Most likely** BLAS summation order, or code uncommitted at 09:02.
-  - **What was done:** both artifacts were re-run with identical settings, as §6.4 permits, and
-    the September files kept in `results/superseded/2026-09-05/`. The gate stayed at 1e-9 rather
-    than being loosened for the one check that tripped it.
+  - **The cause is the machine, established the next run.** DINOv3's artifact, written on
+    2026-11-05 by *today's* code on a GPU node, failed the same gate by 7e-7 when the validation
+    ran on `trzmiel`. Regenerated on `trzmiel`, it and SigLIP 2's (written on szarancza) moved only
+    in the seventh and eighth decimal place. Open-set scores are float32 dot products, and BLAS sums
+    them in a different order on a different CPU. AUROC is the one gated metric that depends on the
+    exact order of near-equal scores across queries, so it is the one that moves; accuracies only
+    move if a ranking flips, and none did. Ruled out along the way: the vectors, numpy (2.5.2
+    throughout), and the September AUROC refactor, which moved identical code.
+  - **What was done:** all four open-set artifacts were re-run on `trzmiel` with identical
+    settings, as §6.4 permits, the earlier files kept in `results/superseded/`, and the gate stayed
+    at 1e-9. **The rule this leaves: a gated continuous metric must be written on the machine that
+    validates it.** The validation's `cpu` partition is `trzmiel`, so an artifact produced on a GPU
+    or student node is regenerated here first. This cost two failed runs, 2.6 hours each, before a
+    one-minute pre-flight check was added to the submission routine.
 - **This shell runs inside a Slurm allocation**, so `srun` tries to add a step to it and fails
   with a GRES error. Submit with `sbatch`, unsetting `SLURM_JOB_ID`.
 
@@ -1449,6 +1456,29 @@ number like every other part:
   the photographer-disjoint queries is reported, so the claim becomes "no gain larger than the
   upper bound". It reuses `recall_curve.measure_arm` and is gated on the released
   `recall_curve-dinov2.json`.
+
+**Two corrections after the first full run (2026-11-07), taken before rerunning.** The run wrote
+`results/cvww_revision2/`, which stays as the record of what is described here; the corrected run
+writes `results/cvww_revision3/`.
+
+- **The family definition was pairs-only by construction.** Every statue has exactly one nearest
+  neighbour, so mutual nearest neighbours can only pair statues, never join three. All 17
+  "families" were pairs, the Słupniki trio was split into one pair and a leftover, and DINOv2's
+  errors on it fell on the leftover, so its share came out 0.0%. That is a property of the
+  definition, visible without data. **Replacement, fixed before its result was seen:** two statues
+  are linked when each is in the other's three nearest by centroid (`family_neighbours: 3`) under at
+  least two of the *other* backbones, and families are the connected components. The paper says
+  the first definition was replaced and why.
+- **The soft-prior weight sat at the edge of its grid.** Accuracy was still rising at the largest
+  weight tried (0.5), and every fold chose it, so 98.1% at 25 m was a lower bound, not a peak —
+  exactly the defect §7.11 recorded for the first matcher sweep. The grid now runs to 20. As the
+  weight grows the ranking tends to location alone (75.1% at 25 m), so the peak must be interior.
+- **Measured findings from that run that change the paper, recorded here so they are not lost:**
+  the permutation test gives p = 0.005 for all four backbones, the smallest value 200 permutations
+  can give; the penalty survives 150 m of coordinate noise; the margin score halves false acceptance
+  at 90% known acceptance (DINOv2 38.3% → 19.6%, DINOv3 21.6% → 7.7%), so "no usable operating
+  point" no longer holds for DINOv3; the k-th-neighbour score is far worse than cosine; and LoFTR
+  edges DISK+LightGlue by 1.1 points (interval 0.1 to 2.2, McNemar p = 0.053).
 
 A fourth item, **queries uploaded to Commons after the 4 September fetch**, was counted before
 anything was built, and **dropped**. On 2026-11-06 only 2 files had been added to any of the 306
