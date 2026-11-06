@@ -58,6 +58,13 @@ def _artifact(path: Path) -> Path:
 
 def test_each_metric_is_printed_in_the_papers_units() -> None:
     assert formatted("dinov2_top_1", 0.9314) == "93.1"
+    # Section 7.15-7.16 metrics: AUROCs as probabilities, counts and weights verbatim.
+    assert formatted("dinov2_reject_margin_auroc", 0.89591) == "0.896"
+    assert formatted("dinov2_reject_knn_minus_cosine_auroc", -0.0123) == "$-$0.012"
+    assert formatted("dinov2_families_count", 37.0) == "37"
+    assert formatted("dinov2_families_errors", 116.0) == "116"
+    assert formatted("dinov2_soft_prior_gps25_fold_0_weight", 0.05) == "0.05"
+    assert formatted("dinov2_families_error_share", 0.4321) == "43.2"
     assert formatted("geo_minus_random", -0.0089) == "$-$0.9"
     assert formatted("dinov2_points_per_doubling", -0.79) == "$-$0.8"
     assert formatted("x_wins", 37.0) == "37"
@@ -71,9 +78,14 @@ def test_the_macro_file_defines_values_and_intervals(tmp_path: Path) -> None:
     assert r"\@namedef{wv@dinov2_top_1@v}{93.1}" in text
     assert r"\@namedef{wv@dinov2_top_1@ci}{91.8 to 94.2}" in text
     assert r"\@namedef{wv@dinov2_points_per_doubling@ci}{$-$0.9 to $-$0.7}" in text
+    # Each end on its own, for a sentence that bounds an effect from one side.
+    assert r"\@namedef{wv@dinov2_top_1@lo}{91.8}" in text
+    assert r"\@namedef{wv@dinov2_top_1@hi}{94.2}" in text
     # A count has no interval, and an unknown name renders visibly, not silently.
     assert "wv@cv_sift_vs_cosine_top_1_wins@ci" not in text
     assert "MISSING" in text
+    # Metric names carry underscores, which are subscripts outside maths mode.
+    assert r"MISSING:\detokenize{#1}" in text
 
 
 def test_fold_weights_become_a_table_and_absent_ones_are_refused(tmp_path: Path) -> None:
