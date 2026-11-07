@@ -44,6 +44,28 @@ MODEL_LABEL = {
 }
 
 
+# What the roster table states about each checkpoint beside its pinned identity:
+# the pooling rule applied (section 7.17), the input size its released processor
+# produces, the embedding width (read off the extracted vectors), and the licence
+# its Hub card declares. Kept here, beside the labels, so the table and the figure
+# cannot disagree about which model is which.
+MODEL_DETAILS: dict[str, tuple[str, str, int, str]] = {
+    "dino": ("CLS", "224", 768, "Apache-2.0"),
+    "dinov2": ("CLS", "224", 768, "Apache-2.0"),
+    "dinov3": ("CLS", "224", 768, "DINOv3 Licence"),
+    "ijepa": ("patch mean", "224", 1280, "CC-BY-NC-4.0"),
+    "mae": ("patch mean", "224", 768, "CC-BY-NC-4.0"),
+    "beit": ("pooler (mean)", "224", 768, "Apache-2.0"),
+    "eva02-mim": ("patch mean", "224", 768, "MIT"),
+    "clip": ("projection", "224", 512, "MIT"),
+    "clip-b16": ("projection", "224", 512, "MIT"),
+    "siglip2": ("attention pool", "224", 768, "Apache-2.0"),
+    "radio": ("summary", "432", 2304, "NVIDIA Open Model"),
+    "aimv2": ("patch mean", "224", 1024, "Apple ASCL"),
+    "vit-supervised": ("CLS", "224", 768, "Apache-2.0"),
+}
+
+
 @dataclass(frozen=True, slots=True)
 class Panel:
     """One measurement: the metric suffix, its axis label, and how to scale it."""
@@ -198,4 +220,12 @@ def render_family_figure(
     return written
 
 
-__all__ = ["FAMILIES", "MODEL_LABEL", "PANELS", "collect", "render_family_figure", "rows"]
+__all__ = [
+    "FAMILIES",
+    "MODEL_DETAILS",
+    "MODEL_LABEL",
+    "PANELS",
+    "collect",
+    "render_family_figure",
+    "rows",
+]

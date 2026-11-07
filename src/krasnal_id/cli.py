@@ -1410,6 +1410,48 @@ def visualize_workshop_tables(
     typer.echo(f"Workshop tables complete: {len(written)} written")
 
 
+@visualize_app.command("family")
+def visualize_family(
+    root: Annotated[
+        Path, typer.Option(help="The family study's results directory (section 7.17).")
+    ] = Path("results/family"),
+    figure: Annotated[Path, typer.Option(help="Where to write the forest plot.")] = Path(
+        "paper-cvww/figures/fig-family.png"
+    ),
+    output_dir: Annotated[Path, typer.Option(help="Where to write the TeX fragments.")] = Path(
+        "paper-cvww/generated"
+    ),
+    width_cm: Annotated[float, typer.Option("--width-cm", help="Printed width.")] = 17.0,
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+) -> None:
+    """Draw the pretraining-family figure and write its numbers and table.
+
+    Reads the family validation (`<root>/validation/`) and each backbone's released
+    artifacts under `<root>/<backbone>/`; nothing is computed here.
+    """
+    from krasnal_id.viz.family_plot import render_family_figure
+    from krasnal_id.viz.workshop_tables import (
+        WorkshopTableError,
+        load_metrics,
+        write_family_outputs,
+    )
+
+    validation = root / "validation" / "workshop_validation-dinov2.json"
+    try:
+        written = write_family_outputs(validation, root, output_dir)
+        metrics = {
+            name: {"value": m["value"], "lower_bound": m["lower"], "upper_bound": m["upper"]}
+            for name, m in load_metrics(validation).items()
+        }
+        path = render_family_figure(metrics, figure, width_cm / 2.54, dpi)
+    except (WorkshopTableError, VisualizationError) as error:
+        typer.echo(f"Family figure error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for item in (*written, path):
+        typer.echo(f"  {item}")
+    typer.echo("Family figure complete")
+
+
 @visualize_app.command("matches")
 def visualize_matches(
     query: Annotated[Path, typer.Option(help="The photograph to match from.")],

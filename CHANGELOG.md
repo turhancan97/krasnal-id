@@ -25,6 +25,12 @@ No result changes and no number is published: the photographs still need a day i
   poolings; `processor_kwargs` carries RADIO's `do_resize=True`. `timm`, `einops` and
   `open-clip-torch` join the `ml` extra, the last two only because RADIO's code imports them.
   Vectors for all nine are extracted for the 1,691 references.
+- `krasnal-id visualize family` draws the family forest plot from `results/family/validation/`
+  and writes `family-numbers.tex` (every number as `\wv{fam_<model>_<metric>}`, prefixed so the
+  family run's re-measured DINOv2 never collides with `numbers.tex`), a compact per-model table
+  and a roster of all thirteen checkpoints with revision, pooling, input, width and licence.
+  Numbers with no statue interval (unseen-photographer top-1, recall, cosine false acceptance)
+  are carried as points, never with a Wilson interval passed off as a statue one.
 
 - `krasnal-id visualize teaser-matches` draws the CVWW supplement's correspondence figure: SIFT
   against DISK+LightGlue on two cases chosen by rule (`viz/matcher_examples.py`). The rescue is the
