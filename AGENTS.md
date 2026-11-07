@@ -2239,6 +2239,11 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
   `wroclaw-dwarves`. The naming search also surfaced two works the paper now cites, each checked
   against the CVF BibTeX: *Doppelgangers* (ICCV 2023), the closest dataset in spirit, and *ILIAS*
   (CVPR 2025), a current instance-retrieval benchmark.
+  **The paper has its own mark** (`paper-cvww/logo/make_logo.py`, SVG to PDF through cairosvg): two
+  identical gnomes, the second a colour-swapped twin, in the corpus colours of §7.14 — deep mustard,
+  the author's mustard and ink. It is set beside a two-line title. It is deliberately unlike the
+  public Krasnal-ID mark in `docs/brand/` (a hat over a location pin), which would identify the
+  author to a reviewer; do not swap one for the other before the review is over.
 - **The rendered bibliography exposed a wrong citation that the journal draft also carries.**
   `chen2020simclr` resolves to an unrelated 2022 *Geophysics* paper on seismic denoising whose
   title contains SimCLR's — the `he2020moco` failure again, missed because only that one key was
