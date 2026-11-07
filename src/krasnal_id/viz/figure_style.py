@@ -62,6 +62,14 @@ BACKBONE_MARKER = {"dinov2": "o", "clip": "s", "dinov3": "^", "siglip2": "D"}
 MATCHER_COLOUR = {"sift": APPLE_PINK, "disk-lightglue": APPLE_PURPLE}
 MATCHER_LABEL = {"sift": "SIFT", "disk-lightglue": "DISK + LightGlue"}
 MATCHER_MARKER = {"sift": "o", "disk-lightglue": "s"}
+# The corpus itself -- statues, their photographs, their positions -- is the one
+# thing every figure shows that is not a backbone or a matcher, so it takes the
+# one hue no entity owns. Deep mustard for points and lines (validated on white:
+# lightness, chroma and separation from the grey it stands beside all pass);
+# the author's mustard, too light for a line, for fills only.
+CORPUS_ACCENT = "#B87A12"
+CORPUS_FILL = APPLE_MUSTARD
+CORPUS_MUTED = "#9AA3AD"  # the corpus's unhighlighted points, beside CORPUS_ACCENT
 CORRECT = APPLE_GREEN  # a correct retrieval, always with a check mark and a heavier frame
 WRONG = INK_MUTED  # a wrong one, always with a cross
 

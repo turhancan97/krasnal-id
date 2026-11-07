@@ -140,6 +140,14 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- The CVWW dataset figure (Figure 2) is restyled in the corpus's own colour, mustard
+  (`figure_style.CORPUS_ACCENT`/`CORPUS_FILL`, validated on white): each confusion arrow is
+  labelled with its share of queries and the statues' separation, the map colours Wikidata
+  positions apart from camera-derived ones with a legend, and the photograph-count bars are
+  mustard with their note shortened so it no longer collides with a bar label. Arrow labels are
+  placed through display coordinates after layout, because an axes inside a subfigure reports its
+  position relative to the subfigure.
+
 - **The paper figures are redrawn under that system.** Panel letters replace in-image titles;
   Figure 1(c)'s second y-axis is gone, with the photographer share labelling each bar; statue
   names in Figure 1(a) wrap instead of truncating; map points and the pool radii are ink rather

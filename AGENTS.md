@@ -1376,6 +1376,13 @@ every paper figure and both retrieval sheets read from it.
   wear face masks the reference does not, so it is a different visit rather than leakage. Re-check
   that if the journal or manifest changes. Drawing re-runs the matcher, so a learned matcher's
   drawn count can differ from the journal's by one or two (404 against 403 here).
+- **The corpus has its own hue: mustard** (2026-11-07). Statues, their photographs and positions
+  are the one thing every figure shows that is no backbone or matcher, and mustard is the one
+  palette hue no entity owns. `CORPUS_ACCENT` `#B87A12` (the author's mustard deepened until it
+  passes the validator's lightness band on white) for points and arrows, `CORPUS_FILL` the
+  author's `#EAB34D` for fills only, `CORPUS_MUTED` grey for unhighlighted points. Figure 2 uses
+  it: confusion arrows labelled with their error share and separation, Wikidata positions in the
+  accent against camera-derived ones in grey, and mustard bars.
 - **Every layout defect was found by looking at the render, not from a log.** A clipped name, an
   arrow that constrained layout shrank the photographs to make room for, a caption over the pool
   circles, a legend on a line, and colliding operating-point labels all rendered without a warning.
