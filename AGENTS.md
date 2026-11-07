@@ -1350,6 +1350,15 @@ every paper figure and both retrieval sheets read from it.
   each bar.
 - **`--layout journal` keeps the *Scientific Reports* draft's two backbones and sizes.** Its
   figures in `paper/figures/` were not regenerated in this change.
+- **The CVWW paper has a page-1 teaser** (`visualize teaser`, `viz/teaser.py`): one query against
+  every member of a lookalike family, with DINOv2 cosine. **Its query is chosen by a rule the caption
+  states, never by eye**: of the family's leave-one-out queries answered correctly, the smallest
+  winning margin, ties to the lower image ID. For the three Słupniki that is `commons-4074360`, won
+  0.642 to 0.641. A teaser is the figure most open to cherry-picking, so the rule is tested.
+- **Workshop figure filenames no longer match their numbers.** The teaser became Figure 1, so
+  `fig1-dataset.png` is Figure 2 and `fig7-rejection.png` Figure 6. The files are shared with the
+  journal draft's generator, and every reference is a `\cref`, so renaming buys nothing here. The
+  rule that names match numbers (§11.1) is the journal's.
 - **Every layout defect was found by looking at the render, not from a log.** A clipped name, an
   arrow that constrained layout shrank the photographs to make room for, a caption over the pool
   circles, a legend on a line, and colliding operating-point labels all rendered without a warning.

@@ -1451,6 +1451,37 @@ def visualize_matches(
     typer.echo(f"Match figure written: {path}")
 
 
+@visualize_app.command("teaser")
+def visualize_teaser(
+    family: Annotated[
+        list[str],
+        typer.Option("--family", help="Repeat once per statue of one lookalike family."),
+    ],
+    output: Annotated[Path, typer.Option(help="Where to write the figure.")] = Path(
+        "paper-cvww/figures/fig0-teaser.jpg"
+    ),
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+    width_cm: Annotated[
+        float | None, typer.Option("--width-cm", help="Printed width; defaults to a CVWW column.")
+    ] = None,
+    override: OverrideOption = None,
+) -> None:
+    """Draw the page-1 teaser: the family query answered correctly by the smallest margin."""
+    from krasnal_id.viz.teaser import create_teaser
+
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path, teaser = create_teaser(config, family, output, dpi, width_cm)
+    except (VisualizationError, EmbeddingStoreError) as error:
+        typer.echo(f"Teaser error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    typer.echo(f"Teaser query {teaser.query_image_id}, margin {teaser.margin:.3f}: {path}")
+    for candidate in teaser.candidates:
+        mark = "correct" if candidate.correct else "wrong"
+        typer.echo(f"  {candidate.display_name}: {candidate.similarity:.3f} ({mark})")
+
+
 @visualize_app.command("retrieval-examples")
 def visualize_retrieval_examples(
     group: Annotated[
