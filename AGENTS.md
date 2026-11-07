@@ -2229,6 +2229,16 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
   with `paper/bin/tectonic`. The corpus is called "ours" and never by the project name, which is
   searchable; the kit's own guidance allows third-person self-citation but that does not make a
   link to a named repository anonymous.
+- **The dataset name and the paper title were chosen on 2026-11-07** (author's choice, from a
+  shortlist) and are recorded only in the untracked `paper-cvww/`. Both were chosen to be
+  searchable, which is exactly why they are kept out of this public repository until the review
+  is over: searching either would lead to the author. **Anonymity is only partial**: the data is
+  already public as `wroclaw-dwarves` on Hugging Face and Kaggle under the author's name, so the
+  submission must not use that name or link. After acceptance, rename the Hub and Kaggle *display
+  titles* to the chosen name and restore it here; Kaggle's slug cannot change and stays
+  `wroclaw-dwarves`. The naming search also surfaced two works the paper now cites, each checked
+  against the CVF BibTeX: *Doppelgangers* (ICCV 2023), the closest dataset in spirit, and *ILIAS*
+  (CVPR 2025), a current instance-retrieval benchmark.
 - **The rendered bibliography exposed a wrong citation that the journal draft also carries.**
   `chen2020simclr` resolves to an unrelated 2022 *Geophysics* paper on seismic denoising whose
   title contains SimCLR's — the `he2020moco` failure again, missed because only that one key was
