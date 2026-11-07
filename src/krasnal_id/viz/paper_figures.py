@@ -287,8 +287,8 @@ def dataset_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> 
     them is a backbone, so nothing here wears a backbone's colour.
     """
     plt = _pyplot()
-    figure = plt.figure(figsize=(layout.full, layout.full * 0.42), layout="constrained")
-    panels = figure.subfigures(1, 3, width_ratios=(0.95, 1.35, 1.0), wspace=0.03)
+    figure = plt.figure(figsize=(layout.full, layout.full * 0.47), layout="constrained")
+    panels = figure.subfigures(1, 3, width_ratios=(1.2, 1.2, 1.0), wspace=0.03)
     manifest = sources.dataset()
 
     arrows = _confused_pairs_panel(panels[0], sources, manifest)
@@ -366,7 +366,7 @@ def _confused_pairs_panel(
     from matplotlib.patches import ConnectionPatch
 
     pairs = sources.records("confusion-dinov2", "pairs")[:CONFUSED_PAIRS_SHOWN]
-    axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.3})
+    axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.22})
     arrows: list[tuple[Any, Any, str, str]] = []
     for row, pair in zip(axes, pairs, strict=True):
         separation = float(pair["separation_metres"])
