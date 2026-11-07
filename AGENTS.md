@@ -1517,6 +1517,19 @@ writes `results/cvww_revision3/`.
   point" no longer holds for DINOv3; the k-th-neighbour score is far worse than cosine; and LoFTR
   edges DISK+LightGlue by 1.1 points (interval 0.1 to 2.2, McNemar p = 0.053).
 
+**Results of the corrected run (revision 3, 2026-11-07), and what they changed.**
+- **The soft prior peaks inside its grid**: every fold chose λ = 2.0, 1.0 and 0.5 at 10, 25 and
+  50 m, giving DINOv2 99.1%, 98.7% and 97.5% against 93.4%. "A weight, not a filter" stands.
+- **Lookalike families do not explain most errors.** 31% of statues fall in a family, but only 14%
+  of DINOv2's errors (12–20% across backbones) are confusions within one, and family members err
+  no more often than other statues (6.9% against 6.8%). The author chose to report this as it is
+  rather than retune the definition or move it out of view: the paper now claims lookalikes cause
+  the top confusions and the geographic penalty, and calls the rest of the error diffuse.
+- In the paper, the pretraining groups of §7.17 are called **paradigms**, never families, so the
+  two uses of "family" cannot be confused.
+- Every other metric matches revision 2 except rejection AUROC, by at most 3.5e-7: the
+  open-set artifacts were rewritten on `szarancza` before this run (§7.15's machine rule).
+
 **The supplement tables are generated, never typed.** `visualize workshop-tables` writes five
 `reviewer-*.tex` fragments from the validation artifact: permutation, coordinate noise, the
 soft-prior sweep with each fold's chosen weight, rejection signals, and the null-result bounds.

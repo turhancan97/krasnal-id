@@ -26,6 +26,9 @@ your own browser.
    proximity-based pools lose to random pools of the same size at every pool size measured, and the
    penalty peaks at a 171–291 m radius — exactly the range a phone-based tool would use. Sculptors
    install related pieces near each other, so a small radius selects for a statue's own lookalikes.
+   Section 16 tests that explanation and it holds: shuffling which statue stands where removes the
+   penalty for all four backbones (p = 0.005). Used as a *weight* rather than a filter, location
+   is the strongest cue in the project (section 16).
 4. **Training a classifier helps only the weaker backbone.** A per-fold linear probe is worth
    nothing to DINOv2 (−0.1 points) but gains CLIP 3.1. Class prototypes cost both about 8 points.
    Where retrieval is already strong, it is already the right tool.
@@ -43,7 +46,9 @@ your own browser.
    (section 10), buys rejection 0.65 AUROC points for DINOv2 and 2.3 for CLIP — because a known
    query's 144 average inliers collapse to 17 once its own photographer is withheld, making
    geometry *more* photographer-dependent than appearance rather than less. Four-fifths of unknown
-   statues are still accepted.
+   statues are still accepted. **Section 16 revises this:** thresholding the *margin* between the
+   best two statues, instead of the top similarity, halves false acceptance for DINOv2 (38.3% to
+   19.6%) and DINOv3 (21.6% to 7.7%), which gives DINOv3 the first usable operating point.
 8. **A bigger backbone does not raise the ceiling that stops re-ranking.** DINOv2 at 3.5x the
    parameters moves recall@10 — the limit section 10's geometric verification runs into — by 0.17
    points, on 22 queries won against 20 lost. What it does gain is 2.59 points at rank 1 when the
@@ -56,7 +61,9 @@ your own browser.
    misses, for 1,690 homographies a query. It is three times as photographer-dependent as
    appearance: withholding the photographer costs it 42 points at rank one where appearance loses
    12. This is measured for SIFT and **not** for learned matchers, which are built for exactly the
-   wide-baseline regime where it collapses; that comparison is not yet run.
+   wide-baseline regime where it collapses (section 15).
+10. **CLIP's weakness is its checkpoint, not language alignment.** SigLIP 2, language-aligned and the
+   same size as DINOv2, reaches 91.2% top-1 against CLIP's 82.9% and DINOv2's 93.1% (section 16).
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
@@ -829,6 +836,108 @@ krasnal-id experiment matcher-rerank
 The evidence is journalled per query and the blend weights are deliberately not part of its
 identity, so re-sweeping weights over an existing run costs nothing.
 
+## 16. The reviewer checks: what the explanations survive
+
+A colleague's review of the workshop draft, and a second pass at what would make its claims harder
+to dispute, turned into measurements. Every number here comes from
+`results/cvww_revision3/workshop_validation-dinov2.json`, written by `krasnal-id experiment
+workshop-validation` (AGENTS.md §7.15–7.16), and each part first reproduces a released number to
+1e-9 before it measures anything new. Intervals are 95% statue-bootstrap intervals.
+
+**A current language-aligned backbone.** SigLIP 2 base (ViT-B/16) reaches **91.2% top-1**
+[89.6, 92.6], 2.0 points below DINOv2 [0.8, 3.2]. Its photographer-attributable gap is 6.2 points
+[3.9, 8.7], between DINOv2's 2.6 and CLIP's 13.2, and it decays 1.01 points per doubling. CLIP's
+deficit therefore belongs mostly to its 2021 ViT-B/32 checkpoint, not to learning from language;
+language alignment carries some of CLIP's dependence on the photographer, but far less than CLIP
+alone suggested.
+
+**Why location narrowing loses, tested.** Statue positions were permuted among the 294 placed
+statues, 200 times, keeping the set of positions and the random arm and breaking only who stands
+next to whom.
+
+| Backbone | Real layout, mean over pools 5/10/20 | Shuffled (mean, 95% of shuffles) | p |
+|---|---:|---:|---:|
+| DINOv2 | −0.8 | 0.1 [−0.3, 0.4] | 0.005 |
+| CLIP | −1.9 | 0.0 [−0.5, 0.6] | 0.005 |
+| DINOv3 | −1.3 | 0.0 [−0.3, 0.3] | 0.005 |
+| SigLIP 2 | −0.9 | 0.0 [−0.4, 0.4] | 0.005 |
+
+No shuffled layout was as harmful as the real one, for any backbone; 0.005 is the smallest p-value
+200 permutations can give. Moving every statue 150 m in a random direction leaves DINOv2's
+five-statue penalty at −0.6 points [−1.1, −0.2], so the result does not depend on coordinate
+precision.
+
+**Location as a weight.** Each placed statue scores its cosine plus λ·exp(−d/200 m), with λ chosen
+on held-out statue folds over a grid running to 20, and the user placed at a fixed distance from
+the statue in a seeded direction. DINOv2 over the 294 placed statues:
+
+| User's distance | Cosine only | With the prior | Gain | Location only | λ chosen (all folds) |
+|---|---:|---:|---:|---:|---:|
+| 10 m | 93.4% | **99.1%** | +5.7 [4.6, 6.9] | 90.9% | 2.0 |
+| 25 m | 93.4% | **98.7%** | +5.2 [4.2, 6.4] | 75.1% | 1.0 |
+| 50 m | 93.4% | **97.5%** | +4.1 [3.1, 5.1] | 60.2% | 0.5 |
+
+Every fold chose the same weight, and every chosen weight is inside the grid, so these are peaks
+rather than the lower bounds the first run reported (its 98.1% at 25 m stopped at λ = 0.5). The
+weight falls as the user's position gets worse, as it should. The headline is the contrast with
+section 6: as a filter location loses to random narrowing, as a weight it adds about five points,
+because a weight keeps every candidate and lets appearance overrule a nearby lookalike.
+
+**Re-ranking with held-out weights, photographer withheld (1,157 queries).**
+
+| Method | Top-1 | Gain over cosine | W / L |
+|---|---:|---:|---:|
+| Cosine (DINOv2) | 81.8% | — | — |
+| + SIFT | 82.1% | +0.3 [−0.4, 0.9] | 8 / 5 |
+| + DISK+LightGlue | 84.4% | +2.5 [1.3, 3.9] | 37 / 8 |
+| + LoFTR | **85.5%** | +3.6 [2.2, 5.2] | 51 / 9 |
+| + DISK+LightGlue, top 50 | 85.2% | +3.4 [1.7, 5.2] | 54 / 15 |
+
+LoFTR's edge over DISK+LightGlue is small, +1.1 [0.1, 2.2] on 26 queries won against 13 lost
+(McNemar p = 0.053): the large step is from hand-designed to learned matching. Verifying fifty
+candidates instead of ten helps DISK+LightGlue, unlike the CLIP-and-SIFT case of section 11.
+
+**Rejection beyond a threshold on similarity.** At 90% known acceptance, calibrated
+leave-one-class-out:
+
+| Backbone | Cosine AUROC | FA | Margin AUROC | FA | k-NN AUROC | FA |
+|---|---:|---:|---:|---:|---:|---:|
+| DINOv2 | 0.896 | 38.3% | 0.927 | **19.6%** | 0.637 | 82.2% |
+| CLIP | 0.806 | 67.4% | 0.852 | 59.1% | 0.571 | 87.0% |
+| DINOv3 | 0.926 | 21.6% | 0.959 | **7.7%** | 0.660 | 84.0% |
+| SigLIP 2 | 0.877 | 43.8% | 0.916 | 27.7% | 0.630 | 83.1% |
+
+The margin, top-1 similarity minus the best similarity of a *different* statue, raises AUROC for
+every backbone by 0.03 to 0.05, each interval excluding zero. The k-th-neighbour score (k = 5) is
+far worse than cosine, because with a median of four photographs per statue the fifth neighbour is
+usually another statue.
+
+**What the null results rule out.** On the photographer-disjoint queries, ViT-L/14 moves recall@10
+by +0.2 points [−1.1, 1.6], so any hidden gain is below 1.6 points. Registers move it by −1.3
+[−2.6, 0.0] at the base size and −1.8 [−3.5, −0.2] at the large size: no gain at either.
+
+**Group and member classes.** Counting a group and its members as one changes 3 DINOv2 queries,
++0.2 points [0.0, 0.5], so the overlap the limitations list does not inflate the error count.
+
+**Lookalike families: they do not explain most errors.** Two statues are linked when each is among
+the other's three nearest by mean embedding under at least two of the *other* backbones, and
+families are the connected components. The definition was fixed before this result was read; the
+first one, mutual nearest neighbours, could only form pairs (AGENTS.md §7.16).
+
+| Backbone | Statues in families | Errors | Share within a family | Error rate inside | outside |
+|---|---:|---:|---:|---:|---:|
+| DINOv2 | 94 (30.7%) | 116 | 13.8% [6.5, 21.9] | 6.9% | 6.8% |
+| CLIP | 104 (34.0%) | 289 | 12.5% [7.7, 17.8] | 17.9% | 16.7% |
+| DINOv3 | 81 (26.5%) | 94 | 20.2% [10.2, 31.2] | 6.7% | 5.1% |
+| SigLIP 2 | 93 (30.4%) | 149 | 14.1% [7.4, 21.6] | 10.1% | 8.2% |
+
+A third of the corpus sits in such families, yet only an eighth to a fifth of each backbone's
+errors are confusions within one, and statues in families err no more often than the rest. The
+named families — the three Słupniki, the fountain pair, the blind and deaf pair — are the most
+frequent *individual* confusions, and lookalikes standing together is what the permutation test
+shows breaks location narrowing; but the bulk of the error is diffuse. This narrowed the paper's
+claim: lookalikes explain the top confusions and the geographic penalty, not the error rate.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
@@ -854,9 +963,10 @@ identity, so re-sweeping weights over an existing run costs nothing.
   cross-photographer at all.
 - **Class sizes are uneven.** The median class has 4 images and the largest 31, so a handful of
   well-photographed statues carry disproportionate weight in the query set.
-- **No rejection signal in this project works at 306 classes.** Both candidates have now been
-  measured (sections 6 and 12) and both fail, so naming a statue for every photograph is a measured
-  position rather than an omission — but it is still a limitation for any real use.
+- **Rejection is usable only for the strongest backbone, and only with the margin score.** Cosine
+  thresholds (section 6) and geometric evidence (section 12) both fail at 306 classes; the margin
+  between the best two statues gives DINOv3 7.7% false acceptance at 90% known acceptance
+  (section 16), but that threshold was calibrated on Commons uploads, not street photographs.
 - **Open-set rejection is measured against statues inside this dataset.** Every "unknown" query is
   still a Wrocław bronze dwarf photographed like the rest. A genuinely out-of-distribution query is
   a harder and untested case. The published demo does not threshold at all. That used to be forced
