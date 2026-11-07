@@ -1542,6 +1542,9 @@ the log, and both are now tested:
 A third defect, the same kind, is now checked: a citation with no bibliography to resolve against
 prints as "[?]", which the build check for "??" does not catch. **Count `??`, `[?]` and MISSING
 in both PDFs after every build.**
+The supplement has no bibliography of its own, so a `\cite` moved into it renders as `[? ]` — with a
+space, which a literal `[?]` search misses. **Match `\[\s*\?\s*\]`, not `[?]`**; the 2026-11-07
+restructure found two that way.
 
 A fourth item, **queries uploaded to Commons after the 4 September fetch**, was counted before
 anything was built, and **dropped**. On 2026-11-06 only 2 files had been added to any of the 306
