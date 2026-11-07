@@ -105,7 +105,7 @@ class Sources:
     manifest: Path
     # Backbones whose artifacts live in `results_dir/<name>/` rather than in
     # `results_dir/`, so that no figure glob over `results/` picks them up (§7.12).
-    separate: tuple[str, ...] = ("dinov3",)
+    separate: tuple[str, ...] = ("dinov3", "siglip2")
     # The workshop validation artifact, for figures that show a section 7.15 result.
     # Named explicitly rather than found by a glob, because several revisions sit
     # side by side and a figure must not quietly draw a superseded one.
@@ -585,7 +585,8 @@ def geography_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     )
 
     pools = (2, 3, 5, 8, 10, 15, 20, 50, 100, 200)
-    for backbone in _measured(sources, layout, "geo_ablation-{backbone}"):
+    present_geo = _measured(sources, layout, "geo_ablation-{backbone}")
+    for backbone in present_geo:
         art = sources.load(f"geo_ablation-{backbone}")
         diffs, seen = [], []
         for pool in pools:
@@ -605,7 +606,7 @@ def geography_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     left.set_ylabel(style.minus("Geographic - random (points)"))
     # Above the plot: the three curves cross the whole plotting area between them,
     # so no corner inside it is clear of a line.
-    left.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3)
+    left.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(present_geo))
     style.panel_tag(left, "a")
 
     enriched = _measured(sources, layout, "confusion-{backbone}")

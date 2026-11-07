@@ -1355,6 +1355,16 @@ every paper figure and both retrieval sheets read from it.
   states, never by eye**: of the family's leave-one-out queries answered correctly, the smallest
   winning margin, ties to the lower image ID. For the three Słupniki that is `commons-4074360`, won
   0.642 to 0.641. A teaser is the figure most open to cherry-picking, so the rule is tested.
+- **A fourth backbone colour had to be searched for, not picked.** The author's spare hues all fail
+  beside blue, orange and teal: purple sits 9.2 from blue under full colour vision (floor 15), pink
+  13.7 from orange, a deepened mustard collides with orange under protanopia. Twelve candidates
+  went through the validator; SigLIP 2 takes `#7B3FA0`, the author's purple deepened, worst pair
+  19.4, with a diamond marker. The matcher figure keeps the author's purple for DISK+LightGlue;
+  the two never share a figure. Red passed too and was refused, because red reads as an error.
+- **DINOv3 and SigLIP 2 now have confusion artifacts** (`results/<backbone>/confusion-*.json`), so
+  the geography figure's panels show the same four backbones. Each backbone's top confusion is a
+  lookalike family, but not the same one: the Słupniki for DINOv2 and CLIP, the blind and deaf pair
+  for DINOv3, a group statue and its own member for SigLIP 2.
 - **Workshop figure filenames no longer match their numbers.** The teaser became Figure 1, so
   `fig1-dataset.png` is Figure 2 and `fig7-rejection.png` Figure 6. The files are shared with the
   journal draft's generator, and every reference is a `\cref`, so renaming buys nothing here. The
@@ -1390,7 +1400,11 @@ the 1 December cut-off of §11.3:
   ViT-B size. The paper attributes CLIP's weakness to language alignment, and our CLIP is a 2021
   ViT-B/32, so without it the attribution could equally be about an old checkpoint.
   **Experiment-only, like DINOv3 (§7.12):** in no export or visualisation list, and its results
-  go to `results/siglip2/`. Tables, not figures.
+  go to `results/siglip2/`. First decided as tables only; **reversed on 2026-11-07** at the author's
+  request, once SigLIP 2 turned out to carry a finding (CLIP's weakness is its checkpoint). It is
+  now the fourth backbone in the CVWW layout's pool-size, geography and rejection figures. The
+  retrieval examples stay a DINOv2-against-CLIP contrast, because their rows are defined by which
+  of two backbones is right.
 
 Declined, with the reason given in the paper:
 

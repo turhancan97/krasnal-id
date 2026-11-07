@@ -10,7 +10,10 @@ hues are the author's palette (2026-11-05). The categorical subsets actually use
 were checked with the dataviz skill's validator against a white page, for lightness,
 chroma, colour-vision-deficiency separation and normal-vision separation:
 
-* backbones -- blue, orange, teal: all checks pass;
+* backbones -- blue, orange, teal, deep purple: all checks pass. SigLIP 2's
+  ``#7B3FA0`` is one step deeper than the author's purple, which sits 9.2 from
+  blue under full colour vision (floor 15) and so cannot stand beside it; found by
+  running candidates through the validator, worst pair 19.4;
 * matchers  -- pink, purple: all checks pass.
 
 Teal is one step deeper than the author's ``#55A398``, which reads grey on paper
@@ -37,6 +40,7 @@ APPLE_MUSTARD = "#EAB34D"  # fills and highlights only: too light for lines on w
 APPLE_ORANGE = "#FF7F50"
 APPLE_GREEN = "#34C759"
 APPLE_YELLOW = "#FFCC00"  # fills and highlights only
+DEEP_PURPLE = "#7B3FA0"  # SigLIP 2: the author's purple, deepened until it parts from blue
 
 # --- ink: text and structure wear neutrals, never a series colour -----------
 INK = "#1F2328"  # titles, values, direct labels
@@ -46,10 +50,15 @@ GRID = "#E6E8EB"
 NEUTRAL_FILL = "#C9D1D9"  # data that is not an entity: corpus statistics, statues on a map
 
 # --- entities ---------------------------------------------------------------
-BACKBONE_COLOUR = {"dinov2": APPLE_BLUE, "clip": APPLE_ORANGE, "dinov3": APPLE_TEAL}
-BACKBONE_LABEL = {"dinov2": "DINOv2", "clip": "CLIP", "dinov3": "DINOv3"}
+BACKBONE_COLOUR = {
+    "dinov2": APPLE_BLUE,
+    "clip": APPLE_ORANGE,
+    "dinov3": APPLE_TEAL,
+    "siglip2": DEEP_PURPLE,
+}
+BACKBONE_LABEL = {"dinov2": "DINOv2", "clip": "CLIP", "dinov3": "DINOv3", "siglip2": "SigLIP 2"}
 # A second encoding beside colour, so identity never rests on hue alone.
-BACKBONE_MARKER = {"dinov2": "o", "clip": "s", "dinov3": "^"}
+BACKBONE_MARKER = {"dinov2": "o", "clip": "s", "dinov3": "^", "siglip2": "D"}
 MATCHER_COLOUR = {"sift": APPLE_PINK, "disk-lightglue": APPLE_PURPLE}
 MATCHER_LABEL = {"sift": "SIFT", "disk-lightglue": "DISK + LightGlue"}
 MATCHER_MARKER = {"sift": "o", "disk-lightglue": "s"}
@@ -85,7 +94,9 @@ class Layout:
 
 
 # The CVWW 2027 kit: 17 cm text block, 0.8 cm gutter.
-CVWW = Layout("cvww", column=8.1 / 2.54, full=17.0 / 2.54, backbones=("dinov2", "clip", "dinov3"))
+CVWW = Layout(
+    "cvww", column=8.1 / 2.54, full=17.0 / 2.54, backbones=("dinov2", "clip", "dinov3", "siglip2")
+)
 # The journal draft, unchanged in size and content: it never introduced DINOv3.
 JOURNAL = Layout("journal", column=4.8, full=7.2, backbones=("dinov2", "clip"))
 LAYOUTS = {layout.name: layout for layout in (CVWW, JOURNAL)}
