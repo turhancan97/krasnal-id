@@ -163,3 +163,121 @@ def draw_match_figure(
     figure.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(figure)
     return output_path
+
+
+def draw_match_grid(
+    rows: tuple[tuple[str, Path, Path], ...],
+    matchers: tuple[str, ...],
+    output_path: Path,
+    long_side: int,
+    width: float,
+    keypoints: int = 1024,
+    device: str = "auto",
+    dpi: int = 300,
+) -> tuple[Path, dict[tuple[int, str], int]]:
+    """Correspondences in a grid: one row per pair, one column per matcher.
+
+    The publication version of `draw_match_figure`, in the shared figure style and
+    drawn at the width it prints. Each matcher's lines wear that matcher's colour,
+    as everywhere else in the paper. Returns the inlier count of every panel too,
+    so the caller can report what was drawn.
+    """
+    if not rows or not matchers:
+        raise MatchPlotError("a match grid needs at least one pair and one matcher")
+    from krasnal_id.viz import figure_style as style
+
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError as error:  # pragma: no cover - exercised by the extra's absence
+        raise MatchPlotError(
+            "drawing needs the analysis extra; run uv sync --extra analysis"
+        ) from error
+    style.apply(plt)
+
+    counts: dict[tuple[int, str], int] = {}
+    images = [
+        (_load_rgb(query, long_side), _load_rgb(candidate, long_side))
+        for _, query, candidate in rows
+    ]
+    aspects = [_side_by_side(left, right)[0].shape for left, right in images]
+    column = width / len(matchers)
+    heading = 0.17  # inches for each row's heading and its panel titles
+    heights = [column * shape[0] / shape[1] + heading for shape in aspects]
+    figure = plt.figure(figsize=(width, sum(heights)), layout="constrained")
+    subfigures = figure.subfigures(len(rows), 1, height_ratios=heights, squeeze=False)
+    for row, ((label, query, candidate), (left, right)) in enumerate(
+        zip(rows, images, strict=True)
+    ):
+        subfigure = subfigures[row][0]
+        subfigure.suptitle(
+            label,
+            x=0.0,
+            ha="left",
+            fontsize=style.SIZE_ANNOTATION,
+            fontweight="bold",
+            color=style.INK,
+        )
+        axes = subfigure.subplots(1, len(matchers), squeeze=False)[0]
+        for axis, name in zip(axes, matchers, strict=True):
+            panel = match_pair(query, candidate, name, keypoints, device)
+            counts[(row, name)] = panel.inliers
+            _draw_styled(axis, left, right, panel, style.MATCHER_COLOUR.get(name, style.INK))
+            axis.set_title(
+                f"{style.MATCHER_LABEL.get(name, name)}: {panel.inliers} verified matches",
+                fontsize=style.SIZE_ANNOTATION,
+                color=style.INK_SECONDARY,
+                pad=2,
+            )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    style.save(figure, output_path, dpi)
+    plt.close(figure)
+    return output_path, counts
+
+
+def _side_by_side(
+    left: npt.NDArray[np.uint8], right: npt.NDArray[np.uint8], gap: int = 12
+) -> tuple[npt.NDArray[np.uint8], float]:
+    """Both photographs at the query's height, and the scale applied to the right one.
+
+    Matching each pair at a common height keeps every panel the same height in
+    print, so a portrait candidate cannot leave a landscape query floating in white.
+    """
+    import cv2
+
+    scale = left.shape[0] / right.shape[0]
+    resized = cv2.resize(
+        right,
+        (max(1, round(right.shape[1] * scale)), left.shape[0]),
+        interpolation=cv2.INTER_AREA,
+    )
+    canvas = np.full((left.shape[0], left.shape[1] + gap + resized.shape[1], 3), 255, np.uint8)
+    canvas[:, : left.shape[1]] = left
+    canvas[:, left.shape[1] + gap :] = resized
+    return canvas, scale
+
+
+def _draw_styled(
+    axes: Any,
+    left: npt.NDArray[np.uint8],
+    right: npt.NDArray[np.uint8],
+    panel: MatchPanel,
+    colour: str,
+    gap: int = 12,
+) -> None:
+    """One pair side by side, its verified matches drawn in the matcher's colour."""
+    canvas, scale = _side_by_side(left, right, gap)
+    axes.imshow(canvas)
+    axes.set_axis_off()
+    kept = np.flatnonzero(panel.correspondences.inlier_mask)
+    if kept.size > MAX_DRAWN:
+        kept = kept[np.linspace(0, kept.size - 1, MAX_DRAWN).astype(int)]
+    offset = left.shape[1] + gap
+    for (x0, y0), (x1, y1) in zip(
+        panel.correspondences.source[kept], panel.correspondences.target[kept], strict=True
+    ):
+        axes.plot(
+            [x0, x1 * scale + offset], [y0, y1 * scale], color=colour, linewidth=0.5, alpha=0.8
+        )

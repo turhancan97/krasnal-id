@@ -152,14 +152,8 @@ def render_teaser(teaser: Teaser, path: Path, dpi: int, width: float) -> Path:
     return _write(pyplot, figure, path, dpi)
 
 
-def create_teaser(
-    config: AppConfig,
-    family: Sequence[str],
-    output: Path,
-    dpi: int = 300,
-    width_cm: float | None = None,
-) -> tuple[Path, Teaser]:
-    """Select the teaser's query from the data and draw it."""
+def create_teaser_selection(config: AppConfig, family: Sequence[str]) -> Teaser:
+    """The teaser's query and candidates, without drawing anything."""
     if not isinstance(config.experiment, VisualizationExperimentConfig):
         raise VisualizationError(
             f"the teaser requires experiment=visualization, got {config.experiment.kind}"
@@ -171,9 +165,27 @@ def create_teaser(
     except BaselineExperimentError as error:
         raise VisualizationError(str(error)) from error
     matrix = load_embedding_matrix(manifest, config.backbone, Path(config.paths.embeddings_dir))
-    teaser = select_teaser(manifest, split, matrix, family)
+    return select_teaser(manifest, split, matrix, family)
+
+
+def create_teaser(
+    config: AppConfig,
+    family: Sequence[str],
+    output: Path,
+    dpi: int = 300,
+    width_cm: float | None = None,
+) -> tuple[Path, Teaser]:
+    """Select the teaser's query from the data and draw it."""
+    teaser = create_teaser_selection(config, family)
     width = style.CVWW.column if width_cm is None else width_cm / 2.54
     return render_teaser(teaser, output, dpi, width), teaser
 
 
-__all__ = ["Candidate", "Teaser", "create_teaser", "render_teaser", "select_teaser"]
+__all__ = [
+    "Candidate",
+    "Teaser",
+    "create_teaser",
+    "create_teaser_selection",
+    "render_teaser",
+    "select_teaser",
+]

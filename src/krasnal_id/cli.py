@@ -1482,6 +1482,112 @@ def visualize_teaser(
         typer.echo(f"  {candidate.display_name}: {candidate.similarity:.3f} ({mark})")
 
 
+@visualize_app.command("teaser-matches")
+def visualize_teaser_matches(
+    family: Annotated[
+        list[str],
+        typer.Option("--family", help="The teaser's lookalike family, as for visualize teaser."),
+    ],
+    output: Annotated[Path, typer.Option(help="Where to write the figure.")] = Path(
+        "paper-cvww/figures/figS-matches.jpg"
+    ),
+    matcher: Annotated[
+        list[str] | None,
+        typer.Option("--matcher", "-m", help="Repeat once per matcher column."),
+    ] = None,
+    width_cm: Annotated[float, typer.Option("--width-cm", help="Printed width.")] = 17.0,
+    device: Annotated[str, typer.Option(help="auto, cpu or cuda.")] = "auto",
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+    override: OverrideOption = None,
+) -> None:
+    """The teaser's query matched against its correct statue and its lookalike.
+
+    The pair is the teaser's, chosen by its stated rule, so nothing here is picked
+    by eye: row one is the correct statue's best photograph, row two the closest
+    other statue's.
+    """
+    from krasnal_id.config import WorkshopValidationConfig
+    from krasnal_id.embeddings.store import load_embedding_matrix
+    from krasnal_id.experiments.baseline_accuracy import load_evaluation_inputs
+    from krasnal_id.experiments.workshop_validation import (
+        eligible_queries,
+        journal_path,
+        load_journal_strictly,
+        packaged,
+    )
+    from krasnal_id.viz.match_plot import draw_match_grid
+    from krasnal_id.viz.matcher_examples import matched_photograph, select_rescue
+    from krasnal_id.viz.teaser import create_teaser_selection
+
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        manifest, split = load_evaluation_inputs(
+            config.paths.manifest_path, config.paths.evaluation_split_path
+        )
+        matrix = load_embedding_matrix(manifest, config.backbone, Path(config.paths.embeddings_dir))
+        names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
+        paths = {image.image_id: Path(image.local_path) for image in manifest.images}
+        settings = packaged(WorkshopValidationConfig, "workshop_validation")
+        evidence = load_journal_strictly(
+            journal_path(
+                Path(config.paths.results_dir) / "journals",
+                split,
+                config.backbone.name,
+                "disk-lightglue",
+                settings,
+            ),
+            eligible_queries(split, manifest),
+        )
+        rescue = select_rescue(evidence)
+        query_path = paths[rescue.query_image_id]
+        teaser = create_teaser_selection(config, family)
+        right, wrong = teaser.candidates[0], teaser.candidates[1]
+        if not right.correct:
+            raise VisualizationError("the teaser's best candidate is not the correct statue")
+        rows = (
+            (
+                f"Rescue, correct: {names[rescue.correct_dwarf_id]}",
+                query_path,
+                matched_photograph(
+                    rescue.query_image_id, rescue.correct_dwarf_id, split, manifest, matrix
+                ),
+            ),
+            (
+                f"Rescue, cosine's choice: {names[rescue.cosine_choice_dwarf_id]}",
+                query_path,
+                matched_photograph(
+                    rescue.query_image_id, rescue.cosine_choice_dwarf_id, split, manifest, matrix
+                ),
+            ),
+            (f"Failure, correct: {right.display_name}", teaser.query_local_path, right.local_path),
+            (
+                f"Failure, lookalike: {wrong.display_name}",
+                teaser.query_local_path,
+                wrong.local_path,
+            ),
+        )
+        typer.echo(
+            f"Rescue: {rescue.query_image_id}, {rescue.correct_inliers} verified matches for the "
+            f"correct statue against at most {rescue.best_wrong_inliers} for any other"
+        )
+        path, counts = draw_match_grid(
+            rows,
+            tuple(matcher or ("sift", "disk-lightglue")),
+            output,
+            DETECT_LONG_SIDE,
+            width_cm / 2.54,
+            device=device,
+            dpi=dpi,
+        )
+    except (VisualizationError, EmbeddingStoreError, MatchPlotError, RerankError) as error:
+        typer.echo(f"Teaser match error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for (row, name), inliers in sorted(counts.items()):
+        typer.echo(f"  {rows[row][0]} | {name}: {inliers} verified matches")
+    typer.echo(f"Teaser match figure written: {path}")
+
+
 @visualize_app.command("retrieval-examples")
 def visualize_retrieval_examples(
     group: Annotated[

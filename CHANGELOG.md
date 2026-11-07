@@ -16,6 +16,15 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- `krasnal-id visualize teaser-matches` draws the CVWW supplement's correspondence figure: SIFT
+  against DISK+LightGlue on two cases chosen by rule (`viz/matcher_examples.py`). The rescue is the
+  unseen-photographer cosine miss whose correct statue DISK+LightGlue's journalled matches favour by
+  the widest margin, shown against the photograph re-ranking compared; on the current journal that
+  is *Pacjent i Lekarz* (404 matches against at most 7 for any other statue). The failure is the
+  teaser's Słupniki pair, where neither matcher separates the statues and the matches land on the
+  lamp. `draw_match_grid` now scales each candidate to the query's height and gives each row its
+  own heading, which removed the empty columns the first render had.
+
 - **SigLIP 2 as an experiment-only backbone** (`backbone=siglip2`, `google/siglip2-base-patch16-224`
   pinned by revision; AGENTS.md §7.15): a `siglip` family adapter in `embeddings/siglip.py` that
   loads only the image processor. Like DINOv3 it is in no export or visualisation list, and its

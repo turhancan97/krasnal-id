@@ -1369,6 +1369,13 @@ every paper figure and both retrieval sheets read from it.
   `fig1-dataset.png` is Figure 2 and `fig7-rejection.png` Figure 6. The files are shared with the
   journal draft's generator, and every reference is a `\cref`, so renaming buys nothing here. The
   rule that names match numbers (§11.1) is the journal's.
+- **The supplement's correspondence figure is chosen by rule too.** The rescue is the photographer-
+  disjoint cosine miss with DISK+LightGlue's widest journalled lead for the correct statue, ties to
+  the lower image ID; the failure is the teaser's pair. A widest-lead rule is the one most likely to
+  pick a near-duplicate, so the chosen pair was looked at before it was used: the query's statues
+  wear face masks the reference does not, so it is a different visit rather than leakage. Re-check
+  that if the journal or manifest changes. Drawing re-runs the matcher, so a learned matcher's
+  drawn count can differ from the journal's by one or two (404 against 403 here).
 - **Every layout defect was found by looking at the render, not from a log.** A clipped name, an
   arrow that constrained layout shrank the photographs to make room for, a caption over the pool
   circles, a legend on a line, and colliding operating-point labels all rendered without a warning.
