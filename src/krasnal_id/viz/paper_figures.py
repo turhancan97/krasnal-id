@@ -106,6 +106,20 @@ class Sources:
     # Backbones whose artifacts live in `results_dir/<name>/` rather than in
     # `results_dir/`, so that no figure glob over `results/` picks them up (§7.12).
     separate: tuple[str, ...] = ("dinov3",)
+    # The workshop validation artifact, for figures that show a section 7.15 result.
+    # Named explicitly rather than found by a glob, because several revisions sit
+    # side by side and a figure must not quietly draw a superseded one.
+    validation: Path | None = None
+
+    def validation_metrics(self) -> dict[str, float]:
+        """The validation artifact's metrics by name, or an error naming the flag."""
+        if self.validation is None or not self.validation.is_file():
+            raise PaperFigureError(
+                f"the CVWW figures need the workshop validation artifact; pass --validation "
+                f"(got {self.validation})"
+            )
+        payload = json.loads(self.validation.read_text(encoding="utf-8"))
+        return {str(m["name"]): float(m["value"]) for m in payload["metrics"]}
 
     def _directory(self, stem: str) -> Path:
         for name in self.separate:
@@ -741,29 +755,82 @@ def matcher_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> 
 def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> Path:
     """Fig. 7 -- the system cannot decline to answer, on either signal."""
     plt = _pyplot()
-    figure, (left, right) = plt.subplots(
-        1, 2, figsize=(layout.full, layout.full * 0.33), layout="constrained"
-    )
-
-    targets = (90, 95, 99)
-    present = _measured(sources, layout, "open_set-{backbone}")
-    for backbone in present:
-        art = sources.load(f"open_set-{backbone}")
-        known = [art.get(f"target_{t}_known_acceptance") * 100 for t in targets]
-        false = [art.get(f"target_{t}_false_acceptance") * 100 for t in targets]
-        _line(
-            left,
-            false,
-            known,
-            backbone,
-            f"{BACKBONE_LABEL[backbone]} (AUROC {art.get('auroc'):.3f})",
+    if layout.name == "cvww":
+        # One column: the workshop paper shows the margin comparison and states the
+        # geometry result in a sentence (section 7.15).
+        figure, left = plt.subplots(
+            figsize=(layout.column, layout.column * 0.62), layout="constrained"
         )
-    left.set_xlabel("Unknown statues wrongly accepted (%)")
-    left.set_ylabel("Known statues accepted (%)")
-    # The three operating points sit on the tick marks, so the axis labels them;
-    # per-point labels overprinted where the backbones converge at 99%.
-    left.set_yticks(targets)
-    left.legend(loc="upper left")
+        right = None
+    else:
+        figure, (left, right) = plt.subplots(
+            1, 2, figsize=(layout.full, layout.full * 0.33), layout="constrained"
+        )
+
+    present = _measured(sources, layout, "open_set-{backbone}")
+    if layout.name == "cvww":
+        # Section 7.15: cosine against the margin score at 90% known acceptance.
+        # Bars, not curves: every operating point shares the 90% row, where markers
+        # and arrows overprinted one another; and at 95% and 99% every backbone
+        # accepts nearly every unknown statue, which says nothing.
+        validation = sources.validation_metrics()
+        width, offsets = _grouped(2)
+        positions = np.arange(len(present), dtype=float)
+        for index, backbone in enumerate(present):
+            colour = BACKBONE_COLOUR[backbone]
+            values = (
+                sources.load(f"open_set-{backbone}").get("target_90_false_acceptance") * 100,
+                validation[f"{backbone}_reject_margin_false_acceptance_90"] * 100,
+            )
+            for offset, value, hatch in zip(offsets, values, ("", "////"), strict=True):
+                bars = left.bar(
+                    [positions[index] + offset],
+                    [value],
+                    width * 0.92,
+                    color="white" if hatch else colour,
+                    edgecolor=colour,
+                    hatch=hatch,
+                    linewidth=0.9,
+                )
+                _bar_labels(left, bars, "%.1f")
+        left.set_xticks(positions)
+        left.set_xticklabels([BACKBONE_LABEL[b] for b in present])
+        left.set_ylabel("Unknown statues accepted (%)")
+        left.set_ylim(0, 80)
+        # The legend names the encoding, in ink: colour already names the backbone.
+        from matplotlib.patches import Patch
+
+        left.legend(
+            handles=[
+                Patch(facecolor=style.INK_MUTED, edgecolor=style.INK_MUTED, label="Cosine"),
+                Patch(facecolor="white", edgecolor=style.INK_MUTED, hatch="////", label="Margin"),
+            ],
+            loc="upper right",
+            title="At 90% known acceptance",
+            title_fontsize=style.SIZE_LEGEND,
+        )
+    else:
+        targets = (90, 95, 99)
+        for backbone in present:
+            art = sources.load(f"open_set-{backbone}")
+            known = [art.get(f"target_{t}_known_acceptance") * 100 for t in targets]
+            false = [art.get(f"target_{t}_false_acceptance") * 100 for t in targets]
+            _line(
+                left,
+                false,
+                known,
+                backbone,
+                f"{BACKBONE_LABEL[backbone]} (AUROC {art.get('auroc'):.3f})",
+            )
+        left.set_xlabel("Unknown statues wrongly accepted (%)")
+        left.set_ylabel("Known statues accepted (%)")
+        # The three operating points sit on the tick marks, so the axis labels them.
+        left.set_yticks(targets)
+        left.legend(loc="upper left")
+    if right is None:
+        written = _save(figure, output)
+        plt.close(figure)
+        return written
     style.panel_tag(left, "a")
 
     # Two regimes of one backbone: DINOv2's blue, full and as a light tint.
@@ -772,8 +839,8 @@ def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     positions = np.arange(len(signals), dtype=float)
     art = sources.load("open_set_geometry-dinov2")
     for offset, regime, colour, label in (
-        (offsets[0], "standard", BACKBONE_COLOUR["dinov2"], "DINOv2, all references"),
-        (offsets[1], "photographer_disjoint", "#B9CAFF", "DINOv2, photographer withheld"),
+        (offsets[0], "standard", BACKBONE_COLOUR["dinov2"], "All references"),
+        (offsets[1], "photographer_disjoint", "#B9CAFF", "Photographer withheld"),
     ):
         bars = right.bar(
             positions + offset,
@@ -786,7 +853,7 @@ def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     _reference(right, 0.5)
     right.set_xticks(positions)
     right.set_xticklabels(("Appearance", "Geometry", "Blended"))
-    right.set_ylabel("AUROC, known vs unknown")
+    right.set_ylabel("DINOv2 AUROC, known vs unknown")
     right.set_ylim(0.4, 1.02)
     right.legend(loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.14))
     style.panel_tag(right, "b")

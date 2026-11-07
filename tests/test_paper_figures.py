@@ -132,3 +132,39 @@ def test_an_artifact_without_the_records_a_figure_needs_names_them(tmp_path: Pat
 
     with pytest.raises(PaperFigureError, match="confusion-dinov2 has no 'pairs' records"):
         sources.records("confusion-dinov2", "pairs")
+
+
+def test_the_cvww_rejection_figure_draws_from_the_named_validation_artifact(
+    tmp_path: Path,
+) -> None:
+    pytest.importorskip("matplotlib")
+    from PIL import Image
+
+    from krasnal_id.viz.figure_style import CVWW
+    from krasnal_id.viz.paper_figures import rejection_figure
+
+    results = tmp_path / "results"
+    for backbone in ("dinov2", "clip"):
+        _artifact(
+            results, f"open_set-{backbone}", {"target_90_false_acceptance": 0.383, "auroc": 0.9}
+        )
+    validation = tmp_path / "validation.json"
+    _artifact(
+        tmp_path,
+        "validation",
+        {
+            "dinov2_reject_margin_false_acceptance_90": 0.196,
+            "clip_reject_margin_false_acceptance_90": 0.59,
+        },
+    )
+    sources = Sources(results_dir=results, manifest=tmp_path / "manifest.json")
+
+    # Several revisions sit side by side, so the figure never guesses which one.
+    with pytest.raises(PaperFigureError, match="--validation"):
+        rejection_figure(sources, tmp_path / "missing.png", CVWW)
+
+    named = Sources(results_dir=results, manifest=tmp_path / "manifest.json", validation=validation)
+    path = rejection_figure(named, tmp_path / "fig7.png", CVWW)
+    with Image.open(path) as image:
+        # One column wide, drawn at print size.
+        assert image.size[0] == int(CVWW.column * PUBLICATION_DPI)

@@ -1324,6 +1324,10 @@ def visualize_paper_figures(
     layout: Annotated[
         str, typer.Option(help="Figure sizes and backbones: journal or cvww.")
     ] = "journal",
+    validation: Annotated[
+        Path | None,
+        typer.Option(help="The workshop validation artifact the CVWW figures draw from."),
+    ] = None,
     override: OverrideOption = None,
 ) -> None:
     """Draw the manuscript's data-derived figures at publication density.
@@ -1337,6 +1341,7 @@ def visualize_paper_figures(
         sources = Sources(
             results_dir=Path(config.paths.results_dir),
             manifest=Path(config.paths.manifest_path),
+            validation=validation,
         )
         written = draw_all(sources, output_dir, layout_named(layout))
     except (PaperFigureError, FigureStyleError) as error:
