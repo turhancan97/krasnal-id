@@ -1616,6 +1616,11 @@ paper, per-model detail in the supplement, and the three headlines reported acro
   stronger representation (§7.8's pattern), while SIFT adds nothing on either. On DINOv3 the two
   learned matchers are indistinguishable, where on DINOv2 LoFTR led by 1.1. Artifact:
   `results/dinov3/rerank_validation/workshop_validation-dinov3.json`.
+- **The camera-origin bound now covers the two newer backbones** (2026-11-08, vector-only,
+  `results/<backbone>/camera_gap-<backbone>.json`). Phone-shot references score below camera-shot
+  ones by 4.6 top-1 points for DINOv3 and 5.0 for SigLIP 2, against 5.3 for DINOv2 and 15.6 for
+  CLIP. The strongest backbone narrows the gap only slightly, so the street gap the paper bounds
+  from below is not a CLIP artefact. 51 phone photographs: a direction, reported without intervals.
 - **The machine rule of §7.15 is incomplete: thread count matters too.** Job 564242 wrote every
   family artifact with three BLAS threads and validated with six on the same node, and DINOv3's
   open-set AUROC failed the 1e-9 gate by 5e-7. Float32 sums depend on how BLAS splits the work, so
