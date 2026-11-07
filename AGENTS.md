@@ -1480,6 +1480,19 @@ writes `results/cvww_revision3/`.
   point" no longer holds for DINOv3; the k-th-neighbour score is far worse than cosine; and LoFTR
   edges DISK+LightGlue by 1.1 points (interval 0.1 to 2.2, McNemar p = 0.053).
 
+**The supplement tables are generated, never typed.** `visualize workshop-tables` writes five
+`reviewer-*.tex` fragments from the validation artifact: permutation, coordinate noise, the
+soft-prior sweep with each fold's chosen weight, rejection signals, and the null-result bounds.
+A table whose part did not run is left out rather than filled with MISSING, so a missing
+`\input` fails the build visibly. Two defects were caught by reading the rendered supplement, not
+the log, and both are now tested:
+- a p-value passed under a generic name was scaled like an accuracy and printed as 0.5;
+- the full located set printed as a row of 0.0 [0.0, 0.0], though both arms are the same pool there.
+
+A third defect, the same kind, is now checked: a citation with no bibliography to resolve against
+prints as "[?]", which the build check for "??" does not catch. **Count `??`, `[?]` and MISSING
+in both PDFs after every build.**
+
 A fourth item, **queries uploaded to Commons after the 4 September fetch**, was counted before
 anything was built, and **dropped**. On 2026-11-06 only 2 files had been added to any of the 306
 manifest categories since the snapshot, both in one category (*Googlak*), and their titles read as

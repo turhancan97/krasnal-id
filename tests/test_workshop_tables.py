@@ -13,6 +13,7 @@ from krasnal_id.viz.workshop_tables import (
     formatted,
     load_metrics,
     macro_file,
+    reviewer_tables,
 )
 
 runner = CliRunner()
@@ -123,3 +124,35 @@ def test_the_cli_writes_both_fragments(tmp_path: Path) -> None:
         ["visualize", "workshop-tables", f"-opaths.results_dir={tmp_path / 'absent'}"],
     )
     assert missing.exit_code == 2
+
+
+def _m(
+    value: float, lower: float | None = None, upper: float | None = None
+) -> dict[str, float | None]:
+    return {"value": value, "lower": lower, "upper": upper}
+
+
+def test_a_value_that_rounds_to_zero_carries_no_sign() -> None:
+    assert formatted("dinov2_geo_minus_random_pool_5", -0.0004) == "0.0"
+    assert formatted("dinov2_geo_minus_random_pool_5", -0.0123) == "$-$1.2"
+
+
+def test_reviewer_tables_are_built_from_whatever_parts_ran() -> None:
+    metrics = {
+        "dinov2_reject_cosine_auroc": _m(0.896, 0.883, 0.909),
+        "dinov2_reject_margin_auroc": _m(0.927, 0.914, 0.940),
+        "dinov2_reject_knn_auroc": _m(0.637, 0.611, 0.665),
+        "dinov2_reject_cosine_false_acceptance_90": _m(0.383),
+        "dinov2_reject_margin_false_acceptance_90": _m(0.196),
+        "dinov2_reject_knn_false_acceptance_90": _m(0.822),
+        "dinov2_geo_minus_random_pool_5": _m(-0.009, -0.015, -0.003),
+        "dinov2_geo_permutation_pool_5_null_mean": _m(0.001, -0.005, 0.004),
+        "dinov2_geo_permutation_mean_p_value": _m(1 / 201),
+    }
+    tables = reviewer_tables(metrics)
+
+    # Only the parts present become tables; the rest are left out, not faked.
+    assert set(tables) == {"reviewer-rejection.tex", "reviewer-permutation.tex"}
+    assert "DINOv2 & 0.896 [0.883, 0.909] & 38.3 & 0.927" in tables["reviewer-rejection.tex"]
+    # The p-value is printed as a p-value, not scaled like an accuracy.
+    assert tables["reviewer-permutation.tex"].rstrip().splitlines()[-3].endswith("0.005 \\\\")

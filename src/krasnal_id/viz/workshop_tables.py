@@ -77,6 +77,9 @@ def formatted(name: str, value: float) -> str:
         return text.replace("-", "$-$") if scaled < 0 else text
     # Typeset a real minus sign rather than a hyphen.
     text = f"{scaled:.1f}"
+    # Never a signed zero: "-0.0" reads as a negative effect that rounding erased.
+    if text == "-0.0":
+        return "0.0"
     return text.replace("-", "$-$") if scaled < 0 else text
 
 
@@ -138,6 +141,211 @@ def fold_weight_table(path: Path) -> str:
     return "\n".join(body) + "\n"
 
 
+# Backbones and matchers as the paper names them, in the order its tables use.
+_BACKBONES = (("dinov2", "DINOv2"), ("clip", "CLIP"), ("dinov3", "DINOv3"), ("siglip2", "SigLIP~2"))
+_NULL_CHECKPOINTS = (
+    ("dinov2-large", "ViT-L/14"),
+    ("dinov2-registers", "ViT-B/14 + registers"),
+    ("dinov2-registers-large", "ViT-L/14 + registers"),
+)
+
+
+def _cell(metrics: Mapping[str, Mapping[str, float | None]], name: str) -> str:
+    """One table cell: the value, and its interval when it has one."""
+    metric = metrics[name]
+    value = metric["value"]
+    assert value is not None
+    text = formatted(name, value)
+    lower, upper = metric["lower"], metric["upper"]
+    if lower is not None and upper is not None:
+        text += f" [{formatted(name, lower)}, {formatted(name, upper)}]"
+    return text
+
+
+def _table(columns: str, header: str, rows: list[str]) -> str:
+    lines = [
+        rf"\begin{{tabular}}{{@{{}}{columns}@{{}}}}",
+        r"\toprule",
+        header,
+        r"\midrule",
+        *rows,
+        r"\bottomrule",
+        r"\end{tabular}",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def reviewer_tables(metrics: Mapping[str, Mapping[str, float | None]]) -> dict[str, str]:
+    """The section 7.15-7.16 supplement tables, each built only if its metrics exist.
+
+    A table whose metrics the artifact does not carry is left out rather than
+    filled with MISSING, because a run without that part is a legitimate run; the
+    manuscript's \\input then fails visibly, which is the check that matters.
+    """
+    tables: dict[str, str] = {}
+    present = [(key, label) for key, label in _BACKBONES if f"{key}_reject_cosine_auroc" in metrics]
+    if present:
+        rows = []
+        for key, label in present:
+            cells = [label]
+            for signal in ("cosine", "margin", "knn"):
+                cells.append(_cell(metrics, f"{key}_reject_{signal}_auroc"))
+                cells.append(
+                    formatted(
+                        f"{key}_reject_{signal}_false_acceptance_90",
+                        metrics[f"{key}_reject_{signal}_false_acceptance_90"]["value"] or 0.0,
+                    )
+                )
+            rows.append(" & ".join(cells) + r" \\")
+        tables["reviewer-rejection.tex"] = _table(
+            "lcccccc",
+            r"& \multicolumn{2}{c}{Cosine} & \multicolumn{2}{c}{Margin}"
+            r" & \multicolumn{2}{c}{$k$-NN} \\"
+            "\n"
+            r"Backbone & AUROC & FA@90 & AUROC & FA@90 & AUROC & FA@90 \\",
+            rows,
+        )
+    sizes = sorted(
+        {
+            int(n.split("_pool_")[1].split("_")[0])
+            for n in metrics
+            if "_geo_minus_random_pool_" in n and "_noise_" in n
+        }
+    )
+    radii = sorted(
+        {
+            float(n.rsplit("_noise_", 1)[1])
+            for n in metrics
+            if "_noise_" in n and n.startswith("dinov2_")
+        }
+    )
+    # The full located set is the same pool for both arms, so its difference is
+    # identically zero; a row of zeros would read as a measurement.
+    sizes = [
+        size
+        for size in sizes
+        if any(
+            v != 0.0
+            for v in metrics[f"dinov2_geo_minus_random_pool_{size}"].values()
+            if v is not None
+        )
+    ]
+    if sizes and radii:
+        rows = []
+        for size in sizes:
+            cells = [str(size), _cell(metrics, f"dinov2_geo_minus_random_pool_{size}")]
+            cells += [
+                _cell(metrics, f"dinov2_geo_minus_random_pool_{size}_noise_{r:g}") for r in radii
+            ]
+            rows.append(" & ".join(cells) + r" \\")
+        tables["reviewer-noise.tex"] = _table(
+            "l" + "c" * (len(radii) + 1),
+            "Pool & As placed & " + " & ".join(f"{r:g}\\,m" for r in radii) + r" \\",
+            rows,
+        )
+    perm_sizes = sorted(
+        {int(n.split("_pool_")[1].split("_")[0]) for n in metrics if "_geo_permutation_pool_" in n}
+    )
+    if perm_sizes:
+        rows = []
+        for key, label in _BACKBONES:
+            if f"{key}_geo_permutation_mean_p_value" not in metrics:
+                continue
+            cells = [label]
+            for size in perm_sizes:
+                cells.append(_cell(metrics, f"{key}_geo_minus_random_pool_{size}"))
+                cells.append(_cell(metrics, f"{key}_geo_permutation_pool_{size}_null_mean"))
+            cells.append(
+                formatted(
+                    f"{key}_geo_permutation_mean_p_value",
+                    metrics[f"{key}_geo_permutation_mean_p_value"]["value"] or 0.0,
+                )
+            )
+            rows.append(" & ".join(cells) + r" \\")
+        tables["reviewer-permutation.tex"] = _table(
+            "l" + "cc" * len(perm_sizes) + "c",
+            " & ".join(["", *(rf"\multicolumn{{2}}{{c}}{{Pool {s}}}" for s in perm_sizes), ""])
+            + r" \\"
+            "\n"
+            + " & ".join(["Backbone", *(["Real", "Shuffled"] * len(perm_sizes)), "$p$"])
+            + r" \\",
+            rows,
+        )
+    weights = sorted(
+        {
+            float(n.split("_w")[-1].removesuffix("_top_1"))
+            for n in metrics
+            if n.startswith("dinov2_soft_prior_gps") and n.endswith("_top_1") and "_w" in n
+        }
+    )
+    errors = sorted(
+        {
+            float(n.split("_gps")[1].split("_")[0])
+            for n in metrics
+            if n.startswith("dinov2_soft_prior_gps")
+        }
+    )
+    if weights and errors:
+        rows = []
+        for w in weights:
+            cells = [f"{w:g}"] + [
+                formatted(
+                    "top_1", metrics[f"dinov2_soft_prior_gps{e:g}_w{w:g}_top_1"]["value"] or 0.0
+                )
+                for e in errors
+            ]
+            rows.append(" & ".join(cells) + r" \\")
+        rows.append(r"\midrule")
+        rows.append(
+            " & ".join(
+                ["Held out"] + [_cell(metrics, f"dinov2_soft_prior_gps{e:g}_top_1") for e in errors]
+            )
+            + r" \\"
+        )
+        folds = sorted(
+            {
+                int(n.split("_fold_")[1].split("_")[0])
+                for n in metrics
+                if "_soft_prior_gps" in n and "_fold_" in n
+            }
+        )
+        rows.append(
+            " & ".join(
+                ["Chosen $\\lambda$"]
+                + [
+                    ", ".join(
+                        f"{metrics[f'dinov2_soft_prior_gps{e:g}_fold_{f}_weight']['value']:g}"
+                        for f in folds
+                    )
+                    for e in errors
+                ]
+            )
+            + r" \\"
+        )
+        tables["reviewer-soft-prior.tex"] = _table(
+            "l" + "c" * len(errors),
+            "$\\lambda$ & " + " & ".join(f"{e:g}\\,m" for e in errors) + r" \\",
+            rows,
+        )
+    if any(n.startswith("null_") for n in metrics):
+        cut_offs = sorted({int(n.rsplit("_r_at_", 1)[1]) for n in metrics if n.startswith("null_")})
+        rows = [
+            " & ".join(
+                [label]
+                + [_cell(metrics, f"null_{key}_minus_dinov2_disjoint_r_at_{k}") for k in cut_offs]
+            )
+            + r" \\"
+            for key, label in _NULL_CHECKPOINTS
+            if f"null_{key}_minus_dinov2_disjoint_r_at_{cut_offs[0]}" in metrics
+        ]
+        tables["reviewer-null-bounds.tex"] = _table(
+            "l" + "c" * len(cut_offs),
+            "Against ViT-B/14 & " + " & ".join(f"R@{k}" for k in cut_offs) + r" \\",
+            rows,
+        )
+    return tables
+
+
 def write_workshop_outputs(validation: Path, output_dir: Path) -> tuple[Path, ...]:
     """Write the macro file and the generated tables, atomically."""
     metrics = load_metrics(validation)
@@ -145,6 +353,7 @@ def write_workshop_outputs(validation: Path, output_dir: Path) -> tuple[Path, ..
     for name, text in (
         ("numbers.tex", macro_file(metrics)),
         ("fold-weights.tex", fold_weight_table(validation)),
+        *reviewer_tables(metrics).items(),
     ):
         path = output_dir / name
         with atomic_text(path, WorkshopTableError) as handle:
