@@ -1,0 +1,11 @@
+# §7.17 control: a supervised ViT-B/16 trained on ImageNet-21k labels (AugReg), no
+# fine-tuning to ImageNet-1k. Pooling is its CLS token, what its classifier read.
+# Apache-2.0.
+name: vit-supervised
+family: timm
+model_id: timm/vit_base_patch16_224.augreg_in21k
+revision: bb70896cd6bffdd579c3d4f7284f39d0c4ab46c3
+preprocessing_id: timm-data-config;pool=model
+pooling: model
+device: auto
+batch_size: 32

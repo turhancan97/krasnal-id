@@ -1,7 +1,7 @@
 """Hydra composition and Pydantic validation for application configuration."""
 
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
 from hydra import compose, initialize_config_module
 from omegaconf import OmegaConf
@@ -99,6 +99,16 @@ BackboneName = Literal[
     "dinov2-registers-large",
     "dinov3",
     "siglip2",
+    # §7.17: one or more checkpoints per pretraining family, ViT-B where released.
+    "dino",
+    "mae",
+    "beit",
+    "eva02-mim",
+    "ijepa",
+    "clip-b16",
+    "radio",
+    "aimv2",
+    "vit-supervised",
 ]
 
 
@@ -122,12 +132,47 @@ class BackboneConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     name: BackboneName
-    family: Literal["dinov2", "dinov3", "clip", "siglip"]
+    family: Literal["dinov2", "dinov3", "clip", "siglip", "timm", "transformers"]
     model_id: str = Field(min_length=1)
     revision: str = Field(min_length=1)
     preprocessing_id: str = Field(min_length=1)
     device: Literal["auto", "cpu", "cuda"] = "auto"
     batch_size: int = Field(gt=0)
+    # How the generic `timm` and `transformers` adapters reduce a token sequence to
+    # one vector (§7.17). `model` is the checkpoint's own pooled or projected output;
+    # `cls` the first token; `mean` the mean of the patch tokens, prefix tokens
+    # excluded; `summary` RADIO's summary output. The older families pool in their
+    # own adapters and must leave this unset.
+    pooling: Literal["model", "cls", "mean", "summary"] | None = None
+    # Only the transformers adapter honours it, and only for a revision-pinned
+    # checkpoint whose code ships in the repository (RADIO).
+    trust_remote_code: bool = False
+    # Extra arguments for the transformers image processor, exactly as the model card
+    # calls it (RADIO's card passes do_resize=True). Part of the input, so a config
+    # that sets any must say so in `preprocessing_id`.
+    processor_kwargs: dict[str, bool] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _pooling_is_part_of_the_identity(self) -> Self:
+        """Generic adapters must name their pooling, and it must key the cache.
+
+        The cache key is model, revision and preprocessing identity. Two poolings of
+        one checkpoint are different embeddings, so the pooling is required to
+        appear in `preprocessing_id` rather than living only in this field.
+        """
+        generic = self.family in ("timm", "transformers")
+        if generic != (self.pooling is not None):
+            raise ValueError(
+                f"family {self.family} {'requires' if generic else 'does not take'} a pooling"
+            )
+        if generic and not self.preprocessing_id.endswith(f";pool={self.pooling}"):
+            raise ValueError(f"preprocessing_id must end with ';pool={self.pooling}'")
+        if (self.trust_remote_code or self.processor_kwargs) and self.family != "transformers":
+            raise ValueError("remote code and processor arguments apply only to transformers")
+        for key, value in self.processor_kwargs.items():
+            if f"{key}={value}" not in self.preprocessing_id:
+                raise ValueError(f"preprocessing_id must record {key}={value}")
+        return self
 
 
 class BaselineExperimentConfig(BaseModel):

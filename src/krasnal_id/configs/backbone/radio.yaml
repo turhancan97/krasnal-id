@@ -1,0 +1,19 @@
+# §7.17 agglomerative distillation: C-RADIOv3-B, distilled from several teachers.
+# Its code ships in the repository and runs with trust_remote_code at the pinned
+# revision only; the code was read before it first ran (no network on this load
+# path). Teachers: DFN CLIP-H, SigLIP 2 so400m, DINOv2-g, SAM. Pooling is RADIO's
+# summary output. Input is 432 px, not 224: a confound the paper states.
+# NVIDIA Open Model License.
+name: radio
+family: transformers
+model_id: nvidia/C-RADIOv3-B
+revision: 44653a0482cf460bb4f12595fc3cc3dfecc403d1
+preprocessing_id: transformers-auto-image-processor;do_resize=True;pool=summary
+pooling: summary
+trust_remote_code: true
+# The card's call: shortest edge 432, aspect kept, no crop. Variable sizes, so one
+# image per batch.
+processor_kwargs:
+  do_resize: true
+device: auto
+batch_size: 1

@@ -16,6 +16,16 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- **Nine backbones for a pretraining-family study** (AGENTS.md §7.17): DINO v1, MAE, BEiT,
+  EVA-02 (MIM), I-JEPA, CLIP B/16, C-RADIOv3-B, AIMv2 and a supervised ViT-B/16, each pinned to a
+  commit and experiment-only. Two generic adapters in `embeddings/generic.py` run them: `timm`
+  (weights loaded strictly from the pinned `model.safetensors`) and `transformers` (with
+  `trust_remote_code` for RADIO only, approved after its code was read). `BackboneConfig.pooling`
+  names the pooling rule and must appear in `preprocessing_id`, so the cache key distinguishes
+  poolings; `processor_kwargs` carries RADIO's `do_resize=True`. `timm`, `einops` and
+  `open-clip-torch` join the `ml` extra, the last two only because RADIO's code imports them.
+  Vectors for all nine are extracted for the 1,691 references.
+
 - `krasnal-id visualize teaser-matches` draws the CVWW supplement's correspondence figure: SIFT
   against DISK+LightGlue on two cases chosen by rule (`viz/matcher_examples.py`). The rescue is the
   unseen-photographer cosine miss whose correct statue DISK+LightGlue's journalled matches favour by

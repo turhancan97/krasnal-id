@@ -1,0 +1,10 @@
+# §7.17 vision-language: CLIP ViT-B/16, so the family has a patch-16 member beside
+# the B/32 the project has always used. Like clip.yaml it is pinned to the Hub's
+# safetensors conversion ref (refs/pr/4), because main serves only a .bin.
+name: clip-b16
+family: clip
+model_id: openai/clip-vit-base-patch16
+revision: d815394a77ca2fa40f758cdda91e237c710bacfe
+preprocessing_id: transformers-auto-processor
+device: auto
+batch_size: 32

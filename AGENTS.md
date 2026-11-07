@@ -1531,6 +1531,54 @@ test set before the deadline. Re-count with the scratch script's method (`list=c
 `cmprop=timestamp`, 1.5 s between requests; Commons answered 0.3 s with HTTP 429) if the question
 returns.
 
+### 7.17 Pretraining-family study (2026-11-07)
+
+**The backbone comparison becomes a comparison of pretraining families**, at the author's request
+after the options were put to them. Four backbones answered "is DINOv2 better than CLIP"; the
+question a CV reader asks is which *kind* of pretraining identifies near-identical instances. It
+is a new main analysis, not a new headline: one family figure and one compact table in the main
+paper, per-model detail in the supplement, and the three headlines reported across every model.
+
+- **Thirteen backbones in seven families, ViT-B wherever a ViT-B is released.** Joint-embedding
+  self-distillation: DINO v1 B/16, DINOv2, DINOv3. Masked image modelling: MAE B/16, BEiT B/16
+  (22k), EVA-02 B/14 (MIM, 22k). Vision-language: CLIP B/32, CLIP B/16, SigLIP 2 B/16. JEPA:
+  I-JEPA H/14. Agglomerative distillation: C-RADIOv3-B. Autoregressive: AIMv2-L/14. Control: a
+  supervised ViT-B/16 on ImageNet-21k labels.
+- **Three cells are not like the others, and the paper says which.** I-JEPA and AIMv2 have no
+  ViT-B release (H/14 and L/14). AIMv2's decoder also predicts caption tokens, so it is
+  *multimodal* autoregressive. EVA-02's MIM target is EVA-CLIP features, so it sits between MIM
+  and distillation. RADIO reads 432 px, not 224, and its summary is three teacher-matched summaries
+  concatenated (2,304-d). Family is also confounded with training data. **With one to three
+  models per family, family differences are descriptive, never tested**; intervals are per model.
+- **Pooling is one stated rule, never tuned**: the checkpoint's released embedding where it has
+  one, else the mean of its patch tokens. CLS for DINO and the supervised ViT; projection for CLIP;
+  attention pooling for SigLIP 2; BEiT's pooler (a mean); RADIO's summary; patch mean for MAE,
+  EVA-02 (its timm head), I-JEPA and AIMv2. MAE has a CLS token, but it is not a trained summary.
+  §7.15 declined alternative pooling, and that still stands: this rule is fixed before any result.
+- **Each model keeps its released preprocessing** (§7.12). RADIO follows its card
+  (`do_resize=True`, short edge 432, aspect kept), then snaps to a multiple of 16 the way RADIO's
+  own README does; its images differ in size, so it runs one per batch.
+- **Two generic adapters, not nine** (`embeddings/generic.py`): `timm` and `transformers`
+  families, with `BackboneConfig.pooling` naming the rule. The pooling must appear in
+  `preprocessing_id`, because the cache key is model, revision and preprocessing: two poolings of
+  one checkpoint are two embeddings. timm weights are read from `model.safetensors` at the pinned
+  revision and loaded **strictly** into an empty model, because timm's own pretrained path reads
+  the moving `main`, and for the AugReg ViT a JAX-format loader that rejects safetensors.
+- **RADIO runs remote code, once read.** C-RADIOv3 ships its model code in the Hub repository.
+  The author approved `trust_remote_code` at the pinned commit after the code was downloaded and
+  read: nothing on its load path touches the network (its one `torch.hub` call loads a DINOv2
+  teacher this checkpoint never builds). transformers refuses to load it without `einops` and
+  `open-clip-torch`, so both are pinned in `ml`; open_clip is used only by text adaptors this
+  project never constructs.
+- **Licences are research-only for three**: MAE and I-JEPA are CC-BY-NC-4.0, AIMv2 Apple ASCL,
+  RADIO the NVIDIA Open Model License. Fine for a paper; none of them reaches `docs/` or an export.
+- **Every family experiment writes under `results/family/`, on one node.** The suite (baseline,
+  pool size, geography, photographer gap, open set, recall, confusion) runs for all thirteen
+  there, DINOv2 and the other three included, then `workshop-validation` runs over the five
+  vector-only parts. §7.15's rule makes this necessary: open-set AUROC moves in the last bits
+  between CPUs, so the gated artifacts and the validation checking them must share a machine.
+  No released artifact under `results/` or `results/<backbone>/` is touched.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
@@ -1797,6 +1845,7 @@ krasnal-id/
 │   │   ├── dinov2.py
 │   │   ├── clip.py
 │   │   ├── siglip.py          # SigLIP 2, experiment-only (§7.15)
+│   │   ├── generic.py         # timm and transformers adapters for the family study (§7.17)
 │   │   ├── extract.py         # resumable extraction for any local image record
 │   │   ├── cache.py           # atomic, validated, content-addressed vector cache
 │   │   └── store.py           # manifest-ordered access for evaluation code

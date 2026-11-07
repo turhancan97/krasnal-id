@@ -1,0 +1,11 @@
+# §7.17 joint-embedding (self-distillation), the DINOv2 family's 2021 ancestor at
+# ViT-B/16. timm's weights at a pinned revision; pooling is the released CLS token,
+# which is what timm's head reads for this checkpoint. Apache-2.0.
+name: dino
+family: timm
+model_id: timm/vit_base_patch16_224.dino
+revision: 4735e392aa9f07d74d9aa296f7be800da73699df
+preprocessing_id: timm-data-config;pool=model
+pooling: model
+device: auto
+batch_size: 32
