@@ -1599,6 +1599,13 @@ paper, per-model detail in the supplement, and the three headlines reported acro
   between CPUs, so the gated artifacts and the validation checking them must share a machine.
   No released artifact under `results/` or `results/<backbone>/` is touched.
 
+- **A learned matcher on the strongest backbone (2026-11-07).** Every add-on measured so far helped
+  CLIP more than DINOv2 (§7.8), so a reviewer will ask whether DISK+LightGlue's held-out gain
+  survives on DINOv3. §7.13's protocol is re-run unchanged on DINOv3's shortlists — SIFT,
+  DISK+LightGlue and LoFTR at k=10, unseen-photographer queries, the same weight grid and statue
+  folds — writing journals, artifact and validation under `results/dinov3/` only
+  (`runs/cvww-family/rerank-dinov3.sh`). Requested by the author in place of a ViT-L size control.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.
