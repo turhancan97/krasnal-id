@@ -1608,6 +1608,19 @@ paper, per-model detail in the supplement, and the three headlines reported acro
   DISK+LightGlue and LoFTR at k=10, unseen-photographer queries, the same weight grid and statue
   folds — writing journals, artifact and validation under `results/dinov3/` only
   (`runs/cvww-family/rerank-dinov3.sh`). Requested by the author in place of a ViT-L size control.
+  **Result (job 564316, 2026-11-07): learned verification still helps the strongest backbone.**
+  Held-out weights over DINOv3's top ten, unseen-photographer queries: cosine 85.2%, SIFT 85.2%
+  (+0.0 [−0.5, 0.5], 5 won / 5 lost), DISK+LightGlue **87.2%** (+2.0 [1.1, 3.0], 30/7,
+  p = 1.9×10⁻⁴), LoFTR 86.7% (+1.5 [0.3, 2.5], 29/12, p = 0.012); LoFTR minus DISK −0.5
+  [−1.5, 0.4]. So learned matching is the first add-on in this project that does *not* fade on a
+  stronger representation (§7.8's pattern), while SIFT adds nothing on either. On DINOv3 the two
+  learned matchers are indistinguishable, where on DINOv2 LoFTR led by 1.1. Artifact:
+  `results/dinov3/rerank_validation/workshop_validation-dinov3.json`.
+- **The machine rule of §7.15 is incomplete: thread count matters too.** Job 564242 wrote every
+  family artifact with three BLAS threads and validated with six on the same node, and DINOv3's
+  open-set AUROC failed the 1e-9 gate by 5e-7. Float32 sums depend on how BLAS splits the work, so
+  a gated continuous metric must be **written and validated on the same machine with the same
+  thread count**. The validation was resubmitted alone at three threads (`validate.sh`).
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
