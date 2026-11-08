@@ -164,6 +164,11 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- The CVWW dataset figure's confusion panel follows a stated rule (`shown_confusions`): the most
+  frequent DINOv2 confusions, skipping a group class against its own member and any statue already
+  shown. Two journal-table captions say "statue" and no longer promise an interval they do not
+  print.
+
 - Figure 2(a) of the workshop paper selects its confusion pairs by a stated rule
   (`paper_figures.shown_confusions`): group/member overlaps and repeated statues are skipped.
   Retrieval sheets clean raw Commons titles through `retrieval_examples.clean_name` and no longer
