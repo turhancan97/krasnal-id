@@ -92,3 +92,17 @@ def test_the_family_command_writes_numbers_table_and_figure(tmp_path: Path) -> N
     assert table.count(r"\quad ") == len(MODELS)
     assert r"\textit{Agglomerative}" in table
     assert (tmp_path / "fig.png").stat().st_size > 0
+
+
+def test_extra_numbers_are_prefixed_and_prefixes_cannot_collide(tmp_path: Path) -> None:
+    from krasnal_id.viz.workshop_tables import write_extra_numbers
+
+    artifact = tmp_path / "a.json"
+    _artifact(artifact, {"cv_cosine_top_1": (0.852, 0.83, 0.87)})
+    out = write_extra_numbers([f"v3={artifact}"], tmp_path)
+    text = out.read_text(encoding="utf-8")
+    assert r"\@namedef{wv@v3_cv_cosine_top_1@v}{85.2}" in text
+    assert r"\newcommand" not in text
+    for bad in ([f"fam={artifact}"], [f"v3={artifact}", f"v3={artifact}"], ["v3"]):
+        with pytest.raises(WorkshopTableError):
+            write_extra_numbers(bad, tmp_path)

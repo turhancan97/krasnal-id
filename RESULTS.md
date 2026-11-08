@@ -938,6 +938,55 @@ frequent *individual* confusions, and lookalikes standing together is what the p
 shows breaks location narrowing; but the bulk of the error is diffuse. This narrowed the paper's
 claim: lookalikes explain the top confusions and the geographic penalty, not the error rate.
 
+## 17. Pretraining paradigms (13 frozen backbones)
+
+Every number below comes from `results/family/`: each backbone's vector-only suite and one
+validation over all thirteen (`results/family/validation/workshop_validation-dinov2.json`), written
+and validated on `szarancza` with three BLAS threads (AGENTS.md §7.17). Intervals resample whole
+statues. Unseen-photographer top-1 and recall at ten are points from the released per-backbone
+artifacts.
+
+| Paradigm | Model | Top-1 | Unseen ph. | R@10 unseen | Per doubling | Location − random (pool 10) | Photographer effect | Reject AUROC (margin) | FA@90 (margin) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Joint-embedding | DINO B/16 | 92.0 [90.5, 93.4] | 74.4 | 86.3 | −0.9 | −0.8 [−1.5, −0.1] | 6.9 [4.2, 9.6] | 0.946 | 11.9% |
+| | DINOv2 B/14 | 93.1 [91.8, 94.4] | 81.8 | 90.8 | −0.8 | −0.7 [−1.4, −0.1] | 2.6 [1.0, 4.3] | 0.927 | 19.6% |
+| | DINOv3 B/16 | 94.4 [93.1, 95.6] | 85.2 | 92.8 | −0.7 | −1.1 [−1.9, −0.4] | 1.7 [−0.3, 3.7] | 0.959 | 7.7% |
+| JEPA | I-JEPA H/14 | 55.6 [51.9, 59.2] | 34.2 | 56.9 | −5.6 | −4.5 [−6.3, −2.8] | 10.1 [7.4, 12.9] | 0.677 | 82.9% |
+| Masked modelling | MAE B/16 | 46.8 [43.7, 50.0] | 14.3 | 32.1 | −6.3 | −2.8 [−4.7, −0.9] | 14.8 [12.1, 17.6] | 0.616 | 86.5% |
+| | BEiT B/16 | 52.8 [49.2, 56.3] | 20.7 | 42.9 | −5.6 | −4.1 [−6.1, −2.2] | 15.0 [12.4, 17.7] | 0.667 | 81.2% |
+| | EVA-02 B/14 | 84.5 [82.5, 86.3] | 63.2 | 80.4 | −1.9 | −1.9 [−2.8, −1.1] | 8.6 [6.0, 11.3] | 0.864 | 50.4% |
+| Vision-language | CLIP B/32 | 82.9 [80.7, 85.0] | 54.1 | 75.1 | −2.1 | −2.1 [−3.1, −1.2] | 13.2 [10.5, 16.1] | 0.852 | 59.1% |
+| | CLIP B/16 | 87.7 [85.9, 89.4] | 63.6 | 79.9 | −1.5 | −1.1 [−1.8, −0.4] | 10.0 [7.4, 12.5] | 0.895 | 42.8% |
+| | SigLIP 2 B/16 | 91.2 [89.6, 92.6] | 75.0 | 86.7 | −1.0 | −1.0 [−1.7, −0.3] | 6.2 [3.9, 8.7] | 0.916 | 27.7% |
+| Agglomerative | C-RADIOv3 B/16 | **94.7** [93.5, 95.8] | 84.3 | 91.8 | −0.6 | −0.4 [−0.8, 0.0] | 3.3 [1.6, 5.0] | 0.947 | 12.2% |
+| Autoregressive | AIMv2 L/14 | 90.7 [89.1, 92.3] | 74.0 | 85.1 | −1.1 | −1.0 [−1.7, −0.3] | 5.5 [3.2, 7.7] | 0.922 | 27.8% |
+| Supervised | ViT B/16 (IN-21k) | 89.4 [87.5, 91.1] | 62.5 | 78.6 | −1.3 | −1.7 [−2.6, −0.8] | 11.7 [8.7, 14.8] | 0.917 | 31.2% |
+
+- **Invariance-trained models lead on every measure.** The self-distillation line and C-RADIOv3,
+  which distils DINOv2 among other teachers, are the top four on top-1; even 2021's DINO v1 beats
+  SigLIP 2 and the supervised ViT. C-RADIOv3 and DINOv3 are indistinguishable at the top.
+- **Reconstruction-trained models fail as frozen features.** MAE, BEiT and I-JEPA — the last at
+  H/14 — reach 47–56% top-1 and lose 5.6–6.3 points per doubling. EVA-02 is masked-image-modelled
+  too, but reconstructs CLIP features, and reaches 84.5%: the prediction target matters more than
+  the masking. This is consistent with MAE's own report that its features need fine-tuning.
+- **The measures move together.** Better identification comes with slower decay, a smaller
+  photographer effect and better rejection, across all thirteen.
+- **The geographic penalty is universal.** At a pool of ten the location pool loses to an
+  equal-sized random pool for every backbone; every interval excludes zero except C-RADIOv3's,
+  whose upper end reaches it.
+- **Descriptive, not tested.** One to three models per paradigm, with training data, size (I-JEPA
+  H/14, AIMv2 L/14) and input resolution (C-RADIOv3 432 px) confounded with paradigm. Pooling
+  follows one rule fixed in advance; MAE was pooled by its patch mean, not its class token.
+
+**Learned verification on the strongest backbone.** §7.13's held-out protocol on DINOv3's top ten,
+unseen-photographer queries (`results/dinov3/rerank_validation/`): cosine 85.2%, SIFT 85.2% (+0.0
+[−0.5, 0.5]), DISK+LightGlue 87.2% (+2.0 [1.1, 3.0], 30 won / 7 lost), LoFTR 86.7% (+1.5
+[0.3, 2.5]). The first addition in this project that does not fade on a stronger representation.
+
+**Camera-origin gap on all four main backbones** (`camera_gap-*.json`): phone-shot references score
+below camera-shot ones by 4.6 top-1 points for DINOv3, 5.0 for SigLIP 2, 5.3 for DINOv2 and 15.6
+for CLIP. A lower bound on the street gap, from 51 photographs.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,

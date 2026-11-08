@@ -124,7 +124,11 @@ from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
 from krasnal_id.viz.paper_tables import write_all as write_paper_tables
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
-from krasnal_id.viz.workshop_tables import WorkshopTableError, write_workshop_outputs
+from krasnal_id.viz.workshop_tables import (
+    WorkshopTableError,
+    write_extra_numbers,
+    write_workshop_outputs,
+)
 
 
 def _read_manifest(path: Path) -> DatasetManifest:
@@ -1385,12 +1389,21 @@ def visualize_workshop_tables(
     output_dir: Annotated[Path, typer.Option(help="Where to write the fragments.")] = Path(
         "paper-cvww/generated"
     ),
+    extra: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--extra",
+            help="PREFIX=PATH: another validation artifact whose metrics are written to "
+            "extra-numbers.tex as \\wv{PREFIX_<metric>}. Repeat for several.",
+        ),
+    ] = None,
     override: OverrideOption = None,
 ) -> None:
     """Emit the CVWW manuscript's numbers and tables from the validation artifact.
 
     The prose cites intervals by metric name through the macro file this writes,
-    so none of them is transcribed.
+    so none of them is transcribed. `--extra` adds the numbers of other runs, such
+    as the DINOv3 re-ranking check, under a prefix so they cannot collide.
     """
     config = load_config(["experiment=workshop_validation", *(override or [])])
     configure_logging(config.logging)
@@ -1402,6 +1415,8 @@ def visualize_workshop_tables(
     )
     try:
         written = write_workshop_outputs(validation, output_dir)
+        if extra:
+            written += (write_extra_numbers(extra, output_dir),)
     except WorkshopTableError as error:
         typer.echo(f"Workshop table error: {error}", err=True)
         raise typer.Exit(code=2) from error

@@ -16,6 +16,12 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- `visualize workshop-tables --extra PREFIX=PATH` writes another validation artifact's metrics to
+  `extra-numbers.tex` under its own prefix (the DINOv3 re-ranking check as `\wv{v3_*}`), refusing a
+  repeated prefix or the family study's `fam`.
+- The pretraining-paradigm study's results: all thirteen backbones' suites and their validation
+  under `results/family/`, the forest-plot figure, and `RESULTS.md` §17.
+
 - **Nine backbones for a pretraining-family study** (AGENTS.md §7.17): DINO v1, MAE, BEiT,
   EVA-02 (MIM), I-JEPA, CLIP B/16, C-RADIOv3-B, AIMv2 and a supervised ViT-B/16, each pinned to a
   commit and experiment-only. Two generic adapters in `embeddings/generic.py` run them: `timm`

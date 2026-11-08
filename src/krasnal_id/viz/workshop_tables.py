@@ -475,6 +475,28 @@ def write_family_outputs(validation: Path, root: Path, output_dir: Path) -> tupl
     return tuple(written)
 
 
+def write_extra_numbers(specs: list[str], output_dir: Path) -> Path:
+    """Write `extra-numbers.tex`: other artifacts' metrics, each under its own prefix.
+
+    A spec is `PREFIX=PATH`. Prefixes must be distinct and must not be `fam`, which
+    the family study already uses, so no two runs can define the same macro.
+    """
+    metrics: dict[str, dict[str, float | None]] = {}
+    seen: set[str] = set()
+    for spec in specs:
+        prefix, sep, path = spec.partition("=")
+        if not sep or not prefix or not path:
+            raise WorkshopTableError(f"--extra takes PREFIX=PATH, got {spec!r}")
+        if prefix in seen or prefix == "fam":
+            raise WorkshopTableError(f"prefix {prefix!r} is reserved or used twice")
+        seen.add(prefix)
+        metrics |= {f"{prefix}_{name}": m for name, m in load_metrics(Path(path)).items()}
+    out = output_dir / "extra-numbers.tex"
+    with atomic_text(out, WorkshopTableError) as handle:
+        handle.write(macro_file(metrics, with_commands=False))
+    return out
+
+
 def write_workshop_outputs(validation: Path, output_dir: Path) -> tuple[Path, ...]:
     """Write the macro file and the generated tables, atomically."""
     metrics = load_metrics(validation)

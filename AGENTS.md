@@ -1602,6 +1602,13 @@ paper, per-model detail in the supplement, and the three headlines reported acro
   between CPUs, so the gated artifacts and the validation checking them must share a machine.
   No released artifact under `results/` or `results/<backbone>/` is touched.
 
+- **Results (validation job 564657, 2026-11-08), recorded in `RESULTS.md` §17.** Invariance-trained
+  models lead on every measure (C-RADIOv3 94.7%, DINOv3 94.4%, DINOv2 93.1%, DINO 92.0% top-1);
+  reconstruction-trained models fail as frozen features (MAE 46.8%, BEiT 52.8%, I-JEPA 55.6%) while
+  EVA-02, which reconstructs CLIP features, reaches 84.5%; the measures move together; and the
+  location-versus-random penalty at a pool of ten holds for all thirteen. The paper reports these
+  through `\wv{fam_*}` macros; the DINOv3 re-ranking numbers come in through `visualize
+  workshop-tables --extra v3=…` as `\wv{v3_*}`.
 - **A learned matcher on the strongest backbone (2026-11-07).** Every add-on measured so far helped
   CLIP more than DINOv2 (§7.8), so a reviewer will ask whether DISK+LightGlue's held-out gain
   survives on DINOv3. §7.13's protocol is re-run unchanged on DINOv3's shortlists — SIFT,
