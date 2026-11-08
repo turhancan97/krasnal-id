@@ -327,3 +327,13 @@ def test_only_the_full_or_the_compact_sheet_is_offered() -> None:
     config = load_config(["experiment=visualization"])
     with pytest.raises(VisualizationError, match="top 5 or the top 1"):
         create_retrieval_examples_plot(config, top_k=3)
+
+
+def test_raw_category_titles_are_cleaned_for_figures() -> None:
+    from krasnal_id.viz.retrieval_examples import clean_name
+
+    assert clean_name("Golasek dwarf in Wrocław") == "Golasek"
+    assert clean_name("Sprinkler dwarf (Wrocław)") == "Sprinkler"
+    assert clean_name("Podróżnik dwarf (Łagowski), Wrocław") == "Podróżnik (Łagowski)"
+    assert clean_name("Wioślarze (dwarves of Wrocław)") == "Wioślarze"
+    assert clean_name("Słupniki Oławskie") == "Słupniki Oławskie"

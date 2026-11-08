@@ -168,3 +168,27 @@ def test_the_cvww_rejection_figure_draws_from_the_named_validation_artifact(
     with Image.open(path) as image:
         # One column wide, drawn at print size.
         assert image.size[0] == int(CVWW.column * PUBLICATION_DPI)
+
+
+def test_panel_a_skips_group_overlaps_and_repeats() -> None:
+    """Figure 2(a) shows three different sculptures' confusions, each statue once."""
+    from krasnal_id.viz.paper_figures import shown_confusions
+
+    def pair(true: str, confused: str) -> dict[str, str]:
+        return {"true_dwarf_id": true, "confused_dwarf_id": confused}
+
+    pairs = [
+        pair("A", "B"),
+        pair("Member", "Group"),  # a group class against its own member
+        pair("C", "D"),
+        pair("E", "A"),  # A is already shown
+        pair("F", "G"),
+    ]
+    shown = shown_confusions(pairs, {frozenset(("Group", "Member"))})
+    assert [(p["true_dwarf_id"], p["confused_dwarf_id"]) for p in shown] == [
+        ("A", "B"),
+        ("C", "D"),
+        ("F", "G"),
+    ]
+    with pytest.raises(PaperFigureError, match="fewer than"):
+        shown_confusions(pairs[:3], {frozenset(("Group", "Member"))})

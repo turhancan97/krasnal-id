@@ -18,6 +18,7 @@ figure shows; the journal draft keeps its own, unchanged.
 
 import json
 import textwrap
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -339,6 +340,45 @@ def _subfigure_tag(panel: Any, letter: str) -> None:
     )
 
 
+def group_links() -> set[frozenset[str]]:
+    """Every (group class, own member) pair, from the packaged group definitions.
+
+    A group statue confused with one of its own members is a labelling overlap,
+    not two lookalike statues, so panel (a) never shows one.
+    """
+    from krasnal_id.config import WorkshopValidationConfig, load_config
+
+    settings = load_config(["experiment=workshop_validation"]).experiment
+    assert isinstance(settings, WorkshopValidationConfig)
+    return {
+        frozenset((group, member))
+        for group, members in settings.groups.items()
+        for member in members
+    }
+
+
+def shown_confusions(
+    pairs: Sequence[Mapping[str, Any]], groups: set[frozenset[str]]
+) -> list[Mapping[str, Any]]:
+    """The most frequent confusions, as recorded, that panel (a) draws.
+
+    In the artifact's order (most misidentifications first), skipping a group
+    and its own member, and any pair naming a statue already shown, so each
+    photograph appears once and every pair is two different sculptures.
+    """
+    shown: list[Mapping[str, Any]] = []
+    seen: set[str] = set()
+    for pair in pairs:
+        ids = {str(pair["true_dwarf_id"]), str(pair["confused_dwarf_id"])}
+        if frozenset(ids) in groups or ids & seen:
+            continue
+        shown.append(pair)
+        seen |= ids
+        if len(shown) == CONFUSED_PAIRS_SHOWN:
+            return shown
+    raise PaperFigureError(f"fewer than {CONFUSED_PAIRS_SHOWN} distinct confusions to show")
+
+
 def _confused_pairs_panel(
     panel: Any, sources: Sources, manifest: DatasetManifest
 ) -> list[tuple[Any, Any, str, str]]:
@@ -365,7 +405,7 @@ def _confused_pairs_panel(
 
     from matplotlib.patches import ConnectionPatch
 
-    pairs = sources.records("confusion-dinov2", "pairs")[:CONFUSED_PAIRS_SHOWN]
+    pairs = shown_confusions(sources.records("confusion-dinov2", "pairs"), group_links())
     axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.22})
     arrows: list[tuple[Any, Any, str, str]] = []
     for row, pair in zip(axes, pairs, strict=True):

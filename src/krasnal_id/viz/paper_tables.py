@@ -185,7 +185,7 @@ def classifier_table(sources: Sources) -> str:
     return _table(
         "Trained classifiers against retrieval, on identical folds. A linear "
         "probe is fitted per fold on the same frozen embeddings; class "
-        "prototypes average each dwarf's reference vectors into one centroid. "
+        "prototypes average each statue's reference vectors into one centroid. "
         "Probes are regularised weakly ($C = 100$): the embeddings are "
         "L2-normalised, so a conventional $C = 1$ underfits badly.",
         "si:probe",
@@ -337,7 +337,7 @@ def camera_table(sources: Sources) -> str:
         "Queries by the capture device recorded in the photograph's metadata. "
         "The median reference count is given because it is the obvious "
         "confound and it does not differ meaningfully between conditions. "
-        "Fifty-one phone queries put a wide interval on that row, and a phone "
+        "Fifty-one phone queries make that row imprecise, and a phone "
         "upload to a photo commons is a deliberate photograph rather than a "
         "snapshot, so the gap is a lower bound on what a street query costs.",
         "si:camera",

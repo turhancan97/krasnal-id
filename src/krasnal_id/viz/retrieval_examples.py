@@ -13,6 +13,7 @@ anything either model sees, so "first" is arbitrary in the way a sample should
 be.
 """
 
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -199,12 +200,27 @@ def select_examples(
     return tuple(chosen[group] for group in order if group in chosen)
 
 
-def _short(name: str, limit: int = _NAME_LIMIT) -> str:
-    """Trim a display name to what fits one cell.
+def clean_name(name: str) -> str:
+    """A statue's name as a figure shows it, without its Commons category dressing.
 
-    Commons category names run to "Concierge dwarf at the entrance of ..." and a
-    handful of those are enough to overwrite the neighbouring cell's label.
+    Sixteen display names are raw category titles ("Golasek dwarf in Wrocław",
+    "Sprinkler dwarf (Wrocław)"). The city and the word "dwarf" carry nothing in
+    a figure about Wrocław's dwarves, so both are dropped; a parenthetical that
+    tells two statues apart, such as a sculptor, is kept.
     """
+    cleaned = re.sub(r",\s*Wroc[lł]aw$", "", name)
+    cleaned = re.sub(r"\s*\((?:dwarves of )?Wroc[lł]aw\)$", "", cleaned)
+    cleaned = re.sub(r"\s+dwar(?:t?f|fs|ves)\b(?=\s*\()", "", cleaned)
+    cleaned = re.sub(r"\s+dwar(?:t?f|fs|ves)\b.*$", "", cleaned)
+    return cleaned.strip() or name
+
+
+def _short(name: str, limit: int = _NAME_LIMIT) -> str:
+    """Clean a display name and trim it to what fits one cell.
+
+    A long name is enough to overwrite the neighbouring cell's label.
+    """
+    name = clean_name(name)
     return name if len(name) <= limit else f"{name[: limit - 1].rstrip()}…"
 
 
@@ -332,7 +348,11 @@ def render_examples(
         query_axes.imshow(_load_cell(example.query_local_path))
         _frame(query_axes, None)
         query_axes.set_title(
-            _group_name(example.group, primary),
+            # Two lines: the query column is one cell wide, and "Only DINOv2 right"
+            # on one line runs past the page edge.
+            _group_name(example.group, primary).replace(" right", "\nright", 1)
+            if len(_group_name(example.group, primary)) > 12
+            else _group_name(example.group, primary),
             fontsize=style.SIZE_LABEL,
             fontweight="bold",
             color=style.INK,
@@ -350,7 +370,7 @@ def render_examples(
                 _frame(axes, match.correct)
                 _badge(axes, match.correct)
                 axes.set_title(
-                    f"{match.rank}. {_short(match.display_name, 18)}\n"
+                    f"{match.rank}. {_short(match.display_name, 15)}\n"
                     f"{match.cosine_similarity:.3f}",
                     fontsize=style.SIZE_ANNOTATION - 0.5,
                     color=style.INK if match.correct else style.INK_SECONDARY,
@@ -414,7 +434,7 @@ def render_top_one(
             _frame(axes, first.correct)
             _badge(axes, first.correct)
             axes.set_title(
-                f"{_backbone_name(row.backbone)}\n{_short(first.display_name, 16)}",
+                f"{_backbone_name(row.backbone)}\n{_short(first.display_name, 18)}",
                 fontsize=style.SIZE_ANNOTATION - 0.5,
                 color=style.INK if first.correct else style.INK_SECONDARY,
                 pad=2,

@@ -1735,6 +1735,41 @@ cited through `--extra r2=…` as `\wv{r2_*}`.
 - **Declined**: a per-backbone runtime table (extraction was never timed per model; vector widths
   are in the roster) and the full hybrid pipeline (the gating result answers its useful half).
 
+### 7.20 Fresh-eyes read-through (2026-11-08)
+
+An independent agent read only the two rendered PDFs, without the reasoning behind them, and found
+seams the three rounds of edits had left. Every item it raised was either fixed or answered; the
+ones worth keeping as rules:
+
+- **A figure regenerated from an artifact can silently stop matching its prose.** Figure 2(a) drew
+  DINOv2's three most frequent confusions straight from `confusion-dinov2.json`, which after the
+  restyle put *Grajek* against *Grajek i Meloman* (a group class and its own member, which §5.1
+  calls a labelling artefact) in the middle row, while the text still described a blind-and-deaf
+  pair that is DINOv3's top confusion, not DINOv2's. `shown_confusions` now states the rule: in
+  the artifact's order, skip a group and its own member (from the packaged `groups`) and any pair
+  naming a statue already shown. It yields Słupniki Solne/Oławskie, the two water-carrying dwarves
+  on one plinth, and Bartonik/Pomagajek 33 m apart, and the caption says so.
+- **A typed point estimate beside a generated interval can disagree in sign.** The slope sentence
+  typed "costs 0.79 points" before macros printing −1.0 to −0.6. Every number in such a sentence
+  now comes from the macros, in one sign convention.
+- **The main text must define everything it reports**, because CVWW reviewers need not open the
+  supplement: rejection gained a protocol paragraph (how unknowns are built, leave-one-class-out
+  calibration, the margin, FA@90), and the 100 m user distance and the top-50 check are in §4.
+- **Wording corrected to what was measured**: I-JEPA predicts latent features, so "reconstruct
+  pixels or tokens" became "masked-prediction models … under a fixed pooling rule"; "lead on every
+  measure" became "lead on accuracy and rejection"; the location result is "more as a weight than
+  as a filter", with the filter's oracle centring and the random arm's non-deployability stated;
+  "What does not help" names each item's own metric and adds ViT-L's +2.6 unseen-photographer
+  top-1, which does not raise recall at ten.
+- **Checked rather than asserted**: the smallest geographic pool's median radius is 52 m, so the
+  9 m coordinate error is "well below" it, not an order of magnitude; SigLIP 2's geographic
+  difference at a pool of 200 is +0.0, so "every size" stops at 100 for it.
+- Retrieval sheets now show names through `clean_name`, which drops the city and the word "dwarf"
+  from the sixteen raw category titles; the top-5 sheet wraps long group labels and shortens names
+  so no label runs into the next column. The camera-gap figures for DINOv3 and SigLIP 2 that the
+  Limitations cite are now in the supplement through `--extra cg3=…`/`cgs=…`.
+- **The body now fills exactly eight pages**; any later addition must be paid for by a cut.
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.

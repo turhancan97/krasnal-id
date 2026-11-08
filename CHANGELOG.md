@@ -164,6 +164,12 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- Figure 2(a) of the workshop paper selects its confusion pairs by a stated rule
+  (`paper_figures.shown_confusions`): group/member overlaps and repeated statues are skipped.
+  Retrieval sheets clean raw Commons titles through `retrieval_examples.clean_name` and no longer
+  let long labels collide. Two journal-table captions say "statue" and no longer mention an
+  interval the table does not show (AGENTS.md §7.20).
+
 - `RESULTS.md` §18 records both internal reviews' results: the kernel and inlier-cap sensitivity,
   unseen-photographer accuracy by remaining references, margin-gated verification, the
   multi-region baseline, the photographer-credit leakage check and the cost figures.
