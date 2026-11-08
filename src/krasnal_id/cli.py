@@ -127,6 +127,7 @@ from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
 from krasnal_id.viz.workshop_tables import (
     WorkshopTableError,
     write_extra_numbers,
+    write_sensitivity_outputs,
     write_workshop_outputs,
 )
 
@@ -1417,6 +1418,8 @@ def visualize_workshop_tables(
         written = write_workshop_outputs(validation, output_dir)
         if extra:
             written += (write_extra_numbers(extra, output_dir),)
+        # The second reviewer's sensitivity runs, when any exist beside the artifact.
+        written += write_sensitivity_outputs(Path(config.paths.results_dir), output_dir)
     except WorkshopTableError as error:
         typer.echo(f"Workshop table error: {error}", err=True)
         raise typer.Exit(code=2) from error

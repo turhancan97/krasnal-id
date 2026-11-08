@@ -16,6 +16,13 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- Sensitivity checks for the second internal review (AGENTS.md §7.18):
+  `experiment.soft_prior_kernel` (exponential or Gaussian) and `experiment.rerank_inlier_cap`
+  for `experiment workshop-validation`, both defaulting to the published values. `visualize
+  workshop-tables` writes `reviewer-kernel.tex`, `reviewer-cap.tex` and `sens-numbers.tex` from
+  any `results/cvww_sens_*` runs. The held-out soft-prior gain holds at 97.7-98.8% top-1 across
+  kernels and scales, and learned-matcher gains hold for caps of 20 to 240.
+
 - `visualize workshop-tables --extra PREFIX=PATH` writes another validation artifact's metrics to
   `extra-numbers.tex` under its own prefix (the DINOv3 re-ranking check as `\wv{v3_*}`), refusing a
   repeated prefix or the family study's `fam`.

@@ -361,3 +361,12 @@ def test_cli_sweeps_and_writes_the_artifact(tmp_path: Path) -> None:
     assert "median_inliers_correct" in result.output
     written = json.loads((tmp_path / "results" / "rerank_ablation-dinov2.json").read_text())
     assert written["experiment"] == "rerank_ablation"
+
+
+def test_the_inlier_cap_sets_where_geometry_saturates() -> None:
+    """A smaller cap saturates sooner; the bonus at the cap is always the weight."""
+    assert blended_score(0.5, 10, 1.0, cap=10) == pytest.approx(1.5)
+    assert blended_score(0.5, 10, 1.0, cap=20) == pytest.approx(1.0)
+    assert blended_score(0.5, 25, 1.0, cap=10) == blended_score(0.5, 10, 1.0, cap=10)
+    with pytest.raises(RerankError, match="cap must be positive"):
+        blended_score(0.5, 10, 1.0, cap=0)

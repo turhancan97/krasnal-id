@@ -357,3 +357,29 @@ def test_null_bounds_reproduce_the_released_recall_and_bound_the_gap(tmp_path: P
 
     with pytest.raises(WorkshopValidationError, match="inputs have changed"):
         null_bounds_part(split, manifest, matrices, {**released, "disjoint_r_at_1": 0.0}, settings)
+
+
+def test_the_gaussian_kernel_keeps_the_control_and_location_only(tmp_path: Path) -> None:
+    """The kernel shape changes only how the bonus falls off, never the controls."""
+    manifest, split, matrix = _located_world(tmp_path)
+    released = _released_geo(manifest, split, matrix)
+    shaped = {
+        m.name: m
+        for m in soft_prior_part(
+            "dinov2",
+            split,
+            manifest,
+            matrix,
+            released,
+            _settings(soft_prior_kernel="gaussian", soft_prior_scale_m=100.0),
+        )
+    }
+    published = {
+        m.name: m for m in soft_prior_part("dinov2", split, manifest, matrix, released, _settings())
+    }
+    for name in (
+        "dinov2_soft_prior_none_top_1",
+        "dinov2_soft_prior_gps25_w0_top_1",
+        "dinov2_soft_prior_gps25_location_only_top_1",
+    ):
+        assert shaped[name].value == pytest.approx(published[name].value)

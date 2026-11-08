@@ -14,6 +14,7 @@ from krasnal_id.viz.workshop_tables import (
     load_metrics,
     macro_file,
     reviewer_tables,
+    sensitivity_outputs,
 )
 
 runner = CliRunner()
@@ -157,3 +158,47 @@ def test_reviewer_tables_are_built_from_whatever_parts_ran() -> None:
     assert "DINOv2 & 0.896 [0.883, 0.909] & 38.3 & 0.927" in tables["reviewer-rejection.tex"]
     # The p-value is printed as a p-value, not scaled like an accuracy.
     assert tables["reviewer-permutation.tex"].rstrip().splitlines()[-3].endswith("0.005 \\\\")
+
+
+def _validation(path: Path, metrics: dict[str, tuple[float, float, float]]) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    (path / "workshop_validation-dinov2.json").write_text(
+        json.dumps(
+            {
+                "metrics": [
+                    {"name": n, "value": v, "lower_bound": lo, "upper_bound": hi}
+                    for n, (v, lo, hi) in metrics.items()
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_sensitivity_tables_and_ranges_come_from_their_runs(tmp_path: Path) -> None:
+    for kernel, scale_m, top in (("exponential", 200, 0.987), ("gaussian", 50, 0.977)):
+        _validation(
+            tmp_path / f"cvww_sens_prior-{kernel}-{scale_m}",
+            {"dinov2_soft_prior_none_top_1": (0.934, 0.92, 0.95)}
+            | {
+                f"dinov2_soft_prior_gps{e}_top_1": (top, top - 0.01, top + 0.01)
+                for e in (10, 25, 50)
+            },
+        )
+    for cap, gain in (("10", 0.014), ("30", 0.025)):
+        _validation(
+            tmp_path / f"cvww_sens_cap-{cap}",
+            {
+                f"cv_{m}_vs_cosine_top_1_gain": (gain, 0.0, 0.04)
+                for m in ("sift", "disk-lightglue", "loftr")
+            },
+        )
+    outputs = sensitivity_outputs(tmp_path)
+    assert set(outputs) == {"reviewer-kernel.tex", "reviewer-cap.tex", "sens-numbers.tex"}
+    assert "200\\,m & 98.7 [97.7, 99.7]" in outputs["reviewer-kernel.tex"]
+    assert outputs["reviewer-cap.tex"].index("10 &") < outputs["reviewer-cap.tex"].index("30 &")
+    numbers = outputs["sens-numbers.tex"]
+    assert r"\@namedef{wv@sens_prior_gps25_min_top_1@v}{97.7}" in numbers
+    assert r"\@namedef{wv@sens_cap_disk_lightglue_max_gain@v}{2.5}" in numbers
+    # No runs, no tables: a missing check must not produce an empty table.
+    assert sensitivity_outputs(tmp_path / "absent") == {}

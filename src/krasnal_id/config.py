@@ -579,6 +579,12 @@ class WorkshopValidationConfig(BaseModel):
     # Soft geographic prior: candidate score = cosine + w * exp(-distance / scale).
     soft_prior_weights: tuple[float, ...] = (0.0,)
     soft_prior_scale_m: float = Field(default=200.0, gt=0.0)
+    # The prior's shape: `exponential` is exp(-d/s), the published one; `gaussian`
+    # is exp(-d^2 / 2s^2). Both exist for the reviewer's sensitivity check.
+    soft_prior_kernel: Literal["exponential", "gaussian"] = "exponential"
+    # The inlier count at which geometry stops adding to the blend. 30 is the
+    # published cap; other values exist only to show the result does not hinge on it.
+    rerank_inlier_cap: int = Field(default=30, ge=1)
     # Where the simulated user stands, metres from the statue in a seeded direction.
     # Never zero alone: at zero a strong prior just names the statue under the user.
     gps_error_m: tuple[float, ...] = (25.0,)

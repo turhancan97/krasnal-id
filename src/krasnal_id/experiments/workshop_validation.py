@@ -62,6 +62,7 @@ from krasnal_id.experiments.pool_size_ablation import measure_pool_size, resolve
 from krasnal_id.experiments.rerank_ablation import QueryEvidence, evidence_from_row
 from krasnal_id.models import DatasetManifest, EvaluationSplit
 from krasnal_id.photographers import is_answerable, photographers_by_class
+from krasnal_id.retrieval.rerank import INLIER_CAP
 from krasnal_id.statistics import exact_mcnemar_p_value
 
 # The method every matcher is compared against: the blend at weight zero, which is
@@ -167,6 +168,7 @@ def cross_validate(
     fold_of_statue: Mapping[str, int],
     weights: tuple[float, ...],
     cut_off: int = 1,
+    cap: int = INLIER_CAP,
 ) -> tuple[tuple[HeldOutQuery, ...], tuple[FoldWeight, ...]]:
     """Choose each matcher's weight on four folds and score it on the fifth.
 
@@ -194,10 +196,10 @@ def cross_validate(
             train = tuple(
                 evidence[matcher][q] for q in queries if fold_of_statue[truths[q]] != fold
             )
-            weight, accuracy = best_weight(train, dict(truths), weights, cut_off)
+            weight, accuracy = best_weight(train, dict(truths), weights, cut_off, cap)
             for query in held:
                 ranks[query][matcher] = evidence[matcher][query].rank_of_truth(
-                    weight, truths[query]
+                    weight, truths[query], cap
                 )
             chosen.append(
                 FoldWeight(
@@ -580,7 +582,9 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
             for matcher in settings.matchers
         }
         fold_of_statue = statue_folds([truths[q] for q in expected], settings.folds, seed)
-        held_out, fold_weights = cross_validate(evidence, truths, fold_of_statue, settings.weights)
+        held_out, fold_weights = cross_validate(
+            evidence, truths, fold_of_statue, settings.weights, cap=settings.rerank_inlier_cap
+        )
         metrics += summarize_held_out(
             held_out,
             (COSINE, *settings.matchers),
@@ -602,7 +606,11 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
                 for matcher in settings.wide_matchers
             }
             wide_held, wide_weights = cross_validate(
-                wide_evidence, truths, fold_of_statue, settings.weights
+                wide_evidence,
+                truths,
+                fold_of_statue,
+                settings.weights,
+                cap=settings.rerank_inlier_cap,
             )
             metrics += summarize_held_out(
                 wide_held,

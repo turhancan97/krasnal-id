@@ -1634,6 +1634,57 @@ paper, per-model detail in the supplement, and the three headlines reported acro
   a gated continuous metric must be **written and validated on the same machine with the same
   thread count**. The validation was resubmitted alone at three threads (`validate.sh`).
 
+### 7.18 Second internal review (2026-11-08)
+
+A colleague's review of the CVWW draft recommended acceptance and asked for sensitivity checks,
+leakage accounting, cost, and three pieces of related work. Every check below runs from cached
+vectors or the existing match journals; no model was loaded and nothing was matched.
+
+- **The geographic kernel is not what carries "a weight, not a filter".** The soft prior was
+  re-run at scales of 50 to 800 m with an exponential and a Gaussian kernel, choosing lambda on
+  held-out statues each time. At 25 m, held-out top-1 stays between 97.7% and 98.8% against
+  93.4% with no prior. The published exponential at 200 m reproduces revision 3 to 1e-9.
+  `soft_prior_kernel` is the new config field.
+- **The inlier cap matters only when it is too small.** `rerank_inlier_cap` is now a config field
+  threaded through `blended_score`, `QueryEvidence.ranked`, `best_weight` and `cross_validate`.
+  From caps of 20 to 240, DISK+LightGlue's held-out gain is 2.2 to 2.5 points and LoFTR's 1.8 to
+  4.1; a cap of 10 saturates before correct and wrong candidates separate and halves them. SIFT
+  is not established at any cap. Cap 30 reproduces revision 3 to 1e-9.
+- **A cap is not removed by making it huge, and that run was superseded.** The blend divides by
+  the cap, so a cap of 100,000 shrank geometry's contribution almost to nothing at every weight in
+  the grid (every DISK fold chose 1.5, LoFTR 1.0); it measured the grid, not the cap. It was
+  moved to `results/superseded/` and replaced by 120 and 240, whose chosen weights are interior.
+  **Check a sensitivity run's chosen weights against the grid edge before reading its result.**
+- **Both new fields had to be declared in `workshop_validation.yaml`**, the §7.9 trap again: the
+  first job failed all fifteen runs at Hydra composition in two seconds.
+- Runs: `runs/cvww-review2/sensitivity.sh` (Slurm job 565229, caps 120 and 240 in 565234), each
+  writing `results/cvww_sens_<prior|cap>-<variant>/`. `visualize workshop-tables` finds them
+  beside the validation artifact and writes `reviewer-kernel.tex`, `reviewer-cap.tex` and
+  `sens-numbers.tex` (`\wv{sens_*}`), or nothing when no runs exist.
+- **Photographer-name variants do not leak into the unseen-photographer arm.** For each of the
+  1,157 answerable queries, the most similar kept reference of its own statue exceeds DINOv2
+  cosine 0.95 for 6 queries, all three pairs of files credited to spellings of one name
+  (`PJulo`/`Julo`) or to a derivative or crop of another contributor's photograph. Merging those
+  three credits leaves unseen-photographer top-1 at exactly 81.85% (DINOv2) and 85.22% (DINOv3).
+  Computed by a one-off script over the cached vectors, `photographers.disjoint_references` and the
+  split; the merged credits are the only input not in the repository.
+- **Cost, for the deployment paragraph.** Exhaustive search over the 1,691 x 768 float32 matrix
+  (5.2 MB) takes 0.22 ms a query on one Xeon Gold 5122 thread. Verifying a top-ten shortlist took
+  0.34 s a query with SIFT, 0.49 s with DISK+LightGlue and 1.73 s with LoFTR on one RTX 2080 Ti,
+  read from the write times of the three DINOv3 journals in `results/dinov3/journals/` (job
+  564316): wall clock including image decoding and feature extraction, not a benchmark.
+- **Group overlap counted**: *Grajek i Meloman* (11 images) with *Grajek* (6) and *Meloman* (9),
+  *Ogrodnik i Kierownik* (7) with *Ogrodnik* (3); 36 of 1,691 images. Stated in the supplement.
+- **Three citations added, each from `arxiv.org/bibtex/<id>`** and checked on title, first author
+  and year: Vanyan et al. (2401.00463, patch-level DINO over MIM for k-NN), MaO (2503.07038,
+  NeurIPS 2025 per its arXiv journal reference) and Bezerra et al. (2610.10991, region tokens on
+  DINOv2-reg, concurrent). The review's "Cluster-CLIP" (2309.14999) was not cited: the name does
+  not appear in that paper's abstract. The review reads as tool-assisted ("using the summaries
+  provided"), so every reference in it was verified before use; all seven IDs exist.
+- **Declined, with reasons already in the paper**: fine-tuning or LoRA (the claim is about frozen
+  features), multi-vector baselines as experiments (a new pipeline; named as future work in
+  Related Work instead), and external distractor scenes for rejection (no such data).
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.

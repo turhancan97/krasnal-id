@@ -192,7 +192,12 @@ def soft_prior_part(
                     np.asarray([locations[s][0] for s in ranking.statues]),
                     np.asarray([locations[s][1] for s in ranking.statues]),
                 )
-                closeness = np.exp(-distance / settings.soft_prior_scale_m)
+                scaled = distance / settings.soft_prior_scale_m
+                closeness = (
+                    np.exp(-scaled)
+                    if settings.soft_prior_kernel == "exponential"
+                    else np.exp(-0.5 * scaled**2)
+                )
                 for w in weights:
                     if rank_with_prior(ranking, w * closeness) == 1:
                         hits[w][ranking.query_image_id] += 1.0 / len(settings.noise_seeds)

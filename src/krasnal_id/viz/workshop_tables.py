@@ -507,6 +507,107 @@ def write_extra_numbers(specs: list[str], output_dir: Path) -> Path:
     return out
 
 
+_KERNELS = (("exponential", "$e^{-d/s}$"), ("gaussian", "$e^{-d^2/2s^2}$"))
+_CAP_MATCHERS = ("sift", "disk-lightglue", "loftr")
+
+
+def _point(value: float) -> dict[str, float | None]:
+    """A metric with a value and no interval."""
+    return {"value": value, "lower": None, "upper": None}
+
+
+def _sensitivity_runs(root: Path, prefix: str) -> dict[str, dict[str, dict[str, float | None]]]:
+    """Every `<root>/cvww_sens_<prefix>-*/workshop_validation-dinov2.json`, by suffix."""
+    return {
+        directory.name.removeprefix(f"cvww_sens_{prefix}-"): load_metrics(
+            directory / "workshop_validation-dinov2.json"
+        )
+        for directory in sorted(root.glob(f"cvww_sens_{prefix}-*"))
+        if (directory / "workshop_validation-dinov2.json").is_file()
+    }
+
+
+def sensitivity_outputs(root: Path) -> dict[str, str]:
+    """The second reviewer's sensitivity tables and their summary macros.
+
+    The soft prior is re-run at several kernel scales and shapes, and the held-out
+    re-ranking at several inlier caps; each run is a separate artifact under
+    `root`. Nothing is written for a check that has no runs.
+    """
+    outputs: dict[str, str] = {}
+    summary: dict[str, dict[str, float | None]] = {}
+    priors = _sensitivity_runs(root, "prior")
+    if priors:
+        errors = (10, 25, 50)
+        rows: list[str] = []
+        any_run = next(iter(priors.values()))
+        rows.append(
+            "No prior & --- & "
+            + " & ".join([_cell(any_run, "dinov2_soft_prior_none_top_1")] * len(errors))
+            + r" \\"
+        )
+        for kernel, label in _KERNELS:
+            scales = sorted(
+                int(key.rsplit("-", 1)[1]) for key in priors if key.startswith(f"{kernel}-")
+            )
+            for position, scale_m in enumerate(scales):
+                run = priors[f"{kernel}-{scale_m}"]
+                rows.append(
+                    " & ".join(
+                        [label if position == 0 else "", f"{scale_m}\\,m"]
+                        + [_cell(run, f"dinov2_soft_prior_gps{e}_top_1") for e in errors]
+                    )
+                    + r" \\"
+                )
+        outputs["reviewer-kernel.tex"] = _table(
+            "llccc",
+            "Kernel & Scale $s$ & " + " & ".join(f"{e}\\,m" for e in errors) + r" \\",
+            rows,
+        )
+        for e in errors:
+            values = [run[f"dinov2_soft_prior_gps{e}_top_1"]["value"] for run in priors.values()]
+            known = [v for v in values if v is not None]
+            summary[f"sens_prior_gps{e}_min_top_1"] = _point(min(known))
+            summary[f"sens_prior_gps{e}_max_top_1"] = _point(max(known))
+        summary["sens_prior_runs_count"] = _point(float(len(priors)))
+    caps = _sensitivity_runs(root, "cap")
+    if caps:
+        rows = []
+        for cap in sorted(caps, key=int):
+            run = caps[cap]
+            rows.append(
+                " & ".join(
+                    [cap] + [_cell(run, f"cv_{m}_vs_cosine_top_1_gain") for m in _CAP_MATCHERS]
+                )
+                + r" \\"
+            )
+        outputs["reviewer-cap.tex"] = _table(
+            "lccc",
+            "Inlier cap & " + " & ".join(_MATCHER_NAMES[m] for m in _CAP_MATCHERS) + r" \\",
+            rows,
+        )
+        for m in _CAP_MATCHERS:
+            key = m.replace("-", "_")
+            gains = [run[f"cv_{m}_vs_cosine_top_1_gain"]["value"] for run in caps.values()]
+            known = [g for g in gains if g is not None]
+            summary[f"sens_cap_{key}_min_gain"] = _point(min(known))
+            summary[f"sens_cap_{key}_max_gain"] = _point(max(known))
+    if summary:
+        outputs["sens-numbers.tex"] = macro_file(summary, with_commands=False)
+    return outputs
+
+
+def write_sensitivity_outputs(root: Path, output_dir: Path) -> tuple[Path, ...]:
+    """Write the sensitivity tables and macros, atomically."""
+    written = []
+    for name, text in sensitivity_outputs(root).items():
+        path = output_dir / name
+        with atomic_text(path, WorkshopTableError) as handle:
+            handle.write(text)
+        written.append(path)
+    return tuple(written)
+
+
 def write_workshop_outputs(validation: Path, output_dir: Path) -> tuple[Path, ...]:
     """Write the macro file and the generated tables, atomically."""
     metrics = load_metrics(validation)
