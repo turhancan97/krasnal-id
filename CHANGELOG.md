@@ -164,6 +164,10 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- `RESULTS.md` §18 records both internal reviews' results: the kernel and inlier-cap sensitivity,
+  unseen-photographer accuracy by remaining references, margin-gated verification, the
+  multi-region baseline, the photographer-credit leakage check and the cost figures.
+
 - The supplement's correspondence figure (`visualize teaser-matches`) is a matcher-by-candidate
   grid of square crops centred on the verified matches. Lines are drawn in each matcher's colour
   with a white casing and endpoint dots so they read on dark bronze, rows carry (a)-(d) tags and a

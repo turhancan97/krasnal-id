@@ -987,6 +987,68 @@ unseen-photographer queries (`results/dinov3/rerank_validation/`): cosine 85.2%,
 below camera-shot ones by 4.6 top-1 points for DINOv3, 5.0 for SigLIP 2, 5.3 for DINOv2 and 15.6
 for CLIP. A lower bound on the street gap, from 51 photographs.
 
+## 18. Internal reviews: sensitivity, scarcity and a multi-vector baseline
+
+Two internal reviews of the workshop draft asked whether the headline results hinge on choices
+made along the way. Every check here reuses cached vectors, region vectors or the existing match
+journals, and reproduces a released number to 1e-9 before measuring anything new (AGENTS.md
+§7.18–§7.19). Sources: `results/cvww_sens_<prior|cap>-*/` and `results/cvww_review2/`.
+
+**The location prior does not depend on its kernel.** Held-out top-1 over the 294 placed statues,
+DINOv2, with lambda chosen on held-out statue folds in every row:
+
+| Kernel | Scale | User 10 m | 25 m | 50 m | 100 m |
+|---|---|---:|---:|---:|---:|
+| No prior | — | 93.4 | 93.4 | 93.4 | 93.4 |
+| exp(−d/s) | 50 m | 99.1 | 97.7 | 95.3 | 93.7 |
+| | 200 m (published) | 99.1 | 98.7 | 97.5 | 95.4 |
+| | 800 m | 99.1 | 98.6 | 98.1 | 97.0 |
+| exp(−d²/2s²) | 200 m | 99.2 | 98.7 | 98.3 | 97.1 |
+
+At 25 m every scale and shape lands between 97.7% and 98.8%. The gain shrinks as the user moves
+away and a wider kernel then holds more of it. Full table: `paper-cvww/generated/reviewer-kernel.tex`.
+
+**The inlier cap matters only when too small.** Held-out top-1 gain over cosine, DINOv2's top ten,
+unseen-photographer queries: DISK+LightGlue 2.2–2.5 points and LoFTR 1.8–4.1 for caps of 20 to
+240; a cap of 10 weakens both (1.4 and 0.2); SIFT is not established at any cap. A cap of 100,000
+was run and superseded, because the blend divides by the cap and that run measured the weight grid
+rather than the cap.
+
+**Much of the unseen-photographer drop is scarcity.** Unseen-photographer top-1 by references of
+the correct statue left once the query's photographer is withheld:
+
+| References left | Queries | DINOv2 | DINOv3 |
+|---|---:|---:|---:|
+| 1 | 207 | 60.4 [51.1, 70.1] | 69.6 [60.6, 78.9] |
+| 2 | 207 | 78.3 [71.1, 85.4] | 81.2 [74.8, 87.4] |
+| 3–5 | 347 | 85.0 [80.4, 89.6] | 88.2 [83.2, 92.4] |
+| 6+ | 396 | 92.2 [89.3, 94.9] | 92.9 [89.7, 95.7] |
+
+**Verification can be spent where cosine is unsure.** Verifying only the 30% of queries with the
+smallest cosine top-two margin gives DISK+LightGlue 84.4% (all of its held-out gain) and LoFTR
+85.3% (against 85.5% verifying all). The order uses cosine alone.
+
+**A compact multi-vector representation is no substitute for verification.** CLS plus grid-pooled
+final-layer patch vectors (2×2, or 2×2 and 3×3), scored by late interaction. Paired difference
+from CLS cosine, points:
+
+| Backbone | Vectors | Top-1 | R@10 | Unseen top-1 | Unseen R@10 |
+|---|---|---:|---:|---:|---:|
+| DINOv2 | 5 | 0.0 [−0.9, 0.9] | 0.7 [0.1, 1.3] | −2.0 [−4.4, 0.4] | 0.0 [−1.4, 1.4] |
+| | 14 | 0.7 [−0.3, 1.6] | 0.8 [0.1, 1.4] | −0.7 [−3.0, 1.6] | 0.5 [−1.0, 2.0] |
+| DINOv3 | 5 | 0.1 [−0.7, 0.8] | 0.2 [−0.3, 0.7] | −1.9 [−4.1, 0.2] | −0.8 [−2.5, 0.8] |
+| | 14 | 0.0 [−0.8, 0.8] | −0.1 [−0.7, 0.5] | −2.6 [−5.2, −0.1] | −1.0 [−3.1, 0.9] |
+
+What the regions add appears only with the photographer's own frames available, the §9 pattern.
+
+**Leakage and cost.** Three pairs of files credited to spellings of one name, or to a crop of
+another contributor's photograph, are the only cross-photographer near-duplicates above cosine
+0.95; merging them leaves unseen-photographer top-1 at exactly 81.85% (DINOv2) and 85.22% (DINOv3).
+Exhaustive search over the 1,691 vectors takes 0.22 ms a query on one CPU thread; verifying a
+top-ten shortlist took 0.34 s (SIFT), 0.49 s (DISK+LightGlue) and 1.7 s (LoFTR) a query on one
+RTX 2080 Ti, read from journal write times rather than benchmarked. Each query has one correct
+statue, so average precision equals reciprocal rank and MRR is the mAP.
+
 ## Limitations
 
 - **Reference photographs are not a phone camera.** These are Commons uploads — mostly good light,
