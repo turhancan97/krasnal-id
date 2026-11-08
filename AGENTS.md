@@ -2269,6 +2269,14 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
   the author's mustard and ink. It is set beside a two-line title. It is deliberately unlike the
   public Krasnal-ID mark in `docs/brand/` (a hat over a location pin), which would identify the
   author to a reviewer; do not swap one for the other before the review is over.
+- **The supplement's layout rule (2026-11-08): never pin floats with `[H]`, and no barrier at every
+  section.** Pinned floats left a half-empty page behind every figure that did not fit, and a
+  per-section `placeins` barrier did the same whenever a full-page figure was pending, stranding
+  headings. Floats are `[!htbp]` (a full-page sheet `[p]`), with float fractions raised so several
+  share a page; table captions go above, figure captions below; a narrow figure sits beside its
+  table (sweep with fold weights) or is wrapped into its text (rejection). That took the
+  supplement from 11 pages to 8 with no blank half-pages. Check by rendering a contact sheet of
+  every page, not by reading the log.
 - **The rendered bibliography exposed a wrong citation that the journal draft also carries.**
   `chen2020simclr` resolves to an unrelated 2022 *Geophysics* paper on seismic denoising whose
   title contains SimCLR's — the `he2020moco` failure again, missed because only that one key was

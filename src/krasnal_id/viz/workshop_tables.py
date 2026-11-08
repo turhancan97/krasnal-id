@@ -126,6 +126,9 @@ def macro_file(
     return "\n".join(lines) + "\n"
 
 
+_MATCHER_NAMES = {"sift": "SIFT", "disk-lightglue": "DISK+LightGlue", "loftr": "LoFTR"}
+
+
 def fold_weight_table(path: Path) -> str:
     """The weight each matcher chose on each statue fold, as a LaTeX table body."""
     try:
@@ -140,9 +143,16 @@ def fold_weight_table(path: Path) -> str:
         r"Matcher & Fold & Weight & Selection top-1 & Held-out queries & statues \\",
         r"\midrule",
     ]
+    previous = None
     for row in rows:
+        # The paper's name for the matcher, once per group, with a rule between groups.
+        name = _MATCHER_NAMES.get(row["matcher"], row["matcher"])
+        if previous is not None and row["matcher"] != previous:
+            body.append(r"\midrule")
+        shown = name if row["matcher"] != previous else ""
+        previous = row["matcher"]
         body.append(
-            f"{row['matcher']} & {row['fold']} & {row['weight']:g} & "
+            f"{shown} & {row['fold']} & {row['weight']:g} & "
             f"{100 * row['selection_top_1']:.1f} & {row['held_out_queries']} & "
             f"{row['held_out_statues']} \\\\"
         )

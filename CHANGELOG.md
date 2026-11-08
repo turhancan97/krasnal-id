@@ -150,6 +150,9 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- The CVWW fold-weight table names matchers as the paper does (SIFT, DISK+LightGlue, LoFTR), once
+  per group with a rule between groups, instead of printing configuration identifiers.
+
 - The CVWW dataset figure (Figure 2) is restyled in the corpus's own colour, mustard
   (`figure_style.CORPUS_ACCENT`/`CORPUS_FILL`, validated on white): each confusion arrow is
   labelled with its share of queries and the statues' separation, the map colours Wikidata

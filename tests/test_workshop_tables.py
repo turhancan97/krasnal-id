@@ -91,7 +91,8 @@ def test_the_macro_file_defines_values_and_intervals(tmp_path: Path) -> None:
 
 def test_fold_weights_become_a_table_and_absent_ones_are_refused(tmp_path: Path) -> None:
     path = _artifact(tmp_path / "v.json")
-    assert "sift & 0 & 0.02 & 82.1 & 219 & 37" in fold_weight_table(path)
+    # The paper's matcher name, not the configuration identifier.
+    assert "SIFT & 0 & 0.02 & 82.1 & 219 & 37" in fold_weight_table(path)
 
     empty = tmp_path / "empty.json"
     empty.write_text(json.dumps({"metrics": [], "fold_weights": []}), encoding="utf-8")
