@@ -423,6 +423,7 @@ def family_table(
         ("mrr", "MRR"),
         ("unseen_top_1", "Unseen"),
         ("unseen_r_at_10", "Unseen R@10"),
+        ("photographer_attributable", "Ph."),
         ("points_per_doubling", "/2$\\times$"),
         ("geo_minus_random_pool_10", "Loc."),
         ("reject_margin_auroc", "AUROC"),

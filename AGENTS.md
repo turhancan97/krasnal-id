@@ -1770,6 +1770,35 @@ ones worth keeping as rules:
   Limitations cite are now in the supplement through `--extra cg3=…`/`cgs=…`.
 - **The body now fills exactly eight pages**; any later addition must be paid for by a cut.
 
+**Second read (same day), after the fixes above.** It found what the first pass introduced or left:
+
+- **Figure 2(a)'s arrows used the wrong denominator.** `ConfusionPair.queries` counts only the
+  queries whose strongest rival was the right-hand statue, so a seven-photograph statue printed
+  "2 of 2". The label now divides by the left statue's photograph count (all its leave-one-out
+  queries): 2 of 11, 2 of 3, 2 of 7.
+- **"Cast from one design" was not true of the teaser's own statues.** The three Słupniki share a
+  series, scale, material and setting but visibly differ in pose. Every factual "cast from one
+  design / cast alike / near-identical pillar dwarves" became "one series, alike in style, scale
+  and setting and differing mainly in pose"; the corpus is "made in themed series". The title and
+  section heading keep "Near-Identical" pending the author's decision.
+- **The family-definition sentence misstated the order of events.** The paper said the
+  mutual-nearest-neighbour definition was replaced "before its result was read"; §7.16 records
+  that its result was seen. It now says the *replacement* was fixed before its own result was seen.
+- **A sentence about the kernel contradicted itself** (no dependence at 25 m, dependence at 100 m);
+  it now states both regimes. "Lifts SIFT to 82.0%" became "leaves SIFT unchanged" (82.1 at top 10).
+  The conclusion's range starts at DINO's 92%, and "masked-prediction models fail" names MAE, BEiT
+  and I-JEPA everywhere, since EVA-02 is masked-modelled and reaches 84.5%.
+- **Causal wording softened to what the permutation test shows**: the penalty depends on the real
+  layout, not "lookalikes stand together"; "a lookalike is the reason" became "one likely reason".
+- The main text gained a short "Other first-stage changes" protocol paragraph so the negative
+  results are defined without the supplement; the supplement's backbone table gained the
+  photographer-effect column it claimed to carry.
+- **Bibliography**: SuperPoint's Crossref page range "337–33712" removed; ViT and CLIP given their
+  ICLR/ICML 2021 venues; the wide-baseline IJCV paper dated 2021 (volume 129); Jégou and Radenović
+  diacritics restored; Video Google's "vol.2" dropped.
+- **Paid for in cuts**: eight lines of repetition and secondary detail, so the body again ends on
+  page 8 with references from page 9.
+
 ### 7.20 Fresh-eyes read before submission (2026-11-08)
 
 An independent agent read only the two rendered PDFs, without the decision record, and found the

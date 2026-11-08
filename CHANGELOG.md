@@ -164,6 +164,10 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- Figure 2(a)'s arrows divide by the left statue's full query count rather than by the
+  competitions counted in the confusion artifact, and the supplement's thirteen-backbone table
+  gains the photographer-effect column (AGENTS.md §7.20).
+
 - The CVWW dataset figure's confusion panel follows a stated rule (`shown_confusions`): the most
   frequent DINOv2 confusions, skipping a group class against its own member and any statue already
   shown. Two journal-table captions say "statue" and no longer promise an interval they do not

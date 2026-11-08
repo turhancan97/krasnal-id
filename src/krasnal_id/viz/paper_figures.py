@@ -408,13 +408,21 @@ def _confused_pairs_panel(
     pairs = shown_confusions(sources.records("confusion-dinov2", "pairs"), group_links())
     axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.22})
     arrows: list[tuple[Any, Any, str, str]] = []
+    # The denominator is every query of the left statue: leave-one-out queries each
+    # of its photographs once. The artifact's own `queries` counts only the queries
+    # whose strongest rival was the right statue, which reads as an impossible
+    # "2 of 2" for a statue with seven photographs.
+    photographs: dict[str, int] = {}
+    for image in manifest.images:
+        photographs[image.dwarf_id] = photographs.get(image.dwarf_id, 0) + 1
     for row, pair in zip(axes, pairs, strict=True):
         separation = float(pair["separation_metres"])
+        total = photographs[str(pair["true_dwarf_id"])]
         arrows.append(
             (
                 row[0],
                 row[1],
-                f"{pair['misidentifications']} of {pair['queries']} queries",
+                f"{pair['misidentifications']} of {total} queries",
                 "same plinth" if separation < 1.0 else f"{separation:.0f} m apart",
             )
         )
