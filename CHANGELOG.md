@@ -150,6 +150,15 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- The supplement's correspondence figure (`visualize teaser-matches`) is a matcher-by-candidate
+  grid of square crops centred on the verified matches. Lines are drawn in each matcher's colour
+  with a white casing and endpoint dots so they read on dark bronze, rows carry (a)-(d) tags and a
+  rotated label, and each pair carries a "N verified matches" badge.
+- The supplement's per-paradigm curves (`visualize family --curves`) use one subfigure per column
+  with lettered titles. Each row opens with its paradigm in bold on the left and its model key
+  over the right panel, so no legend or label crosses a curve. The type sizes are now the shared
+  tick and label sizes rather than the annotation size.
+
 - The CVWW fold-weight table names matchers as the paper does (SIFT, DISK+LightGlue, LoFTR), once
   per group with a rule between groups, instead of printing configuration identifiers.
 

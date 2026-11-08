@@ -263,14 +263,13 @@ def render_family_curves(
     plt = import_optional_analysis("matplotlib.pyplot")
     style.apply(plt)
     rows = len(FAMILIES)
-    figure, grid = plt.subplots(
-        rows,
-        2,
-        figsize=(width, 0.84 * rows + 0.5),
-        layout="constrained",
-        sharex="col",
-        squeeze=False,
-    )
+    # One subfigure per column, so each column carries its own lettered title
+    # without sharing a title offset with the first row's paradigm name.
+    figure = plt.figure(figsize=(width, 0.98 * rows + 0.6), layout="constrained")
+    columns = figure.subfigures(1, 2, wspace=0.03)
+    left = columns[0].subplots(rows, 1, sharex=True, squeeze=False)[:, 0]
+    right = columns[1].subplots(rows, 1, sharex=True, squeeze=False)[:, 0]
+    grid = [(left[i], right[i]) for i in range(rows)]
     for row, (family, models) in enumerate(FAMILIES):
         pool_axes, geo_axes = grid[row]
         styles = _member_styles(models)
@@ -319,35 +318,45 @@ def render_family_curves(
                 linewidth=style.LINE_WIDTH * 0.8,
             )
         geo_axes.axhline(0, color=style.INK_MUTED, linewidth=style.REFERENCE_LINE_WIDTH)
-        # A legend needs empty space, and in a panel of falling curves every corner
-        # is crossed by one. Rows with several models get headroom below the curves
-        # instead, and the legend sits in it.
-        if len(models) > 1:
-            low, high = pool_axes.get_ylim()
-            pool_axes.set_ylim(low - 0.55 * (high - low), high)
-        pool_axes.legend(
-            loc="lower left" if len(models) > 1 else "best",
-            fontsize=style.SIZE_ANNOTATION,
+        # Each row opens with a header line: the paradigm in bold on the left and
+        # its models' key on the right, both above the axes, so neither a label
+        # nor a legend ever has to share space with a falling curve.
+        pool_axes.set_title(family, loc="left", fontsize=style.SIZE_LABEL, fontweight="bold", pad=3)
+        handles, labels = pool_axes.get_legend_handles_labels()
+        geo_axes.legend(
+            handles,
+            labels,
+            loc="lower right",
+            bbox_to_anchor=(1.0, 1.0),
+            fontsize=style.SIZE_LEGEND,
             frameon=False,
-            handlelength=1.8,
-            borderaxespad=0.2,
-            ncol=len(models) if len(models) > 1 else 1,
+            handlelength=2.2,
+            borderaxespad=0.1,
+            columnspacing=1.4,
+            ncol=len(models),
         )
-        pool_axes.set_ylabel(f"{family}\nTop-1 (%)", fontsize=style.SIZE_ANNOTATION)
-        geo_axes.set_ylabel("Location \u2212\nrandom (pts)", fontsize=style.SIZE_ANNOTATION)
+        pool_axes.set_ylabel("Top-1 (%)")
+        geo_axes.set_ylabel("\u0394 top-1 (pts)")
+        locator = import_optional_analysis("matplotlib.ticker").MaxNLocator
         for axes in (pool_axes, geo_axes):
             axes.set_xscale("log")
             axes.minorticks_off()
-            axes.tick_params(labelsize=style.SIZE_ANNOTATION)
+            axes.yaxis.set_major_locator(locator(nbins=4, steps=[1, 2, 5, 10]))
             axes.yaxis.set_major_formatter(
                 import_optional_analysis("matplotlib.ticker").FuncFormatter(
                     lambda v, _: style.minus(f"{v:g}")
                 )
             )
+    columns[0].suptitle("(a) Top-1 against pool size", fontsize=style.SIZE_PANEL, fontweight="bold")
+    columns[1].suptitle(
+        "(b) Location minus random at equal pool size",
+        fontsize=style.SIZE_PANEL,
+        fontweight="bold",
+    )
     grid[-1][0].set_xticks(_TICKS, [str(n) for n in _TICKS])
     grid[-1][1].set_xticks((*_TICKS[:-1], 200), [str(n) for n in (*_TICKS[:-1], 200)])
     grid[-1][0].set_xlabel("Candidate statues in the pool")
-    grid[-1][1].set_xlabel("Candidate pool size")
+    grid[-1][1].set_xlabel("Candidate statues in the pool")
     written = style.save(figure, path, dpi)
     plt.close(figure)
     return written
