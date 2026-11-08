@@ -31,8 +31,8 @@ class WorkshopTableError(ValueError):
 _POINTS = re.compile(r"points_per_doubling$")
 # Metrics that are counts or p-values, written verbatim.
 _RAW = re.compile(r"(_wins|_losses|_p_value|_queries|_statues|_count|_errors|_permutations)$")
-# AUROCs and their differences are probabilities the paper prints as 0.896, not 89.6.
-_AUROC = re.compile(r"_auroc$")
+# AUROCs, their differences and MRR are printed as 0.896, not 89.6.
+_AUROC = re.compile(r"(_auroc|_mrr)$")
 # Selected weights are printed as chosen, never as percentages.
 _WEIGHT = re.compile(r"_weight$")
 
@@ -370,6 +370,8 @@ def reviewer_tables(metrics: Mapping[str, Mapping[str, float | None]]) -> dict[s
 # has a statue interval, so the table prints them as points.
 _FAMILY_RELEASED = (
     ("photographer_gap", "disjoint_top_1", "unseen_top_1"),
+    ("baseline", "top_5", "top_5"),
+    ("baseline", "mrr", "mrr"),
     ("recall_curve", "disjoint_r_at_10", "unseen_r_at_10"),
     ("open_set", "target_90_false_acceptance", "cosine_false_acceptance_90"),
 )
@@ -417,7 +419,10 @@ def family_table(
     """The compact per-model table: points only, grouped under family headings."""
     columns = (
         ("top_1", "Top-1"),
+        ("top_5", "Top-5"),
+        ("mrr", "MRR"),
         ("unseen_top_1", "Unseen"),
+        ("unseen_r_at_10", "Unseen R@10"),
         ("points_per_doubling", "/2$\\times$"),
         ("geo_minus_random_pool_10", "Loc."),
         ("reject_margin_auroc", "AUROC"),
@@ -538,9 +543,21 @@ def sensitivity_outputs(root: Path) -> dict[str, str]:
     summary: dict[str, dict[str, float | None]] = {}
     priors = _sensitivity_runs(root, "prior")
     if priors:
-        errors = (10, 25, 50)
-        rows: list[str] = []
         any_run = next(iter(priors.values()))
+        # The user distances every run measured, read from the artifacts.
+        errors = tuple(
+            sorted(
+                {
+                    int(n.removeprefix("dinov2_soft_prior_gps").removesuffix("_top_1"))
+                    for n in any_run
+                    if n.startswith("dinov2_soft_prior_gps")
+                    and n.endswith("_top_1")
+                    and "_w" not in n
+                    and "location_only" not in n
+                }
+            )
+        )
+        rows: list[str] = []
         rows.append(
             "No prior & --- & "
             + " & ".join([_cell(any_run, "dinov2_soft_prior_none_top_1")] * len(errors))
@@ -560,7 +577,7 @@ def sensitivity_outputs(root: Path) -> dict[str, str]:
                     + r" \\"
                 )
         outputs["reviewer-kernel.tex"] = _table(
-            "llccc",
+            "ll" + "c" * len(errors),
             "Kernel & Scale $s$ & " + " & ".join(f"{e}\\,m" for e in errors) + r" \\",
             rows,
         )
@@ -597,10 +614,102 @@ def sensitivity_outputs(root: Path) -> dict[str, str]:
     return outputs
 
 
+_STRATA = (("1", "1"), ("2", "2"), ("3to5", "3--5"), ("6plus", "6+"))
+_GATED_MATCHERS = ("sift", "disk-lightglue", "loftr")
+_REGION_SETS = (("grid5", "CLS + 2$\\times$2"), ("grid14", "CLS + 2$\\times$2 + 3$\\times$3"))
+
+
+def review2_tables(metrics: Mapping[str, Mapping[str, float | None]]) -> dict[str, str]:
+    """The third review's supplement tables, each only if its metrics exist.
+
+    Strata of unseen-photographer top-1 by remaining references, top-1 against the
+    fraction of queries verified, and the multi-region baseline against cosine.
+    """
+    tables: dict[str, str] = {}
+    backbones = [(k, label) for k, label in _BACKBONES if f"{k}_strata_1_top_1" in metrics]
+    if backbones:
+        rows = []
+        for key, label in _STRATA:
+            first = backbones[0][0]
+            if f"{first}_strata_{key}_queries" not in metrics:
+                continue
+            cells = [
+                label,
+                formatted("q_queries", metrics[f"{first}_strata_{key}_queries"]["value"] or 0.0),
+                formatted("q_statues", metrics[f"{first}_strata_{key}_statues"]["value"] or 0.0),
+            ] + [_cell(metrics, f"{b}_strata_{key}_top_1") for b, _ in backbones]
+            rows.append(" & ".join(cells) + r" \\")
+        tables["reviewer-strata.tex"] = _table(
+            "lrr" + "c" * len(backbones),
+            "References left & Queries & Statues & "
+            + " & ".join(label for _, label in backbones)
+            + r" \\",
+            rows,
+        )
+    fractions = sorted(
+        {
+            int(n.split("_")[-3])
+            for n in metrics
+            if n.startswith("cv_gate_") and n.endswith("_top_1")
+        }
+    )
+    if fractions:
+        matchers = [m for m in _GATED_MATCHERS if f"cv_gate_{m}_{fractions[0]}_top_1" in metrics]
+        rows = [
+            " & ".join([f"{f}\\%"] + [_cell(metrics, f"cv_gate_{m}_{f}_top_1") for m in matchers])
+            + r" \\"
+            for f in fractions
+        ]
+        tables["reviewer-gated.tex"] = _table(
+            "l" + "c" * len(matchers),
+            "Verified & " + " & ".join(_MATCHER_NAMES[m] for m in matchers) + r" \\",
+            rows,
+        )
+    region_backbones = [
+        (k, label) for k, label in _BACKBONES if f"{k}_mr_full_cosine_top_1" in metrics
+    ]
+    if region_backbones:
+        rows = []
+        for key, label in region_backbones:
+            rows.append(
+                " & ".join(
+                    [label, "CLS cosine"]
+                    + [
+                        _cell(metrics, f"{key}_mr_{arm}_cosine_top_{k}")
+                        for arm in ("full", "disjoint")
+                        for k in (1, 10)
+                    ]
+                )
+                + r" \\"
+            )
+            for method, name in _REGION_SETS:
+                rows.append(
+                    " & ".join(
+                        ["", name]
+                        + [
+                            _cell(metrics, f"{key}_mr_{arm}_{method}_vs_cosine_top_{k}_gain")
+                            for arm in ("full", "disjoint")
+                            for k in (1, 10)
+                        ]
+                    )
+                    + r" \\"
+                )
+        tables["reviewer-multiregion.tex"] = _table(
+            "llcccc",
+            "Backbone & Vectors & Top-1 & R@10 & Unseen top-1 & Unseen R@10 \\\\",
+            rows,
+        )
+    return tables
+
+
 def write_sensitivity_outputs(root: Path, output_dir: Path) -> tuple[Path, ...]:
     """Write the sensitivity tables and macros, atomically."""
     written = []
-    for name, text in sensitivity_outputs(root).items():
+    outputs = dict(sensitivity_outputs(root))
+    review2 = root / "cvww_review2" / "workshop_validation-dinov2.json"
+    if review2.is_file():
+        outputs |= review2_tables(load_metrics(review2))
+    for name, text in outputs.items():
         path = output_dir / name
         with atomic_text(path, WorkshopTableError) as handle:
             handle.write(text)

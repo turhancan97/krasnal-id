@@ -39,6 +39,7 @@ soft_prior_scale_m: 200
 # The second reviewer's sensitivity checks; the published values are the defaults.
 soft_prior_kernel: exponential
 rerank_inlier_cap: 30
+gate_fractions: [0.0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0]
 gps_error_m: [10, 25, 50]
 noise_metres: [9, 50, 150]
 noise_seeds: [0, 1, 2, 3, 4]

@@ -571,7 +571,7 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
     metrics: list[MetricSummary] = []
     fold_weights: tuple[FoldWeight, ...] = ()
 
-    if "rerank" in settings.parts:
+    if "rerank" in settings.parts or "gated" in settings.parts:
         expected = eligible_queries(split, manifest)
         truths = {fold.query_image_id: fold.query_dwarf_id for fold in split.folds}
         evidence: dict[str, dict[str, QueryEvidence]] = {
@@ -585,6 +585,11 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
         held_out, fold_weights = cross_validate(
             evidence, truths, fold_of_statue, settings.weights, cap=settings.rerank_inlier_cap
         )
+        if "gated" in settings.parts:
+            from krasnal_id.experiments.second_review import gated_part
+
+            metrics += gated_part(held_out, evidence, settings)
+    if "rerank" in settings.parts:
         metrics += summarize_held_out(
             held_out,
             (COSINE, *settings.matchers),
@@ -627,7 +632,7 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
                 for row in wide_weights
             ]
 
-    recomputed = [part for part in settings.parts if part != "rerank"]
+    recomputed = [part for part in settings.parts if part not in ("rerank", "gated")]
     if recomputed:
         # Imported here: the reviewer checks build on this module's helpers.
         from krasnal_id.experiments.reviewer_checks import (
@@ -721,6 +726,29 @@ def run_workshop_validation(config: AppConfig, journals_dir: Path) -> WorkshopVa
                     released_metrics(released_dir(name), f"baseline-{name}"),
                     settings,
                 )
+            if "strata" in recomputed or "multi_region" in recomputed:
+                from krasnal_id.embeddings.regions import load_regions
+                from krasnal_id.experiments.second_review import multi_region_part, strata_part
+
+                photographer = released_metrics(released_dir(name), f"photographer_gap-{name}")
+                if "strata" in recomputed:
+                    metrics += strata_part(name, split, manifest, matrix, photographer, settings)
+                if "multi_region" in recomputed:
+                    regions = load_regions(
+                        Path(config.paths.embeddings_dir) / f"regions-{name}.npz",
+                        matrix.image_ids,
+                        backbone_config(name),
+                    )
+                    metrics += multi_region_part(
+                        name,
+                        split,
+                        manifest,
+                        matrix,
+                        regions,
+                        released_metrics(released_dir(name), f"baseline-{name}"),
+                        photographer,
+                        settings,
+                    )
             if "pool" in recomputed:
                 metrics += pool_part(
                     name,

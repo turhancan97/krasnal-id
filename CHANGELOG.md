@@ -16,6 +16,13 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- Third internal review (AGENTS.md §7.19): `embeddings extract-regions` writes CLS plus
+  grid-pooled patch vectors; the `multi_region`, `strata` and `gated` parts of `experiment
+  workshop-validation` score a late-interaction multi-vector baseline, unseen-photographer top-1
+  by remaining references, and margin-gated verification. `visualize workshop-tables` writes
+  `reviewer-strata.tex`, `reviewer-gated.tex` and `reviewer-multiregion.tex`, and the
+  thirteen-backbone table gains top-5, MRR and unseen-photographer R@10.
+
 - Sensitivity checks for the second internal review (AGENTS.md §7.18):
   `experiment.soft_prior_kernel` (exponential or Gaussian) and `experiment.rerank_inlier_cap`
   for `experiment workshop-validation`, both defaulting to the published values. `visualize

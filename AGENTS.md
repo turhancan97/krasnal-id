@@ -1685,6 +1685,56 @@ vectors or the existing match journals; no model was loaded and nothing was matc
   features), multi-vector baselines as experiments (a new pipeline; named as future work in
   Related Work instead), and external distractor scenes for rejection (no such data).
 
+### 7.19 Third internal review (2026-11-08)
+
+A second colleague's review, also recommending acceptance and evidently from the same review tool
+(its structure and "using the summaries provided" match §7.18's), asked for ranking metrics
+beyond top-1, a compact multi-vector baseline, a stratification of the unseen-photographer arm,
+and a hybrid that verifies only uncertain queries. All five arXiv references it cited exist and
+were verified before use. Everything below writes `results/cvww_review2/` (job 565259) and is
+cited through `--extra r2=…` as `\wv{r2_*}`.
+
+- **mAP is MRR here, and saying so is the answer.** Each query has exactly one correct statue,
+  so average precision equals reciprocal rank. The supplement's thirteen-backbone table
+  (`family-table.tex`, now included) gains top-5, MRR and unseen-photographer R@10; MRR prints
+  as 0.943, through the `_AUROC` formatting pattern widened to `(_auroc|_mrr)$`.
+- **The multi-region baseline is a negative result, and its shape is the finding.** CLS plus
+  the mean of final-layer patch tokens over a 2x2 grid, or 2x2 and 3x3, each normalised, scored
+  by late interaction (mean over query vectors of the best reference vector), statue by best
+  reference. On leave-one-out queries it is flat at top-1 and lifts DINOv2's R@10 by 0.7-0.8
+  points; once the photographer is withheld it helps neither backbone and lowers top-1 (DINOv3,
+  14 vectors: -2.6, interval excluding zero). What regions add comes from the same photographer's
+  frames, the §7.5 pattern again. It is "a grid-pooled multi-vector baseline in the spirit of"
+  patch-wise retrieval and region tokens, never a reproduction of either.
+  - Regions come from `embeddings extract-regions` (job 565257, 2 minutes a backbone on a 2080
+    Ti) into `data/embeddings/regions-<backbone>.npz`, outside the content-addressed cache
+    because that cache holds one vector per image. `load_regions` refuses a file written by
+    another model or revision. Extracted CLS agrees with the cached vectors to 1e-7.
+  - The cosine arm reproduces both the released baseline and the released photographer-disjoint
+    top-1 to 1e-9 before any region set is scored.
+- **Scarcity, measured directly.** Unseen-photographer top-1 by references of the correct statue
+  left once the photographer is withheld: DINOv2 60.4% with one, 78.3% with two, 85.0% with three
+  to five, 92.2% with six or more (DINOv3 69.6 to 92.9). The strata reproduce the released
+  disjoint arm in total.
+- **Verification can be gated by cosine margin.** Verifying only the 30% of queries with the
+  smallest top-two cosine margin, each with its fold's held-out weight, gives DISK+LightGlue
+  84.4% (all of its gain) and LoFTR 85.3% (against 85.5% when all are verified). The order uses
+  cosine alone, so no matcher output selects the queries; 0% reproduces cosine exactly.
+- **The kernel table now runs to a 100 m user distance.** At 100 m the published 200 m
+  exponential still gains 2.0 points and wider kernels hold more (up to 97.5%). The 10/25/50 m
+  runs were moved to `results/superseded/` and re-run with 100 m added, because the overwrite
+  guard rightly refuses a changed configuration in place.
+- **The overwrite guard caught a shell default.** `${CAPS:-…}` treats an empty value as unset, so
+  the cap runs re-ran when they should not have; adding `gate_fractions` to the config made their
+  configuration differ and the guard refused all six before computing. Use `${VAR-…}` when an
+  empty value is meaningful.
+- **Citations added**: Patch-wise retrieval (WACV 2026), Cadar et al. (ACCV 2024) on semantic
+  cues for cacheable local descriptors, and SW-CLIP and GeoMetric (arXiv 2026) on distance-graded
+  geo-localization targets. Efficient LoFTR was already cited and is not run: it is LoFTR's speed
+  variant, and LoFTR is evaluated.
+- **Declined**: a per-backbone runtime table (extraction was never timed per model; vector widths
+  are in the roster) and the full hybrid pipeline (the gating result answers its useful half).
+
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
 - **v0.2**: candidate-pool-size ablation (the headline experiment) + confusion matrix + embedding visualization.

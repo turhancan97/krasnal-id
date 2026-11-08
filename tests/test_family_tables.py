@@ -45,8 +45,12 @@ def _study(root: Path, skip: str | None = None) -> Path:
     validation = root / "validation" / "workshop_validation-dinov2.json"
     _artifact(validation, validated)
     for model in MODELS:
+        # One file per experiment, holding every metric the table reads from it.
+        released: dict[str, dict[str, tuple[float, float | None, float | None]]] = {}
         for experiment, metric, _ in _FAMILY_RELEASED:
-            _artifact(root / model / f"{experiment}-{model}.json", {metric: (0.8, 0.7, 0.9)})
+            released.setdefault(experiment, {})[metric] = (0.8, 0.7, 0.9)
+        for experiment, metrics in released.items():
+            _artifact(root / model / f"{experiment}-{model}.json", metrics)
         # The supplement's curves read each backbone's pool-size artifact too.
         _artifact(
             root / model / f"pool_size_ablation-{model}.json",

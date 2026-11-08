@@ -562,6 +562,9 @@ class WorkshopValidationConfig(BaseModel):
             "geo_permutation",
             "families",
             "null_bounds",
+            "multi_region",
+            "strata",
+            "gated",
         ],
         ...,
     ] = Field(min_length=1)
@@ -585,6 +588,9 @@ class WorkshopValidationConfig(BaseModel):
     # The inlier count at which geometry stops adding to the blend. 30 is the
     # published cap; other values exist only to show the result does not hinge on it.
     rerank_inlier_cap: int = Field(default=30, ge=1)
+    # Section 7.18: fractions of queries verified, least certain by cosine margin
+    # first, for the `gated` part. Zero is cosine and one the full held-out result.
+    gate_fractions: tuple[float, ...] = ()
     # Where the simulated user stands, metres from the statue in a seeded direction.
     # Never zero alone: at zero a strong prior just names the statue under the user.
     gps_error_m: tuple[float, ...] = (25.0,)

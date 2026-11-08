@@ -679,6 +679,31 @@ def export_kaggle(
     )
 
 
+@embeddings_app.command("extract-regions")
+def extract_region_vectors(override: OverrideOption = None) -> None:
+    """Write CLS plus 2x2 and 3x3 grid-pooled patch vectors for every admitted image.
+
+    For the multi-vector baseline of AGENTS.md section 7.18 only; the file sits
+    beside the embedding cache as `regions-<backbone>.npz` and nothing else reads it.
+    """
+    from krasnal_id.embeddings.regions import RegionExtractionError, extract_regions
+
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    output = Path(config.paths.embeddings_dir) / f"regions-{config.backbone.name}.npz"
+    try:
+        written = extract_regions(
+            _read_manifest(config.paths.manifest_path),
+            config.backbone,
+            output,
+            config.backbone.batch_size,
+        )
+    except (RegionExtractionError, EmbeddingExtractionError) as error:
+        typer.echo(f"Region extraction error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    typer.echo(f"Region vectors complete: {written}")
+
+
 @embeddings_app.command("extract")
 def extract_embeddings(
     override: OverrideOption = None,
