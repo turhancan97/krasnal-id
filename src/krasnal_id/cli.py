@@ -1437,6 +1437,9 @@ def visualize_family(
         "paper-cvww/generated"
     ),
     width_cm: Annotated[float, typer.Option("--width-cm", help="Printed width.")] = 17.0,
+    curves: Annotated[
+        Path, typer.Option(help="Where to write the supplement's full curves, by paradigm.")
+    ] = Path("paper-cvww/figures/figS-family-curves.png"),
     dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
 ) -> None:
     """Draw the pretraining-family figure and write its numbers and table.
@@ -1444,7 +1447,7 @@ def visualize_family(
     Reads the family validation (`<root>/validation/`) and each backbone's released
     artifacts under `<root>/<backbone>/`; nothing is computed here.
     """
-    from krasnal_id.viz.family_plot import render_family_figure
+    from krasnal_id.viz.family_plot import render_family_curves, render_family_figure
     from krasnal_id.viz.workshop_tables import (
         WorkshopTableError,
         load_metrics,
@@ -1459,10 +1462,11 @@ def visualize_family(
             for name, m in load_metrics(validation).items()
         }
         path = render_family_figure(metrics, figure, width_cm / 2.54, dpi)
+        curves_path = render_family_curves(root, metrics, curves, width_cm / 2.54, dpi)
     except (WorkshopTableError, VisualizationError) as error:
         typer.echo(f"Family figure error: {error}", err=True)
         raise typer.Exit(code=2) from error
-    for item in (*written, path):
+    for item in (*written, path, curves_path):
         typer.echo(f"  {item}")
     typer.echo("Family figure complete")
 

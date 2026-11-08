@@ -220,12 +220,146 @@ def render_family_figure(
     return written
 
 
+POOL_SIZES = (2, 3, 5, 8, 10, 15, 20, 50, 100, 200, 306)
+# A tick at every measured size would collide at this width; the curves keep them all.
+_TICKS = (2, 5, 10, 20, 50, 100, 306)
+GEO_POOLS = (2, 3, 5, 8, 10, 15, 20, 50, 100, 200)
+# Inside a paradigm the members that have no colour of their own are told apart by
+# line style and marker, in ink, so the four colours stay with their backbones.
+_UNCOLOURED_STYLES = (("-", "o"), ("--", "s"), (":", "^"))
+
+
+def _member_styles(models: tuple[str, ...]) -> dict[str, tuple[str, str, str]]:
+    """Colour, line style and marker for each model in one paradigm's panels."""
+    styles: dict[str, tuple[str, str, str]] = {}
+    spare = iter(_UNCOLOURED_STYLES)
+    for model in models:
+        if model in style.BACKBONE_COLOUR:
+            styles[model] = (style.BACKBONE_COLOUR[model], "-", style.BACKBONE_MARKER[model])
+        else:
+            line, marker = next(spare)
+            styles[model] = (style.INK, line, marker)
+    return styles
+
+
+def render_family_curves(
+    root: Path,
+    validation: Mapping[str, Mapping[str, float | None]],
+    path: Path,
+    width: float,
+    dpi: int = style.PUBLICATION_DPI,
+) -> Path:
+    """The full pool-size and location curves of all thirteen backbones, by paradigm.
+
+    One row per paradigm, so each panel holds at most three models and keeps its own
+    y-range: on one shared axis the reconstruction models' 50% would flatten the
+    differences among the 90%+ ones. Left, top-1 against pool size with the spread
+    across seeds; right, location minus random with statue intervals.
+    """
+    from krasnal_id.viz.workshop_tables import load_metrics
+
+    matplotlib = import_optional_analysis("matplotlib")
+    matplotlib.use("Agg")
+    plt = import_optional_analysis("matplotlib.pyplot")
+    style.apply(plt)
+    rows = len(FAMILIES)
+    figure, grid = plt.subplots(
+        rows,
+        2,
+        figsize=(width, 0.84 * rows + 0.5),
+        layout="constrained",
+        sharex="col",
+        squeeze=False,
+    )
+    for row, (family, models) in enumerate(FAMILIES):
+        pool_axes, geo_axes = grid[row]
+        styles = _member_styles(models)
+        for model in models:
+            colour, line, marker = styles[model]
+            pool = load_metrics(root / model / f"pool_size_ablation-{model}.json")
+            xs = [n for n in POOL_SIZES if f"top_1_pool_{n}" in pool]
+            if not xs:
+                raise VisualizationError(f"pool_size_ablation-{model} has no pool sizes")
+            values = [100 * (pool[f"top_1_pool_{n}"]["value"] or 0.0) for n in xs]
+            low = [100 * (pool[f"top_1_pool_{n}"]["lower"] or 0.0) for n in xs]
+            high = [100 * (pool[f"top_1_pool_{n}"]["upper"] or 0.0) for n in xs]
+            pool_axes.fill_between(xs, low, high, color=colour, alpha=0.14, linewidth=0)
+            pool_axes.plot(
+                xs,
+                values,
+                color=colour,
+                linestyle=line,
+                marker=marker,
+                markersize=style.MARKER_SIZE * 0.7,
+                linewidth=style.LINE_WIDTH * 0.8,
+                label=MODEL_LABEL[model],
+            )
+            names = [f"{model}_geo_minus_random_pool_{n}" for n in GEO_POOLS]
+            present = [
+                (n, validation[k]) for n, k in zip(GEO_POOLS, names, strict=True) if k in validation
+            ]
+            if not present:
+                raise VisualizationError(f"the family validation has no geography for {model}")
+            gx = [n for n, _ in present]
+            geo_axes.fill_between(
+                gx,
+                [100 * (m["lower_bound"] or 0.0) for _, m in present],
+                [100 * (m["upper_bound"] or 0.0) for _, m in present],
+                color=colour,
+                alpha=0.14,
+                linewidth=0,
+            )
+            geo_axes.plot(
+                gx,
+                [100 * (m["value"] or 0.0) for _, m in present],
+                color=colour,
+                linestyle=line,
+                marker=marker,
+                markersize=style.MARKER_SIZE * 0.7,
+                linewidth=style.LINE_WIDTH * 0.8,
+            )
+        geo_axes.axhline(0, color=style.INK_MUTED, linewidth=style.REFERENCE_LINE_WIDTH)
+        # A legend needs empty space, and in a panel of falling curves every corner
+        # is crossed by one. Rows with several models get headroom below the curves
+        # instead, and the legend sits in it.
+        if len(models) > 1:
+            low, high = pool_axes.get_ylim()
+            pool_axes.set_ylim(low - 0.55 * (high - low), high)
+        pool_axes.legend(
+            loc="lower left" if len(models) > 1 else "best",
+            fontsize=style.SIZE_ANNOTATION,
+            frameon=False,
+            handlelength=1.8,
+            borderaxespad=0.2,
+            ncol=len(models) if len(models) > 1 else 1,
+        )
+        pool_axes.set_ylabel(f"{family}\nTop-1 (%)", fontsize=style.SIZE_ANNOTATION)
+        geo_axes.set_ylabel("Location \u2212\nrandom (pts)", fontsize=style.SIZE_ANNOTATION)
+        for axes in (pool_axes, geo_axes):
+            axes.set_xscale("log")
+            axes.minorticks_off()
+            axes.tick_params(labelsize=style.SIZE_ANNOTATION)
+            axes.yaxis.set_major_formatter(
+                import_optional_analysis("matplotlib.ticker").FuncFormatter(
+                    lambda v, _: style.minus(f"{v:g}")
+                )
+            )
+    grid[-1][0].set_xticks(_TICKS, [str(n) for n in _TICKS])
+    grid[-1][1].set_xticks((*_TICKS[:-1], 200), [str(n) for n in (*_TICKS[:-1], 200)])
+    grid[-1][0].set_xlabel("Candidate statues in the pool")
+    grid[-1][1].set_xlabel("Candidate pool size")
+    written = style.save(figure, path, dpi)
+    plt.close(figure)
+    return written
+
+
 __all__ = [
     "FAMILIES",
     "MODEL_DETAILS",
     "MODEL_LABEL",
     "PANELS",
     "collect",
+    "render_family_curves",
     "render_family_figure",
     "rows",
 ]

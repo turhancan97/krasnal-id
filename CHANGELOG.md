@@ -19,6 +19,10 @@ No result changes and no number is published: the photographs still need a day i
 - `visualize workshop-tables --extra PREFIX=PATH` writes another validation artifact's metrics to
   `extra-numbers.tex` under its own prefix (the DINOv3 re-ranking check as `\wv{v3_*}`), refusing a
   repeated prefix or the family study's `fam`.
+- `visualize family` also draws the supplement's full curves for all thirteen backbones
+  (`--curves`, default `figS-family-curves.png`): one row per paradigm, top-1 against pool size and
+  location minus random, each row on its own scale so the reconstruction models' fall does not
+  flatten the rest. Main Figures 5 and 6 keep the four backbones used throughout and say so.
 - The pretraining-paradigm study's results: all thirteen backbones' suites and their validation
   under `results/family/`, the forest-plot figure, and `RESULTS.md` §17.
 

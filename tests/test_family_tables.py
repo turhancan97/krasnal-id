@@ -47,6 +47,11 @@ def _study(root: Path, skip: str | None = None) -> Path:
     for model in MODELS:
         for experiment, metric, _ in _FAMILY_RELEASED:
             _artifact(root / model / f"{experiment}-{model}.json", {metric: (0.8, 0.7, 0.9)})
+        # The supplement's curves read each backbone's pool-size artifact too.
+        _artifact(
+            root / model / f"pool_size_ablation-{model}.json",
+            {f"top_1_pool_{n}": (0.9 - n / 1000, 0.88, 0.92) for n in (2, 10, 306)},
+        )
     return validation
 
 
@@ -81,6 +86,8 @@ def test_the_family_command_writes_numbers_table_and_figure(tmp_path: Path) -> N
             str(tmp_path / "family"),
             "--figure",
             str(tmp_path / "fig.png"),
+            "--curves",
+            str(tmp_path / "curves.png"),
             "--output-dir",
             str(tmp_path / "gen"),
             "--dpi",
@@ -92,6 +99,7 @@ def test_the_family_command_writes_numbers_table_and_figure(tmp_path: Path) -> N
     assert table.count(r"\quad ") == len(MODELS)
     assert r"\textit{Agglomerative}" in table
     assert (tmp_path / "fig.png").stat().st_size > 0
+    assert (tmp_path / "curves.png").stat().st_size > 0
 
 
 def test_extra_numbers_are_prefixed_and_prefixes_cannot_collide(tmp_path: Path) -> None:
