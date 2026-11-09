@@ -12,6 +12,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- The GitHub Pages front door is a research project page using the Academic Project Page
+  Template structure and pinned Bulma styling, the Doppeldwarf-306 lockup, a resolved abstract,
+  six copied figures, attributed teaser photographs, dataset terms and a copyable software
+  citation. Shared theme tokens support light and dark layouts.
+- The browser identifier moves to `docs/demo.html`, with a project-page backlink and unchanged
+  inference, model switching and self-test paths. Current documentation links point there;
+  `findings.html` becomes a redirect to the project page, and the unreferenced `docs/chart.js`
+  is removed. `RESULTS.md` remains the complete research record.
 - `README.md` is a short landing page: the Doppeldwarf-306 lockup, badges, headline results, a
   quick start and a documentation table. Its command walkthroughs moved verbatim into `guide/`
   (`pipeline.md`, `experiments.md`, `demo.md`, `dataset.md`, `development.md`), and

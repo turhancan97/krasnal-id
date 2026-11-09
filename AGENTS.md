@@ -562,7 +562,7 @@ loaders saw — scored 86.8% (DINOv2) and 71.1% (CLIP).
   dataset it scored 66% top-1 against 96% at `C=100`. The default is 100.
 ### 6.3 Browser demo decisions (2026-09-02)
 
-The published demo at `turhancan97.github.io/krasnal-id` is static: GitHub Pages cannot run the
+The published identifier at `turhancan97.github.io/krasnal-id/demo.html` is static: GitHub Pages cannot run the
 Gradio app, so the model runs in the visitor's browser instead. Four decisions there were measured
 rather than assumed, and each cost accuracy when guessed wrong.
 
@@ -591,10 +591,10 @@ that survived the swap, not as the shipped figures.
   research CLIP pipeline, so the browser/pipeline drift is 0.5 points at this scale. Assets are
   29 MB, of which 22 MB is 1,691 thumbnails; that size was accepted deliberately so every match
   shows its own reference photograph rather than a stand-in for its class.
-- The page's chart data in `docs/chart.js` is hardcoded and must be regenerated from
-  `results/pool_size_ablation-*.json` whenever the ablation is re-run. Its gridlines and axis
-  bounds are hardcoded too: check they still span the series, or a backbone's whole curve can land
-  in an unlabelled void, as happened when CLIP's floor fell from 92.5% to 82.9%.
+- **Retired by §6.7:** `docs/chart.js` and its hardcoded chart data, gridlines and axis bounds
+  no longer apply. The project page uses copied, generated figures under §6.4 instead. The old
+  chart once lost CLIP's curve when its floor fell below the axis range; inspect rendered figures
+  whenever results change rather than assuming a clean render means the data is visible.
 
 ### 6.4 Result publication policy (2026-09-01)
 
@@ -705,10 +705,11 @@ Measured on an identical 40-class, 200-image subset before committing to a dtype
 
 ### 6.6 Two backbones in the browser, and two pages (2026-09-10)
 
-The page now offers a choice of backbone, and the site is split in two: `index.html` is the
-identifier, `findings.html` is the written result, and `style.css` is shared so they stay one
-design. `index.html` went from 550 lines to about 100, which was the point — the upload control
-was below a fold of prose that most visitors are not there for.
+The identifier offers a choice of backbone. The original split separated the upload control
+from the long findings so it stayed easy to reach. Section 6.7 now puts the identifier at
+`demo.html`, the research project page at `index.html`, and a redirect at `findings.html`;
+`style.css` remains shared. The model choice and all browser measurement rules below still apply
+only to the identifier.
 
 **The choice is a comparison, not a size tier, and the difference matters because the obvious
 label is false.** CLIP is the *larger* download of the two — 63.6 MB against DINOv2 q4's 56.4 MB,
@@ -746,6 +747,58 @@ already on screen rather than asking for it again.
   are that mismatch, and they had been printing for as long as the demo has had a build without
   anyone reading them as a performance problem. **Set the count from `nproc`, not from
   `/proc/cpuinfo`, and re-measure on the machine that runs the build.**
+
+### 6.7 Project page (2026-11-09)
+
+- **The research is the front door.** `docs/index.html` is the project page; `docs/demo.html`
+  holds the identifier, one click away. Its model switch, assets, theme and both self-test modes
+  keep the same relative paths and behaviour. The header links back to the project page. The
+  identifier quotes only its shipped-vector measurements from `references.json`, never the
+  research accuracies; its navigation card therefore carries no research accuracy claim.
+- **The presentation adapts the Academic Project Page Template**
+  (<https://github.com/eliahuhorwitz/Academic-project-page-template>), derived from Nerfies,
+  with its hero, resource buttons, teaser, abstract and citation structure. Bulma is pinned to
+  `1.0.4` on jsDelivr; the existing Google Fonts and shared light/dark tokens remain, with mustard
+  `#B87A12` / `#EAB34D` and ink `#1F2328`. No carousel or video plugins are loaded. The adapted
+  page credits the template and its CC BY-SA 4.0 terms in the footer; original code stays MIT and
+  each photograph keeps its own licence.
+- **The title has one definition**, the `paper-title` heading. `docs/project.js` copies it into
+  the browser title and implements citation copying through the Clipboard API, with selection
+  copying as a fallback. The software BibTeX is verbatim from `README.md`; the paper link stays
+  disabled until a public paper is available. `CITATION.cff` supplies the author name and is not
+  extended with an affiliation.
+- **Research text traces to artifacts.** The abstract is the plain-HTML transcription of the
+  paper abstract, with every number macro resolved from its generated TeX fragments and intervals
+  written as “lo to hi”. Key-result text uses `RESULTS.md` or those same macros. Paired matcher
+  gains in the abstract are 2.5 and 3.6 points; endpoint accuracies in the cards are independently
+  rounded and must not be used to re-derive those gains. Dataset counts and licence families trace
+  to §12.1 and §5.11, and the depicted-work disclosure and removal path follow `export/card.py`.
+  The geographic claim explicitly covers 294 of 306 statues and identifies derived positions.
+- **Published figures are copies, never hand edits**, under §6.4 and §7.14. Each source below is
+  under `paper-cvww/figures/`, copied byte for byte into `docs/figures/`:
+
+  | Source file | Published copy | Regenerate source with |
+  |---|---|---|
+  | `fig0-teaser.jpg` | `teaser.jpg` | `krasnal-id visualize teaser` |
+  | `fig3-pool-size.png` | `paper-pool-size.png` | `krasnal-id visualize paper-figures` |
+  | `fig4-geography.png` | `paper-geography.png` | `krasnal-id visualize paper-figures` |
+  | `fig-family.png` | `paper-family.png` | `krasnal-id visualize family` |
+  | `fig6-matcher.png` | `paper-matcher.png` | `krasnal-id visualize paper-figures` |
+  | `fig7-rejection.png` | `paper-rejection.png` | `krasnal-id visualize paper-figures` |
+
+  See each command's `--help` for output paths and §7.14 for the figure system. The four
+  `paper-figures` sources use `--layout cvww` and the current validation artifact recorded in
+  §12.1. Re-copy the generated source after regeneration; do not change a website figure alone.
+  The teaser caption states the smallest-correct-winning-margin rule, including image-ID ties,
+  from `viz/teaser.py`; its four displayed photographs have individual source and licence links
+  in an expandable credit block, with cropping/resizing disclosed.
+- **There is one written research record.** `RESULTS.md` remains complete; the project page is
+  a concise introduction rather than a second copy. `findings.html` redirects immediately to
+  `index.html` with a canonical link and visible fallback. `docs/chart.js` is deleted with no
+  remaining site references. Current identifier links in the README, results and demo guide
+  target `demo.html`; historical changelog entries retain their original paths.
+- **This is a presentation-only change.** No data, results-directory artifact, paper source,
+  embedding, generated demo asset, export or deployed site is rebuilt or changed.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
@@ -2038,14 +2091,18 @@ krasnal-id/
 │   ├── embeddings/            # ignored embedding cache, keyed by content and backbone
 │   ├── splits/                # ignored generated evaluation split
 │   └── manifest.json          # ignored generated manifest
-├── docs/                      # the published GitHub Pages demo
-│   ├── index.html             # the findings, and an identifier that runs in the browser
+├── docs/                      # the published GitHub Pages research site
+│   ├── .nojekyll              # serve static assets directly
+│   ├── index.html             # research project page
+│   ├── demo.html              # in-browser identifier
+│   ├── findings.html          # redirect to the project page
+│   ├── style.css              # shared theme, identifier and scoped Bulma styles
+│   ├── project.js             # title synchronization and citation copying
 │   ├── app.js                 # ONNX inference, retrieval, and the co-location warning
-│   ├── chart.js               # the figures the page draws from the result artifacts
 │   ├── assets/                # generated reference vectors and thumbnails
 │   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
 │   ├── demo/                  # the build that produces docs/assets
-│   └── figures/               # figures selected for publication
+│   └── figures/               # published figures, including the copied paper figures (§6.7)
 ├── src/krasnal_id/
 │   ├── cli.py                 # unified Typer CLI
 │   ├── config.py              # Hydra composition + Pydantic validation

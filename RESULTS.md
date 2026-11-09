@@ -11,7 +11,7 @@ asking properly:
 > become a reliable way to identify a statue?
 
 This repository answers that with a measured curve rather than a single accuracy number. You can
-also [try it on a photograph](https://turhancan97.github.io/krasnal-id/), which runs the model in
+also [try it on a photograph](https://turhancan97.github.io/krasnal-id/demo.html), which runs the model in
 your own browser.
 
 ## Summary of findings

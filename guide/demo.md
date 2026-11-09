@@ -4,11 +4,11 @@
 
 ## Interactive demonstration
 
-The published demo at <https://turhancan97.github.io/krasnal-id/> is a static page: it embeds an
+The published demo at <https://turhancan97.github.io/krasnal-id/demo.html> is a static page: it embeds an
 uploaded photograph with a quantised ONNX backbone in the visitor's own browser and ranks it
 against reference vectors built by the same code, so nothing is uploaded and there is no backend.
-The written findings live on a second page, [`findings.html`](../docs/findings.html), so the
-identifier itself stays short.
+The [project page](../docs/index.html) introduces the research and dataset; the identifier lives
+at [`demo.html`](../docs/demo.html). The complete written record stays in [RESULTS.md](../RESULTS.md).
 
 ![The published identifier after running one of its example photographs: a DINOv2/CLIP model switch showing 56 MB at 93.2% and 64 MB at 82.4%, the query photograph, the five closest dwarves with similarity scores and photographer credits, and a warning that this statue stands with six others installed as one themed group.](../docs/figures/demo-ui.png)
 

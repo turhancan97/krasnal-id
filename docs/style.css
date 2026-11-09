@@ -1,10 +1,4 @@
-/*
- * Shared stylesheet for both pages of the site.
- *
- * index.html is the identifier and findings.html is the written result, and
- * they are one design rather than two: extracting this from index.html's
- * <style> block when the pages split is what keeps them that way.
- */
+/* Shared theme and identifier styles; scoped Bulma overrides for the project page below. */
 :root{
   --ground:#F1F3F4; --surface:#FFFFFF; --raised:#FFFFFF; --plate:#FFFFFF;
   --ink:#182126; --ink-2:#47535A; --ink-3:#76838A;
@@ -263,3 +257,96 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
 .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
                  white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+/* ---------- research project page (Bulma layout, existing theme tokens) ---------- */
+:root{--corpus-accent:#B87A12; --corpus-fill:#EAB34D}
+.project-back{font-size:.88rem; align-self:flex-start}
+.project-page{--ink:var(--mark-beard); --link:var(--corpus-accent); color-scheme:light dark}
+.project-page a{color:var(--link)}
+.project-page .hero,.project-page .section{display:block}
+.project-page .section{padding:3.5rem 1.5rem}
+.project-page .container{width:100%; min-width:0}
+.project-page .container.is-max-desktop{max-width:60rem!important}
+.project-page .container.reading-width{max-width:48rem!important}
+.project-page .title{color:var(--ink); font-family:inherit; font-weight:600;
+                     letter-spacing:-.025em; line-height:1.18}
+.project-page .title.is-3{font-size:1.85rem; margin-bottom:1.4rem}
+.project-page .title.is-4{font-size:1.4rem; margin-bottom:.8rem}
+.project-hero .hero-body{padding:4rem 1.5rem 1rem}
+.project-lockup{display:block; width:min(26rem,100%); margin:0 auto 2.6rem}
+.project-lockup img{width:100%; height:auto; display:block}
+.project-page .publication-title{max-width:55rem; margin:0 auto 1.5rem;
+  font-size:clamp(2rem,4.5vw,3.2rem); line-height:1.12; text-wrap:balance}
+.publication-authors{font-size:1.25rem; font-weight:500; margin-bottom:.25rem}
+.publication-affiliation{color:var(--ink-2); font-size:1rem}
+.publication-links.buttons{gap:.65rem; margin:1.8rem 0 0}
+.project-page .button{font:inherit; font-size:.9rem; height:auto; min-height:2.65rem;
+  padding:.55rem 1.1rem; text-decoration:none; color:var(--ink); background:var(--surface);
+  border:1px solid var(--rule); box-shadow:none; white-space:normal; gap:.5rem}
+.project-page .button:hover{border-color:var(--corpus-accent); color:var(--ink)}
+.project-page .button[disabled]{opacity:1; color:var(--ink-2); background:var(--ground);
+  border-style:dashed; cursor:not-allowed}
+.project-page .button.is-primary{background:var(--corpus-fill); border-color:var(--corpus-fill);
+  color:#1F2328; font-weight:600}
+.project-page .button.is-primary:hover{background:#f0c16b}
+.project-page .button.is-small{font-size:.8rem; min-height:2rem; padding:.3rem .9rem}
+.project-page .teaser{padding-top:2rem; padding-bottom:3rem}
+.figure-link{display:block; background:#fff; border-radius:5px; overflow:hidden}
+.figure-link img{display:block; width:100%; height:auto; max-width:100%}
+.project-page figcaption{color:var(--ink-2); max-width:52rem; margin:0 auto; line-height:1.6}
+.project-page figcaption strong{color:var(--ink); font-weight:600}
+.photo-credits{margin-top:1rem; color:var(--ink-2); font-size:.8rem}
+.photo-credits ul{margin:.7rem 0 .5rem 1.25rem; list-style:disc}
+.photo-credits a{overflow-wrap:anywhere}
+.project-band{background:var(--surface); border-block:1px solid var(--rule-soft)}
+.project-page .content{color:var(--ink-2); line-height:1.8}
+.project-page .content strong{color:var(--ink); font-weight:600}
+.project-page .content p:not(:last-child){margin-bottom:1.1rem}
+.abstract-text{font-size:1.07rem}
+.section-intro{margin-bottom:1.8rem}
+.section-intro .eyebrow{color:var(--link); margin-bottom:.75rem; letter-spacing:.12em}
+.section-intro .title.is-3{margin-bottom:.7rem}
+.section-intro>p:last-child{color:var(--ink-2)}
+.result-cards{display:grid; gap:2rem}
+.project-page .result-card{padding:0; overflow:hidden; background:var(--surface);
+  color:var(--ink-2); border:1px solid var(--rule); border-radius:10px; box-shadow:var(--shadow)}
+.result-card .card-content{padding:1.6rem 1.8rem}
+.result-card .figure-link{border-radius:0}
+.results-note{font-size:.88rem; color:var(--ink-2); margin-top:1.8rem}
+.dataset-facts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem;
+  margin:1.8rem 0 2rem; padding-bottom:1.8rem; border-bottom:1px solid var(--rule)}
+.dataset-facts>div{display:flex; flex-direction:column; gap:.2rem; min-width:0}
+.dataset-facts strong{font-size:clamp(1.8rem,5vw,2.5rem); line-height:1.2; font-weight:600;
+  color:var(--link); letter-spacing:-.04em; font-variant-numeric:tabular-nums}
+.dataset-facts span{font-size:.85rem; color:var(--ink-2)}
+.citation-heading{display:flex; align-items:center; justify-content:space-between; gap:1rem}
+.project-page .citation-heading .title{margin:0}
+.citation-note{color:var(--ink-2); font-size:.94rem; margin:1.1rem 0}
+.project-page pre.citation{background:var(--surface); border:1px solid var(--rule);
+  border-radius:8px; padding:1.3rem; max-width:100%; overflow-wrap:anywhere; white-space:pre-wrap;
+  color:var(--ink); font-size:.8rem; line-height:1.65; font-family:"IBM Plex Mono",monospace}
+.project-page pre.citation code{padding:0; background:none; font:inherit; color:inherit}
+.copy-status{font-size:.82rem; min-height:1.7em; margin-top:.5rem; color:var(--ink-2)}
+.project-page .project-footer{background:var(--ground); padding:2rem 1.5rem 3rem;
+  border-top:1px solid var(--rule); color:var(--ink-2); font-size:.82rem; text-align:center}
+.project-footer p+p{margin-top:.6rem}
+.skip-link{position:absolute; top:.5rem; left:.5rem; padding:.5rem 1rem;
+  background:var(--surface); z-index:10; transform:translateY(-160%)}
+.skip-link:focus{transform:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--corpus-accent:#EAB34D}}
+:root[data-theme="dark"]{--corpus-accent:#EAB34D}
+@media (max-width:30rem){
+  .project-hero .hero-body{padding:2rem 1.25rem .5rem}
+  .project-lockup{margin-bottom:2rem}
+  .project-page .section{padding:2.5rem 1.25rem}
+  .project-page .teaser{padding-top:1.5rem}
+  .project-page .publication-title{font-size:2rem}
+  .project-page .publication-links{gap:.5rem}
+  .project-page .publication-links .button{font-size:.84rem; padding:.5rem .85rem}
+  .result-card .card-content{padding:1.25rem}
+  .project-page .title.is-3{font-size:1.6rem}
+  .project-page .title.is-4{font-size:1.25rem}
+  .dataset-facts{gap:.7rem}
+  .dataset-facts span{font-size:.75rem; line-height:1.4}
+  .project-page pre.citation{padding:1rem; font-size:.72rem}
+}

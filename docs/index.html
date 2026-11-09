@@ -3,110 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Krasnal-ID — identify a Wrocław dwarf statue</title>
-<meta name="description" content="Upload a photo of a Wrocław dwarf statue and identify it in your browser. Research prototype for fine-grained visual instance recognition.">
+<title>Doppeldwarf-306 · Research project</title>
+<meta name="description" content="Doppeldwarf-306: near-identical instance retrieval on Wrocław’s bronze dwarf statues. Explore the research, dataset and in-browser identifier.">
+<meta name="color-scheme" content="light dark">
 <link rel="icon" href="brand/doppeldwarf-mark-light.svg">
-<meta property="og:title" content="Krasnal-ID">
-<meta property="og:description" content="Identify a Wrocław dwarf statue from a photograph, entirely in your browser.">
+<meta property="og:title" content="Doppeldwarf-306">
+<meta property="og:description" content="Which dwarf is this? Research on retrieving near-identical bronze statues from photographs.">
 <meta property="og:image" content="brand/doppeldwarf-social-preview.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
 <link rel="stylesheet" href="style.css">
+<script defer src="project.js"></script>
 </head>
-<body>
-<div class="page">
-
-  <header>
-    <div class="brandrow">
-      <svg viewBox="6.5 1.5 51.5 47.5" aria-hidden="true"><g transform="translate(17 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-twin)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#EAB34D"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#EAB34D"/><circle cx="24" cy="33" r="3.6" fill="#B87A12"/></g><g transform="translate(0 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><circle cx="24" cy="33" r="3.6" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-beard)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#B87A12"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#B87A12"/><circle cx="24" cy="33" r="3.6" fill="#EAB34D"/></g></svg>
-      <span class="eyebrow">Doppeldwarf-306 · near-identical instance retrieval</span>
-    </div>
-    <h1>Which Wrocław dwarf is this?</h1>
-    <p class="lede">Wrocław is scattered with several hundred small bronze dwarf statues,
-    individually sculpted but sharing a vocabulary — the same scale, the same material, the same
-    crouching poses and props. Upload a photograph and this page will tell you which one it is,
-    running the model in your own browser.</p>
-    <div class="facts">
-      <span>306 dwarves</span><span>1,691 reference photographs</span>
-      <span id="fact-model">DINOv2</span><span id="fact-acc">93.2% top-1</span>
-    </div>
-  </header>
-
-  <section>
-    <div class="demo">
-      <div class="models" id="models" role="group" aria-label="Embedding model" hidden></div>
-      <p class="modelnote" id="model-note" hidden>Both are frozen — neither was trained on these
-      statues. Switching re-ranks the same photograph, which is the comparison most of this
-      project&rsquo;s findings are about. DINOv2 is the smaller download <em>and</em> the more
-      accurate one.</p>
-
-      <div class="drop" id="drop">
-        <div class="actions">
-          <label for="file"><button class="primary" type="button" id="pick">Choose a photo</button></label>
-          <input type="file" id="file" accept="image/*">
-          <label for="camera" id="camera-label" hidden><button type="button" id="shoot">Take a photo</button></label>
-          <input type="file" id="camera" accept="image/*" capture="environment">
-        </div>
-        <p>or drop one here</p>
-        <div class="examples" id="examples"><span>try one:</span></div>
-      </div>
-
-      <div class="status" id="status" role="status" aria-live="polite">
-        <span id="status-text">The model downloads once, on your first identification.</span>
-        <span class="bar" id="bar" hidden><i id="bar-fill"></i></span>
-      </div>
-
-      <div id="result" hidden>
-        <div class="query">
-          <img id="query-img" alt="The photograph you chose">
-          <div class="meta">
-            <span class="t" id="query-title">Closest matches</span>
-            <span class="s" id="query-sub"></span>
-          </div>
-        </div>
-        <ol class="results" id="hits"></ol>
-        <div class="note" id="colocated" hidden>
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-            <circle cx="8" cy="8" r="7" fill="none" stroke="var(--red)" stroke-width="1.5"/>
-            <path d="M8 4.6v4.2M8 11.1v.2" stroke="var(--red)" stroke-width="1.6"
-                  stroke-linecap="round"/>
-          </svg>
-          <span id="colocated-text"></span>
+<body class="project-page">
+<a class="skip-link" href="#abstract">Skip to abstract</a>
+<main>
+  <section class="hero project-hero" aria-labelledby="paper-title">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        <picture class="project-lockup">
+          <source media="(prefers-color-scheme: dark)" srcset="brand/doppeldwarf-lockup-horizontal-dark.svg">
+          <img src="brand/doppeldwarf-lockup-horizontal-light.svg" alt="Doppeldwarf-306 — near-identical instance retrieval" width="560" height="152">
+        </picture>
+        <h1 class="title publication-title" id="paper-title">Which Dwarf Is This? Doppeldwarf-306 and Near-Identical Instance Retrieval</h1>
+        <p class="publication-authors">Turhan Can Kargın</p>
+        <p class="publication-affiliation">Jagiellonian University, Kraków</p>
+        <div class="publication-links buttons is-centered" aria-label="Project resources">
+          <button class="button is-rounded" type="button" disabled>Paper (coming soon)</button>
+          <a class="button is-rounded" href="https://github.com/turhancan97/krasnal-id">Code</a>
+          <a class="button is-rounded" href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">Dataset</a>
+          <a class="button is-rounded" href="https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves">Kaggle</a>
+          <a class="button is-rounded" href="https://doi.org/10.5281/zenodo.22548023">Zenodo</a>
+          <a class="button is-rounded is-primary" href="demo.html">Try the identifier <span aria-hidden="true">↗</span></a>
         </div>
       </div>
-
-      <p class="privacy">Your photograph never leaves this device. Everything runs locally.</p>
     </div>
   </section>
 
-  <nav class="pagelink">
-    <a href="findings.html">
-      <span class="t">What the experiments found</span>
-      <span class="s">93.1% top-1 across 306 statues with no fine-tuning, why narrowing by
-      location makes identification <em>harder</em> rather than easier, where the errors
-      concentrate, and what this page does not show.</span>
-    </a>
-  </nav>
+  <section class="section teaser" aria-label="A family of lookalikes">
+    <div class="container is-max-desktop">
+      <figure>
+        <a class="figure-link" href="figures/teaser.jpg" aria-label="Open the teaser at full resolution">
+          <img src="figures/teaser.jpg" alt="A query photograph and the Solne, Oławskie and Świdnickie pillar dwarves ranked by DINOv2 cosine similarity; the correct Solne statue narrowly wins." width="956" height="296" fetchpriority="high">
+        </a>
+        <figcaption><strong>One query, a family of lookalikes.</strong> Every member is represented by its best-matching reference photograph, ranked by DINOv2 cosine similarity. Of this family’s leave-one-out queries answered correctly, the query has the smallest winning margin over another statue, with ties broken by lower image ID.</figcaption>
+      </figure>
+      <details class="photo-credits">
+        <summary>Photograph credits</summary>
+        <ul><li>Query: <a href="https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Slupnik_Solny.JPG">Adalbertus</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>.</li>
+<li>Solne: <a href="https://commons.wikimedia.org/wiki/File:Slupniki_Solne_(Salt_Columnists)_Wroclaw_(1)_dwarf_02.JPG">Pnapora</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</li>
+<li>Oławskie: <a href="https://commons.wikimedia.org/wiki/File:Krasnal_slupnik_olawska_01.jpg">User: (WT-shared) Krasnoludek at wts wikivoyage</a> · <a href="https://creativecommons.org/publicdomain/mark/1.0/">Public domain</a>.</li>
+<li>Świdnickie: <a href="https://commons.wikimedia.org/wiki/File:Slupniki_Swidnickie_(Swidnicka_Columnists)_Wroclaw_(1)_dwarf_02.JPG">Pnapora</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>.</li></ul>
+        <p>Photographs cropped and resized in the figure; each keeps its own terms.</p>
+      </details>
+    </div>
+  </section>
 
-  <footer>
-    <p>Every number here traces to a committed command and a structured result artifact. Full
-    method, dataset construction, licensing and attribution handling, and the reproduction script
-    are in the repository.</p>
-    <p class="repo"><a href="https://github.com/turhancan97/krasnal-id">github.com/turhancan97/krasnal-id</a></p>
-    <p>The dataset behind this page &mdash; 1,691 attributed photographs of 306 statues, both
-    backbones&rsquo; embeddings and the evaluation folds &mdash; is published on
-    <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">Hugging Face</a>
-    (parquet, images embedded) and
-    <a href="https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves">Kaggle</a>
-    (images on disk beside CSV tables).</p>
-    <p>Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
-    licences; each result names its photographer and licence. Model weights from
-    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a> and
-    <a href="https://huggingface.co/Xenova/clip-vit-base-patch32">Xenova/clip-vit-base-patch32</a>,
-    both quantised to q4 and fetched only when selected.</p>
-  </footer>
-</div>
-<script type="module" src="app.js"></script>
+  <section class="section project-band" id="abstract" aria-labelledby="abstract-heading">
+    <div class="container is-max-desktop reading-width">
+      <h2 class="title is-3" id="abstract-heading">Abstract</h2>
+      <div class="content abstract-text"><p>Instance retrieval benchmarks are dominated by landmarks, which are large and distinctive by design. We study the opposite case: objects made to look alike. We introduce Doppeldwarf-306: 1,691 openly licensed photographs of 306 bronze dwarf statues in one European city, many made in themed series that share one style, with the photographer of each image recorded. With no training, nearest-neighbour search over frozen features names the right statue first for up to 94.7% of queries. Across thirteen backbones from seven pretraining paradigms, models trained for invariant embeddings lead, while masked-prediction models (MAE, BEiT, I-JEPA) reach 55.6% at best under a fixed pooling rule. For DINOv2, accuracy falls slowly as more statues are added, by about 0.8 points each time the number of candidates doubles. A natural idea for a phone guide is to compare a photograph only with statues near the user. Surprisingly, in simulation this helps less than comparing it with the same number of statues chosen at random, because the few lookalikes that stand close together stay in a neighbourhood pool; a permutation test shows the penalty depends on the real layout (p = 0.005). Used as a weight instead of a filter, location raises accuracy from 93.4% to 98.7% for a simulated user 25 m from the statue. When the photographer is new, learned local-feature matching adds 2.5 to 3.6 points, and still helps DINOv3, while SIFT adds nothing measurable. Finally, comparing the two best candidates halves how often an unknown statue is wrongly accepted, for DINOv2 and DINOv3.</p></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="results-heading">
+    <div class="container is-max-desktop">
+      <div class="section-intro">
+        <p class="eyebrow">Retrieve · narrow · verify · reject</p>
+        <h2 class="title is-3" id="results-heading">Key results</h2>
+        <p>Frozen features, the same statues, and a sequence of tests of what helps.</p>
+      </div>
+      <div class="result-cards">
+        <article class="card result-card">
+          <div class="card-content">
+            <h3 class="title is-4">Accuracy falls slowly as candidates are added</h3>
+            <p>DINOv2 loses 0.79 accuracy points per doubling of the candidate pool, reaching 93.1% top-1 across all 306 statues. CLIP loses 2.06 points per doubling, and its decline steepens as the pool grows.</p>
+          </div>
+          <figure><a class="figure-link" href="figures/paper-pool-size.png" aria-label="Open the candidate-pool figure at full resolution"><img src="figures/paper-pool-size.png" loading="lazy" alt="Accuracy versus candidate-pool size for four frozen backbones, with fitted decay and extrapolation beyond the measured pool."></a></figure>
+        </article>
+        <article class="card result-card">
+          <div class="card-content">
+            <h3 class="title is-4">Location helps more as a weight than as a filter</h3>
+            <p>Nearby candidate pools are harder than random pools of the same size: a few close-standing lookalikes stay in the neighbourhood pool. Using distance as a soft weight instead raises DINOv2 from 93.4% to 98.7% for a simulated user 25 m from the statue. This experiment covers the 294 of 306 statues with coordinates, most derived from camera positions.</p>
+          </div>
+          <figure><a class="figure-link" href="figures/paper-geography.png" aria-label="Open the geography figure at full resolution"><img src="figures/paper-geography.png" loading="lazy" alt="Geographic versus random candidate pools, confusion pairs and a soft geographic prior; nearby filtering retains lookalikes while distance weighting improves accuracy."></a></figure>
+        </article>
+        <article class="card result-card">
+          <div class="card-content">
+            <h3 class="title is-4">Pretraining decides most of the outcome</h3>
+            <p>Across thirteen frozen backbones in seven pretraining paradigms, models trained for invariant embeddings lead, with C-RADIOv3 reaching 94.7% top-1. Masked-prediction models MAE, BEiT and I-JEPA fail as frozen retrieval features under the fixed pooling rule, reaching only 47–56%.</p>
+          </div>
+          <figure><a class="figure-link" href="figures/paper-family.png" aria-label="Open the backbone-family figure at full resolution"><img src="figures/paper-family.png" loading="lazy" alt="Thirteen frozen backbones grouped by seven pretraining paradigms, compared on retrieval, new-photographer queries and unknown-statue rejection."></a></figure>
+        </article>
+        <article class="card result-card">
+          <div class="card-content">
+            <h3 class="title is-4">Learned verification helps where SIFT does not</h3>
+            <p>With the query’s photographer withheld, DISK+LightGlue and LoFTR lift DINOv2 top-1 from 81.8% to 84.4% and 85.5%, with weights chosen on held-out statues. SIFT adds nothing measurable; learned verification still adds 2.0 points on DINOv3.</p>
+          </div>
+          <figure><a class="figure-link" href="figures/paper-matcher.png" aria-label="Open the local-matcher figure at full resolution"><img src="figures/paper-matcher.png" loading="lazy" alt="Cross-photographer re-ranking with SIFT, DISK+LightGlue and LoFTR, comparing weight sweeps and gains chosen on held-out statues."></a></figure>
+        </article>
+        <article class="card result-card">
+          <div class="card-content">
+            <h3 class="title is-4">Rejection needs a margin</h3>
+            <p>A high similarity alone is weak evidence that a statue is known when the pool contains many lookalikes. At the same operating point, comparing the best two statues lowers false acceptance from 38.3% to 19.6% for DINOv2 and from 21.6% to 7.7% for DINOv3.</p>
+          </div>
+          <figure><a class="figure-link" href="figures/paper-rejection.png" aria-label="Open the rejection figure at full resolution"><img src="figures/paper-rejection.png" loading="lazy" alt="Unknown-statue rejection curves comparing top similarity and the margin between the best two candidates, with false-acceptance operating points."></a></figure>
+        </article>
+      </div>
+      <p class="results-note">These are research-pipeline measurements. The <a href="demo.html">identifier</a> reports its own measurements on the browser vectors it ships. Street photographs remain an unmeasured domain gap.</p>
+    </div>
+  </section>
+
+  <section class="section project-band" aria-labelledby="dataset-heading">
+    <div class="container is-max-desktop reading-width">
+      <h2 class="title is-3" id="dataset-heading">The dataset</h2>
+      <div class="dataset-facts" aria-label="Dataset size">
+        <div><strong>306</strong><span>statues</span></div>
+        <div><strong>1,691</strong><span>photographs</span></div>
+        <div><strong>294</strong><span>placed on the map</span></div>
+      </div>
+      <div class="content">
+        <p>Every image carries its source, photographer, licence and licence URL. Coverage follows usable photographs rather than geography; each statue has at least three references. Coordinates are recorded as Wikidata positions or positions derived from Commons camera metadata.</p>
+        <p>The photographs retain their individual terms: <strong>CC BY-SA</strong> (1,577), <strong>CC BY</strong> (55), <strong>public domain</strong> (52) and <strong>CC0</strong> (7). Per-file attribution and modification records accompany the dataset.</p>
+        <p>The statues are contemporary sculptures by living artists, protected independently of the photographs. Wikimedia Commons hosts these photographs under Poland’s freedom-of-panorama provision for works permanently displayed in public places. The United States, where the dataset platforms are hosted, has no equivalent exemption for sculpture. The photographers’ Creative Commons licences cover the photographs and cannot grant rights in the sculptures depicted; reuse requiring the sculptor’s permission still requires it.</p>
+        <p>Removal requests from sculptors, photographers, rights-holders, their representatives or people depicted are honoured without requiring a legal argument. <a href="https://github.com/turhancan97/krasnal-id/issues">Open an issue</a>; the photograph is excluded through <code>data/image-review.json</code>, the affected artifacts are rebuilt, and the dataset is updated.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="citation-heading">
+    <div class="container is-max-desktop reading-width">
+      <div class="citation-heading">
+        <h2 class="title is-3" id="citation-heading">BibTeX</h2>
+        <button class="button is-small is-rounded" id="copy-citation" type="button">Copy</button>
+      </div>
+      <p class="citation-note">The paper’s citation will be added when it is public. For now, cite the software:</p>
+      <pre class="citation"><code id="bibtex">@software{kargin2026krasnalid,
+  author    = {Kargın, Turhan Can},
+  title     = {Krasnal-ID: fine-grained visual instance retrieval of
+               Wrocław&#x27;s dwarf statues},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22548023},
+  url       = {https://doi.org/10.5281/zenodo.22548023}
+}</code></pre>
+      <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+<footer class="footer project-footer">
+  <div class="container is-max-desktop">
+    <p>Page template adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+    <p>Code MIT · photographs keep their Wikimedia Commons licences</p>
+    <p><a href="https://github.com/turhancan97/krasnal-id/blob/main/RESULTS.md">Complete research record</a></p>
+  </div>
+</footer>
 </body>
 </html>

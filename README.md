@@ -14,7 +14,7 @@ measures how hard that gets as the number of candidate statues grows. Its corpus
 **Doppeldwarf-306**, holds 1,691 openly licensed photographs of 306 statues, each carrying its
 source, photographer and licence, with 294 statues placed on the map.
 
-[**Try the identifier**](https://turhancan97.github.io/krasnal-id/) (runs in your browser; nothing
+[**Try the identifier**](https://turhancan97.github.io/krasnal-id/demo.html) (runs in your browser; nothing
 is uploaded) · [**Dataset on Hugging Face**](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves)
 · [**Dataset on Kaggle**](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves) ·
 [**Full results**](RESULTS.md)
