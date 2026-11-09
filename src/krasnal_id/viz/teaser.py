@@ -1,4 +1,4 @@
-"""The CVWW paper's page-1 teaser: one query against a family of lookalikes.
+"""The paper's page-1 teaser: one query against a family of lookalikes.
 
 The paper asks which statue a photograph shows, and page 1 is where a reader decides what
 the paper is about, so the teaser answers the question visually: a query photograph,

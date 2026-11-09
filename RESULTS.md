@@ -852,7 +852,7 @@ identity, so re-sweeping weights over an existing run costs nothing.
 
 ## 16. The reviewer checks: what the explanations survive
 
-A colleague's review of the workshop draft, and a second pass at what would make its claims harder
+A colleague's review of the paper draft, and a second pass at what would make its claims harder
 to dispute, turned into measurements. Every number here comes from
 `results/cvww_revision3/workshop_validation-dinov2.json`, written by `krasnal-id experiment
 workshop-validation` (AGENTS.md §7.15–7.16), and each part first reproduces a released number to
@@ -1003,7 +1003,7 @@ for CLIP. A lower bound on the street gap, from 51 photographs.
 
 ## 18. Internal reviews: sensitivity, scarcity and a multi-vector baseline
 
-Two internal reviews of the workshop draft asked whether the headline results hinge on choices
+Two internal reviews of the paper draft asked whether the headline results hinge on choices
 made along the way. Every check here reuses cached vectors, region vectors or the existing match
 journals, and reproduces a released number to 1e-9 before measuring anything new (AGENTS.md
 §7.18–§7.19). Sources: `results/cvww_sens_<prior|cap>-*/` and `results/cvww_review2/`.

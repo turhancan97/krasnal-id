@@ -1356,7 +1356,7 @@ def visualize_paper_figures(
     ] = "journal",
     validation: Annotated[
         Path | None,
-        typer.Option(help="The workshop validation artifact the CVWW figures draw from."),
+        typer.Option(help="The validation artifact the short-paper figures draw from."),
     ] = None,
     override: OverrideOption = None,
 ) -> None:
@@ -1425,7 +1425,7 @@ def visualize_workshop_tables(
     ] = None,
     override: OverrideOption = None,
 ) -> None:
-    """Emit the CVWW manuscript's numbers and tables from the validation artifact.
+    """Emit the paper's numbers and tables from the validation artifact.
 
     The prose cites intervals by metric name through the macro file this writes,
     so none of them is transcribed. `--extra` adds the numbers of other runs, such
@@ -1551,7 +1551,8 @@ def visualize_teaser(
     ),
     dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
     width_cm: Annotated[
-        float | None, typer.Option("--width-cm", help="Printed width; defaults to a CVWW column.")
+        float | None,
+        typer.Option("--width-cm", help="Printed width; defaults to a short-paper column."),
     ] = None,
     override: OverrideOption = None,
 ) -> None:
@@ -1691,7 +1692,8 @@ def visualize_retrieval_examples(
     width_cm: Annotated[
         float | None,
         typer.Option(
-            "--width-cm", help="Printed width; defaults to a CVWW column (top 1) or page (top 5)."
+            "--width-cm",
+            help="Printed width; defaults to a short-paper column (top 1) or page (top 5).",
         ),
     ] = None,
     override: OverrideOption = None,

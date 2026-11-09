@@ -1,4 +1,4 @@
-"""Re-checks of published results for the CVWW paper, from evidence already on disk.
+"""Re-checks of published results for the paper, from evidence already on disk.
 
 The re-ranking numbers this project published -- 82.28% for SIFT and 84.62% for
 DISK+LightGlue, photographer-disjoint -- are each the best point of a weight sweep

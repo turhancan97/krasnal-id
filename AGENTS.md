@@ -1183,9 +1183,9 @@ necessary rather than cautious.
   the **weights are deliberately excluded from its identity**, because inliers cost hours and the
   sweep over them costs milliseconds.
 
-### 7.12 Workshop runs: DINOv3 and a learned first stage (2026-11-05)
+### 7.12 Paper runs: DINOv3 and a learned first stage (2026-11-05)
 
-Two runs the CVWW paper needs (§11.3). Both completed on 2026-11-05 in Slurm job 562714;
+Two runs the paper needs (§11.3). Both completed on 2026-11-05 in Slurm job 562714;
 results are below the design bullets.
 
 - **DINOv3 ViT-B/16 enters as an experiment-only backbone, reversing §7.9's exclusion of it.** The
@@ -1248,9 +1248,9 @@ results are below the design bullets.
   recovery, not a working first stage. Artifact: `results/geometry_first-disk-lightglue-misses10-dinov2.json`.
   It came in before the 1 December cut-off, so it is in the paper.
 
-### 7.13 Workshop evaluation revision: held-out weights and statue intervals (2026-11-05)
+### 7.13 Evaluation revision: held-out weights and statue intervals (2026-11-05)
 
-An external review of the first CVWW draft found real defects, the most important being that the
+An external review of the first draft of the paper found real defects, the most important being that the
 published re-ranking numbers were best-of-sweep, chosen and scored on the same queries. The author
 adopted that review's plan with five changes; this records what was built and what it measured.
 
@@ -1324,7 +1324,7 @@ adopted that review's plan with five changes; this records what was built and wh
 
 ### 7.14 Publication figure system (2026-11-06)
 
-The workshop figures had been styled one function at a time, so each picked its own width, red
+The paper's figures had been styled one function at a time, so each picked its own width, red
 and in-image sentence title. `viz/figure_style.py` is now the one place those choices live, and
 every paper figure and both retrieval sheets read from it.
 
@@ -1338,7 +1338,7 @@ every paper figure and both retrieval sheets read from it.
   wears ink colours, never series colours. Correctness is green plus a check mark and a heavier
   frame, never hue alone; the mark is set in DejaVu Sans because TeX Gyre Heros has no check-mark
   glyph and matplotlib silently substituted a wrong one.
-- **Figures are drawn at the size they print and placed unscaled.** The CVWW kit's column is
+- **Figures are drawn at the size they print and placed unscaled.** The author kit's column is
   8.1 cm and its text block 17 cm; `save` never uses `bbox_inches="tight"`, which crops and so gets
   rescaled by `\linewidth`. So 7 pt ticks are 7 pt on the page in every figure. The top-5 sheet
   is drawn at 13.6 cm through `--width-cm` because at 17 cm it is taller than the page; a narrower
@@ -1350,7 +1350,7 @@ every paper figure and both retrieval sheets read from it.
   each bar.
 - **`--layout journal` keeps the *Scientific Reports* draft's two backbones and sizes.** Its
   figures in `paper/figures/` were not regenerated in this change.
-- **The CVWW paper has a page-1 teaser** (`visualize teaser`, `viz/teaser.py`): one query against
+- **The paper has a page-1 teaser** (`visualize teaser`, `viz/teaser.py`): one query against
   every member of a lookalike family, with DINOv2 cosine. **Its query is chosen by a rule the caption
   states, never by eye**: of the family's leave-one-out queries answered correctly, the smallest
   winning margin, ties to the lower image ID. For the three Słupniki that is `commons-4074360`, won
@@ -1365,7 +1365,7 @@ every paper figure and both retrieval sheets read from it.
   the geography figure's panels show the same four backbones. Each backbone's top confusion is a
   lookalike family, but not the same one: the Słupniki for DINOv2 and CLIP, the blind and deaf pair
   for DINOv3, a group statue and its own member for SigLIP 2.
-- **Workshop figure filenames no longer match their numbers.** The teaser became Figure 1, so
+- **The new manuscript's figure filenames no longer match their numbers.** The teaser became Figure 1, so
   `fig1-dataset.png` is Figure 2 and `fig7-rejection.png` Figure 6. The files are shared with the
   journal draft's generator, and every reference is a `\cref`, so renaming buys nothing here. The
   rule that names match numbers (§11.1) is the journal's.
@@ -1389,7 +1389,7 @@ every paper figure and both retrieval sheets read from it.
 
 ### 7.15 Reviewer checks (2026-11-06)
 
-A colleague's review of the CVWW draft asked for more than the paper measured. Each request was
+A colleague's review of the draft asked for more than the paper measured. Each request was
 sorted by cost and by whether its answer could change what the paper claims. Answered, all before
 the 1 December cut-off of §11.3:
 
@@ -1416,7 +1416,7 @@ the 1 December cut-off of §11.3:
   **Experiment-only, like DINOv3 (§7.12):** in no export or visualisation list, and its results
   go to `results/siglip2/`. First decided as tables only; **reversed on 2026-11-07** at the author's
   request, once SigLIP 2 turned out to carry a finding (CLIP's weakness is its checkpoint). It is
-  now the fourth backbone in the CVWW layout's pool-size, geography and rejection figures. The
+  now the fourth backbone in the new manuscript's pool-size, geography and rejection figures. The
   retrieval examples stay a DINOv2-against-CLIP contrast, because their rows are defined by which
   of two backbones is right.
 
@@ -1636,7 +1636,7 @@ paper, per-model detail in the supplement, and the three headlines reported acro
 
 ### 7.18 Second internal review (2026-11-08)
 
-A colleague's review of the CVWW draft recommended acceptance and asked for sensitivity checks,
+A colleague's review of the draft recommended acceptance and asked for sensitivity checks,
 leakage accounting, cost, and three pieces of related work. Every check below runs from cached
 vectors or the existing match journals; no model was loaded and nothing was matched.
 
@@ -1752,7 +1752,7 @@ ones worth keeping as rules:
 - **A typed point estimate beside a generated interval can disagree in sign.** The slope sentence
   typed "costs 0.79 points" before macros printing −1.0 to −0.6. Every number in such a sentence
   now comes from the macros, in one sign convention.
-- **The main text must define everything it reports**, because CVWW reviewers need not open the
+- **The main text must define everything it reports**, because reviewers need not open the
   supplement: rejection gained a protocol paragraph (how unknowns are built, leave-one-class-out
   calibration, the margin, FA@90), and the 100 m user distance and the top-50 check are in §4.
 - **Wording corrected to what was measured**: I-JEPA predicts latent features, so "reconstruct
@@ -2000,9 +2000,8 @@ the output and reading it rather than by reading a log.
     worth building, and §7.8 predicts it is not: a known query's 144 inliers collapse to 17 once
     its own photographer is withheld, which is the regime this arm runs in.
 
-- **An archival workshop publication takes priority** — decided by the author on 2026-11-05;
-  see §11.3. CVWW 2027's contributed papers track is the leading candidate. Travel is unrestricted.
-  The *Scientific Reports* plan of §11.1 and its APC investigation in §11.2 remain as a fallback
+- **A shorter archival manuscript takes priority** — decided by the author on 2026-11-05;
+  see §11.3. The *Scientific Reports* plan of §11.1 and its APC investigation in §11.2 remain as a fallback
   and historical record; journal submission and APC funding are no longer the next step.
 
 Any of these is a scope change. Record the decision here before implementing it.
@@ -2114,15 +2113,15 @@ krasnal-id/
 │       ├── ablation_plot.py
 │       ├── open_set_plot.py
 │       ├── figure_style.py    # one palette, typeface, type scale and print width for every figure
-│       ├── paper_figures.py   # the manuscripts' data figures, journal and CVWW layouts
+│       ├── paper_figures.py   # the manuscripts' data figures, journal and short-paper layouts
 │       ├── paper_tables.py    # the journal supplement's generated tables
 │       ├── family_plot.py     # the thirteen-backbone forest plot and per-paradigm curves (§7.17)
-│       ├── teaser.py          # the CVWW page-1 teaser, its query chosen by rule
+│       ├── teaser.py          # the paper's page-1 teaser, its query chosen by rule
 │       ├── retrieval_examples.py # top-1 and top-5 retrieval sheets
 │       ├── match_plot.py      # drawn correspondences between a query and its candidates
 │       ├── matcher_examples.py # the rescue and failure pairs the match figure shows, by rule
 │       ├── fonts/             # vendored TeX Gyre Heros, GUST Font License
-│       └── workshop_tables.py # the CVWW manuscript's numbers and tables, by metric name
+│       └── workshop_tables.py # the paper's numbers and tables, by metric name
 ├── results/                   # ignored generated results
 └── tests/                     # schemas, configs, CLI, experiments, and interface contracts
 ```
@@ -2149,7 +2148,7 @@ krasnal-id/
 ### 11.1 Publication plan decision (2026-09-12)
 
 **Historical journal plan.** Section 11.3 supersedes this as the first submission priority on
-2026-11-05. Preserve the manuscript decisions below when preparing a workshop version.
+2026-11-05. Preserve the manuscript decisions below when preparing the shorter version.
 
 **One paper, to *Scientific Reports*: the dataset and the analysis together.** The first plan here
 was two papers, a Data Descriptor for the corpus and an analysis paper for the findings. It was
@@ -2398,54 +2397,41 @@ about the paper, and what can be checked without logging in looks unfavourable.
   manuscript is specific to this journal beyond the template, the 4,500-word budget and the
   eight-display-item limit.
 
-### 11.3 Workshop publication priority (2026-11-05)
+### 11.3 Paper drafting (2026-11-05)
 
-**Prioritize an archival workshop publication over the earlier journal-first plan.** The author
-made this choice explicitly and has no geographic restriction on travel. *Scientific Reports*
-remains a fallback, with §11.1 and §11.2 retained as the record of that earlier route.
+**The paper is now drafted as a shorter, archival conference-style manuscript, ahead of the earlier
+journal-first plan.** The author made this choice explicitly. *Scientific Reports* remains a
+fallback, with §11.1 and §11.2 retained as the record of that earlier route. **This public
+repository does not name where the paper is submitted**; the venue, its dates and its rules are
+kept in the untracked `paper-cvww/VENUE-NOTES.md`.
 
-- **CVWW 2027's contributed papers track is the leading candidate.** It reviews original work
-  and publishes accepted papers through TU Wien's reposiTUm repository under CC BY 4.0, with
-  authors retaining copyright. Its feedback track does not publish papers and does not meet the
-  publication goal. Source: [official submission guidelines](https://cvww2027.cvl.tuwien.ac.at/submission-guidelines/),
-  checked 2026-11-05.
-- **The current submission deadline is 21 December 2026 at 23:59:59 CET.** Notification is
-  18 January 2027, camera-ready is 25 January, and the workshop runs 8–10 February in Rust,
-  Austria. Submissions use the current author kit, double-blind review, and 6–8 pages excluding
-  references. Sources: [official dates](https://cvww2027.cvl.tuwien.ac.at/) and the submission
-  guidelines above, checked 2026-11-05. Recheck before submitting; this record is dated evidence.
-- **Scholar visibility is expected, not guaranteed.** The author checked example CVWW papers
-  from 2025 and 2026 and confirmed they appear in Google Scholar. That is evidence for choosing
-  the venue, not a guarantee that a future paper will be indexed or a claim about other indexes.
-- **This decision changes the submission priority, not the research results or manuscript.**
-  The existing journal draft remains in the deliberately untracked `paper/` directory. Workshop
-  reformatting and submission have not yet been done; do not describe either as completed.
 - **Positioning, fixed on 2026-11-05 from the author's answers to thirty yes/no questions.**
-  Audience is computer vision; sole author; spending these results on the workshop is accepted.
-  The three headline contributions are the attributed corpus, the pool-size curve and "location
-  narrowing is harder than random narrowing"; lookalike families are the thread through every
-  result, which are ordered by system stage — retrieve, narrow, verify, reject. Supporting: the
-  photographer control as expected deployed accuracy, learned-matcher re-ranking, and one table of
-  negative results. Out: the browser demo, fine-tuning, and the story of the project overturning
-  its own 23-class conclusions. **There is no fieldwork before the deadline**, so the street gap
-  is stated as §5.9's camera-origin lower bound. New runs (§7.12) have a hard cut-off of
-  1 December 2026; after it the paper goes in with what exists.
-- **The draft is in untracked `paper-cvww/`, built from the official 2027 kit.** The kit's header
-  comment says 2025 but `cvww.sty` declares `\confYear{2027}` and the zip is the one the 2027
-  site serves, dated September 2026; an unmodified copy is kept in `paper-cvww/_kit/`. It builds
-  with `paper/bin/tectonic`. The corpus is called "ours" and never by the project name, which is
-  searchable; the kit's own guidance allows third-person self-citation but that does not make a
-  link to a named repository anonymous.
-- **The dataset name and the paper title were chosen on 2026-11-07** (author's choice, from a
-  shortlist) and are recorded only in the untracked `paper-cvww/`. Both were chosen to be
-  searchable, which is exactly why they are kept out of this public repository until the review
-  is over: searching either would lead to the author. **Anonymity is only partial**: the data is
-  already public as `wroclaw-dwarves` on Hugging Face and Kaggle under the author's name, so the
-  submission must not use that name or link. After acceptance, rename the Hub and Kaggle *display
-  titles* to the chosen name and restore it here; Kaggle's slug cannot change and stays
-  `wroclaw-dwarves`. The naming search also surfaced two works the paper now cites, each checked
-  against the CVF BibTeX: *Doppelgangers* (ICCV 2023), the closest dataset in spirit, and *ILIAS*
-  (CVPR 2025), a current instance-retrieval benchmark.
+  Audience is computer vision; sole author. The three headline contributions are the attributed
+  corpus, the pool-size curve and "location narrowing is harder than random narrowing"; lookalike
+  families are the thread through every result, which are ordered by system stage — retrieve,
+  narrow, verify, reject. Supporting: the photographer control as expected deployed accuracy,
+  learned-matcher re-ranking, and one table of negative results. Out: the browser demo,
+  fine-tuning, and the story of the project overturning its own 23-class conclusions. **There is no
+  fieldwork before the paper is finished**, so the street gap is stated as §5.9's camera-origin
+  lower bound. New runs (§7.12) had a hard cut-off of 1 December 2026; after it the paper goes in
+  with what exists.
+- **The draft is in untracked `paper-cvww/`, built from its venue's official author kit**, an
+  unmodified copy of which is kept in `paper-cvww/_kit/`. It builds with `paper/bin/tectonic`.
+  Review is double-blind, so the corpus is called "ours" and never by the project name, and the
+  manuscript neither names nor links this repository or the published datasets. On 2026-11-09 the
+  organisers confirmed that an arXiv preprint, and this repository and the datasets staying
+  public, are both fine during review; only the manuscript itself must stay anonymous.
+- **The dataset is named Doppeldwarf-306 and the paper "Which Dwarf Is This? Doppeldwarf-306 and
+  Near-Identical Instance Retrieval"** (author's choice, 2026-11-07, from a shortlist). The name
+  was chosen to be sayable, to describe the difficulty (lookalike dwarves, after doppelgänger) and
+  to be searchable: on that date "Doppeldwarf" returned no results, where GNOME, DWARF and SNOW are
+  buried under software and weather datasets. It deliberately avoids "Wrocław" and the project
+  name. **Anonymity is only partial**: the data is already public as `wroclaw-dwarves` on Hugging
+  Face and Kaggle under the author's name, so the manuscript must not use that name or link. After
+  acceptance, rename the Hub and Kaggle *display titles* to Doppeldwarf-306; Kaggle's slug cannot
+  change and stays `wroclaw-dwarves`. The naming search also surfaced two works the paper now cites,
+  each checked against the CVF BibTeX: *Doppelgangers* (ICCV 2023), the closest dataset in spirit,
+  and *ILIAS* (CVPR 2025), a current instance-retrieval benchmark.
   **The paper has its own mark** (`paper-cvww/logo/make_logo.py`, SVG to PDF through cairosvg): two
   identical gnomes, the second a colour-swapped twin, in the corpus colours of §7.14 — deep mustard,
   the author's mustard and ink. It is set beside a two-line title. It is deliberately unlike the
@@ -2466,13 +2452,13 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
   first author and year. `paper/references.bib` carried it too, cited twice by `paper/main.tex`;
   it was replaced with the same verified entry on 2026-11-05 and the rendered journal PDF re-read.
   The journal bibliography then took the other four fixes too — Sivic and Zisserman's first names,
-  the ICLR, NeurIPS and TMLR venues, The Met's NeurIPS venue — copied from the workshop copy.
+  the ICLR, NeurIPS and TMLR venues, The Met's NeurIPS venue — copied from the new manuscript's copy.
   `sn-nature.bst` sets titles in sentence case, so there **only the words that must keep their
   capitals are braced** (acronyms, mixed-case names, proper nouns: 18 titles), never whole titles,
   which would defeat the style. Both journal PDFs were rebuilt and every changed reference re-read.
   The same read found `sivic2003videogoogle` without first names, three arXiv-only entries for
   papers published at ICLR, NeurIPS and TMLR, and The Met without its NeurIPS venue — and that
-  `ieeenat_fullname` lowercases titles, so every title is braced in the workshop copy.
+  `ieeenat_fullname` lowercases titles, so every title is braced in the new manuscript's copy.
 
 ## 12. Living documentation and handoffs
 - Treat this file as the authoritative project brief and decision record. Update it in the same change whenever implementation work introduces or changes architecture, scope, schemas, conventions, build order, or other decisions that future contributors must follow.
@@ -2550,11 +2536,11 @@ Implementation state:
   §7.15, and the nine of the §7.17 paradigm study (`dino`, `mae`, `beit`, `eva02-mim`, `ijepa`,
   `clip-b16`, `radio`, `aimv2`, `vit-supervised`), whose results live under `results/family/`.
   None is named in any export list, so they cost the published datasets nothing; DINOv3 and
-  SigLIP 2 appear only in the CVWW figure layout. Their vectors sit in the same content-addressed
+  SigLIP 2 appear only in the short-paper figure layout. Their vectors sit in the same content-addressed
   cache; the key includes the model id, revision and pooling, so no checkpoint can read another's
   vectors. `embeddings extract-regions` writes the separate `regions-<backbone>.npz` files §7.19
   reads, outside that cache.
-- **The CVWW manuscript's numbers come from `results/cvww_revision3/`** through `visualize
+- **The paper's numbers come from `results/cvww_revision3/`** through `visualize
   workshop-tables`, with `--extra v3=…` (DINOv3 re-ranking), `r2=…` (§7.19), `cg3=…`/`cgs=…`
   (camera gap) and the `results/cvww_sens_*` runs (§7.18) picked up automatically; the
   thirteen-backbone numbers come from `visualize family`. `paper-cvww/` itself is untracked and

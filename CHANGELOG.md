@@ -56,7 +56,7 @@ No result changes and no number is published: the photographs still need a day i
   Numbers with no statue interval (unseen-photographer top-1, recall, cosine false acceptance)
   are carried as points, never with a Wilson interval passed off as a statue one.
 
-- `krasnal-id visualize teaser-matches` draws the CVWW supplement's correspondence figure: SIFT
+- `krasnal-id visualize teaser-matches` draws the paper supplement's correspondence figure: SIFT
   against DISK+LightGlue on two cases chosen by rule (`viz/matcher_examples.py`). The rescue is the
   unseen-photographer cosine miss whose correct statue DISK+LightGlue's journalled matches favour by
   the widest margin, shown against the photograph re-ranking compared; on the current journal that
@@ -93,7 +93,7 @@ No result changes and no number is published: the photographs still need a day i
 - **One visual system for the publication figures, `krasnal_id.viz.figure_style`** (AGENTS.md
   §7.14). The author's palette, restricted to the validated subsets (backbones blue, orange and
   teal; matchers pink and purple), one vendored typeface (TeX Gyre Heros, GUST Font License), one
-  type scale, and the CVWW kit's 8.1 cm and 17 cm print widths. `visualize paper-figures` takes
+  type scale, and the author kit's 8.1 cm and 17 cm print widths. `visualize paper-figures` takes
   `--layout cvww|journal`; `journal` keeps the old two-backbone sizes.
 - `visualize retrieval-examples --width-cm` draws a sheet at its printed width rather than
   scaling it, so the top-5 sheet fits a page at 13.6 cm with the same type size as every other
@@ -143,7 +143,7 @@ No result changes and no number is published: the photographs still need a day i
   outcomes** beside their aggregates, computed from the same draws, so no released number moves.
 - **`visualize retrieval-examples --top-k 1`** draws a compact sheet of the same deterministic
   queries, one row each with every backbone's first answer.
-- **`visualize workshop-tables`** writes the CVWW manuscript's numbers as named macros and its
+- **`visualize workshop-tables`** writes the paper's numbers as named macros and its
   fold-weight table, from the validation artifact, so no interval in the paper is typed by hand.
 
 ### Fixed
@@ -174,12 +174,12 @@ No result changes and no number is published: the photographs still need a day i
   competitions counted in the confusion artifact, and the supplement's thirteen-backbone table
   gains the photographer-effect column (AGENTS.md §7.20).
 
-- The CVWW dataset figure's confusion panel follows a stated rule (`shown_confusions`): the most
+- The paper's dataset figure's confusion panel follows a stated rule (`shown_confusions`): the most
   frequent DINOv2 confusions, skipping a group class against its own member and any statue already
   shown. Two journal-table captions say "statue" and no longer promise an interval they do not
   print.
 
-- Figure 2(a) of the workshop paper selects its confusion pairs by a stated rule
+- Figure 2(a) of the paper selects its confusion pairs by a stated rule
   (`paper_figures.shown_confusions`): group/member overlaps and repeated statues are skipped.
   Retrieval sheets clean raw Commons titles through `retrieval_examples.clean_name` and no longer
   let long labels collide. Two journal-table captions say "statue" and no longer mention an
@@ -198,10 +198,10 @@ No result changes and no number is published: the photographs still need a day i
   over the right panel, so no legend or label crosses a curve. The type sizes are now the shared
   tick and label sizes rather than the annotation size.
 
-- The CVWW fold-weight table names matchers as the paper does (SIFT, DISK+LightGlue, LoFTR), once
+- The paper's fold-weight table names matchers as the paper does (SIFT, DISK+LightGlue, LoFTR), once
   per group with a rule between groups, instead of printing configuration identifiers.
 
-- The CVWW dataset figure (Figure 2) is restyled in the corpus's own colour, mustard
+- The paper's dataset figure (Figure 2) is restyled in the corpus's own colour, mustard
   (`figure_style.CORPUS_ACCENT`/`CORPUS_FILL`, validated on white): each confusion arrow is
   labelled with its share of queries and the statues' separation, the map colours Wikidata
   positions apart from camera-derived ones with a legend, and the photograph-count bars are
@@ -216,14 +216,13 @@ No result changes and no number is published: the photographs still need a day i
   operating points are labelled by the axis instead of by colliding annotations. Correct
   retrievals carry a check-mark badge beside the green frame, so correctness never rests on
   colour.
-- `paper-cvww/`, the workshop manuscript, is ignored like `paper/`, which it draws on; it vendors
-  the CVWW author kit. A complete anonymous draft and supplement now build from it: 8 pages with
+- `paper-cvww/`, the shorter manuscript, is ignored like `paper/`, which it draws on; it vendors
+  its venue's author kit. A complete anonymous draft and supplement now build from it: 8 pages with
   references from page 7, Times via TeX Gyre Termes, and every interval generated. `AGENTS.md` section 11.3 records the paper's positioning and a wrong
   `chen2020simclr` citation found in the journal draft's bibliography.
-- Recorded the author's priority of an archival workshop publication in `AGENTS.md` sections 8
-  and 11.3, with CVWW 2027's contributed papers track as the leading candidate. The earlier
-  *Scientific Reports* plan and APC investigation remain as a fallback and historical record.
-  This records the venue priority only; the manuscript has not been reformatted or submitted.
+- Recorded the author's priority of a shorter archival manuscript in `AGENTS.md` sections 8 and
+  11.3. The earlier *Scientific Reports* plan and APC investigation remain as a fallback and
+  historical record.
 - `data/field-guide.md` asks for JPEG, a photographer with no Commons uploads of these statues, and
   transfer by cable or full-quality backup rather than a messaging app, and describes the sorting
   step. The README's field-query section describes both comparators and the intervals.

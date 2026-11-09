@@ -301,7 +301,7 @@ def bootstrap_gaps(
 
     A statue's field and Commons queries are drawn together, which pairs the two
     sides exactly as the point estimate does. The resampling itself lives in
-    `krasnal_id.bootstrap`, shared with the workshop validation.
+    `krasnal_id.bootstrap`, shared with `workshop_validation`.
     """
     field_hits = np.array([_hits(statue.field, k) for statue in statues], dtype=np.float64)
     field_n = np.array([len(statue.field) for statue in statues], dtype=np.float64)

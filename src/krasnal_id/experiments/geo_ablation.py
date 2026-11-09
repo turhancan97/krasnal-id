@@ -218,7 +218,7 @@ def located_inputs(
     """Restrict both arms to the statues that carry coordinates.
 
     Returns the located split, the located statue ids, every statue id, and the
-    coordinates. Shared with the workshop validation so the two cannot disagree
+    coordinates. Shared with `workshop_validation` so the two cannot disagree
     about which queries the geographic comparison covers.
     """
     locations = dwarf_locations(manifest)

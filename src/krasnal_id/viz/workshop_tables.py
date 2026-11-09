@@ -1,6 +1,6 @@
-"""Numbers and tables for the CVWW manuscript, generated from result artifacts.
+"""Numbers and tables for the paper, generated from result artifacts.
 
-The workshop paper quotes dozens of statue-level intervals. Typing them would
+The paper quotes dozens of statue-level intervals. Typing them would
 re-open the failure §6.4 exists to prevent -- a published number with no artifact
 behind it -- so the manuscript cites them by metric name instead:
 

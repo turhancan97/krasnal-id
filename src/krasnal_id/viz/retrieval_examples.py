@@ -325,7 +325,7 @@ def render_examples(
 ) -> Path:
     """Draw every example as a query column beside one row per backbone.
 
-    Drawn at `width` inches -- the CVWW full text width by default -- in the shared
+    Drawn at `width` inches -- the short-paper full text width by default -- in the shared
     figure style. The density is a parameter because the sheet has two readers: the
     repository's copy is read on a screen at 150 dpi, the manuscript's at 300.
     """
@@ -452,7 +452,7 @@ def create_retrieval_examples_plot(
 ) -> Path:
     """Draw one contact sheet covering every backbone the config names.
 
-    `width_cm` is the width the sheet will be printed at. It defaults to one CVWW
+    `width_cm` is the width the sheet will be printed at. It defaults to one short-paper
     column for the top-1 sheet and the full text width for the top-5 one; a
     narrower width is drawn narrower rather than scaled, so its type stays the
     size every other figure uses.

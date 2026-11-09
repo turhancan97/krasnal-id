@@ -1,4 +1,4 @@
-"""Qualitative matcher examples for the CVWW supplement, chosen by stated rules.
+"""Qualitative matcher examples for the paper's supplement, chosen by stated rules.
 
 A correspondence figure is the one place a reader can see *why* a learned matcher
 re-ranks where SIFT does not. It is also the figure most easily cherry-picked, so

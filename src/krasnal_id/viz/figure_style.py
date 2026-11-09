@@ -21,7 +21,7 @@ Teal is one step deeper than the author's ``#55A398``, which reads grey on paper
 Mustard and yellow fail the lightness band on white and are kept for fills and
 highlights, never for thin lines or small points.
 
-**Figures are drawn at the size they are printed.** The CVWW kit's text block is
+**Figures are drawn at the size they are printed.** The short-paper author kit's text block is
 17 cm wide with a 0.8 cm gutter, so a column is 8.1 cm and the full width 17 cm.
 A figure drawn at those widths and placed at ``\\linewidth`` is never scaled, so
 the 7 pt tick labels below really are 7 pt on the page, in every figure.
@@ -101,7 +101,7 @@ class Layout:
     backbones: tuple[str, ...]
 
 
-# The CVWW 2027 kit: 17 cm text block, 0.8 cm gutter.
+# The short-paper author kit: 17 cm text block, 0.8 cm gutter.
 CVWW = Layout(
     "cvww", column=8.1 / 2.54, full=17.0 / 2.54, backbones=("dinov2", "clip", "dinov3", "siglip2")
 )

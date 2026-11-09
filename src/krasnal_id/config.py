@@ -520,7 +520,7 @@ class GeometryFirstConfig(BaseModel):
 
 
 class WorkshopValidationConfig(BaseModel):
-    """Re-checks of published results for the CVWW paper, from evidence already on disk.
+    """Re-checks of published results for the paper, from evidence already on disk.
 
     Nothing here loads a model or matches an image. The re-ranking part reads the
     two matcher journals; it never constructs a matcher. The identity settings

@@ -1,4 +1,4 @@
-"""The CVWW manuscript's numbers are generated from artifacts, never typed."""
+"""The paper's numbers are generated from artifacts, never typed."""
 
 import json
 from pathlib import Path

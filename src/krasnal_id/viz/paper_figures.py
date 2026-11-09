@@ -116,7 +116,7 @@ class Sources:
         """The validation artifact's metrics by name, or an error naming the flag."""
         if self.validation is None or not self.validation.is_file():
             raise PaperFigureError(
-                f"the CVWW figures need the workshop validation artifact; pass --validation "
+                f"the short-paper figures need the validation artifact; pass --validation "
                 f"(got {self.validation})"
             )
         payload = json.loads(self.validation.read_text(encoding="utf-8"))
@@ -903,7 +903,7 @@ def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     """Fig. 7 -- the system cannot decline to answer, on either signal."""
     plt = _pyplot()
     if layout.name == "cvww":
-        # One column: the workshop paper shows the margin comparison and states the
+        # One column: the paper shows the margin comparison and states the
         # geometry result in a sentence (section 7.15).
         figure, left = plt.subplots(
             figsize=(layout.column, layout.column * 0.62), layout="constrained"
