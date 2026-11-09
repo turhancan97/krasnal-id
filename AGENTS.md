@@ -1840,7 +1840,11 @@ release that writes the paper, and the only one whose findings are about the man
 than the corpus. Every display item and all fourteen supplementary tables are generated from
 `results/*.json`; the manuscript gains a Related Work section (§11.1) and written availability
 sections; and six defects surface that a clean build reported as success, each found by rendering
-the output and reading it rather than by reading a log.
+the output and reading it rather than by reading a log. `0.20.0` puts the headline results under
+test (§7.12-§7.20): held-out re-ranking weights, whole-statue intervals and a 1e-9 reproduction
+gate on every recomputation, thirteen backbones in seven pretraining paradigms, a soft location
+prior, margin rejection, kernel and inlier-cap sensitivity, scarcity strata, gated verification and
+a multi-region baseline. It also makes the field-query path walk-ready (§5.14).
 
 - ~~**Open-set rejection**~~ — done on 2026-09-03 as `experiment open-set`; see §7.2 for the
   protocol and what it measured. What it leaves open is a *product* question rather than a
