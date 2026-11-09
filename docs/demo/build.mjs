@@ -22,20 +22,11 @@
  *
  * Model weights are fetched from the Hugging Face CDN on first run and cached.
  */
-import {
-  AutoModel,
-  AutoProcessor,
-  CLIPVisionModelWithProjection,
-  RawImage,
-  env,
-} from "@huggingface/transformers";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import sharp from "sharp";
 import { BACKBONES, unitVector, vectorFile } from "../backbones.mjs";
 import { resizeToShortestEdge } from "../resize.mjs";
 
-env.allowLocalModels = false;
 
 const REPO = resolve(import.meta.dirname, "../..");
 const OUT = join(REPO, "docs/assets");
@@ -47,7 +38,6 @@ const SELF_TEST_COUNT = 8;
 
 // Resolved here rather than in backbones.mjs because the browser loads
 // transformers.js from a CDN and this file loads it from npm.
-const CLASSES = { AutoModel, CLIPVisionModelWithProjection };
 
 // Measured on this dataset, embedding DINOv2 q4 where the build actually had
 // four usable CPUs:
@@ -77,6 +67,23 @@ const names = new Map(dwarfs.map((d) => [d.dwarf_id, d.display_name]));
 
 console.log(`${images.length} reference photographs, ${dwarfs.length} dwarves`);
 console.log(`backbones: ${BACKBONES.map((b) => `${b.label} (${b.dtype})`).join(", ")}`);
+
+// This branch precedes all decoder/model imports and never writes a .bin or thumbnail.
+const metadataOnly = process.argv.includes("--metadata-only");
+if (process.argv.slice(2).some((arg) => arg !== "--metadata-only")) throw new Error("Unknown build option");
+const { enrichMetadata, writeMetadataAtomic } = await import("./metadata.mjs");
+if (metadataOnly) {
+  const path = join(OUT, "references.json");
+  const metadata = JSON.parse(readFileSync(path, "utf8"));
+  writeMetadataAtomic(path, enrichMetadata(metadata, manifest, REPO, OUT));
+  console.log("Metadata-only build complete; no model imported, no vectors or thumbnails written");
+  process.exit(0);
+}
+const { AutoModel, AutoProcessor, CLIPVisionModelWithProjection, RawImage, env } =
+  await import("@huggingface/transformers");
+const { default: sharp } = await import("sharp");
+env.allowLocalModels = false;
+const CLASSES = { AutoModel, CLIPVisionModelWithProjection };
 
 // --- models -----------------------------------------------------------------
 const loaded = new Map();
@@ -246,9 +253,9 @@ const coLocated = [...clusters.values()].filter((g) => g.length > 1).map((g) => 
 console.log(`co-located groups: ${coLocated.map((g) => g.length).join(", ")}`);
 
 // --- write ------------------------------------------------------------------
-writeFileSync(
+writeMetadataAtomic(
   join(OUT, "references.json"),
-  `${JSON.stringify(
+  enrichMetadata(
     {
       generated_at: new Date().toISOString(),
       backbones,
@@ -268,9 +275,8 @@ writeFileSync(
         source_url: image.source_url,
       })),
     },
-    null,
-    1,
-  )}\n`,
+    manifest, REPO, OUT,
+  ),
 );
 
 const thumbBytes = readdirSync(THUMBS).reduce((sum, f) => sum + statSync(join(THUMBS, f)).size, 0);

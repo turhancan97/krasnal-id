@@ -808,6 +808,49 @@ already on screen rather than asking for it again.
 - **This is a presentation-only change.** No data, results-directory artifact, paper source,
   embedding, generated demo asset, export or deployed site is rebuilt or changed.
 
+### 6.8 Identifier metadata and interaction decisions (2026-11-09)
+
+- **`node docs/demo/build.mjs --metadata-only` cannot load a model.** It branches before dynamic
+  imports of transformers.js and sharp, reads the same sorted manifest as the full build, and
+  changes only `docs/assets/references.json` through a temporary sibling and atomic rename.
+  `demo/metadata.mjs` validates image IDs, order, labels and staging against existing metadata,
+  vector byte lengths and model identities, and reproduces every stored `measured` value to
+  1e-12 before writing. It records per-backbone binary and image-order SHA-256 digests and checks
+  them on later updates. Anonymous binary rows carry no IDs of their own: the existing metadata
+  is their original row-order contract, checked against the manifest, rather than a second source
+  from which row identities can be recovered. The full build uses the same metadata enrichment.
+- **Coordinates retain their source.** Exactly 294 statues have `lat`, `lon` (five decimal places)
+  and `coordinate_source`, with the other 12 carrying none. Their sources are `wikidata` and
+  `commons_camera`; positions estimated from photographs must be labelled as estimates.
+- **The location prior is exponential, scale 200 m, weight 0.2.** Its source is the existing
+  sensitivity artifact's `dinov2_soft_prior_gps100_fold_*_weight` metrics; read directly, the five
+  weights are 0.5, 0.2, 0.2, 0.2, 0.2, so four of five folds support 0.2. The exact artifact path
+  and metric prefix live in metadata's `location_prior.source`, not in user-facing prose.
+- **Close-call statistics are descriptive leave-one-out measurements on the shipped vectors.**
+  `retrieval.mjs` supplies the same per-statue best-image cosine ranking to metadata calibration
+  and the browser. Each query is withheld. Candidate thresholds are distinct observed top-two
+  cosine margins; strict `< threshold` includes whole ties, with both sides nonempty. Scan all
+  boundaries, because prefix accuracy can rise and fall, and choose the largest boundary whose
+  lower group has accuracy strictly below 80%. No rounding or interpolation affects selection.
+  These in-sample groups describe this dataset, not a probability for a visitor's photograph.
+
+  | Backbone | Margin threshold | Share below | Top-1 below | Top-1 above |
+  |---|---:|---:|---:|---:|
+  | DINOv2 | 0.12890930711185511 | 32.76168% | 79.96390% | 99.64820% |
+  | CLIP | 0.086518953772539264 | 88.05441% | 79.98657% | 100.00000% |
+
+- **Example selection is deterministic and query-only.** Fix `commons-4074360`, then use the
+  nearest-rank 10th, 30th, 50th, 70th and 90th percentiles of DINOv2 margins after excluding every
+  Słupniki statue. Sort by margin, then ASCII image ID. If a target statue was already selected,
+  choose the nearest remaining index; equal rank distances go to the lower ASCII image ID.
+  The selected IDs are `commons-4074360`, `commons-33580401`, `commons-30095904`,
+  `commons-15801714`, `commons-114315993`, `commons-175031164`, all distinct statues.
+  The full rule is stored beside the list in `references.json.examples`.
+- **Verification:** metadata-only build reproduced both backbone measurements; binary SHA-256
+  checks matched before and after. Five Node tests cover withheld queries, stable ties, the
+  weight-zero control, unplaced statues, nonmonotonic threshold selection, tied margins,
+  distinct-statue examples and refusal of shuffled/relabelled metadata rows. No model ran in Node.
+
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
 2. **Headline experiment**: accuracy vs. candidate-pool size N (synthetic random subsampling, repeated with multiple seeds per N for error bars; real geo-based pools as a secondary comparison if coordinate coverage allows).
@@ -2107,9 +2150,10 @@ krasnal-id/
 │   ├── style.css              # shared theme, identifier and scoped Bulma styles
 │   ├── project.js             # title synchronization and citation copying
 │   ├── app.js                 # ONNX inference, retrieval, and the co-location warning
+│   ├── retrieval.mjs          # shared vector-only ranking and geographic weighting
 │   ├── assets/                # generated reference vectors and thumbnails
 │   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
-│   ├── demo/                  # the build that produces docs/assets
+│   ├── demo/                  # full build, metadata-only calibration and vector-contract tests
 │   └── figures/               # published figures, including the copied paper figures (§6.7)
 ├── src/krasnal_id/
 │   ├── cli.py                 # unified Typer CLI

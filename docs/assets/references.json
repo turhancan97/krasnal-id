@@ -6199,7 +6199,9 @@
       0.013767
      ]
     }
-   ]
+   ],
+   "image_order_sha256": "249e1c0996242ea660094008cd11ed38a72163dea697bd9f8deeb925ee572aaf",
+   "vectors_sha256": "cf8febd8ce9281ef7015d805e0b07da81e7cfe4cb2a05157a0c65e63a3c65ca5"
   },
   "clip": {
    "repo": "Xenova/clip-vit-base-patch32",
@@ -10351,7 +10353,9 @@
       -0.016718
      ]
     }
-   ]
+   ],
+   "image_order_sha256": "249e1c0996242ea660094008cd11ed38a72163dea697bd9f8deeb925ee572aaf",
+   "vectors_sha256": "3dfe9b4afba9fb530309541a7ff381a3d8b3f2f38f4d4c1387f932355ac73fd1"
   }
  },
  "staging_sha256": "ce22a7249083a5e7ccc0c3efb396e16791bfb9f242bea5bae719dbed32a5a548",
@@ -10506,55 +10510,94 @@
  "dwarfs": [
   {
    "id": "C-antonio-okulista-dwarf-wroclaw",
-   "name": "Antonio Okulista"
+   "name": "Antonio Okulista",
+   "lat": 51.11648,
+   "lon": 17.05259,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-antykwarek-dwarf-wroclaw",
-   "name": "Antykwarek"
+   "name": "Antykwarek",
+   "lat": 51.10213,
+   "lon": 17.03042,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-archimax-dwarf-wroclaw",
-   "name": "Archimax"
+   "name": "Archimax",
+   "lat": 51.114,
+   "lon": 17.08443,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-aurer-dwarf-wroclaw",
-   "name": "Aurer"
+   "name": "Aurer",
+   "lat": 51.05704,
+   "lon": 17.03287,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-automatek-dwarf-wroclaw",
-   "name": "Automatek"
+   "name": "Automatek",
+   "lat": 51.10867,
+   "lon": 17.0652,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-automatek-ii-dwarf-wroclaw",
-   "name": "Automatek II"
+   "name": "Automatek II",
+   "lat": 51.10816,
+   "lon": 17.03811,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bagazowy-dwarf-wroclaw",
-   "name": "Bagażowy"
+   "name": "Bagażowy",
+   "lat": 51.11489,
+   "lon": 17.04482,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bajkusia-dwarf-wroclaw",
-   "name": "Bajkusia"
+   "name": "Bajkusia",
+   "lat": 51.12259,
+   "lon": 16.98337,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bamboszek-dwarf-wroclaw",
-   "name": "Bamboszek"
+   "name": "Bamboszek",
+   "lat": 51.10649,
+   "lon": 17.0385,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bankomatki-dwarfs-wroclaw",
-   "name": "Bankomatki"
+   "name": "Bankomatki",
+   "lat": 51.11171,
+   "lon": 17.03407,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bankus-pieniazek-dwarf-wroclaw",
-   "name": "Bankuś Pieniążek"
+   "name": "Bankuś Pieniążek",
+   "lat": 51.10999,
+   "lon": 17.03029,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bardus-dwarf-wroclaw",
-   "name": "Barduś"
+   "name": "Barduś",
+   "lat": 51.11286,
+   "lon": 17.0192,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bartonik-dwarf-wroclaw",
-   "name": "Bartonik"
+   "name": "Bartonik",
+   "lat": 51.10991,
+   "lon": 17.03214,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bedeusz-dwarf-wroclaw",
@@ -10562,31 +10605,52 @@
   },
   {
    "id": "C-bernas-i-warchles-dwarfs-wroclaw",
-   "name": "Bernaś i Warchleś"
+   "name": "Bernaś i Warchleś",
+   "lat": 51.11563,
+   "lon": 17.02538,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bibliofil-dwarf-wroclaw",
-   "name": "Bibliofil"
+   "name": "Bibliofil",
+   "lat": 51.10557,
+   "lon": 17.03282,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-biegacz-dwarf-wroclaw",
-   "name": "Biegacz"
+   "name": "Biegacz",
+   "lat": 51.09398,
+   "lon": 17.01993,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bolizabek-dwarf-wroclaw",
-   "name": "Boliząbek"
+   "name": "Boliząbek",
+   "lat": 51.08347,
+   "lon": 17.05365,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-botanik-dwarf-wroclaw",
-   "name": "Botanik"
+   "name": "Botanik",
+   "lat": 51.11635,
+   "lon": 17.04728,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bracia-o-hurt-dwarves-wroclaw",
-   "name": "Bracia O'Hurt"
+   "name": "Bracia O'Hurt",
+   "lat": 51.09865,
+   "lon": 17.02839,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-budoludki-dwarves-wroclaw",
-   "name": "Budoludki"
+   "name": "Budoludki",
+   "lat": 51.11283,
+   "lon": 17.03148,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-budowniczy-dwarf-wroclaw",
@@ -10594,11 +10658,17 @@
   },
   {
    "id": "C-bulbulek-dwarf-wroclaw",
-   "name": "Bulbulek"
+   "name": "Bulbulek",
+   "lat": 51.10557,
+   "lon": 17.03453,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-bumarek-i-fadromka-dwarves-wroclaw",
-   "name": "Bumarek i Fadromka"
+   "name": "Bumarek i Fadromka",
+   "lat": 51.09906,
+   "lon": 16.99748,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ceneusz-dwarf-wroclaw",
@@ -10606,79 +10676,136 @@
   },
   {
    "id": "C-chemik-ii-dwarf-wroclaw",
-   "name": "Chemik II"
+   "name": "Chemik II",
+   "lat": 51.10782,
+   "lon": 17.06319,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-chirurg-dwarf-wroclaw",
-   "name": "Chirurg"
+   "name": "Chirurg",
+   "lat": 51.10917,
+   "lon": 17.06743,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-chodziarz-dwarf-wroclaw",
-   "name": "Chodziarz"
+   "name": "Chodziarz",
+   "lat": 51.1046,
+   "lon": 17.03118,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-chrapek-dwarf-wroclaw",
-   "name": "Chrapek"
+   "name": "Chrapek",
+   "lat": 51.11167,
+   "lon": 17.02972,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-chuscioszka-i-maly-krasnal-dwarves-wroclaw",
-   "name": "Chuścioszka i Mały Krasnal"
+   "name": "Chuścioszka i Mały Krasnal",
+   "lat": 51.11706,
+   "lon": 17.03751,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ciagnacy-walizke-dwarf-wroclaw",
-   "name": "Ciągnący walizkę"
+   "name": "Ciągnący walizkę",
+   "lat": 51.09886,
+   "lon": 17.03676,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ciastus-i-amorinek-dwarves-wroclaw",
-   "name": "Ciastuś i Amorinek"
+   "name": "Ciastuś i Amorinek",
+   "lat": 51.11042,
+   "lon": 17.03363,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-concierge-dwarf-at-the-entrance-of-wroclavia-shopping-center-grzegorz-lagowski",
-   "name": "Concierge dwarf at the entrance of Wroclavia Shopping Center (Grzegorz Łagowski)"
+   "name": "Concierge dwarf at the entrance of Wroclavia Shopping Center (Grzegorz Łagowski)",
+   "lat": 51.09738,
+   "lon": 17.03348,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-costek-dwarf-wroclaw",
-   "name": "Costek"
+   "name": "Costek",
+   "lat": 51.13348,
+   "lon": 17.06597,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dekoralek-dwarf-wroclaw",
-   "name": "Dekoralek"
+   "name": "Dekoralek",
+   "lat": 51.12642,
+   "lon": 17.10517,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dhl-dwarf-wroclaw",
-   "name": "DHL"
+   "name": "DHL",
+   "lat": 51.15515,
+   "lon": 17.14059,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-diagnostek-dwarf-wroclaw",
-   "name": "Diagnostek"
+   "name": "Diagnostek",
+   "lat": 51.12423,
+   "lon": 17.03637,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dialogomir-dwarf-wroclaw",
-   "name": "Dialogomir"
+   "name": "Dialogomir",
+   "lat": 51.10967,
+   "lon": 17.0292,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dlugi-dwarf-wroclaw",
-   "name": "Długi"
+   "name": "Długi",
+   "lat": 51.109,
+   "lon": 17.02954,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-doktor-cornelius-dwarf-wroclaw",
-   "name": "Doktor Cornelius"
+   "name": "Doktor Cornelius",
+   "lat": 51.14137,
+   "lon": 17.02615,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-drukarz-kacper-dwarf-wroclaw",
-   "name": "Drukarz Kacper"
+   "name": "Drukarz Kacper",
+   "lat": 51.11456,
+   "lon": 17.04333,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dryndek-dwarf-wroclaw",
-   "name": "Dryndek"
+   "name": "Dryndek",
+   "lat": 51.10999,
+   "lon": 17.03335,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dzinn-dwarf-wroclaw",
-   "name": "Dżinn"
+   "name": "Dżinn",
+   "lat": 51.106,
+   "lon": 17.10614,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-dziupelka-dwarf-wroclaw",
-   "name": "Dziupelka"
+   "name": "Dziupelka",
+   "lat": 51.11028,
+   "lon": 17.03353,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ebi-dwarf-wroclaw",
@@ -10686,43 +10813,73 @@
   },
   {
    "id": "C-edukacjusz-dwarf-wroclaw",
-   "name": "Edukacjusz"
+   "name": "Edukacjusz",
+   "lat": 51.09393,
+   "lon": 17.06187,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ekonomek-dwarf-wroclaw",
-   "name": "Ekonomek"
+   "name": "Ekonomek",
+   "lat": 51.09038,
+   "lon": 17.02613,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-eldziki-dwarves-wroclaw",
-   "name": "Eldżiki"
+   "name": "Eldżiki",
+   "lat": 51.02002,
+   "lon": 16.88271,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-elwrus-lutowniczek-dwarf-wroclaw",
-   "name": "Elwruś Lutowniczek"
+   "name": "Elwruś Lutowniczek",
+   "lat": 51.11165,
+   "lon": 17.01029,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-esencjusz-dwarf-wroclaw",
-   "name": "Esencjusz"
+   "name": "Esencjusz",
+   "lat": 51.10955,
+   "lon": 17.03401,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-farciarz-dwarf-wroclaw",
-   "name": "Farciarz"
+   "name": "Farciarz",
+   "lat": 51.10127,
+   "lon": 17.03014,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-farmacjusz-dwarf-wroclaw",
-   "name": "Farmacjusz"
+   "name": "Farmacjusz",
+   "lat": 51.08088,
+   "lon": 17.05524,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-fatus-dwarf-wroclaw",
-   "name": "Fatuś"
+   "name": "Fatuś",
+   "lat": 51.09556,
+   "lon": 16.97931,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-fizolek-dwarf-wroclaw",
-   "name": "Fizolek"
+   "name": "Fizolek",
+   "lat": 51.11534,
+   "lon": 17.10205,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-florianek-dwarf-wroclaw",
-   "name": "Florianek"
+   "name": "Florianek",
+   "lat": 51.10674,
+   "lon": 17.03186,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-fotograf-i-mloda-para-dwarves-wroclaw",
@@ -10730,103 +10887,178 @@
   },
   {
    "id": "C-franek-moczymordka-dwarf-wroclaw",
-   "name": "Franek Moczymordka"
+   "name": "Franek Moczymordka",
+   "lat": 51.10944,
+   "lon": 17.03199,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-freudek-dwarf-wroclaw",
-   "name": "Freudek"
+   "name": "Freudek",
+   "lat": 51.09474,
+   "lon": 17.03746,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-fuger-bankowy-dwarf-wroclaw",
-   "name": "Fuger Bankowy"
+   "name": "Fuger Bankowy",
+   "lat": 51.11419,
+   "lon": 16.99509,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gasiorek-dwarf-wroclaw",
-   "name": "Gasiorek"
+   "name": "Gasiorek",
+   "lat": 51.08154,
+   "lon": 17.03628,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gaviusz-dwarf-wroclaw",
-   "name": "Gaviusz"
+   "name": "Gaviusz",
+   "lat": 51.09323,
+   "lon": 17.05907,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gazeciarz-dwarf-wroclaw",
-   "name": "Gazeciarz"
+   "name": "Gazeciarz",
+   "lat": 51.10244,
+   "lon": 17.03003,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gazus-dwarf-wroclaw",
-   "name": "Gazuś"
+   "name": "Gazuś",
+   "lat": 51.11464,
+   "lon": 17.04263,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-geolog-dwarf-wroclaw",
-   "name": "Geolog"
+   "name": "Geolog",
+   "lat": 51.11659,
+   "lon": 17.02906,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gieldus-dwarf-wroclaw",
-   "name": "Giełduś"
+   "name": "Giełduś",
+   "lat": 51.109,
+   "lon": 17.0295,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-giermek-grun-waldek-dwarf-wroclaw",
-   "name": "Giermek Grun-Waldek"
+   "name": "Giermek Grun-Waldek",
+   "lat": 51.11208,
+   "lon": 17.06004,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gladiatorek-dwarf-wroclaw",
-   "name": "Gladiatorek"
+   "name": "Gladiatorek",
+   "lat": 51.10827,
+   "lon": 17.02687,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gluchak-dwarf-wroclaw",
-   "name": "Głuchak"
+   "name": "Głuchak",
+   "lat": 51.10966,
+   "lon": 17.03169,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-glukozjusz-herba-cukrzycki-dwarf-wroclaw",
-   "name": "Glukozjusz Herba Cukrzycki"
+   "name": "Glukozjusz Herba Cukrzycki",
+   "lat": 51.1073,
+   "lon": 17.05681,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-golasek-dwarf-in-wroclaw",
-   "name": "Golasek dwarf in Wrocław"
+   "name": "Golasek dwarf in Wrocław",
+   "lat": 51.11566,
+   "lon": 17.05135,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-golebnik-dwarf-wroclaw",
-   "name": "Gołębnik"
+   "name": "Gołębnik",
+   "lat": 51.10999,
+   "lon": 17.0311,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-googlak-dwarf-wroclaw",
-   "name": "Googlak"
+   "name": "Googlak",
+   "lat": 51.11738,
+   "lon": 17.04161,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-grajek-dwarf-wroclaw",
-   "name": "Grajek"
+   "name": "Grajek",
+   "lat": 51.10862,
+   "lon": 17.03506,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-grajek-i-meloman-dwarves-wroclaw",
-   "name": "Grajek i Meloman"
+   "name": "Grajek i Meloman",
+   "lat": 51.10862,
+   "lon": 17.03506,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-gwarus-dwarf-wroclaw",
-   "name": "Gwaruś"
+   "name": "Gwaruś",
+   "lat": 51.11143,
+   "lon": 17.03438,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-halabardnik-dwarf-wroclaw",
-   "name": "Halabardnik"
+   "name": "Halabardnik",
+   "lat": 51.10125,
+   "lon": 17.0377,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-harfus-dwarf-wroclaw",
-   "name": "Harfuś"
+   "name": "Harfuś",
+   "lat": 51.10919,
+   "lon": 17.00071,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-harivansh-rai-bachchan-dwarf-wroclaw",
-   "name": "Harivansh Rai Bachchan"
+   "name": "Harivansh Rai Bachchan",
+   "lat": 51.11061,
+   "lon": 17.03364,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-helpik-dwarf-wroclaw",
-   "name": "Helpik"
+   "name": "Helpik",
+   "lat": 51.10557,
+   "lon": 17.03453,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-hewus-dwarf-wroclaw",
-   "name": "Hewuś"
+   "name": "Hewuś",
+   "lat": 51.18589,
+   "lon": 17.22575,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-hipoczysciciel-dwarf-wroclaw",
-   "name": "Hipoczyściciel"
+   "name": "Hipoczyściciel",
+   "lat": 51.10661,
+   "lon": 17.07242,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-honorek-dwarf-wroclaw",
@@ -10834,199 +11066,346 @@
   },
   {
    "id": "C-hulk-i-ryszard-dwarves-wroclaw",
-   "name": "Hulk i Ryszard"
+   "name": "Hulk i Ryszard",
+   "lat": 51.14503,
+   "lon": 17.14493,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-hydrotechnik-dwarf-wroclaw",
-   "name": "Hydrotechnik"
+   "name": "Hydrotechnik",
+   "lat": 51.11414,
+   "lon": 17.03055,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-implantolog-dwarf-wroclaw",
-   "name": "Implantolog"
+   "name": "Implantolog",
+   "lat": 51.06614,
+   "lon": 17.00991,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-inwigilus-dwarf-wroclaw",
-   "name": "Inwigiluś"
+   "name": "Inwigiluś",
+   "lat": 51.11814,
+   "lon": 17.04928,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ip-ek-dwarf-wroclaw",
-   "name": "IP-ek"
+   "name": "IP-ek",
+   "lat": 51.10712,
+   "lon": 17.08364,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-islamek-dwarf-wroclaw",
-   "name": "Islamek"
+   "name": "Islamek",
+   "lat": 51.13651,
+   "lon": 17.04051,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-italudek-dwarf-wroclaw",
-   "name": "Italudek"
+   "name": "Italudek",
+   "lat": 51.1123,
+   "lon": 17.03233,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-janinek-dwarf-wroclaw",
-   "name": "Janinek"
+   "name": "Janinek",
+   "lat": 51.11132,
+   "lon": 17.03379,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-jedrus-dwarf-wroclaw",
-   "name": "Jedruś"
+   "name": "Jedruś",
+   "lat": 51.11096,
+   "lon": 17.02819,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-julian-okulista-dwarf-wroclaw",
-   "name": "Julian Okulista"
+   "name": "Julian Okulista",
+   "lat": 51.11379,
+   "lon": 17.05409,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kaczmarus-dwarf-wroclaw",
-   "name": "Kaczmaruś"
+   "name": "Kaczmaruś",
+   "lat": 51.09718,
+   "lon": 17.0031,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kanapownik-dwarf-wroclaw",
-   "name": "Kanapownik"
+   "name": "Kanapownik",
+   "lat": 51.11087,
+   "lon": 17.02356,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kandarek-dwarf-wroclaw",
-   "name": "Kandarek"
+   "name": "Kandarek",
+   "lat": 51.06016,
+   "lon": 17.00361,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kantorki-dwarves-wroclaw",
-   "name": "Kantorki"
+   "name": "Kantorki",
+   "lat": 51.10886,
+   "lon": 17.03377,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kapitan-jack-port-dwarf-wroclaw",
-   "name": "Kapitan Jack Port"
+   "name": "Kapitan Jack Port",
+   "lat": 51.11026,
+   "lon": 17.12553,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kapitanskie-blizniaki-dwarves-wroclaw",
-   "name": "Kapitańskie Bliźniaki"
+   "name": "Kapitańskie Bliźniaki",
+   "lat": 51.11428,
+   "lon": 17.04208,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kauflandki-dwarves-wroclaw",
-   "name": "Kauflandki"
+   "name": "Kauflandki",
+   "lat": 51.08262,
+   "lon": 17.05291,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kawiarek-dwarf-wroclaw",
-   "name": "Kawiarek"
+   "name": "Kawiarek",
+   "lat": 51.11455,
+   "lon": 17.04382,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kazio-dwarf-wroclaw",
-   "name": "Kazio"
+   "name": "Kazio",
+   "lat": 51.12506,
+   "lon": 17.07392,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kinoman-mlodszy-dwarf-wroclaw",
-   "name": "Kinoman Młodszy"
+   "name": "Kinoman Młodszy",
+   "lat": 51.10892,
+   "lon": 17.02656,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-klaun-dwarf-wroclaw",
-   "name": "Klaun"
+   "name": "Klaun",
+   "lat": 51.11796,
+   "lon": 17.06716,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-klucznik-dwarf-wroclaw",
-   "name": "Klucznik"
+   "name": "Klucznik",
+   "lat": 51.10969,
+   "lon": 17.03434,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolanki-dwarves-wroclaw",
-   "name": "Kolanki"
+   "name": "Kolanki",
+   "lat": 51.11255,
+   "lon": 17.05688,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolejarz-brochowski-i-dwarf-wroclaw",
-   "name": "Kolejarz Brochowski I"
+   "name": "Kolejarz Brochowski I",
+   "lat": 51.06315,
+   "lon": 17.08067,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolejarz-brochowski-ii-dwarf-wroclaw",
-   "name": "Kolejarz Brochowski II"
+   "name": "Kolejarz Brochowski II",
+   "lat": 51.06323,
+   "lon": 17.08067,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolejarz-dwarf-wroclaw",
-   "name": "Kolejarz"
+   "name": "Kolejarz",
+   "lat": 51.10034,
+   "lon": 17.02853,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolejarz-ii-dwarf-wroclaw",
-   "name": "Kolejarz II"
+   "name": "Kolejarz II",
+   "lat": 51.14302,
+   "lon": 16.86642,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kolekcjoner-dwarf-wroclaw",
-   "name": "Kolekcjoner"
+   "name": "Kolekcjoner",
+   "lat": 51.10945,
+   "lon": 17.03317,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-koncertus-dwarf-wroclaw",
-   "name": "Koncertuś"
+   "name": "Koncertuś",
+   "lat": 51.17179,
+   "lon": 17.11606,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-konspirek-dwarf-wroclaw",
-   "name": "Konspirek"
+   "name": "Konspirek",
+   "lat": 51.10921,
+   "lon": 17.02815,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-koronus-dwarf-wroclaw",
-   "name": "Koronuś"
+   "name": "Koronuś",
+   "lat": 51.10906,
+   "lon": 17.03328,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kozanek-dwarf-wroclaw",
-   "name": "Kozanek"
+   "name": "Kozanek",
+   "lat": 51.13726,
+   "lon": 16.97588,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-krasnale-na-kominie-dwarves-wroclaw",
-   "name": "Krasnale na Kominie"
+   "name": "Krasnale na Kominie",
+   "lat": 51.11253,
+   "lon": 17.0241,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-krasnale-pan-wroclaw",
-   "name": "Krasnale PAN, Wrocław"
+   "name": "Krasnale PAN, Wrocław",
+   "lat": 51.10139,
+   "lon": 17.06792,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-krasnale-promenad-wroclawskich",
-   "name": "Krasnale Promenad Wrocławskich"
+   "name": "Krasnale Promenad Wrocławskich",
+   "lat": 51.12966,
+   "lon": 17.04462,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-krasnale-przyladka-nadziei-dwarves-wroclaw",
-   "name": "Krasnale Przylądka Nadziei"
+   "name": "Krasnale Przylądka Nadziei",
+   "lat": 51.10959,
+   "lon": 16.88002,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-krasnalica-dwarf-wroclaw",
-   "name": "Krasnalica"
+   "name": "Krasnalica",
+   "lat": 51.09808,
+   "lon": 17.03782,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-kupczyk-dwarf-wroclaw",
-   "name": "Kupczyk"
+   "name": "Kupczyk",
+   "lat": 51.09477,
+   "lon": 17.02832,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lady-wolnosc-dwarf-wroclaw",
-   "name": "Lady Wolność"
+   "name": "Lady Wolność",
+   "lat": 51.11098,
+   "lon": 17.03131,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-landus-i-defcia-dwarves-wroclaw",
-   "name": "Landuś i Defcia"
+   "name": "Landuś i Defcia",
+   "lat": 51.17301,
+   "lon": 17.17413,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-leslaw-dwarf-wroclaw",
-   "name": "Lesław"
+   "name": "Lesław",
+   "lat": 51.10773,
+   "lon": 17.05084,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-leszko-dwarf-wroclaw",
-   "name": "Leszko"
+   "name": "Leszko",
+   "lat": 51.10993,
+   "lon": 17.03086,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lezacy-na-trawie-dwarf-wroclaw",
-   "name": "Leżący na trawie"
+   "name": "Leżący na trawie",
+   "lat": 51.09886,
+   "lon": 17.03676,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lion-spod-znaku-lwa-dwarf-wroclaw",
-   "name": "Lion spod znaku lwa"
+   "name": "Lion spod znaku lwa",
+   "lat": 51.11,
+   "lon": 17.03186,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-listonosz-dwarf-wroclaw",
-   "name": "Listonosz"
+   "name": "Listonosz",
+   "lat": 51.10818,
+   "lon": 17.04448,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lotnicy-dwarves-wroclaw",
-   "name": "Lotnicy"
+   "name": "Lotnicy",
+   "lat": 51.09886,
+   "lon": 17.03676,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lottus-dwarf-wroclaw",
-   "name": "Lottuś"
+   "name": "Lottuś",
+   "lat": 51.09479,
+   "lon": 17.037,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-luminator-dwarf-wroclaw",
-   "name": "Luminator"
+   "name": "Luminator",
+   "lat": 51.08854,
+   "lon": 17.01655,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-lunatyk-dwarf-wroclaw",
-   "name": "Lunatyk"
+   "name": "Lunatyk",
+   "lat": 51.11146,
+   "lon": 17.026,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-maria-i-feniks-dwarves-wroclaw",
@@ -11034,171 +11413,297 @@
   },
   {
    "id": "C-marian-dwarf-wroclaw",
-   "name": "Marian"
+   "name": "Marian",
+   "lat": 51.11597,
+   "lon": 17.04105,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-marysia-pieknisia-dwarf-wroclaw",
-   "name": "Marysia Pięknisia"
+   "name": "Marysia Pięknisia",
+   "lat": 51.10661,
+   "lon": 17.03354,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-matematyk-dwarf-wroclaw",
-   "name": "Matematyk"
+   "name": "Matematyk",
+   "lat": 51.1104,
+   "lon": 17.0543,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-max-i-fliz-dwarves-wroclaw",
-   "name": "Max i Fliz"
+   "name": "Max i Fliz",
+   "lat": 51.1199,
+   "lon": 16.99945,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-mechanik-dwarf-wroclaw",
-   "name": "Mechanik"
+   "name": "Mechanik",
+   "lat": 51.11366,
+   "lon": 17.13219,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-mellonik-dwarf-wroclaw",
-   "name": "Mellonik"
+   "name": "Mellonik",
+   "lat": 51.09839,
+   "lon": 17.03116,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-meloman-dwarf-wroclaw",
-   "name": "Meloman"
+   "name": "Meloman",
+   "lat": 51.10862,
+   "lon": 17.03506,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-mikolaj-ziolko-dwarf-wroclaw",
-   "name": "Mikołaj Ziółko"
+   "name": "Mikołaj Ziółko",
+   "lat": 51.11154,
+   "lon": 17.02779,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-milostroz-dwarf-wroclaw",
-   "name": "Miłostróż"
+   "name": "Miłostróż",
+   "lat": 51.11473,
+   "lon": 17.0422,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-mis-mokrej-lapki-dwarf-wroclaw",
-   "name": "Miś Mokrej Łapki"
+   "name": "Miś Mokrej Łapki",
+   "lat": 51.0856,
+   "lon": 17.01053,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-moczypieta-dwarf-wroclaw",
-   "name": "Moczypięta"
+   "name": "Moczypięta",
+   "lat": 51.09074,
+   "lon": 17.0332,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-modrus-i-odrus-dwarves-wroclaw",
-   "name": "Modruś i Odruś"
+   "name": "Modruś i Odruś",
+   "lat": 51.11262,
+   "lon": 17.03139,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-motocyklista-dwarf-wroclaw",
-   "name": "Motocyklista"
+   "name": "Motocyklista",
+   "lat": 51.10957,
+   "lon": 17.03453,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-myslichwilek-dwarf-wroclaw",
-   "name": "Myślichwilek"
+   "name": "Myślichwilek",
+   "lat": 51.06993,
+   "lon": 17.01082,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-nawigator-dwarf-wroclaw",
-   "name": "Nawigator"
+   "name": "Nawigator",
+   "lat": 51.11475,
+   "lon": 17.03221,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-neptunek-dwarf-wroclaw",
-   "name": "Neptunek"
+   "name": "Neptunek",
+   "lat": 51.11015,
+   "lon": 17.0392,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-niesamowitek-dwarf-wroclaw",
-   "name": "Niesamowitek"
+   "name": "Niesamowitek",
+   "lat": 51.10575,
+   "lon": 17.07801,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-niewypalek-i-biegajlo-dwarves-wroclaw",
-   "name": "Niewypałek i Biegajło"
+   "name": "Niewypałek i Biegajło",
+   "lat": 51.11953,
+   "lon": 17.09555,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-niezabudka-dwarf-wroclaw",
-   "name": "Niezabudka"
+   "name": "Niezabudka",
+   "lat": 51.06499,
+   "lon": 16.98475,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-numizmatyk-dwarf-wroclaw",
-   "name": "Numizmatyk"
+   "name": "Numizmatyk",
+   "lat": 51.11106,
+   "lon": 17.03203,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-obarek-dwarf-wroclaw",
-   "name": "O’Barek"
+   "name": "O’Barek",
+   "lat": 51.11294,
+   "lon": 17.03318,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-obiezysmak-dwarf-wroclaw",
-   "name": "Obieżysmak"
+   "name": "Obieżysmak",
+   "lat": 51.11069,
+   "lon": 17.03277,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-oddludek-dwarf-wroclaw",
-   "name": "Oddludek"
+   "name": "Oddludek",
+   "lat": 51.10465,
+   "lon": 17.03692,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ogorzalek-i-opilek-dwarves-wroclaw",
-   "name": "Ogorzałek i Opiłek"
+   "name": "Ogorzałek i Opiłek",
+   "lat": 51.11112,
+   "lon": 17.03045,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-okniarek-i-pan-porada-dwarves-wroclaw",
-   "name": "Okniarek i Pan Porada"
+   "name": "Okniarek i Pan Porada",
+   "lat": 51.14779,
+   "lon": 17.07885,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-onkus-dwarf-wroclaw",
-   "name": "Onkuś"
+   "name": "Onkuś",
+   "lat": 51.11482,
+   "lon": 16.97375,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-opalek-dwarf-wroclaw",
-   "name": "Opałek"
+   "name": "Opałek",
+   "lat": 51.12281,
+   "lon": 17.04239,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-opiekunek-i-krasnomalenstwo-dwarves-wroclaw",
-   "name": "Opiekunek i Krasnomaleństwo"
+   "name": "Opiekunek i Krasnomaleństwo",
+   "lat": 51.10934,
+   "lon": 17.07376,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ortopeda-dwarf-wroclaw",
-   "name": "Ortopeda"
+   "name": "Ortopeda",
+   "lat": 51.07429,
+   "lon": 17.03104,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-osemek-dwarf-wroclaw",
-   "name": "Ósemek"
+   "name": "Ósemek",
+   "lat": 51.09376,
+   "lon": 17.0149,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ottus-dwarf-wroclaw",
-   "name": "Ottuś"
+   "name": "Ottuś",
+   "lat": 51.10907,
+   "lon": 17.02918,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pacjent-i-lekarz-dwarves-wroclaw",
-   "name": "Pacjent i Lekarz"
+   "name": "Pacjent i Lekarz",
+   "lat": 51.11646,
+   "lon": 17.05316,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pan-kazimierz-dwarf-wroclaw",
-   "name": "Pan Kazimierz"
+   "name": "Pan Kazimierz",
+   "lat": 51.11547,
+   "lon": 17.06058,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pan-twardowski-dwarf-wroclaw",
-   "name": "Pan Twardowski"
+   "name": "Pan Twardowski",
+   "lat": 51.12136,
+   "lon": 16.84452,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pani-doktor-dwarf-wroclaw",
-   "name": "Pani Doktor"
+   "name": "Pani Doktor",
+   "lat": 51.09178,
+   "lon": 17.00418,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-panna-pychotka-dwarf-wroclaw",
-   "name": "Panna Pychotka"
+   "name": "Panna Pychotka",
+   "lat": 51.10529,
+   "lon": 17.02294,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-panoramik-dwarf-wroclaw",
-   "name": "Panoramik"
+   "name": "Panoramik",
+   "lat": 51.11034,
+   "lon": 17.04486,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-panstwo-krasnalscy-dwarves-wroclaw",
-   "name": "Państwo Krasnalscy"
+   "name": "Państwo Krasnalscy",
+   "lat": 51.11062,
+   "lon": 17.02278,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-parasolniki-dwarves-wroclaw",
-   "name": "Parasolniki"
+   "name": "Parasolniki",
+   "lat": 51.11136,
+   "lon": 17.06236,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-parkm-dwarf-wroclaw",
-   "name": "ParkM"
+   "name": "ParkM",
+   "lat": 51.11268,
+   "lon": 17.04194,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-patrolek-dwarf-wroclaw",
-   "name": "Patrolek"
+   "name": "Patrolek",
+   "lat": 51.10513,
+   "lon": 17.0281,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-piastek-dwarf-wroclaw",
-   "name": "Piastek"
+   "name": "Piastek",
+   "lat": 51.1122,
+   "lon": 17.07274,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-piastoslaw-i-zlocisty-dwarf-wroclaw",
@@ -11206,223 +11711,388 @@
   },
   {
    "id": "C-pieroznik-dwarf-wroclaw",
-   "name": "Pierożnik"
+   "name": "Pierożnik",
+   "lat": 51.11102,
+   "lon": 17.03377,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-piwowar-dwarf-wroclaw",
-   "name": "Piwowar"
+   "name": "Piwowar",
+   "lat": 51.15068,
+   "lon": 17.02301,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-piwozlop-z-pieselem-piwoszem-wroclaw",
-   "name": "Piwożłop z piesełem Piwoszem, Wrocław"
+   "name": "Piwożłop z piesełem Piwoszem, Wrocław",
+   "lat": 51.11037,
+   "lon": 17.03351,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-plazus-dwarf-wroclaw",
-   "name": "Plazuś"
+   "name": "Plazuś",
+   "lat": 51.11747,
+   "lon": 17.0359,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-plumplumek-dwarf-wroclaw",
-   "name": "Plumplumek"
+   "name": "Plumplumek",
+   "lat": 51.10557,
+   "lon": 17.03453,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pocztowiec-dwarf-wroclaw",
-   "name": "Pocztowiec"
+   "name": "Pocztowiec",
+   "lat": 51.11089,
+   "lon": 17.03067,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-podroznik-dwarf-lagowski-wroclaw",
-   "name": "Podróżnik dwarf (Łagowski), Wrocław"
+   "name": "Podróżnik dwarf (Łagowski), Wrocław",
+   "lat": 51.09718,
+   "lon": 17.03534,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-podroznik-dwarf-zwolanskaholod-wroclaw",
-   "name": "Podróżnik dwarf (Zwolańska–Hołod), Wrocław"
+   "name": "Podróżnik dwarf (Zwolańska–Hołod), Wrocław",
+   "lat": 51.11225,
+   "lon": 17.03008,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-poliglotek-dwarf-wroclaw",
-   "name": "Poliglotek"
+   "name": "Poliglotek",
+   "lat": 51.10856,
+   "lon": 17.05442,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-politek-dwarf-wroclaw",
-   "name": "Politek"
+   "name": "Politek",
+   "lat": 51.14107,
+   "lon": 17.06905,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-polonek-i-germanek-dwarves-wroclaw",
-   "name": "Polonek i Germanek"
+   "name": "Polonek i Germanek",
+   "lat": 51.10641,
+   "lon": 17.04163,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pomagajek-dwarf-wroclaw",
-   "name": "Pomagajek"
+   "name": "Pomagajek",
+   "lat": 51.10975,
+   "lon": 17.03175,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-popowicjusz-dwarf-wroclaw",
-   "name": "Popowicjusz"
+   "name": "Popowicjusz",
+   "lat": 51.12636,
+   "lon": 16.99125,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-powerek-dwarf-wroclaw",
-   "name": "Powerek"
+   "name": "Powerek",
+   "lat": 51.10956,
+   "lon": 17.03034,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pozarki-dwarves-wroclaw",
-   "name": "Pożarki"
+   "name": "Pożarki",
+   "lat": 51.1112,
+   "lon": 17.03045,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-pracz-odrzanski-dwarf-wroclaw",
-   "name": "Pracz Odrzański"
+   "name": "Pracz Odrzański",
+   "lat": 51.11356,
+   "lon": 17.04022,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-prezentus-dwarf-wroclaw",
-   "name": "Prezentuś"
+   "name": "Prezentuś",
+   "lat": 51.10977,
+   "lon": 17.03078,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-profesor-medyk-dwarf-wroclaw",
-   "name": "Profesor Medyk"
+   "name": "Profesor Medyk",
+   "lat": 51.11376,
+   "lon": 17.03361,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-profesor-miodek-dwarf-wroclaw",
-   "name": "Profesor Miodek"
+   "name": "Profesor Miodek",
+   "lat": 51.11299,
+   "lon": 17.03905,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-prolinka-dwarf-wroclaw",
-   "name": "ProLinka"
+   "name": "ProLinka",
+   "lat": 51.11051,
+   "lon": 17.02637,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-promocjusz-i-przecennik-dwarves-wroclaw",
-   "name": "Promocjusz i Przecennik"
+   "name": "Promocjusz i Przecennik",
+   "lat": 51.09881,
+   "lon": 17.02821,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-promyczek-dwarf-wroclaw",
-   "name": "Promyczek"
+   "name": "Promyczek",
+   "lat": 51.09723,
+   "lon": 17.0317,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-prywatek-dwarf-wroclaw",
-   "name": "Prywatek"
+   "name": "Prywatek",
+   "lat": 51.08127,
+   "lon": 16.96968,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-przemyslaw-parkus-dwarf-wroclaw",
-   "name": "Przemysław Parkuś"
+   "name": "Przemysław Parkuś",
+   "lat": 51.11194,
+   "lon": 16.99111,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-przodownik-dwarf-wroclaw",
-   "name": "Przodownik"
+   "name": "Przodownik",
+   "lat": 51.11059,
+   "lon": 17.03182,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-quadeusz-dwarf-wroclaw",
-   "name": "Quadeusz"
+   "name": "Quadeusz",
+   "lat": 51.17264,
+   "lon": 17.1748,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rachciach-dwarf-wroclaw",
-   "name": "Rachciach"
+   "name": "Rachciach",
+   "lat": 51.1146,
+   "lon": 17.0427,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-radiowiec-dwarf-wroclaw",
-   "name": "Radiowiec"
+   "name": "Radiowiec",
+   "lat": 51.07167,
+   "lon": 17.00642,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ratus-dwarf-wroclaw",
-   "name": "Ratuś"
+   "name": "Ratuś",
+   "lat": 51.10557,
+   "lon": 17.03453,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-recyklinek-dwarf-wroclaw",
-   "name": "Recyklinek"
+   "name": "Recyklinek",
+   "lat": 51.10606,
+   "lon": 17.0316,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rmfek-dwarf-wroclaw",
-   "name": "RMFek"
+   "name": "RMFek",
+   "lat": 51.10994,
+   "lon": 17.03202,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rodzinka-dwarves-wroclaw",
-   "name": "Rodzinka"
+   "name": "Rodzinka",
+   "lat": 51.14135,
+   "lon": 16.89895,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rogalik-dwarf-wroclaw",
-   "name": "Rogalik"
+   "name": "Rogalik",
+   "lat": 51.11073,
+   "lon": 17.03356,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-roszek-dwarf-wroclaw",
-   "name": "Roszek"
+   "name": "Roszek",
+   "lat": 51.11223,
+   "lon": 17.06464,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-royaldenciaki-dwarves-wroclaw",
-   "name": "RoyalDenciaki"
+   "name": "RoyalDenciaki",
+   "lat": 51.10801,
+   "lon": 17.03148,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rozkwietnik-dwarf-wroclaw",
-   "name": "Rozkwietnik"
+   "name": "Rozkwietnik",
+   "lat": 51.12248,
+   "lon": 17.04038,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rstynek-dwarf-wroclaw",
-   "name": "RSTynek"
+   "name": "RSTynek",
+   "lat": 51.0856,
+   "lon": 17.01053,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-rycerz-jadwizanski-dwarf-wroclaw",
-   "name": "Rycerz Jadwiżański"
+   "name": "Rycerz Jadwiżański",
+   "lat": 51.14574,
+   "lon": 16.87037,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-saper-dwarf-wroclaw",
-   "name": "Saper"
+   "name": "Saper",
+   "lat": 51.15068,
+   "lon": 17.01644,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-serdecznis-dwarf-wroclaw",
-   "name": "Serdeczniś"
+   "name": "Serdeczniś",
+   "lat": 51.11216,
+   "lon": 17.05963,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-siedzacy-na-walizce-dwarf-wroclaw",
-   "name": "Siedzący na walizce"
+   "name": "Siedzący na walizce",
+   "lat": 51.09886,
+   "lon": 17.03676,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-silacz-dwarf-wroclaw",
-   "name": "Siłacz"
+   "name": "Siłacz",
+   "lat": 51.14505,
+   "lon": 17.14482,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-silowmir-dwarf-wroclaw",
-   "name": "Siłowmir"
+   "name": "Siłowmir",
+   "lat": 51.16856,
+   "lon": 17.02822,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-skarbus-dwarf-wroclaw",
-   "name": "Skarbuś"
+   "name": "Skarbuś",
+   "lat": 51.148,
+   "lon": 17.03071,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-skryba-dwarf-wroclaw",
-   "name": "Skryba"
+   "name": "Skryba",
+   "lat": 51.11332,
+   "lon": 17.03596,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-slepak-dwarf-wroclaw",
-   "name": "Ślepak"
+   "name": "Ślepak",
+   "lat": 51.10966,
+   "lon": 17.03169,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-slupniki-olawskie-dwarves-wroclaw",
-   "name": "Słupniki Oławskie"
+   "name": "Słupniki Oławskie",
+   "lat": 51.10852,
+   "lon": 17.03529,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-slupniki-solne-dwarfs-wroclaw",
-   "name": "Słupniki Solne"
+   "name": "Słupniki Solne",
+   "lat": 51.10941,
+   "lon": 17.02931,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-slupniki-swidnickie-dwarves-wroclaw",
-   "name": "Słupniki Świdnickie"
+   "name": "Słupniki Świdnickie",
+   "lat": 51.10843,
+   "lon": 17.03276,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-solidarek-dwarf-wroclaw",
-   "name": "Solidarek"
+   "name": "Solidarek",
+   "lat": 51.11286,
+   "lon": 17.0192,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-solidarek-walczacy-dwarf-wroclaw",
-   "name": "Solidarek Walczący"
+   "name": "Solidarek Walczący",
+   "lat": 51.10919,
+   "lon": 17.05172,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-spioch-dwarf-wroclaw",
-   "name": "Śpioch"
+   "name": "Śpioch",
+   "lat": 51.11116,
+   "lon": 17.03068,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-sportus-dwarf-wroclaw",
-   "name": "Sportuś"
+   "name": "Sportuś",
+   "lat": 51.10797,
+   "lon": 17.0252,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-sprinkler-dwarf-wroclaw",
-   "name": "Sprinkler dwarf (Wrocław)"
+   "name": "Sprinkler dwarf (Wrocław)",
+   "lat": 51.11009,
+   "lon": 17.03204,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-suvenirek-dwarf-wroclaw",
-   "name": "Suvenirek"
+   "name": "Suvenirek",
+   "lat": 51.11068,
+   "lon": 17.03059,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-swiatowid-dwarf-wroclaw",
@@ -11430,91 +12100,157 @@
   },
   {
    "id": "C-swietlik-dwarf-wroclaw",
-   "name": "Świetlik"
+   "name": "Świetlik",
+   "lat": 51.10495,
+   "lon": 17.08642,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-szczesciarze-dwarves-wroclaw",
-   "name": "Szcześciarze"
+   "name": "Szcześciarze",
+   "lat": 51.07028,
+   "lon": 17.01189,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-szermierz-dwarf-wroclaw",
-   "name": "Szermierz"
+   "name": "Szermierz",
+   "lat": 51.11393,
+   "lon": 17.03419,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-szol-mastgolon-dwarf-wroclaw",
-   "name": "Szoł Mastgołoń"
+   "name": "Szoł Mastgołoń",
+   "lat": 51.10083,
+   "lon": 17.03016,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-szomol-dwarf-wroclaw",
-   "name": "Szomol"
+   "name": "Szomol",
+   "lat": 51.10735,
+   "lon": 17.02591,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tatuator-dwarf-wroclaw",
-   "name": "Tatuator"
+   "name": "Tatuator",
+   "lat": 51.1109,
+   "lon": 17.02945,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-teatralny-dwarf-wroclaw",
-   "name": "Teatralny"
+   "name": "Teatralny",
+   "lat": 51.11226,
+   "lon": 17.02884,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-telefonista-dwarf-wroclaw",
-   "name": "Telefonista"
+   "name": "Telefonista",
+   "lat": 51.10454,
+   "lon": 17.04621,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-telesfor-dwarf-wroclaw",
-   "name": "Telesfor"
+   "name": "Telesfor",
+   "lat": 51.07215,
+   "lon": 17.0067,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-temidek-dwarf-wroclaw",
-   "name": "Temidek"
+   "name": "Temidek",
+   "lat": 51.10828,
+   "lon": 17.02404,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tescoma-dwarf-wroclaw",
-   "name": "Tescoma"
+   "name": "Tescoma",
+   "lat": 51.10254,
+   "lon": 17.037,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tolerance-dwarves-wroclaw",
-   "name": "Tolerance"
+   "name": "Tolerance",
+   "lat": 51.10833,
+   "lon": 17.02603,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tomek-dwarf-wroclaw",
-   "name": "Tomek"
+   "name": "Tomek",
+   "lat": 51.03441,
+   "lon": 16.99227,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tomek-jedrzejak-i-dwa-krasnale-dwarves-wroclaw",
-   "name": "Tomek Jędrzejak i dwa krasnale"
+   "name": "Tomek Jędrzejak i dwa krasnale",
+   "lat": 51.12022,
+   "lon": 17.09681,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tralalalek-dwarf-wroclaw",
-   "name": "Tralalalek"
+   "name": "Tralalalek",
+   "lat": 51.113,
+   "lon": 17.03257,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-trisomek-dwarf-wroclaw",
-   "name": "Trisomek"
+   "name": "Trisomek",
+   "lat": 51.1152,
+   "lon": 17.04603,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-trojkuc-wywiadek-dwarf-wroclaw",
-   "name": "Trójkuć Wywiadek"
+   "name": "Trójkuć Wywiadek",
+   "lat": 51.10817,
+   "lon": 17.02243,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-truchcia-dwartf-wroclaw",
-   "name": "Truchcia dwartf, Wrocław"
+   "name": "Truchcia dwartf, Wrocław",
+   "lat": 51.10797,
+   "lon": 17.02669,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-trufelek-dwarf-wroclaw",
-   "name": "Trufelek"
+   "name": "Trufelek",
+   "lat": 51.05826,
+   "lon": 17.01032,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-turysta-dwarf-wroclaw",
-   "name": "Turysta"
+   "name": "Turysta",
+   "lat": 51.1095,
+   "lon": 17.03064,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-tynqus-dwarf-wroclaw",
-   "name": "TynQuś"
+   "name": "TynQuś",
+   "lat": 51.11003,
+   "lon": 17.03179,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-ursus-dwarf-wroclaw",
-   "name": "Ursus"
+   "name": "Ursus",
+   "lat": 51.11278,
+   "lon": 17.03715,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-uziomek-dwarf-wroclaw",
@@ -11522,71 +12258,122 @@
   },
   {
    "id": "C-vertigus-dwarf-wroclaw",
-   "name": "Vertiguś"
+   "name": "Vertiguś",
+   "lat": 51.10845,
+   "lon": 17.03543,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-w-skers-dwarf-wroclaw",
-   "name": "W-Skers"
+   "name": "W-Skers",
+   "lat": 51.10966,
+   "lon": 17.03169,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wagus-dwarf-wroclaw",
-   "name": "Waguś"
+   "name": "Waguś",
+   "lat": 51.08739,
+   "lon": 17.05903,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wedelek-dwarf-wroclaw",
-   "name": "Wedelek"
+   "name": "Wedelek",
+   "lat": 51.11099,
+   "lon": 17.0312,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-weteran-dwarf-wroclaw",
-   "name": "Weteran"
+   "name": "Weteran",
+   "lat": 51.11142,
+   "lon": 17.03004,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-weterynarz-dwarf-wroclaw",
-   "name": "Weterynarz"
+   "name": "Weterynarz",
+   "lat": 51.08023,
+   "lon": 17.02212,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wieniawek-dwarf-wroclaw",
-   "name": "Wieniawek"
+   "name": "Wieniawek",
+   "lat": 51.09006,
+   "lon": 17.00782,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wiesiek-partnerski-dwarf-wroclaw",
-   "name": "Wiesiek Partnerski"
+   "name": "Wiesiek Partnerski",
+   "lat": 51.11018,
+   "lon": 17.03122,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wiezien-dwarf-wroclaw",
-   "name": "Więzień"
+   "name": "Więzień",
+   "lat": 51.11247,
+   "lon": 17.03247,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wioslarze-dwarves-of-wroclaw",
-   "name": "Wioślarze (dwarves of Wrocław)"
+   "name": "Wioślarze (dwarves of Wrocław)",
+   "lat": 51.10662,
+   "lon": 17.05875,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wiz-ek-dwarf-wroclaw",
-   "name": "WIZ-ek"
+   "name": "WIZ-ek",
+   "lat": 51.10813,
+   "lon": 17.06483,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wks-slask-dwarf-wroclaw",
-   "name": "WKS Śląsk"
+   "name": "WKS Śląsk",
+   "lat": 51.07979,
+   "lon": 17.09176,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wodne-dwarves-wroclaw",
-   "name": "Wodne"
+   "name": "Wodne",
+   "lat": 51.10661,
+   "lon": 17.03354,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wodziarz-dwarf-wroclaw",
-   "name": "Wodziarz"
+   "name": "Wodziarz",
+   "lat": 51.10984,
+   "lon": 17.03143,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wrati-i-slawi-dwarves-wroclaw",
-   "name": "Wrati i Slawi"
+   "name": "Wrati i Slawi",
+   "lat": 51.0885,
+   "lon": 17.06496,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wroc-ek-dwarf-wroclaw",
-   "name": "Wroc-ek"
+   "name": "Wroc-ek",
+   "lat": 51.16972,
+   "lon": 16.90181,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wroclaw-butcher-dwarf",
-   "name": "Wroclaw butcher dwarf"
+   "name": "Wroclaw butcher dwarf",
+   "lat": 51.11208,
+   "lon": 17.03096,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wroclawiak-dwarf-wroclaw",
@@ -11598,135 +12385,234 @@
   },
   {
    "id": "C-wroclovek-dwarf-wroclaw",
-   "name": "WrocLovek"
+   "name": "WrocLovek",
+   "lat": 51.11114,
+   "lon": 17.03074,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wroclovki-dwarves-wroclaw",
-   "name": "Wroclovki"
+   "name": "Wroclovki",
+   "lat": 51.09557,
+   "lon": 17.03322,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wyksztalciuch-dwarf-wroclaw",
-   "name": "Wykształciuch"
+   "name": "Wykształciuch",
+   "lat": 51.10733,
+   "lon": 17.06033,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wyplatnik-dwarf-wroclaw",
-   "name": "Wypłatnik"
+   "name": "Wypłatnik",
+   "lat": 51.10979,
+   "lon": 17.03021,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-wytrwalek-dwarf-wroclaw",
-   "name": "Wytrwałek"
+   "name": "Wytrwałek",
+   "lat": 51.09326,
+   "lon": 17.02311,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-zaczek-dwarf-wroclaw",
-   "name": "Żaczek"
+   "name": "Żaczek",
+   "lat": 51.10605,
+   "lon": 17.03569,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-zakupek-dwarf-wroclaw",
-   "name": "Zakupek"
+   "name": "Zakupek",
+   "lat": 51.09865,
+   "lon": 17.02839,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-zgryzek-dwarf-wroclaw",
-   "name": "Zgryzek"
+   "name": "Zgryzek",
+   "lat": 51.06121,
+   "lon": 17.02736,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-zoska-dwarf-wroclaw",
-   "name": "Zośka"
+   "name": "Zośka",
+   "lat": 51.11096,
+   "lon": 17.02819,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "C-zyczliwek-dwarf-wroclaw",
-   "name": "Życzliwek"
+   "name": "Życzliwek",
+   "lat": 51.11058,
+   "lon": 17.03129,
+   "coordinate_source": "commons_camera"
   },
   {
    "id": "Q11823412",
-   "name": "Pomnik Pomarańczowej Alternatywy"
+   "name": "Pomnik Pomarańczowej Alternatywy",
+   "lat": 51.1072,
+   "lon": 17.032,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001318",
-   "name": "Ossolinek"
+   "name": "Ossolinek",
+   "lat": 51.11389,
+   "lon": 17.03722,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001344",
-   "name": "Demokracja"
+   "name": "Demokracja",
+   "lat": 51.10944,
+   "lon": 17.02917,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001355",
-   "name": "Syzyfki"
+   "name": "Syzyfki",
+   "lat": 51.10889,
+   "lon": 17.03278,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001369",
-   "name": "100matolog"
+   "name": "100matolog",
+   "lat": 51.095,
+   "lon": 17.05861,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001407",
-   "name": "Kusy"
+   "name": "Kusy",
+   "lat": 51.10944,
+   "lon": 17.09583,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136001464",
-   "name": "Agorek"
+   "name": "Agorek",
+   "lat": 51.13475,
+   "lon": 17.02154,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136006129",
-   "name": "Ogrodnik i Kierownik"
+   "name": "Ogrodnik i Kierownik",
+   "lat": 51.11639,
+   "lon": 17.04722,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136276711",
-   "name": "Aktor"
+   "name": "Aktor",
+   "lat": 51.10539,
+   "lon": 17.03321,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136276947",
-   "name": "Karmiący Ptaki"
+   "name": "Karmiący Ptaki",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136277457",
-   "name": "Ogrodnik"
+   "name": "Ogrodnik",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136278769",
-   "name": "Parasolnik"
+   "name": "Parasolnik",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136290068",
-   "name": "Puszczający Stateczki"
+   "name": "Puszczający Stateczki",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136290183",
-   "name": "Wierzbownik"
+   "name": "Wierzbownik",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136290218",
-   "name": "Zbierający Wodę"
+   "name": "Zbierający Wodę",
+   "lat": 51.10532,
+   "lon": 17.03313,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136297592",
-   "name": "Zikusia"
+   "name": "Zikusia",
+   "lat": 51.10169,
+   "lon": 17.02957,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136338281",
-   "name": "Dziarus"
+   "name": "Dziarus",
+   "lat": 51.10616,
+   "lon": 17.03147,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136338464",
-   "name": "Pralinka"
+   "name": "Pralinka",
+   "lat": 51.08934,
+   "lon": 17.06625,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136341125",
-   "name": "Capgeminiusz Programista"
+   "name": "Capgeminiusz Programista",
+   "lat": 51.10867,
+   "lon": 17.03298,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136341163",
-   "name": "Polisludek"
+   "name": "Polisludek",
+   "lat": 51.10614,
+   "lon": 17.03152,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136462711",
-   "name": "Iasek"
+   "name": "Iasek",
+   "lat": 51.10774,
+   "lon": 17.07438,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q136474992",
-   "name": "Czajczyński"
+   "name": "Czajczyński",
+   "lat": 51.11148,
+   "lon": 17.02749,
+   "coordinate_source": "wikidata"
   },
   {
    "id": "Q65742089",
-   "name": "Kowal"
+   "name": "Kowal",
+   "lat": 51.11052,
+   "lon": 17.03357,
+   "coordinate_source": "wikidata"
   }
  ],
  "images": [
@@ -28640,5 +29526,37 @@
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "source_url": "https://commons.wikimedia.org/wiki/File:Krasnalica.jpg"
   }
- ]
+ ],
+ "metadata_updated_at": "2026-11-09T15:30:11.542Z",
+ "location_prior": {
+  "kernel": "exponential",
+  "scale_m": 200,
+  "weight": 0.2,
+  "source": "results/cvww_sens_prior-exponential-200/workshop_validation-dinov2.json, metrics dinov2_soft_prior_gps100_fold_*_weight (4 of 5 held-out folds chose 0.2)"
+ },
+ "close_call": {
+  "dinov2": {
+   "threshold": 0.1289093071118551,
+   "share_of_queries": 0.3276167947959787,
+   "top_1_below": 0.7996389891696751,
+   "top_1_above": 0.9964819700967458
+  },
+  "clip": {
+   "threshold": 0.08651895377253926,
+   "share_of_queries": 0.8805440567711413,
+   "top_1_below": 0.7998656816655474,
+   "top_1_above": 1
+  }
+ },
+ "examples": {
+  "image_ids": [
+   "commons-4074360",
+   "commons-33580401",
+   "commons-30095904",
+   "commons-15801714",
+   "commons-114315993",
+   "commons-175031164"
+  ],
+  "rule": "Fixed query commons-4074360; then nearest-rank 10th, 30th, 50th, 70th and 90th percentiles of DINOv2 leave-one-out cosine margins among non-Słupniki images. Sort by margin then ASCII image ID; choose the nearest unused-statue rank at each percentile, ties by lower ASCII image ID."
+ }
 }

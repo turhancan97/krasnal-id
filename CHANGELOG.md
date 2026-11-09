@@ -10,6 +10,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Added
+
+- Metadata-only browser-asset calibration, with image-order and binary-hash guards, atomic JSON
+  output and stored-measurement reproduction to 1e-12. Metadata now carries sourced coordinates
+  for 294 statues, a verified exponential location prior, per-backbone close-call statistics and
+  six examples selected deterministically from the shipped DINOv2 vectors. Shared vector-only
+  ranking and five Node contract tests require no model or image decoder.
+
 ### Changed
 
 - The GitHub Pages front door is a research project page using the Academic Project Page
