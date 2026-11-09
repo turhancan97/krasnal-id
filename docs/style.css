@@ -409,3 +409,38 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
   .matches-map{height:18rem}
   .location-panel{padding:.8rem}
 }
+
+/* Identifier page, minimal layout (2026-11-09): one action first, options in one row,
+   explanations only where a result needs them. */
+.identifier-page .id-head{gap:.7rem}
+.identifier-page .id-head h1{font-size:clamp(1.9rem,4.5vw,2.4rem)}
+.identifier-page .id-head .lede{font-size:1rem}
+.identifier-page .brandrow svg{width:30px; height:28px}
+.identifier-page .demo{gap:1.1rem}
+.identifier-page .drop{padding:1.4rem 1rem}
+.identifier-page .examples-heading{font-weight:400; font-size:.85rem; color:var(--ink-3); text-align:center; margin-bottom:.5rem}
+.example-credits{font-size:.72rem; color:var(--ink-3); margin-top:.5rem}
+.example-credits summary{cursor:pointer; font-size:.72rem}
+.example-credits p{line-height:1.5; margin-top:.25rem}
+.example-credits a{color:var(--ink-2)}
+.options{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.6rem 1rem}
+.identifier-page .models{display:inline-flex; gap:0; border:1px solid var(--rule); border-radius:8px; overflow:hidden}
+.identifier-page .models[hidden]{display:none}
+.identifier-page .model{flex-direction:row; align-items:baseline; gap:.45rem; border:0; border-radius:0; padding:.45rem .8rem}
+.identifier-page .model+.model{border-left:1px solid var(--rule)}
+.identifier-page .model .ms{font-size:.68rem}
+.identifier-page .location-control{align-items:center; font-size:.85rem}
+.location-status{flex-basis:100%; font-size:.75rem; color:var(--ink-3); margin:0}
+.location-status:empty{display:none}
+.ranking-note:empty{display:none}
+.identifier-page .map-status:empty{display:none}
+.identifier-page .map-status{min-height:0}
+.identifier-page .map-panel{padding-top:0}
+.id-foot{font-size:.78rem; color:var(--ink-3); gap:.4rem; text-align:center}
+.id-foot .id-links{font-size:.82rem}
+.identifier-page .model .ms{white-space:nowrap}
+@media (max-width:560px){
+  .identifier-page .examples{grid-template-columns:repeat(6,minmax(0,1fr)); gap:.35rem}
+  .identifier-page .models{display:flex; width:100%}
+  .identifier-page .model{flex:1; flex-direction:column; align-items:center; gap:.1rem; padding:.45rem .5rem}
+}
