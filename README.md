@@ -12,7 +12,7 @@ would help.
 
 ## Project status
 
-Current version **0.19.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
+Current version **0.20.0**. Every stage runs: Wikidata and Commons discovery, reviewed Commons
 acquisition, audited manifest construction, deterministic leave-one-out splits, resumable
 DINOv2/CLIP embedding extraction, cosine k-NN retrieval, and fourteen experiments — the full-pool
 baseline, the candidate-pool-size ablation, the geographic ablation, the trained-classifier
@@ -58,8 +58,8 @@ availability sections, and a run of defects surfaces that every build had report
 references printing with no conference name while BibTeX exited 0, four Supplementary figures that
 nothing in the prose pointed at, and display items numbered out of citation order.
 
-**Unreleased, since `0.19.0`:** the claims behind the headline results were put under test, and
-the backbone comparison widened to thirteen frozen models from seven pretraining paradigms. Every
+`0.20.0` puts the claims behind the headline results under test, and widens
+the backbone comparison to thirteen frozen models from seven pretraining paradigms. Every
 re-ranking number is now scored with weights chosen on held-out statues, every interval resamples
 whole statues, and every recomputation must reproduce the released artifact to 1e-9 before
 anything new is reported. Location used as a *weight* rather than a filter lifts DINOv2 to 98.7%
@@ -166,7 +166,7 @@ uv sync --extra demo
 Live Wikidata requests require a contact-bearing user agent supplied outside Git:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.19.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.20.0 (mailto:you@example.com)'
 uv run krasnal-id data query
 ```
 
@@ -212,7 +212,7 @@ mapping is reset to `pending` the next time review preparation runs.
 After every emitted mapping has a decision, fetch the approved categories:
 
 ```bash
-export KRASNAL_ID_USER_AGENT='krasnal-id/0.19.0 (mailto:you@example.com)'
+export KRASNAL_ID_USER_AGENT='krasnal-id/0.20.0 (mailto:you@example.com)'
 uv run krasnal-id data fetch
 ```
 

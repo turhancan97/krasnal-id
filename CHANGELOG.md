@@ -10,7 +10,19 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
-The field-query path is walk-ready. Section 5.10 had only ever seen stand-ins cut from Commons
+## [0.20.0] - 2026-11-09
+
+The headline results were put under test, and the backbone comparison grew from four models to
+thirteen in seven pretraining paradigms. Every re-ranking number is now scored with weights chosen
+on held-out statues, every interval resamples whole statues, and every recomputation must reproduce
+the released artifact to 1e-9 before anything new is reported. What the tests found is recorded in
+`RESULTS.md` sections 16-18: location used as a weight rather than a filter lifts DINOv2 to 98.7%,
+a permutation test shows the filter's penalty depends on the real arrangement of the statues, a
+margin between the two best statues makes rejection usable for DINOv3, learned verification keeps
+its gain on the strongest backbone, and much of the cross-photographer drop is scarcity of
+references rather than the photographer. Several earlier claims were softened to what was measured.
+
+The field-query path is also walk-ready. Section 5.10 had only ever seen stand-ins cut from Commons
 derivatives, which are upright, JPEG and never sorted by hand; a real phone dump is none of those.
 No result changes and no number is published: the photographs still need a day in Wrocław.
 
