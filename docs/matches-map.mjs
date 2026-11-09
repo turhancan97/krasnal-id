@@ -85,7 +85,7 @@ export async function renderMatchesMap(hits, metadata, position) {
     if (points.length) map.fitBounds(points, { padding:[30,40], maxZoom:18 });
     else map.setView([51.11,17.03],12);
     const count=hits.filter((h)=>placed(dwarfs.get(h.image.dwarf))).length;
-    status.textContent = `${count} of ${hits.length} matches have mapped positions.${group ? ' The shaded installation contains nearby statues; zoom in to inspect them.' : ''}`;
+    status.textContent = count < hits.length ? `${count} of ${hits.length} matches have a known position.` : (group ? 'The shaded area holds statues that stand together; zoom in.' : '');
   } catch (error) {
     if (request === version) status.textContent = 'Map unavailable. The photograph matches above still work.';
   }

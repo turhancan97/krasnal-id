@@ -874,8 +874,8 @@ already on screen rather than asking for it again.
   these are held-out dataset measurements rather than measured probabilities for a visitor's
   photo, and never rejects an answer. If location changes the winner, name both photograph-only
   candidates (“X or Y”) so the note cannot suggest the displayed winner as its own alternative.
-  The location explanation cites the 100 m simulation over 294 placed statues (93.4% to 95.4%),
-  explicitly distinguished from the browser's measurements.
+  The page no longer quotes the location simulation at all (§6.9), so no research number
+  appears beside the browser's own measurements.
 - **The map loads with the first result.** `matches-map.mjs` loads Leaflet 1.9.4 JS and CSS from
   cdnjs, both with CDN-provided SHA-512 integrity hashes and anonymous CORS. The map reserves
   its height before the library loads; map failure leaves the photograph results usable.
@@ -896,6 +896,28 @@ already on screen rather than asking for it again.
   checks matched before and after. Five Node tests cover withheld queries, stable ties, the
   weight-zero control, unplaced statues, nonmonotonic threshold selection, tied margins,
   distinct-statue examples and refusal of shuffled/relabelled metadata rows. No model ran in Node.
+
+### 6.9 Minimal identifier page (2026-11-09)
+
+The identifier carried an explanation beside every control, and with a result showing it was
+about three screens of prose. It now shows the action first and explains only what a result
+needs. Behaviour, data and calibration are unchanged; the self-test passes as before (8 probes,
+mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
+
+- **One action first.** Upload, then the six examples, then one row with the model switch and
+  the location switch. The header is a title and one sentence; the fact strip, the model note
+  and the link card to the project page are gone.
+- **The model switch shows measured numbers only**: name, shipped-vector top-1 and download
+  size, from `references.json` as §6.6 requires. The "role" captions were dropped.
+- **Credits move, they are not removed.** Example thumbnails carry the photographer and licence
+  in their tooltip and in a collapsed "Example photo credits" list; every result and the chosen
+  query still show theirs inline. Attribution stays one click away for every photograph shown.
+- **Text appears only when it says something.** The ranking note shows only when location is on,
+  the location status only after the switch is used, and the map status only for a missing
+  position or a co-located group. The close-call note keeps the measured accuracy and the words
+  "held-out dataset photos", which is what stops it reading as a probability for the visitor.
+- **One privacy sentence** in the footer covers the photo, the location and the OpenStreetMap
+  tile requests, replacing three separate notices.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.

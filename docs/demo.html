@@ -17,37 +17,16 @@
 <body class="identifier-page">
 <div class="page">
 
-  <header>
-    <a class="project-back" href="index.html">← Project page</a>
-    <div class="brandrow">
-      <svg viewBox="6.5 1.5 51.5 47.5" aria-hidden="true"><g transform="translate(17 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-twin)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#EAB34D"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#EAB34D"/><circle cx="24" cy="33" r="3.6" fill="#B87A12"/></g><g transform="translate(0 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><circle cx="24" cy="33" r="3.6" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-beard)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#B87A12"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#B87A12"/><circle cx="24" cy="33" r="3.6" fill="#EAB34D"/></g></svg>
-      <span class="eyebrow">Doppeldwarf-306 · near-identical instance retrieval</span>
-    </div>
-    <h1>Which Wrocław dwarf is this?</h1>
-    <p class="lede">Wrocław is scattered with several hundred small bronze dwarf statues,
-    individually sculpted but sharing a vocabulary — the same scale, the same material, the same
-    crouching poses and props. Upload a photograph and this page will tell you which one it is,
-    running the model in your own browser.</p>
-    <div class="facts">
-      <span>306 dwarves</span><span>1,691 reference photographs</span>
-      <span id="fact-model">DINOv2</span><span id="fact-acc">93.2% top-1</span>
-    </div>
+  <header class="id-head">
+    <a class="project-back" href="index.html">← Doppeldwarf-306</a>
+    <div class="brandrow"><svg viewBox="6.5 1.5 51.5 47.5" aria-hidden="true"><g transform="translate(17 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-twin)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#EAB34D"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#EAB34D"/><circle cx="24" cy="33" r="3.6" fill="#B87A12"/></g><g transform="translate(0 0)"><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><circle cx="24" cy="33" r="3.6" fill="var(--ground)" stroke="var(--ground)" stroke-width="4.8" stroke-linejoin="round"/><path d="M11 29 Q11 46 24 47.5 Q37 46 37 29 Z" fill="var(--mark-beard)"/><path d="M14.5 26 C16.5 17 20 10 25.5 3.5 C27.5 11 31 18 33.5 26 Z" fill="#B87A12"/><rect x="8.5" y="24.5" width="31" height="5.6" rx="2.8" fill="#B87A12"/><circle cx="24" cy="33" r="3.6" fill="#EAB34D"/></g></svg></div>
+    <h1>Which dwarf is this?</h1>
+    <p class="lede">Identify a Wrocław dwarf statue from a photo. The model runs in your
+    browser; nothing is uploaded.</p>
   </header>
 
   <section>
     <div class="demo">
-      <div class="models" id="models" role="group" aria-label="Embedding model" hidden></div>
-      <p class="modelnote" id="model-note" hidden>Both are frozen — neither was trained on these
-      statues. Switching re-ranks the same photograph, which is the comparison most of this
-      project&rsquo;s findings are about. DINOv2 is the smaller download <em>and</em> the more
-      accurate one.</p>
-
-      <div class="example-section">
-        <p class="examples-heading">Try an example</p>
-        <div class="examples" id="examples" aria-label="Example photographs"></div>
-        <p class="examples-note">Examples are photographs from the dataset, scored with that photograph held out.</p>
-      </div>
-
       <div class="drop" id="drop">
         <div class="actions">
           <label for="file"><button class="primary" type="button" id="pick">Choose a photo</button></label>
@@ -58,18 +37,25 @@
         <p>or drop one here</p>
       </div>
 
-      <div class="location-panel">
-        <label class="location-control"><input id="use-location" type="checkbox" role="switch">
-          <span>Use my location to favour nearby statues</span></label>
-        <p id="location-status" role="status" aria-live="polite">Off. Your photograph alone determines the ranking.</p>
-        <details>
-          <summary>Why use location as a weight?</summary>
-          <p>The <a href="https://github.com/turhancan97/krasnal-id/blob/main/RESULTS.md">research pipeline’s simulations</a> found that nearby-only filtering hurts relative to random narrowing because some lookalikes stand together; a soft distance weight keeps every statue eligible. In simulation, DINOv2 top-1 rose from 93.4% to 95.4% for users 100 m away over 294 placed statues — a research result, separate from this identifier’s measured photograph-only accuracy.</p>
+      <div class="example-section">
+        <p class="examples-heading">or try an example</p>
+        <div class="examples" id="examples" aria-label="Example photographs"></div>
+        <details class="example-credits">
+          <summary>Example photo credits</summary>
+          <div id="example-credits"></div>
+          <p>Examples are dataset photos, scored with that photo held out.</p>
         </details>
       </div>
 
+      <div class="options">
+        <div class="models" id="models" role="group" aria-label="Embedding model" hidden></div>
+        <label class="location-control"><input id="use-location" type="checkbox" role="switch">
+          <span>Favour statues near me</span></label>
+        <p id="location-status" class="location-status" role="status" aria-live="polite"></p>
+      </div>
+
       <div class="status" id="status" role="status" aria-live="polite">
-        <span id="status-text">Choose an example, or upload a photograph.</span>
+        <span id="status-text">Choose a photo or an example.</span>
         <span class="bar" id="bar" hidden><i id="bar-fill"></i></span>
       </div>
 
@@ -93,48 +79,24 @@
           </svg>
           <span id="colocated-text"></span>
         </div>
-        <section class="map-panel" aria-labelledby="map-heading">
-          <h2 id="map-heading">Where the matches stand</h2>
-          <p class="map-status" id="map-status" role="status">The map loads with your first result.</p>
+        <section class="map-panel" aria-label="Where the matches stand">
           <div class="matches-map" id="matches-map" aria-label="Map of the closest statue matches"></div>
+          <p class="map-status" id="map-status" role="status"></p>
           <div class="map-legend">
-            <span><i class="legend-pin stated" aria-hidden="true"></i> Wikidata position</span>
-            <span><i class="legend-pin estimated" aria-hidden="true"></i> Position estimated from photographs</span>
-            <span><i class="legend-pin first" aria-hidden="true"></i> First match</span>
-            <span><i class="legend-position" aria-hidden="true"></i> Your position, when enabled</span>
+            <span><i class="legend-pin first" aria-hidden="true"></i> Best match</span>
+            <span><i class="legend-pin stated" aria-hidden="true"></i> Known position</span>
+            <span><i class="legend-pin estimated" aria-hidden="true"></i> Estimated from photos</span>
           </div>
-          <p class="map-privacy">Map tiles load from OpenStreetMap, which sees which map area is shown. Your exact GPS coordinates and photograph stay in this browser.</p>
         </section>
       </div>
-
-      <p class="privacy">Your photograph is never uploaded. Location is optional and stays in this browser. OpenStreetMap receives requests for the map area shown.</p>
     </div>
   </section>
 
-  <nav class="pagelink">
-    <a href="index.html">
-      <span class="t">What the experiments found</span>
-      <span class="s">The research, dataset and experiments behind the identifier, including candidate-pool
-      size, location and lookalike families.</span>
-    </a>
-  </nav>
-
-  <footer>
-    <p>Every number here traces to a committed command and a structured result artifact. Full
-    method, dataset construction, licensing and attribution handling, and the reproduction script
-    are in the repository.</p>
-    <p class="repo"><a href="https://github.com/turhancan97/krasnal-id">github.com/turhancan97/krasnal-id</a></p>
-    <p>The dataset behind this page &mdash; 1,691 attributed photographs of 306 statues, both
-    backbones&rsquo; embeddings and the evaluation folds &mdash; is published on
-    <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">Hugging Face</a>
-    (parquet, images embedded) and
-    <a href="https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves">Kaggle</a>
-    (images on disk beside CSV tables).</p>
-    <p>Code MIT. Reference photographs from Wikimedia Commons under Public Domain, CC0, CC BY and CC BY-SA
-    licences; each result names its photographer and licence. Model weights from
-    <a href="https://huggingface.co/Xenova/dinov2-base">Xenova/dinov2-base</a> and
-    <a href="https://huggingface.co/Xenova/clip-vit-base-patch32">Xenova/clip-vit-base-patch32</a>,
-    both quantised to q4 and fetched only when selected.</p>
+  <footer class="id-foot">
+    <p>Your photo and location stay in this browser; map tiles come from OpenStreetMap.
+    Reference photos are from Wikimedia Commons, each credited with its licence.</p>
+    <p class="id-links"><a href="index.html">Project</a> · <a href="https://github.com/turhancan97/krasnal-id">Code</a> ·
+    <a href="https://huggingface.co/datasets/turhancan97/wroclaw-dwarves">Dataset</a></p>
   </footer>
 </div>
 <script type="module" src="app.js"></script>

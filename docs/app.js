@@ -254,11 +254,8 @@ function renderCoLocated(hits) {
   const names = new Map(meta.dwarfs.map((d) => [d.id, d.name]));
   const others = group.filter((id) => id !== top).map((id) => names.get(id));
   el("colocated-text").innerHTML =
-    `<b>This one is genuinely hard.</b> It stands at the same spot as ` +
-    `${others.length} other ${others.length === 1 ? "dwarf" : "dwarves"} — ` +
-    `${others.join(", ")} — and they were installed as one themed group. ` +
-    `They are the statues this project's error analysis finds most confusable, ` +
-    `and knowing where you are does not separate them.`;
+    `<b>Hard case.</b> It stands with ${others.join(", ")} as one themed group, ` +
+    `and location cannot tell them apart.`;
   box.hidden = false;
 }
 
@@ -415,7 +412,7 @@ async function identifyQuery(query) {
     else for (const button of el("examples").querySelectorAll("button")) button.setAttribute("aria-pressed", "false");
     el("result").hidden = false;
     renderCurrentRanking();
-    say(`${backbone(id).label} compared it against ${meta.images.length - (query.image ? 1 : 0)} reference photographs of ${meta.dwarfs.length} dwarves.${query.image ? " The example photograph was held out; no model download was needed." : ""}`);
+    say(`Compared with ${(meta.images.length - (query.image ? 1 : 0)).toLocaleString("en")} photos of ${meta.dwarfs.length} statues using ${backbone(id).label}.`);
   } catch (error) {
     if (request !== requestVersion) return;
     console.error(error); progress(null); lastRanking = null;
@@ -432,7 +429,7 @@ function renderCurrentRanking() {
   const position = el("use-location").checked ? userPosition : null;
   const hits = weightByLocation(plain, dwarfById, position, meta.location_prior).slice(0, TOP_K);
   renderHits(hits); renderCoLocated(hits);
-  el("ranking-note").textContent = position ? "Ranked by photograph plus location; scores include a distance bonus." : "Ranked by photograph alone; scores are cosine similarity.";
+  el("ranking-note").textContent = position ? "Ranked by photo and distance." : "";
   const alone = el("photo-alone");
   alone.hidden = hits[0].image.dwarf === plain[0].image.dwarf;
   alone.textContent = `The photograph alone ranked ${plain[0].image.name} first.`;
@@ -453,16 +450,16 @@ function renderCloseCall(plain, weighted, winnerChanged) {
   // A geographic winner can be the photo runner-up. Name both photo candidates
   // explicitly in that case, rather than suggesting the displayed winner again.
   if (winnerChanged) {
-    heading.append("Photograph-only close call — ");
+    heading.append("Close call on the photo alone — ");
     const first = document.createElement("strong"); first.textContent = plain[0].image.name;
     heading.append(first, " or ");
   } else {
-    heading.append(weighted ? "Photograph-only close call — could also be " : "Close call — could also be ");
+    heading.append(weighted ? "Close call on the photo alone — could also be " : "Close call — could also be ");
   }
   const name = document.createElement("strong"); name.textContent = plain[1].image.name;
   heading.append(name, ".");
   const detail = document.createElement("p");
-  detail.textContent = `On the dataset, the photograph-only first guess is right ${(100 * calibration.top_1_below).toFixed(2)}% of the time when this close. This describes held-out dataset photographs, not a measured chance for your photo.`;
+  detail.textContent = `On held-out dataset photos this close, the first guess was right ${(100 * calibration.top_1_below).toFixed(1)}% of the time.`;
   note.append(heading, detail); el("hits").firstElementChild.append(note);
 }
 
@@ -473,12 +470,12 @@ function wireLocation() {
     const ticket = ++locationRequest;
     userPosition = null; renderCurrentRanking();
     if (!control.checked) {
-      status.textContent = "Off. Your photograph alone determines the ranking."; return;
+      status.textContent = ""; return;
     }
     if (!navigator.geolocation) {
       status.textContent = "Location is unavailable in this browser; photograph alone is used."; return;
     }
-    status.textContent = "Getting your location once…";
+    status.textContent = "Getting your location…";
     navigator.geolocation.getCurrentPosition((fix) => {
       if (ticket !== locationRequest || !control.checked) return;
       const { latitude:lat, longitude:lon, accuracy } = fix.coords;
@@ -488,7 +485,7 @@ function wireLocation() {
         const position = {lat,lon};
         const nearest = Math.min(...meta.dwarfs.filter((d)=>Number.isFinite(d.lat)&&Number.isFinite(d.lon)).map((d)=>distanceMetres(position,d)));
         if (nearest > 2000) status.textContent = "You seem to be away from Wrocław’s statues; location not used.";
-        else { userPosition = position; status.textContent = "Location is favouring nearby statues. All statues remain eligible."; }
+        else { userPosition = position; status.textContent = "Nearby statues get a small boost; every statue stays in the running."; }
       }
       renderCurrentRanking();
     }, (error) => {
@@ -518,7 +515,6 @@ async function selectBackbone(id) {
   if (id === current) return;
   current = id;
   renderModelChoice();
-  renderFacts();
   if (lastQuery) await identifyQuery(lastQuery);
   else say(readyMessage());
 }
@@ -529,7 +525,6 @@ function renderModelChoice() {
   const options = available();
   // One backbone is not a choice; a build that ships one should not imply two.
   row.hidden = options.length < 2;
-  el("model-note").hidden = options.length < 2;
   if (row.hidden) return;
   row.textContent = "";
   for (const spec of options) {
@@ -538,21 +533,13 @@ function renderModelChoice() {
     button.type = "button";
     button.className = spec.id === current ? "model on" : "model";
     button.setAttribute("aria-pressed", String(spec.id === current));
-    button.innerHTML = '<span class="ml"></span><span class="mr"></span><span class="ms"></span>';
+    button.innerHTML = '<span class="ml"></span><span class="ms"></span>';
     button.querySelector(".ml").textContent = spec.label;
-    button.querySelector(".mr").textContent = spec.role;
     button.querySelector(".ms").textContent =
-      `${spec.downloadMb} MB · ${(info.measured.top_1 * 100).toFixed(1)}% top-1`;
+      `${(info.measured.top_1 * 100).toFixed(1)}% · ${spec.downloadMb} MB`;
     button.addEventListener("click", () => selectBackbone(spec.id));
     row.appendChild(button);
   }
-}
-
-/** Keep the header's fact strip on the backbone actually selected. */
-function renderFacts() {
-  const info = meta.backbones[current];
-  el("fact-model").textContent = backbone(current).label;
-  el("fact-acc").textContent = `${(info.measured.top_1 * 100).toFixed(1)}% top-1`;
 }
 
 function wireInputs() {
@@ -597,25 +584,25 @@ function appendCredit(parent, image, stacked = false) {
 
 function renderExamples() {
   const row = el("examples"); row.replaceChildren();
+  const credits = el("example-credits"); credits.replaceChildren();
   for (const id of meta.examples.image_ids) {
     const image = meta.images.find((entry) => entry.id === id);
     if (!image) throw new Error(`Missing example ${id}`);
     const tile = document.createElement("div"); tile.className = "example-tile";
     const button = document.createElement("button"); button.className = "example-button"; button.type = "button";
     button.dataset.imageId = id; button.setAttribute("aria-pressed", "false");
-    button.setAttribute("aria-label", `Try ${image.name}`); button.title = image.name;
+    button.setAttribute("aria-label", `Try ${image.name}`); button.title = `${image.name} · ${image.author} · ${image.license}`;
     const thumb = document.createElement("img"); thumb.src = `assets/thumbs/${image.thumb}`; thumb.alt = image.name;
     button.append(thumb); button.addEventListener("click", () => identifyExample(id));
-    const credit = document.createElement("div"); credit.className = "example-credit"; appendCredit(credit,image,true);
-    tile.append(button,credit); row.append(tile);
+    tile.append(button); row.append(tile);
+    const credit = document.createElement("p"); credit.append(`${image.name}: `); appendCredit(credit, image); credits.append(credit);
   }
 }
 
 loadMetadata()
   .then(() => {
     renderModelChoice();
-    renderFacts();
-    wireInputs();
+      wireInputs();
     wireLocation();
     renderExamples();
     say(readyMessage());

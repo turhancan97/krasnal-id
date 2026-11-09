@@ -12,6 +12,11 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- The identifier page is minimal: upload first, then examples, then one row with the model and
+  location switches. Explanatory paragraphs, the fact strip, the project link card and the long
+  footer are gone; example credits sit in a collapsed list and tooltips, results keep theirs
+  inline, and one footer sentence covers privacy. Behaviour is unchanged and the self-test passes.
+
 - The identifier's close-call hint now marks only photographs whose first guess is right less
   than half the time on the shipped vectors' leave-one-out run: 11.3% of DINOv2 queries
   (margin below 0.0511) and 31.3% of CLIP's (below 0.0229). The first rule, below 80%, fired for
