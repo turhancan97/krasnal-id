@@ -58,6 +58,15 @@ availability sections, and a run of defects surfaces that every build had report
 references printing with no conference name while BibTeX exited 0, four Supplementary figures that
 nothing in the prose pointed at, and display items numbered out of citation order.
 
+**Unreleased, since `0.19.0`:** the claims behind the headline results were put under test, and
+the backbone comparison widened to thirteen frozen models from seven pretraining paradigms. Every
+re-ranking number is now scored with weights chosen on held-out statues, every interval resamples
+whole statues, and every recomputation must reproduce the released artifact to 1e-9 before
+anything new is reported. Location used as a *weight* rather than a filter lifts DINOv2 to 98.7%
+for a simulated user 25 m away; a permutation test shows the filter's penalty depends on the real
+arrangement of the statues; and a margin between the two best statues makes rejection usable for
+DINOv3. `RESULTS.md` sections 16–18 record it all.
+
 The dataset is published on
 [Hugging Face](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) and
 [Kaggle](https://www.kaggle.com/datasets/turhancankargin/wroclaw-dwarves): 1,691 attributed
@@ -74,7 +83,8 @@ whole measuring path are built and tested; what is missing is a day in Wrocław 
 DINOv2 reaches 93.1% top-1 across a 306-dwarf pool with no fine-tuning, losing 0.79 accuracy
 points per doubling of the candidate pool where CLIP loses 2.06 and accelerates. Narrowing by real
 location helps *less* than random subsampling suggests, a trained classifier helps only the weaker
-backbone, and the errors concentrate on families of near-identical statues. Thresholding
+backbone, and the most frequent confusions are between lookalike statues, though most errors are
+diffuse. Thresholding
 similarity to answer "I don't know this one" worked at 23 classes and **does not** at 306 — one of
 three conclusions the larger dataset overturned. Queries shot on phones rather than cameras cost
 DINOv2 5.3 top-1 points and CLIP 15.6, which is a lower bound on what a real street photograph
@@ -91,8 +101,20 @@ DINOv2 at 3.5x the parameters moves that first-stage ceiling by **0.17 points**,
 queries and losing 20 — what it does buy is 2.59 points of robustness to a change of photographer.
 And SIFT promoted to the first stage, ranking all 1,690 references by inlier count with no
 embedding involved, reaches **43.5%** in the top ten where cosine reaches 90.8%, rescuing 12% of
-what cosine loses for seven seconds a photograph — measured for SIFT, and not yet for the learned
-matchers built for the regime where it fails.
+what cosine loses for seven seconds a photograph. A learned matcher rescues a third.
+
+Across thirteen frozen backbones, models trained for invariant embeddings identify best — C-RADIOv3
+94.7%, DINOv3 94.4%, DINOv2 93.1% — while MAE, BEiT and I-JEPA, under the same fixed pooling rule,
+reach 47–56%; EVA-02, masked-modelled against CLIP features, reaches 84.5%. With weights chosen on
+held-out statues, learned verification raises DINOv2's cross-photographer top-1 from 81.8% to
+**84.4%** (DISK+LightGlue) and **85.5%** (LoFTR) where SIFT adds nothing measurable, still adds
+2.0 points on DINOv3's shortlists, and recovers all of its gain when only the 30% of queries with
+the smallest cosine margin are verified. Location as a weight rather than a filter lifts DINOv2 from
+93.4% to **98.7%** over the placed statues, for any kernel scale from 50 to 800 m. A margin between
+the two best statues cuts DINOv3's false acceptance of unknown statues from 21.6% to **7.7%**. Much
+of the cross-photographer drop is scarcity: with one reference of the right statue left DINOv2
+scores 60%, with six or more 92%. A compact multi-vector representation does not substitute for
+verification.
 
 ![One query photograph and the five dwarves each backbone ranks highest, for four queries: one both backbones identify, one only DINOv2 identifies, one only CLIP identifies, and one neither identifies. Correct statues are outlined in green and wrong ones in red.](docs/figures/retrieval-examples.jpg)
 
@@ -113,7 +135,7 @@ statues, and the learned matcher can. Redraw for any two photographs with
 
 - [**Identify a photograph**](https://turhancan97.github.io/krasnal-id/) — the findings, plus a
   working identifier that runs the model in your browser. Nothing is uploaded.
-- [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eight
+- [**RESULTS.md**](RESULTS.md) — the complete written record: dataset construction, all eighteen
   result sections, limitations, and how to reproduce them.
 - [**The dataset on Hugging Face**](https://huggingface.co/datasets/turhancan97/wroclaw-dwarves) —
   1,691 attributed photographs of 306 statues, both backbones' embeddings, and the evaluation

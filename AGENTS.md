@@ -2051,6 +2051,7 @@ krasnal-id/
 │   ├── image_io.py            # decoding upright: the EXIF rotation every loader applies
 │   ├── bootstrap.py           # paired whole-statue bootstrap, shared by every interval
 │   ├── statistics.py          # the rank statistic two experiments share
+│   ├── photographers.py       # who took which photograph; the unseen-photographer helpers
 │   ├── logging.py             # structured run logging
 │   ├── configs/               # packaged Hydra configuration groups
 │   ├── data_pipeline/
@@ -2069,12 +2070,14 @@ krasnal-id/
 │   │   ├── clip.py
 │   │   ├── siglip.py          # SigLIP 2, experiment-only (§7.15)
 │   │   ├── generic.py         # timm and transformers adapters for the family study (§7.17)
+│   │   ├── regions.py         # CLS plus grid-pooled patch vectors for the multi-vector baseline (§7.19)
 │   │   ├── extract.py         # resumable extraction for any local image record
 │   │   ├── cache.py           # atomic, validated, content-addressed vector cache
 │   │   └── store.py           # manifest-ordered access for evaluation code
 │   ├── retrieval/
 │   │   ├── knn.py
 │   │   ├── rerank.py          # SIFT + RANSAC verification of the top candidates
+│   │   ├── matchers.py        # learned matchers (DISK+LightGlue, LoFTR) behind one interface
 │   │   └── query.py           # single-image retrieval against the reference set
 │   ├── experiments/
 │   │   ├── contracts.py       # serializable result schemas
@@ -2089,9 +2092,12 @@ krasnal-id/
 │   │   ├── camera_gap.py      # the query-domain gap, lower-bounded from EXIF
 │   │   ├── photographer_gap.py # statue or photographer? decomposed against a control
 │   │   ├── rerank_ablation.py  # the geometric re-ranking sweep
+│   │   ├── matcher_rerank.py  # journalled SIFT / DISK+LightGlue / LoFTR re-ranking (§7.11)
+│   │   ├── geometry_first.py  # local features as a first stage, and the rescue rate (§7.10)
 │   │   ├── recall_curve.py     # the first stage's ceiling, and three rejected fixes
 │   │   ├── workshop_validation.py # held-out weights and statue intervals, from evidence on disk
 │   │   ├── reviewer_checks.py # §7.15–7.16 parts, each gated on a released number
+│   │   ├── second_review.py   # §7.19 parts: multi-region baseline, reference strata, gated verification
 │   │   └── field_gap.py       # the query-domain gap, measured on field photographs
 │   ├── export/
 │   │   ├── schema.py          # arrow schemas, HF features, the shard plan
@@ -2099,6 +2105,7 @@ krasnal-id/
 │   │   ├── tables.py          # parquet writing
 │   │   ├── card.py            # the dataset card, licences and credits
 │   │   ├── huggingface.py     # building the export directory
+│   │   ├── kaggle.py          # the Kaggle export: images on disk, CSV tables (§5.13)
 │   │   └── push.py            # uploading it, behind an explicit flag
 │   ├── demo/
 │   │   └── app.py             # the local Gradio demo
@@ -2107,6 +2114,13 @@ krasnal-id/
 │       ├── ablation_plot.py
 │       ├── open_set_plot.py
 │       ├── figure_style.py    # one palette, typeface, type scale and print width for every figure
+│       ├── paper_figures.py   # the manuscripts' data figures, journal and CVWW layouts
+│       ├── paper_tables.py    # the journal supplement's generated tables
+│       ├── family_plot.py     # the thirteen-backbone forest plot and per-paradigm curves (§7.17)
+│       ├── teaser.py          # the CVWW page-1 teaser, its query chosen by rule
+│       ├── retrieval_examples.py # top-1 and top-5 retrieval sheets
+│       ├── match_plot.py      # drawn correspondences between a query and its candidates
+│       ├── matcher_examples.py # the rescue and failure pairs the match figure shows, by rule
 │       ├── fonts/             # vendored TeX Gyre Heros, GUST Font License
 │       └── workshop_tables.py # the CVWW manuscript's numbers and tables, by metric name
 ├── results/                   # ignored generated results
@@ -2467,7 +2481,7 @@ remains a fallback, with §11.1 and §11.2 retained as the record of that earlie
 - When cutting a version, move the relevant `Unreleased` entries into a dated version section and recreate an empty `Unreleased` section.
 - Before completing an implementation task, verify whether both this file and `CHANGELOG.md` need corresponding updates. Documentation-only wording fixes do not require a new architectural decision, but should still be logged when material.
 
-### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-05)
+### 12.1 Current dataset-audit and implementation handoff (updated 2026-09-05; backbones and experiments 2026-11-09)
 
 Everything below is recomputed from the tracked artifacts on the date in the heading. Where a
 number here disagrees with an artifact, the artifact wins.
@@ -2530,12 +2544,21 @@ Implementation state:
   DINOv2 checkpoints are configuration rather than code. `BackboneName` is declared once in
   `config.py` and reused by every experiment field that names backbones in a list, because
   `fuse_backbones` having its own copy meant it could reject a checkpoint the pipeline could run.
-- **Six backbones are packaged; two are first-class.** `dinov2` and `clip` are exported,
-  visualized and shipped to the browser. `dinov2-large`, `dinov2-registers` and
-  `dinov2-registers-large` exist for §7.9, and `dinov3` for §7.12; none is named in any export or
-  visualization list, so they
-  cost the published artifacts nothing. Their vectors sit in the same content-addressed cache; the
-  key includes the model id and revision, so no checkpoint can read another's vectors.
+- **Sixteen backbones are packaged; two are first-class.** `dinov2` and `clip` are exported,
+  visualized and shipped to the browser. The rest are experiment-only: `dinov2-large`,
+  `dinov2-registers` and `dinov2-registers-large` for §7.9, `dinov3` for §7.12, `siglip2` for
+  §7.15, and the nine of the §7.17 paradigm study (`dino`, `mae`, `beit`, `eva02-mim`, `ijepa`,
+  `clip-b16`, `radio`, `aimv2`, `vit-supervised`), whose results live under `results/family/`.
+  None is named in any export list, so they cost the published datasets nothing; DINOv3 and
+  SigLIP 2 appear only in the CVWW figure layout. Their vectors sit in the same content-addressed
+  cache; the key includes the model id, revision and pooling, so no checkpoint can read another's
+  vectors. `embeddings extract-regions` writes the separate `regions-<backbone>.npz` files §7.19
+  reads, outside that cache.
+- **The CVWW manuscript's numbers come from `results/cvww_revision3/`** through `visualize
+  workshop-tables`, with `--extra v3=…` (DINOv3 re-ranking), `r2=…` (§7.19), `cg3=…`/`cgs=…`
+  (camera gap) and the `results/cvww_sens_*` runs (§7.18) picked up automatically; the
+  thirteen-backbone numbers come from `visualize family`. `paper-cvww/` itself is untracked and
+  backed up under `/shared/results/common/kargin/projects/krasnal-id/paper-backups/`.
 - `embeddings extract` is implemented for the pinned DINOv2 and CLIP configurations. It validates
   image checksums and dimensions, supports CPU/automatic CUDA selection and configured batching,
   reuses valid normalized `.npy` vectors, and keeps model loading lazy so CI remains offline. CI

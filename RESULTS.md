@@ -26,15 +26,18 @@ your own browser.
    proximity-based pools lose to random pools of the same size at every pool size measured, and the
    penalty peaks at a 171–291 m radius — exactly the range a phone-based tool would use. Sculptors
    install related pieces near each other, so a small radius selects for a statue's own lookalikes.
-   Section 16 tests that explanation and it holds: shuffling which statue stands where removes the
-   penalty for all four backbones (p = 0.005). Used as a *weight* rather than a filter, location
+   Section 16 tests that explanation: shuffling which statue stands where removes the penalty for
+   all four backbones (p = 0.005), so it depends on the real arrangement, consistent with
+   short-range clustering of lookalikes. Used as a *weight* rather than a filter, location
    is the strongest cue in the project (section 16).
 4. **Training a classifier helps only the weaker backbone.** A per-fold linear probe is worth
    nothing to DINOv2 (−0.1 points) but gains CLIP 3.1. Class prototypes cost both about 8 points.
    Where retrieval is already strong, it is already the right tool.
-5. **The errors are explainable, not random.** Both backbones concentrate their mistakes on
-   near-identical statues installed as families — above all the three *Słupniki* pillar dwarves —
-   and the embedding projection picks the same clusters out unprompted.
+5. **The most frequent confusions are between lookalikes, but most errors are diffuse.** The
+   single most common confusions are statues made as a series — above all the three *Słupniki*
+   pillar dwarves — and the embedding projection picks the same clusters out unprompted. Yet only
+   14% of DINOv2's errors fall within a lookalike family defined by the other backbones, and family
+   members err no more often than other statues (section 16).
 6. **Phone photographs are measurably harder queries.** Using the 51 references that were
    themselves shot on phones, DINOv2 loses 5.3 top-1 points and CLIP 15.6 against camera-shot
    queries — and not because they belong to easier or harder classes. It is a lower bound, since
@@ -60,10 +63,21 @@ your own browser.
    photographer-disjoint queries against cosine's 90.8% — and rescues only 12% of what cosine
    misses, for 1,690 homographies a query. It is three times as photographer-dependent as
    appearance: withholding the photographer costs it 42 points at rank one where appearance loses
-   12. This is measured for SIFT and **not** for learned matchers, which are built for exactly the
-   wide-baseline regime where it collapses (section 15).
-10. **CLIP's weakness is its checkpoint, not language alignment.** SigLIP 2, language-aligned and the
-   same size as DINOv2, reaches 91.2% top-1 against CLIP's 82.9% and DINOv2's 93.1% (section 16).
+   12. A learned matcher does better here, rescuing 33 to 36 of the 107 queries cosine misses at
+   ten — a third, still at 1,690 matches a query (section 15).
+10. **CLIP's weakness is not inherent to language alignment.** SigLIP 2, language-aligned, the same
+   size as DINOv2 and trained with added self-supervised losses, reaches 91.2% top-1 against CLIP's
+   82.9% and DINOv2's 93.1% (section 16).
+11. **Pretraining decides most of the outcome.** Across thirteen frozen backbones in seven
+   paradigms, invariance-trained models lead on accuracy and rejection (C-RADIOv3 94.7%, DINOv3
+   94.4%), while MAE, BEiT and I-JEPA under the same pooling rule reach 47–56% and EVA-02, which
+   regresses CLIP features, 84.5% (section 17).
+12. **Learned verification is the one add-on that survives a strong backbone.** With weights chosen
+   on held-out statues it lifts DINOv2's cross-photographer top-1 from 81.8% to 84.4%
+   (DISK+LightGlue) and 85.5% (LoFTR), still adds 2.0 points on DINOv3, and keeps all of its gain
+   when only the 30% least certain queries are verified. Much of the cross-photographer drop it
+   works against is scarcity: 60% with one reference of the right statue left, 92% with six or more
+   (sections 16–18).
 
 Findings 2, 4 and 7 all revise conclusions this project previously published from a 23-class
 dataset. Section 7 is about which of them the small pool got wrong, and why.
