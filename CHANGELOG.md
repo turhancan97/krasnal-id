@@ -10,6 +10,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- The identifier's close-call hint now marks only photographs whose first guess is right less
+  than half the time on the shipped vectors' leave-one-out run: 11.3% of DINOv2 queries
+  (margin below 0.0511) and 31.3% of CLIP's (below 0.0229). The first rule, below 80%, fired for
+  32.8% and 88.1%, so the hint carried no information for CLIP. Reference vectors unchanged.
+
 ### Added
 
 - Metadata-only browser-asset calibration, with image-order and binary-hash guards, atomic JSON
@@ -25,6 +32,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   disclosed separately from local photographs and exact GPS. Leaflet 1.9.4 and transformers.js
   load only when needed; the former has CDN integrity hashes. Browser probes pass, including
   an exact weight-zero control, while the reference binaries remain unchanged.
+
+### Fixed
+
+- When location changes the identifier's winner, the close-call hint names both photograph-only
+  candidates instead of suggesting the displayed winner as its own alternative. The location
+  explanation now gives the sourced 100 m simulation result, labelled separately from browser
+  accuracy. Rechecked metadata calibration, all six examples on both backbones, location guards,
+  map attribution and four responsive theme screenshots; reference binaries are unchanged.
 
 ### Changed
 

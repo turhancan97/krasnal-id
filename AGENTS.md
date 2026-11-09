@@ -831,13 +831,18 @@ already on screen rather than asking for it again.
   and the browser. Each query is withheld. Candidate thresholds are distinct observed top-two
   cosine margins; strict `< threshold` includes whole ties, with both sides nonempty. Scan all
   boundaries, because prefix accuracy can rise and fall, and choose the largest boundary whose
-  lower group has accuracy strictly below 80%. No rounding or interpolation affects selection.
+  lower group has accuracy strictly below one half. No rounding or interpolation affects selection.
   These in-sample groups describe this dataset, not a probability for a visitor's photograph.
 
   | Backbone | Margin threshold | Share below | Top-1 below | Top-1 above |
   |---|---:|---:|---:|---:|
-  | DINOv2 | 0.12890930711185511 | 32.76168% | 79.96390% | 99.64820% |
-  | CLIP | 0.086518953772539264 | 88.05441% | 79.98657% | 100.00000% |
+  | DINOv2 | 0.05110780652810931 | 11.29509% | 49.73822% | 98.73333% |
+  | CLIP | 0.02286541223906724 | 31.28326% | 49.90548% | 97.16007% |
+
+  **The bound is one half, not the 80% first built.** At 80% the hint fired for 32.8% of DINOv2
+  queries and 88.1% of CLIP's, so for CLIP it was on almost always and said nothing. Below one
+  half it marks the photographs where the first guess is no better than a coin flip, which is
+  the only claim the hint makes.
 
 - **Example selection is deterministic and query-only.** Fix `commons-4074360`, then use the
   nearest-rank 10th, 30th, 50th, 70th and 90th percentiles of DINOv2 margins after excluding every
@@ -865,9 +870,12 @@ already on screen rather than asking for it again.
   when its plain top-two cosine margin is below the active backbone's threshold, naming the
   plain runner-up. With location active the note explicitly says “Photograph-only close call”;
   it never applies photograph-only calibration to a weighted margin. Accuracy is shown to two
-  decimal places, which keeps the just-below-80% groups from rounding to 80.0%. The page says
+  decimal places, which keeps the just-below-half groups from rounding to 50.0%. The page says
   these are held-out dataset measurements rather than measured probabilities for a visitor's
-  photo, and never rejects an answer.
+  photo, and never rejects an answer. If location changes the winner, name both photograph-only
+  candidates (“X or Y”) so the note cannot suggest the displayed winner as its own alternative.
+  The location explanation cites the 100 m simulation over 294 placed statues (93.4% to 95.4%),
+  explicitly distinguished from the browser's measurements.
 - **The map loads with the first result.** `matches-map.mjs` loads Leaflet 1.9.4 JS and CSS from
   cdnjs, both with CDN-provided SHA-512 integrity hashes and anonymous CORS. The map reserves
   its height before the library loads; map failure leaves the photograph results usable.
