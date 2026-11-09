@@ -26,7 +26,9 @@ export function closeCallStatistics(queries) {
   // Candidate t values are observed distinct margins. Strict < t includes whole
   // tie groups, never individual members of a tie. Both sides must be nonempty.
   // Scan every boundary: prefix accuracy need not be monotonic. Keep the largest
-  // t whose prefix accuracy is strictly below 80%. No interpolation or rounding.
+  // t whose prefix accuracy is strictly below one half: when this close, the first
+  // guess is no better than a coin flip. (An 80% bound flagged a third of DINOv2
+  // queries and 88% of CLIP's, which told a visitor nothing.) No interpolation or rounding.
   const sorted = [...queries].sort((a, b) => a.margin - b.margin || compareIds(a.id, b.id));
   const totalCorrect = sorted.filter((q) => q.correct).length;
   let correct = 0, selected = null;
@@ -34,12 +36,12 @@ export function closeCallStatistics(queries) {
     correct += Number(sorted[i].correct);
     const count = i + 1;
     if (sorted[i].margin === sorted[i + 1].margin) continue;
-    if (correct * 5 < count * 4) selected = {
+    if (correct * 2 < count) selected = {
       threshold: sorted[i + 1].margin, share_of_queries: count / sorted.length,
       top_1_below: correct / count, top_1_above: (totalCorrect - correct) / (sorted.length - count),
     };
   }
-  if (!selected) throw new Error('No nonempty close-call group below 80% accuracy');
+  if (!selected) throw new Error('No nonempty close-call group below 50% accuracy');
   return selected;
 }
 

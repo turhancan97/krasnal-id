@@ -27,12 +27,12 @@ test('weight zero is exact, missing positions get no bonus, and weighted ties ke
 });
 
 test('close-call scan includes complete ties and finds the last valid boundary after an accuracy rebound', () => {
-  const queries = [false,true,true,true,true,false,true].map((correct,i)=>({id:`id${i}`,margin:i,correct}));
-  // Prefix first reaches 80%, then drops below it again. Last valid cut is 6.
+  const queries = [false,false,true,true,false,false,true].map((correct,i)=>({id:`id${i}`,margin:i,correct}));
+  // Prefix first reaches 50%, then drops below it again. Last valid cut is 6.
   assert.equal(closeCallStatistics(queries).threshold,6);
-  const tied = [{id:'a',margin:0,correct:false},{id:'b',margin:0,correct:true},{id:'c',margin:1,correct:true}];
-  const result=closeCallStatistics(tied);assert.equal(result.threshold,1);assert.equal(result.share_of_queries,2/3);
-  assert.equal(result.top_1_below,0.5);assert.equal(result.top_1_above,1);
+  const tied = [{id:'a',margin:0,correct:false},{id:'b',margin:0,correct:true},{id:'c',margin:0,correct:false},{id:'d',margin:1,correct:true}];
+  const result=closeCallStatistics(tied);assert.equal(result.threshold,1);assert.equal(result.share_of_queries,3/4);
+  assert.equal(result.top_1_below,1/3);assert.equal(result.top_1_above,1);
   assert.throws(()=>closeCallStatistics([{id:'a',margin:0,correct:true},{id:'b',margin:1,correct:true}]));
 });
 

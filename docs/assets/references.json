@@ -29527,7 +29527,7 @@
    "source_url": "https://commons.wikimedia.org/wiki/File:Krasnalica.jpg"
   }
  ],
- "metadata_updated_at": "2026-11-09T17:13:20.001Z",
+ "metadata_updated_at": "2026-11-09T17:43:24.248Z",
  "location_prior": {
   "kernel": "exponential",
   "scale_m": 200,
@@ -29536,16 +29536,16 @@
  },
  "close_call": {
   "dinov2": {
-   "threshold": 0.1289093071118551,
-   "share_of_queries": 0.3276167947959787,
-   "top_1_below": 0.7996389891696751,
-   "top_1_above": 0.9964819700967458
+   "threshold": 0.05110780652810931,
+   "share_of_queries": 0.11295091661738617,
+   "top_1_below": 0.4973821989528796,
+   "top_1_above": 0.9873333333333333
   },
   "clip": {
-   "threshold": 0.08651895377253926,
-   "share_of_queries": 0.8805440567711413,
-   "top_1_below": 0.7998656816655474,
-   "top_1_above": 1
+   "threshold": 0.02286541223906724,
+   "share_of_queries": 0.3128326434062685,
+   "top_1_below": 0.499054820415879,
+   "top_1_above": 0.9716006884681584
   }
  },
  "examples": {
