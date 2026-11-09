@@ -35,24 +35,20 @@ TAGLINE = "Near-identical instance retrieval"
 DEEP = "#B87A12"
 MUSTARD = "#EAB34D"
 
-# Per theme: the front gnome's beard, the twin's beard, the wordmark, the tagline,
-# and the background the mark sits on, which the ring around the front gnome takes
-# so that the twin appears to stand behind it.
+# Per theme: the front gnome's beard, the twin's beard, the wordmark and the tagline.
+# The light variant is for light backgrounds, the dark one for dark backgrounds.
 THEMES = {
     "light": {
         "beard": "#1F2328",
         "twin": "#57606A",
         "ink": "#1F2328",
         "tag": "#57606A",
-        "ground": "#FFFFFF",
     },
-    # GitHub's dark background, where the README shows this variant.
     "dark": {
         "beard": "#E6EDF3",
         "twin": "#8C959F",
         "ink": "#E6EDF3",
         "tag": "#8C959F",
-        "ground": "#0D1117",
     },
 }
 PLATE = "#12181C"  # the dark plate behind the social preview
@@ -85,10 +81,28 @@ def gnome(dx: float, colours: dict[str, str], ring: str | None = None) -> str:
 
 
 def mark(theme: dict[str, str]) -> str:
-    """The pair, in mark coordinates (origin at the bounding box's corner)."""
+    """The pair, in mark coordinates (origin at the bounding box's corner).
+
+    The gap between the front gnome and its twin is cut out of the twin with a mask
+    rather than painted in a background colour, so it is genuinely transparent: each
+    file reads cleanly on any background, not only the one it was drawn for.
+    """
+    cut = "".join(
+        f'<{tag} {geometry} fill="black" stroke="black" stroke-width="{RING}" '
+        'stroke-linejoin="round"/>'
+        for tag, geometry, _ in SHAPES
+    )
+    mask = (
+        '<defs><mask id="dd-gap" maskUnits="userSpaceOnUse" x="-10" y="-10" '
+        f'width="100" height="80"><rect x="-10" y="-10" width="100" height="80" '
+        f'fill="white"/>{cut}</mask></defs>'
+    )
     twin = gnome(17, {"hat": MUSTARD, "beard": theme["twin"], "nose": DEEP})
-    front = gnome(0, {"hat": DEEP, "beard": theme["beard"], "nose": MUSTARD}, ring=theme["ground"])
-    return f'<g transform="translate({-MARK_X:g} {-MARK_Y:g})">{twin}{front}</g>'
+    front = gnome(0, {"hat": DEEP, "beard": theme["beard"], "nose": MUSTARD})
+    return (
+        f'<g transform="translate({-MARK_X:g} {-MARK_Y:g})">{mask}'
+        f'<g mask="url(#dd-gap)">{twin}</g>{front}</g>'
+    )
 
 
 def _to_svg_path(path: MPath, dx: float, dy: float, scale: float) -> str:
@@ -187,8 +201,7 @@ def social_preview(width: int = 1280, height: int = 640) -> None:
     except ImportError:
         print("  doppeldwarf-social-preview.png  skipped (install cairosvg)")
         return
-    plate = dict(THEMES["dark"], ground=PLATE)
-    lockup = stacked(plate)
+    lockup = stacked(THEMES["dark"])
     box = lockup.split('viewBox="')[1].split('"')[0].split()
     lw, lh = float(box[2]), float(box[3])
     factor = 560 / lw

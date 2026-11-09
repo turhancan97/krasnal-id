@@ -20,7 +20,9 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 - The README header and the website (favicon, header mark, link preview) use the new
   Doppeldwarf-306 mark: two identical gnomes, one a colour-swapped twin, in the corpus colours.
   `docs/brand/doppeldwarf.py` generates its light and dark marks, lockups and social preview from
-  the vendored TeX Gyre Heros; the Krasnal-ID mark stays in `docs/brand/` as an archive.
+  the vendored TeX Gyre Heros; the Krasnal-ID mark stays in `docs/brand/` as an archive. Every file
+  comes in a light variant for light backgrounds and a dark one for dark backgrounds, and the gap
+  between the two gnomes is a transparent cut-out, so each variant also reads on any other colour.
 
 ## [0.20.0] - 2026-11-09
 

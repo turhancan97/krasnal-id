@@ -21,10 +21,12 @@ which is what the dataset is about. Drawn in the corpus colours every figure use
 | Twin hat, front nose | `#EAB34D` | `#EAB34D` |
 | Front beard, wordmark | `#1F2328` | `#E6EDF3` |
 | Twin beard, tagline | `#57606A` | `#8C959F` |
-| Ring around the front gnome | the background (`#FFFFFF`) | the background (`#0D1117`) |
 
-The ring takes the colour of whatever the mark sits on; that is what makes the twin read as standing
-behind. On the website it is the page's `--ground` variable, so it follows the theme.
+Use the light files on light backgrounds and the dark files on dark ones; the README picks the right
+one from the viewer's system theme. The gap that makes the twin read as standing behind is cut out
+of the twin, not painted, so it is transparent and both variants work on any background colour.
+The website's inline header mark paints that gap in the page's `--ground` variable instead, which
+follows the theme.
 
 - Keep clear space of at least one hat brim's width on every side.
 - Minimum size: 16px tall for the mark, 160px wide for the horizontal lockup (the tagline needs it).
