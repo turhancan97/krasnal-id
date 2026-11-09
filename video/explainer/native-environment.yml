@@ -1,0 +1,12 @@
+# A separate prefix supplies native libraries; exact Linux builds are in native-linux-64.lock.
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - pip
+  - cairo
+  - pango
+  - glib
+  - pkg-config
+  - ffmpeg

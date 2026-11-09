@@ -1,0 +1,67 @@
+{
+  "status": "approved-reference",
+  "narration_words": 221,
+  "full_video_rendered": true,
+  "project_page_modified": true,
+  "frames": [
+    {
+      "file": "review/frames/01-hook.png",
+      "sha256": "09451a743dd091d624b14600fff16f2f841e20aa184bd5beea2359a2c732a1c6"
+    },
+    {
+      "file": "review/frames/02-retrieval.png",
+      "sha256": "05997e2eb1160130e8da69b61a6f580781eeebcb884be1b25eda5105b175fbd8"
+    },
+    {
+      "file": "review/frames/03-pool.png",
+      "sha256": "90497e09060ae8141bf0f8d93e56a509e7352378e708afad02bca692cf4fc623"
+    },
+    {
+      "file": "review/frames/04-location.png",
+      "sha256": "3ac633ae12e8d6e6e812ce56fa0073b10383956d616cf62792d2cdc75170fca1"
+    },
+    {
+      "file": "review/frames/05-verification.png",
+      "sha256": "c47e2cc3437a959ea61667e52851aa26c29ea8c3943a48e22329e2fd8b69d828"
+    },
+    {
+      "file": "review/frames/06-uncertainty.png",
+      "sha256": "b9ca848d527863f5dd6c07b8dede096a9aaf0ffd7b0ec44b879f3c00e9e2fd51"
+    },
+    {
+      "file": "review/frames/07-takeaway.png",
+      "sha256": "3c41464f23ffecf33c29f66a56c1afd318180cd5b20cc5e815031c537c6350ad"
+    },
+    {
+      "file": "review/frames/08-credits.png",
+      "sha256": "c32f16972c0bb3749a2c9a58711ab8b61d80cae18a2a42ba4c0716e0337e6738"
+    }
+  ],
+  "voices": [
+    {
+      "file": "voice-af_heart.wav",
+      "duration_s": 15,
+      "sample_rate": 24000,
+      "sha256": "215f0919184f3685753d64fc62838b0d472c9233d96eb0c81c32e46f55642ab7"
+    },
+    {
+      "file": "voice-am_michael.wav",
+      "duration_s": 15,
+      "sample_rate": 24000,
+      "sha256": "ac00d87cbcd00dceeff8028ca4851df3b3f4c68d5a07b92706585360548f53b9"
+    }
+  ],
+  "poster_sha256": "bdbc78236997c866f55082d8e77d0a399892e7740d0faa3dde793f0ad17cd41f",
+  "preview": {
+    "duration_s": 10.0,
+    "frames": 300,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "fast_start": true,
+    "bytes": 680793,
+    "sha256": "1226045548683eba16d4159929d1667dff66bd3862a632bac9e970c3210879fd"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "photographs": [
+    {
+      "image_id": "commons-4074360",
+      "label": "Query · Solne",
+      "name": "Słupniki Solne",
+      "author": "Adalbertus",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Wroclaw_krasnal_Slupnik_Solny.JPG",
+      "sha256": "904da4d3cadd811286c1687f04a9199bed5377bef8bb0d7bdef57f0f1dc73daa",
+      "modifications": "Existing locally resized WebP thumbnail; fitted or cropped in frames and animated layouts."
+    },
+    {
+      "image_id": "commons-30336184",
+      "label": "Solne reference",
+      "name": "Słupniki Solne",
+      "author": "Pnapora",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Slupniki_Solne_(Salt_Columnists)_Wroclaw_(1)_dwarf_02.JPG",
+      "sha256": "71e460091b145b4c35ad12336dc7c5b846079ccf2f4703adecbcff44911c8d96",
+      "modifications": "Existing locally resized WebP thumbnail; fitted or cropped in frames and animated layouts."
+    },
+    {
+      "image_id": "commons-23727175",
+      "label": "Oławskie reference",
+      "name": "Słupniki Oławskie",
+      "author": "User: (WT-shared) Krasnoludek at wts wikivoyage",
+      "license": "Public domain",
+      "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Krasnal_slupnik_olawska_01.jpg",
+      "sha256": "a9caea37c9b95b18e4128767c6fc304be6fcbf69bd43add846e64d8428c13f65",
+      "modifications": "Existing locally resized WebP thumbnail; fitted or cropped in frames and animated layouts."
+    },
+    {
+      "image_id": "commons-30344888",
+      "label": "Świdnickie reference",
+      "name": "Słupniki Świdnickie",
+      "author": "Pnapora",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Slupniki_Swidnickie_(Swidnicka_Columnists)_Wroclaw_(1)_dwarf_02.JPG",
+      "sha256": "767fa0cab7d62a4cafc57293477e6fa33f76ce8cc6f9f801353a63955d7f3d3f",
+      "modifications": "Existing locally resized WebP thumbnail; fitted or cropped in frames and animated layouts."
+    }
+  ],
+  "narration": {
+    "tool": "Kokoro-82M",
+    "voice": "af_heart",
+    "synthetic": true,
+    "model_revision": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M"
+  },
+  "depicted_works": "The photographs and the sculptures are distinct works. Photograph licences do not grant rights in depicted sculptures; the existing dataset disclosure and removal path apply."
+}

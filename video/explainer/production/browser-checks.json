@@ -1,0 +1,97 @@
+{
+  "browser": "145.0.7632.6",
+  "video_sha256": "55d2439e893bd9bcde567eeb7f1114568fff554f22b95a71d3d33c82f6c66f31",
+  "interactions": {
+    "preloadNone": true,
+    "noAutoplay": true,
+    "noRuntimeModel": true,
+    "correctPlacement": true,
+    "stableHeight": true,
+    "playback": true,
+    "seeking": true,
+    "keyboard": true,
+    "fullscreen": true,
+    "download": true,
+    "transcript": true,
+    "allPhotoCredits": true,
+    "media": {
+      "width": 1920,
+      "height": 1080,
+      "duration": 120,
+      "paused": false
+    },
+    "errors": [],
+    "failedRequests": [
+      {
+        "url": "http://127.0.0.1:33491/docs/media/explainer.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://127.0.0.1:33491/docs/media/explainer.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://127.0.0.1:33491/docs/media/explainer.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://127.0.0.1:33491/docs/media/explainer.mp4",
+        "error": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  "screenshots": [
+    {
+      "path": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/project-1280-light.png",
+      "section": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/player-1280-light.png",
+      "width": 1280,
+      "colorScheme": "light",
+      "dimensions": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "videoHeight": 540,
+        "brokenImages": []
+      },
+      "errors": []
+    },
+    {
+      "path": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/project-1280-dark.png",
+      "section": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/player-1280-dark.png",
+      "width": 1280,
+      "colorScheme": "dark",
+      "dimensions": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "videoHeight": 540,
+        "brokenImages": []
+      },
+      "errors": []
+    },
+    {
+      "path": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/project-390-light.png",
+      "section": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/player-390-light.png",
+      "width": 390,
+      "colorScheme": "light",
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390,
+        "videoHeight": 196.875,
+        "brokenImages": []
+      },
+      "errors": []
+    },
+    {
+      "path": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/project-390-dark.png",
+      "section": "/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review/film/qa/player-390-dark.png",
+      "width": 390,
+      "colorScheme": "dark",
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390,
+        "videoHeight": 196.875,
+        "brokenImages": []
+      },
+      "errors": []
+    }
+  ]
+}

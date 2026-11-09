@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "status": "awaiting-owner-review",
+  "title": "Which dwarf is this?",
+  "project": "Doppeldwarf-306",
+  "max_duration_s": 120,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "background": "#F7F8FA",
+  "ink": "#1F2328",
+  "palette": {
+    "blue": "#507AFF",
+    "pink": "#D97FAE",
+    "teal": "#55A398",
+    "purple": "#8A6BDD",
+    "mustard": "#EAB34D",
+    "orange": "#FF7F50",
+    "green": "#34C759",
+    "yellow": "#FFCC00"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "title": "Which dwarf is this?",
+      "start_s": 0,
+      "end_s": 12,
+      "narration": "Across Wrocław, bronze dwarves share poses and props. Given a photograph, which individual statue are we looking at? Meet Doppeldwarf-306.",
+      "visual": "The existing teaser query appears on the left. Three pillar-dwarf references enter from the right; their shared silhouettes make the problem visible. Dataset counts appear below.",
+      "transition": "The query card shrinks into the input of the retrieval pipeline.",
+      "claims": [
+        "dataset"
+      ]
+    },
+    {
+      "id": "retrieval",
+      "title": "Photographs become vectors",
+      "start_s": 12,
+      "end_s": 30,
+      "narration": "A frozen vision model turns each image into a vector: a numerical visual description. Cosine similarity compares these vectors. Similar directions suggest similar appearance; they do not prove identity. We rank each statue by its best reference photograph, without fine-tuning the model.",
+      "visual": "The query and reference photographs become coloured vectors. Two directions nearly align; a ranked list forms. The vector diagram is labelled illustrative. The query photograph is withheld from its references.",
+      "transition": "The ranked cards multiply into a candidate grid.",
+      "claims": [
+        "method"
+      ]
+    },
+    {
+      "id": "pool",
+      "title": "One number misses the question",
+      "start_s": 30,
+      "end_s": 47,
+      "narration": "Now add more candidates. Do lookalikes overwhelm retrieval? Instead of reporting one accuracy number, we repeatedly sample larger candidate pools, always keeping the correct statue. DINOv2's accuracy falls slowly; CLIP's falls faster. The curve is the result.",
+      "visual": "A small pool grows while the measured DINOv2 and CLIP curves draw left to right. The horizontal axis uses log-scaled candidate counts; observed points stay visible.",
+      "transition": "Candidate dots rearrange into a schematic neighbourhood.",
+      "claims": [
+        "pool"
+      ]
+    },
+    {
+      "id": "location",
+      "title": "A weight, rather than a filter",
+      "start_s": 47,
+      "end_s": 69,
+      "narration": "Surely location solves this? But nearby lookalikes survive a hard geographic filter. In simulation, a soft distance bonus works better. Across 294 placed statues, DINOv2 rises from 93.4 to 98.7 percent for users twenty-five metres away.",
+      "visual": "A hard neighbourhood boundary excludes a distant candidate but retains nearby lookalikes. It becomes a gradual distance bonus. Persistent labels: IN SIMULATION; 294 placed statues; user 25 m away; held-out weights.",
+      "transition": "The location halo fades; two photographs of the same statue take its place.",
+      "claims": [
+        "location"
+      ]
+    },
+    {
+      "id": "verification",
+      "title": "New photographer, new challenge",
+      "start_s": 69,
+      "end_s": 88,
+      "narration": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops; fewer reference photographs also contribute. LoFTR matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist.",
+      "visual": "Two existing photographs show one statue from different viewpoints. Illustrative LoFTR correspondences appear between them, followed by geometric consistency and an animated shortlist swap. A measured DINOv2 result, 81.8% to 85.5%, is labelled photographer withheld and held-out weights; the shortlist itself is illustrative.",
+      "transition": "The two image cards become the best two ranked candidates.",
+      "claims": [
+        "photographer",
+        "verification"
+      ]
+    },
+    {
+      "id": "uncertainty",
+      "title": "Look at the gap",
+      "start_s": 88,
+      "end_s": 104,
+      "narration": "Finally, high similarity need not mean a known statue. Comparing the best two candidates exposes ambiguity. This margin reduces false acceptance in the research; the browser demo uses a separately measured close-call hint.",
+      "visual": "Two schematic similarity bars almost tie; a bracket isolates their small margin. Labels distinguish research unknown-statue evaluation from the browser close-call hint. No made-up probabilities or measured cosine values appear.",
+      "transition": "The margin bracket opens into the end-card pipeline.",
+      "claims": [
+        "uncertainty"
+      ]
+    },
+    {
+      "id": "takeaway",
+      "title": "Test the conditions",
+      "start_s": 104,
+      "end_s": 112,
+      "narration": "The lesson: test the pool, the place, and the photographer. Explore the dataset, and try the identifier.",
+      "visual": "Three labelled nodes reunite: candidate pool, location, photographer. The project lockup and the identifier address enter together.",
+      "transition": "Hold the project address while photograph and narration credits appear.",
+      "claims": [
+        "takeaway"
+      ]
+    },
+    {
+      "id": "credits",
+      "title": "Credits",
+      "start_s": 112,
+      "end_s": 120,
+      "narration": "",
+      "visual": "Four compact photograph credits with author and licence, narration acknowledgement, and project address. Full linked source URLs accompany the downloadable video.",
+      "transition": "End on a still frame; no fade that shortens reading time.",
+      "claims": [
+        "credits"
+      ]
+    }
+  ],
+  "voice_samples": {
+    "voices": [
+      "af_heart",
+      "am_michael"
+    ],
+    "duration_s": 15,
+    "text": "Which dwarf is this? Across Wrocław, many statues look alike. Doppeldwarf-306 compares their photographs using cosine similarity. Now add more candidates."
+  },
+  "preview": {
+    "duration_s": 10,
+    "voice": "af_heart",
+    "voice_is_provisional": true,
+    "text": "Which dwarf is this? A photograph becomes a visual fingerprint. We compare directions, then rank the statues by similarity."
+  }
+}

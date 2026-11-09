@@ -1,0 +1,13 @@
+{
+  "approval_text": "Approve with af_heart",
+  "voice": "af_heart",
+  "story_sha256": "70811b4a7d86c163a79fcc203fd187f6cf0c157fb97ba03a3aa8d2490e4e7a32",
+  "scope": "Approved script, eight storyboard frames and motion style; authorize complete film and local project-page integration. No push or publication.",
+  "revisions": [
+    {
+      "previous_story_sha256": "3e3c888231a534fb718b83f1ea39213a7c5b99c73677bc5b4aa6205078b204dc",
+      "owner_request": "I would show the method that helps improve the ranking, not the SIFT results. second I would always show one row ot text on the subtitle not two or more rows",
+      "changes": "Emphasize LoFTR correspondences, geometric consistency and shortlist re-ranking; replace the comparison narration; require one-line subtitles."
+    }
+  ]
+}

@@ -1,0 +1,513 @@
+{
+  "video_sha256": "55d2439e893bd9bcde567eeb7f1114568fff554f22b95a71d3d33c82f6c66f31",
+  "cue_samples": [
+    {
+      "cue": 1,
+      "time": 1.5687499999999999,
+      "expected": "Across Wroc\u0142aw, bronze dwarves share",
+      "image": "cue-01.png",
+      "text_mask_sha256": "bb04617513107d7eb71a4dc5d4f29bc34d8321ac62b9237168749a7c4eef2a63",
+      "ink": 6367,
+      "text_height_at_half_resolution_px": 38
+    },
+    {
+      "cue": 2,
+      "time": 3.525,
+      "expected": "poses and props.",
+      "image": "cue-02.png",
+      "text_mask_sha256": "a559f05b8cb71e96205152162a020539c66647d3a0d6d4a739869cbeaf78791c",
+      "ink": 2856,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 3,
+      "time": 5.16875,
+      "expected": "Given a photograph, which individual",
+      "image": "cue-03.png",
+      "text_mask_sha256": "0a81d9038eaeb3b8665dc8c6d75c13a5453389034b929971b0296727c5016c49",
+      "ink": 6045,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 4,
+      "time": 6.8875,
+      "expected": "statue are we looking at?",
+      "image": "cue-04.png",
+      "text_mask_sha256": "fa229886510b26d561098db04ec6f744e2592cbf10e86d0e0486dac7cad5a57c",
+      "ink": 4042,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 5,
+      "time": 9.448333333333334,
+      "expected": "Meet Doppeldwarf-306.",
+      "image": "cue-05.png",
+      "text_mask_sha256": "d3e62ac38b2f788c346e988b73fbba99c61c6cf0d883eb2c8d1832dd5fda8bf2",
+      "ink": 4293,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 6,
+      "time": 12.885416666666668,
+      "expected": "A frozen vision model turns each image",
+      "image": "cue-06.png",
+      "text_mask_sha256": "755c0d59db1f873d146028369c24dd313a56d22de8aa40a3f2307644da94e945",
+      "ink": 6135,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 7,
+      "time": 15.235416666666666,
+      "expected": "into a vector: a numerical visual",
+      "image": "cue-07.png",
+      "text_mask_sha256": "d98c65dd01ee602d6c3770daa98fdf8c324e853db9018f492194a0ef1be60674",
+      "ink": 4684,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 8,
+      "time": 16.972916666666666,
+      "expected": "description.",
+      "image": "cue-08.png",
+      "text_mask_sha256": "c99230ae7aee8dc0da16566a0232cd77f3567a18d65eea36a63749176521c76b",
+      "ink": 1972,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 9,
+      "time": 19.035416666666666,
+      "expected": "Cosine similarity compares these vectors.",
+      "image": "cue-09.png",
+      "text_mask_sha256": "10f9dcb19c76433de62cbe96877bb7cd4c8c386dc337729e2bde22ff5650c403",
+      "ink": 6673,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 10,
+      "time": 21.541666666666668,
+      "expected": "Similar directions suggest similar",
+      "image": "cue-10.png",
+      "text_mask_sha256": "056200e7b7c213a7ba0c938cd23344dce95c1772e6c4c4f35c7f5f47024c97ab",
+      "ink": 5533,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 11,
+      "time": 22.991666666666667,
+      "expected": "appearance;",
+      "image": "cue-11.png",
+      "text_mask_sha256": "41ede9e83e44050245d61cdbeecd8855e7b49f92430f7aea6c2b43ceba2505d3",
+      "ink": 2178,
+      "text_height_at_half_resolution_px": 33
+    },
+    {
+      "cue": 12,
+      "time": 24.329166666666666,
+      "expected": "they do not prove identity.",
+      "image": "cue-12.png",
+      "text_mask_sha256": "ef53b8306fa5dc51b2af1cbdf6308cee56dacfdc756ed8b445e4b979cefff308",
+      "ink": 4055,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 13,
+      "time": 26.241666666666667,
+      "expected": "We rank each statue by its best",
+      "image": "cue-13.png",
+      "text_mask_sha256": "9ed22fed074119a39a88e6a02c18e8f1de91a92274a1b8c84f2ed746bf6d3bf5",
+      "ink": 5037,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 14,
+      "time": 28.085416666666667,
+      "expected": "reference photograph, without",
+      "image": "cue-14.png",
+      "text_mask_sha256": "423e3f1257246dee0b2dfdb95414a13d9a93d4a608f8adc2d388eb249ac92b25",
+      "ink": 5031,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 15,
+      "time": 29.787916666666668,
+      "expected": "fine-tuning the model.",
+      "image": "cue-15.png",
+      "text_mask_sha256": "d516f277c264922c018a57f8397c1e7a3edd7b382b4f23df08b9b74002df7d1e",
+      "ink": 3450,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 16,
+      "time": 32.166666666666664,
+      "expected": "Now add more candidates.",
+      "image": "cue-16.png",
+      "text_mask_sha256": "6d9322fc362ce5c5f268f5c140ab2a68b6189b4cfc6386b753dfc92c166368a0",
+      "ink": 4383,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 17,
+      "time": 34.197916666666664,
+      "expected": "Do lookalikes overwhelm retrieval?",
+      "image": "cue-17.png",
+      "text_mask_sha256": "28a29a17de97b47d71c8893f5c3d38c9ab550498536a6dbce9952770729eeb47",
+      "ink": 5792,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 18,
+      "time": 36.485416666666666,
+      "expected": "Instead of reporting one accuracy number,",
+      "image": "cue-18.png",
+      "text_mask_sha256": "4d8645badf26633ba5239d82fff716e74e84b67f6b55071fabaa5cd45233ff51",
+      "ink": 6665,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 19,
+      "time": 38.729166666666664,
+      "expected": "we repeatedly sample larger candidate",
+      "image": "cue-19.png",
+      "text_mask_sha256": "d50ae1214f4dc2af6aa7c5187fa4129602f84a2d120cf85c4d5db4bd436c1977",
+      "ink": 6577,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 20,
+      "time": 40.766666666666666,
+      "expected": "pools, always keeping the correct",
+      "image": "cue-20.png",
+      "text_mask_sha256": "a0f396905984597810bb4b0792ca596d82ff08a17fd055176db18132e0436d4b",
+      "ink": 5454,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 21,
+      "time": 42.36666666666666,
+      "expected": "statue.",
+      "image": "cue-21.png",
+      "text_mask_sha256": "5fbbd0de7f9aabf3c423292154f68407bc0f57ad7217f96f9a90ec112a11b825",
+      "ink": 1124,
+      "text_height_at_half_resolution_px": 29
+    },
+    {
+      "cue": 22,
+      "time": 44.322916666666664,
+      "expected": "DINOv2's accuracy falls slowly;",
+      "image": "cue-22.png",
+      "text_mask_sha256": "f628b5a7a15a8a9391baaf2cdf3861a119624e09a9cab8d1bccc45425785af5c",
+      "ink": 5060,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 23,
+      "time": 46.46666666666667,
+      "expected": "CLIP's falls faster.",
+      "image": "cue-23.png",
+      "text_mask_sha256": "c7bb2e8644253140dba79317466a522d6a45cb71839d63eec5fc52e50738cfcf",
+      "ink": 2938,
+      "text_height_at_half_resolution_px": 33
+    },
+    {
+      "cue": 24,
+      "time": 48.26291666666667,
+      "expected": "The curve is the result.",
+      "image": "cue-24.png",
+      "text_mask_sha256": "8912ecb52320a5eb1622049b1024fe694a140ad8d3c7f685f2b3df6f1c23f690",
+      "ink": 3288,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 25,
+      "time": 50.854166666666664,
+      "expected": "Surely location solves this?",
+      "image": "cue-25.png",
+      "text_mask_sha256": "b080f4c601d855e8437913754aa9942b8e4b1dca3ec5c543de9f99dd1831a2e9",
+      "ink": 4366,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 26,
+      "time": 52.860416666666666,
+      "expected": "But nearby lookalikes survive a hard",
+      "image": "cue-26.png",
+      "text_mask_sha256": "827b7d769029af0cc9058aa415b867d78ff2717ba58ac333fbe2e6b3b274e182",
+      "ink": 5861,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 27,
+      "time": 54.641666666666666,
+      "expected": "geographic filter.",
+      "image": "cue-27.png",
+      "text_mask_sha256": "ba1dfc486220586759218c3152fec3b40ac23fb2ab9f3c567f7836658def04f5",
+      "ink": 2956,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 28,
+      "time": 56.77291666666667,
+      "expected": "In simulation, a soft distance bonus",
+      "image": "cue-28.png",
+      "text_mask_sha256": "8bb80d0cfa2947b3485a95c76994095ffbdb734a3410510f87bc5bf760b20890",
+      "ink": 5488,
+      "text_height_at_half_resolution_px": 38
+    },
+    {
+      "cue": 29,
+      "time": 58.71041666666667,
+      "expected": "works better.",
+      "image": "cue-29.png",
+      "text_mask_sha256": "d426d0d7b75367551fb974a9abde795be8c5201fff28f302b5c5df3c12e032ea",
+      "ink": 2166,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 30,
+      "time": 60.69166666666666,
+      "expected": "Across 294 placed statues,",
+      "image": "cue-30.png",
+      "text_mask_sha256": "92cdad21804bb349777601d76a4f009be873760b91f2b9bfd705a97d3ba71b2e",
+      "ink": 4541,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 31,
+      "time": 62.87291666666667,
+      "expected": "DINOv2 rises from",
+      "image": "cue-31.png",
+      "text_mask_sha256": "c2f3645cec56c4ba5f24010e139573a1133cb45215163184e9b16b5e87c5a2c2",
+      "ink": 3067,
+      "text_height_at_half_resolution_px": 33
+    },
+    {
+      "cue": 32,
+      "time": 65.21666666666667,
+      "expected": "93.4 to 98.7",
+      "image": "cue-32.png",
+      "text_mask_sha256": "7ed80d653e54dd40f4a239a8813e3d014f15518d8fd17a2b79a4adb1f1b57a66",
+      "ink": 1863,
+      "text_height_at_half_resolution_px": 31
+    },
+    {
+      "cue": 33,
+      "time": 67.81666666666666,
+      "expected": "percent for users twenty-five metres",
+      "image": "cue-33.png",
+      "text_mask_sha256": "c18309961ec938f2989a1d1b700d2a30b25337c6797029e77b1299a3c3cd9afd",
+      "ink": 5768,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 34,
+      "time": 69.7025,
+      "expected": "away.",
+      "image": "cue-34.png",
+      "text_mask_sha256": "294d9300802f41ce47039a3984f2556f6800920c66d16ce270b27a62f5864d49",
+      "ink": 968,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 35,
+      "time": 71.84583333333335,
+      "expected": "A new photographer brings different",
+      "image": "cue-35.png",
+      "text_mask_sha256": "d481980e42ca64acf160258c3cdad94320a07ac5c9df0e437ba3f88e6fa0b4d8",
+      "ink": 6082,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 36,
+      "time": 73.91458333333334,
+      "expected": "viewpoints, backgrounds, and lighting.",
+      "image": "cue-36.png",
+      "text_mask_sha256": "8666e75ae18c66d130465a47e4093e645017a0604a48ce605b12cab834fbcf17",
+      "ink": 6312,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 37,
+      "time": 75.82083333333334,
+      "expected": "Accuracy drops;",
+      "image": "cue-37.png",
+      "text_mask_sha256": "b1312652e419210102003aa7fa19847b16a70f7e7aaf01ceede3b6c9086e2a6d",
+      "ink": 2633,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 38,
+      "time": 77.32708333333335,
+      "expected": "fewer reference photographs also",
+      "image": "cue-38.png",
+      "text_mask_sha256": "40a668912cbdfad973cb7143e647fd5ecdb3fed5776945071d4356041e659570",
+      "ink": 5706,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 39,
+      "time": 78.80833333333334,
+      "expected": "contribute.",
+      "image": "cue-39.png",
+      "text_mask_sha256": "eea1140405b5c5aa1694c48b30b1fc2cacb7fd8f3be0067e2d0fb465b4c1992a",
+      "ink": 1708,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 40,
+      "time": 80.54583333333335,
+      "expected": "LoFTR matches local details across",
+      "image": "cue-40.png",
+      "text_mask_sha256": "d15368bd5f33d1bc014e52eac869f111575a5765e39d2dd1634fbac7b0fe9ba9",
+      "ink": 5788,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 41,
+      "time": 82.28333333333335,
+      "expected": "photographs.",
+      "image": "cue-41.png",
+      "text_mask_sha256": "1fc24f7febe52b9b318f2a406e7e110b3c7093183d9cad95be8e7acb8867a2ec",
+      "ink": 2358,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 42,
+      "time": 84.15833333333335,
+      "expected": "Geometric consistency adds evidence to",
+      "image": "cue-42.png",
+      "text_mask_sha256": "4551201c6cd73ac6eaa34cd60011bc517a95454d5ca2dece54f2560b561693d1",
+      "ink": 6637,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 43,
+      "time": 86.44583333333335,
+      "expected": "visual similarity, moving a better",
+      "image": "cue-43.png",
+      "text_mask_sha256": "a7728716b4ec810a3a5696f482dd01b144c204ae8ea1657eb1a78a1a1a0da65f",
+      "ink": 5110,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 44,
+      "time": 88.35249999999999,
+      "expected": "match up the shortlist.",
+      "image": "cue-44.png",
+      "text_mask_sha256": "e7dfbab2947ed04fd5df85f67867022581e327f6ed4033c00862b94856de6f7d",
+      "ink": 3474,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 45,
+      "time": 90.94166666666666,
+      "expected": "Finally, high similarity need not mean",
+      "image": "cue-45.png",
+      "text_mask_sha256": "0212f40a6f3ebecf5d426e606182224260e360c4c78c07a242af2fa687bddf0a",
+      "ink": 5924,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 46,
+      "time": 92.82291666666666,
+      "expected": "a known statue.",
+      "image": "cue-46.png",
+      "text_mask_sha256": "9089130a93940ccb13abe3a446e2869000f69189c0c514473a0c1047c307ba9f",
+      "ink": 2397,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 47,
+      "time": 94.41666666666666,
+      "expected": "Comparing the best two candidates",
+      "image": "cue-47.png",
+      "text_mask_sha256": "5e494a9c7a3fa20165ef6d0b4ae3fd361b30508683dd61c0762bfa661daab05c",
+      "ink": 5934,
+      "text_height_at_half_resolution_px": 42
+    },
+    {
+      "cue": 48,
+      "time": 96.21666666666667,
+      "expected": "exposes ambiguity.",
+      "image": "cue-48.png",
+      "text_mask_sha256": "eb271e87d26890b0f9b183bc4817e34d3f558e155de2820a942e3f587357934c",
+      "ink": 3323,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 49,
+      "time": 98.31666666666666,
+      "expected": "This margin reduces false acceptance in",
+      "image": "cue-49.png",
+      "text_mask_sha256": "2291e036ee0eea1d09ac4e6c83b58991b4ce3b7008b638e6cdeb645f92990131",
+      "ink": 6541,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 50,
+      "time": 99.99791666666667,
+      "expected": "the research;",
+      "image": "cue-50.png",
+      "text_mask_sha256": "d5e97378ca71c803ee31dfb25218189fc411bbc03fcc85063edcffd3fb0fd28b",
+      "ink": 2093,
+      "text_height_at_half_resolution_px": 38
+    },
+    {
+      "cue": 51,
+      "time": 101.59791666666666,
+      "expected": "the browser demo uses a separately",
+      "image": "cue-51.png",
+      "text_mask_sha256": "57cca4bb2689b80ad62d33bc959e4dfb6526aba6d8641c4844dd50651645aabf",
+      "ink": 5821,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 52,
+      "time": 103.66291666666666,
+      "expected": "measured close-call hint.",
+      "image": "cue-52.png",
+      "text_mask_sha256": "9ae7b9805bf34c0743ea0f77979d9b7267b1f301dc93630252a8f6b9c3f0224b",
+      "ink": 3972,
+      "text_height_at_half_resolution_px": 32
+    },
+    {
+      "cue": 53,
+      "time": 106.21041666666667,
+      "expected": "The lesson: test the pool, the place,",
+      "image": "cue-53.png",
+      "text_mask_sha256": "a38dfc7072eaa311bb0785f4ab0277ddf567f4e73b53f44e6dcb3dd93ad262b3",
+      "ink": 5390,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 54,
+      "time": 107.95416666666668,
+      "expected": "and the photographer.",
+      "image": "cue-54.png",
+      "text_mask_sha256": "bf04b920923f22a26af8b1785a7a5321e584067bf358e8d7bcbf92e9efdbdda0",
+      "ink": 3646,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 55,
+      "time": 109.52916666666667,
+      "expected": "Explore the dataset, and try the",
+      "image": "cue-55.png",
+      "text_mask_sha256": "79568754be8bab5c9ab067e1d37bd8c01e1cf1e4bc47ee139d150252b9f079b2",
+      "ink": 4998,
+      "text_height_at_half_resolution_px": 41
+    },
+    {
+      "cue": 56,
+      "time": 111.14208333333333,
+      "expected": "identifier.",
+      "image": "cue-56.png",
+      "text_mask_sha256": "1dfca7c6a80025bea1512f0c86c99fbe45a260501b08e7c988737eb0574b3a99",
+      "ink": 1539,
+      "text_height_at_half_resolution_px": 32
+    }
+  ],
+  "method": "Rendered cue samples, nonempty/changed text masks and visual contact sheets",
+  "chapter_transitions": 7,
+  "captions_nonempty_and_changing": true,
+  "subtitle_lines": 1
+}

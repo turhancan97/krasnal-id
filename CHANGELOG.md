@@ -12,6 +12,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- The explainer now demonstrates LoFTR correspondences, geometric consistency and a shortlist
+  re-ranking, replacing the comparison. The revised narration and transcript explain the helpful
+  method; measured research gains remain labelled with the photographer-withheld protocol.
+- All explainer subtitles use one line at a fixed, larger font. Long sentences are split into
+  shorter word-timed cues in the movie, SRT/WebVTT and review preview; a regression test and
+  rendered text-height checks enforce the one-line contract. The film remains two minutes.
+
 - The identifier page is minimal: upload first, then examples, then one row with the model and
   location switches. Explanatory paragraphs, the fact strip, the project link card and the long
   footer are gone; example credits sit in a collapsed list and tooltips, results keep theirs
@@ -23,6 +30,27 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   32.8% and 88.1%, so the hint carried no information for CLIP. Reference vectors unchanged.
 
 ### Added
+
+- The approved two-minute Doppeldwarf-306 explainer, narrated locally with Kokoro `af_heart`,
+  with eight animated chapters, word-timed burned captions and eight seconds of credits.
+  A responsive native player sits between the project-page teaser and abstract, reserves its
+  dimensions and downloads no movie before playback. The self-hosted MP4 has a poster,
+  transcript, SRT/WebVTT and per-photograph source/licence/modification credits.
+- Reproducible full-film sources and approval checks, natural-speed audio scheduling, atomic
+  H.264/AAC export, independent transcription, delivered-audio correlation and caption/transition
+  frame checks. Five offline tests cover timing, caption grouping and approval validity.
+  Time-based subtitle updaters prevent frozen captions during still scenes; photograph emphasis
+  preserves the original colours. Research artifacts and reference vectors remain unchanged.
+
+- A local explainer review package under `video/explainer/`, with a sourced 226-word script,
+  eight-scene storyboard, Manim motion study, two Kokoro stock-voice auditions, per-photograph
+  credits and independently locked rendering tools. The palette matches the supplied RGB values
+  exactly; research results and illustrative diagrams are distinguished. Owner approval is
+  recorded separately for the completed film; nothing is pushed or published.
+  The rendered package includes eight full-resolution frames, a clean poster, two exact
+  15-second WAVs and a 10-second 1080p H.264/AAC preview with burned captions and SRT/WebVTT.
+  Browser media controls, four responsive layouts, source integrity and repository lint/format
+  checks pass; the existing site and reference vectors are unchanged.
 
 - Metadata-only browser-asset calibration, with image-order and binary-hash guards, atomic JSON
   output and stored-measurement reproduction to 1e-12. Metadata now carries sourced coordinates
