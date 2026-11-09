@@ -1,0 +1,1645 @@
+{
+  "fps": 30,
+  "frames": 3600,
+  "duration_s": 120,
+  "voice": "af_heart",
+  "story_sha256": "3e3c888231a534fb718b83f1ea39213a7c5b99c73677bc5b4aa6205078b204dc",
+  "model_revision": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "chapters": [
+    {
+      "id": "hook",
+      "start": 0.0,
+      "end": 11.0,
+      "frames": 330,
+      "speech_seconds": 9.725,
+      "speed": 1.0,
+      "audio_file": "hook-a9246d4e7480.wav",
+      "audio_sha256": "2900e85d46a4655bfbbb5f4c79f3987d7f8961ab7804640bf830684c913dd1a5",
+      "words": [
+        {
+          "text": "Across",
+          "start": 0.4,
+          "end": 0.75
+        },
+        {
+          "text": "Wrocław",
+          "start": 0.75,
+          "end": 1.4749999999999999
+        },
+        {
+          "text": ",",
+          "start": 1.4749999999999999,
+          "end": 1.5875
+        },
+        {
+          "text": "bronze",
+          "start": 1.5875,
+          "end": 2.025
+        },
+        {
+          "text": "dwarves",
+          "start": 2.025,
+          "end": 2.4875
+        },
+        {
+          "text": "share",
+          "start": 2.4875,
+          "end": 2.7375
+        },
+        {
+          "text": "poses",
+          "start": 2.7375,
+          "end": 3.25
+        },
+        {
+          "text": "and",
+          "start": 3.25,
+          "end": 3.375
+        },
+        {
+          "text": "props",
+          "start": 3.375,
+          "end": 4.175000000000001
+        },
+        {
+          "text": ".",
+          "start": 4.175000000000001,
+          "end": 4.3125
+        },
+        {
+          "text": "Given",
+          "start": 4.3125,
+          "end": 4.5625
+        },
+        {
+          "text": "a",
+          "start": 4.5625,
+          "end": 4.6625000000000005
+        },
+        {
+          "text": "photograph",
+          "start": 4.6625000000000005,
+          "end": 5.275
+        },
+        {
+          "text": ",",
+          "start": 5.275,
+          "end": 5.3125
+        },
+        {
+          "text": "which",
+          "start": 5.3125,
+          "end": 5.5
+        },
+        {
+          "text": "individual",
+          "start": 5.5,
+          "end": 6.025
+        },
+        {
+          "text": "statue",
+          "start": 6.025,
+          "end": 6.525
+        },
+        {
+          "text": "are",
+          "start": 6.525,
+          "end": 6.612500000000001
+        },
+        {
+          "text": "we",
+          "start": 6.612500000000001,
+          "end": 6.75
+        },
+        {
+          "text": "looking",
+          "start": 6.75,
+          "end": 7.1000000000000005
+        },
+        {
+          "text": "at",
+          "start": 7.1000000000000005,
+          "end": 7.6000000000000005
+        },
+        {
+          "text": "?",
+          "start": 7.6000000000000005,
+          "end": 7.75
+        },
+        {
+          "text": "Meet",
+          "start": 7.75,
+          "end": 8.0
+        },
+        {
+          "text": "Doppeldwarf-306",
+          "start": 8.0,
+          "end": 9.625
+        },
+        {
+          "text": ".",
+          "start": 9.625,
+          "end": 9.775
+        }
+      ]
+    },
+    {
+      "id": "retrieval",
+      "start": 11.0,
+      "end": 30.5,
+      "frames": 585,
+      "speech_seconds": 19.125,
+      "speed": 1.0,
+      "audio_file": "retrieval-103dec95c08e.wav",
+      "audio_sha256": "caae0c41bd74ad8c34e7e57339540b88e138938465896f3d895e9ac3ac57ae93",
+      "words": [
+        {
+          "text": "A",
+          "start": 11.425,
+          "end": 11.525
+        },
+        {
+          "text": "frozen",
+          "start": 11.525,
+          "end": 12.0
+        },
+        {
+          "text": "vision",
+          "start": 12.0,
+          "end": 12.35
+        },
+        {
+          "text": "model",
+          "start": 12.35,
+          "end": 12.7375
+        },
+        {
+          "text": "turns",
+          "start": 12.7375,
+          "end": 13.162500000000001
+        },
+        {
+          "text": "each",
+          "start": 13.162500000000001,
+          "end": 13.45
+        },
+        {
+          "text": "image",
+          "start": 13.45,
+          "end": 13.8125
+        },
+        {
+          "text": "into",
+          "start": 13.8125,
+          "end": 14.05
+        },
+        {
+          "text": "a",
+          "start": 14.05,
+          "end": 14.125
+        },
+        {
+          "text": "vector",
+          "start": 14.125,
+          "end": 14.850000000000001
+        },
+        {
+          "text": ":",
+          "start": 14.850000000000001,
+          "end": 14.9875
+        },
+        {
+          "text": "a",
+          "start": 14.9875,
+          "end": 15.100000000000001
+        },
+        {
+          "text": "numerical",
+          "start": 15.100000000000001,
+          "end": 15.7125
+        },
+        {
+          "text": "visual",
+          "start": 15.7125,
+          "end": 16.125
+        },
+        {
+          "text": "description",
+          "start": 16.125,
+          "end": 17.15
+        },
+        {
+          "text": ".",
+          "start": 17.15,
+          "end": 17.2875
+        },
+        {
+          "text": "Cosine",
+          "start": 17.2875,
+          "end": 17.8375
+        },
+        {
+          "text": "similarity",
+          "start": 17.8375,
+          "end": 18.525
+        },
+        {
+          "text": "compares",
+          "start": 18.525,
+          "end": 19.0
+        },
+        {
+          "text": "these",
+          "start": 19.0,
+          "end": 19.225
+        },
+        {
+          "text": "vectors",
+          "start": 19.225,
+          "end": 20.1
+        },
+        {
+          "text": ".",
+          "start": 20.1,
+          "end": 20.25
+        },
+        {
+          "text": "Similar",
+          "start": 20.25,
+          "end": 20.65
+        },
+        {
+          "text": "directions",
+          "start": 20.65,
+          "end": 21.2875
+        },
+        {
+          "text": "suggest",
+          "start": 21.2875,
+          "end": 21.85
+        },
+        {
+          "text": "similar",
+          "start": 21.85,
+          "end": 22.3
+        },
+        {
+          "text": "appearance",
+          "start": 22.3,
+          "end": 23.05
+        },
+        {
+          "text": ";",
+          "start": 23.05,
+          "end": 23.15
+        },
+        {
+          "text": "they",
+          "start": 23.15,
+          "end": 23.3
+        },
+        {
+          "text": "do",
+          "start": 23.3,
+          "end": 23.4125
+        },
+        {
+          "text": "not",
+          "start": 23.4125,
+          "end": 23.625
+        },
+        {
+          "text": "prove",
+          "start": 23.625,
+          "end": 23.9125
+        },
+        {
+          "text": "identity",
+          "start": 23.9125,
+          "end": 24.85
+        },
+        {
+          "text": ".",
+          "start": 24.85,
+          "end": 24.975
+        },
+        {
+          "text": "We",
+          "start": 24.975,
+          "end": 25.125
+        },
+        {
+          "text": "rank",
+          "start": 25.125,
+          "end": 25.450000000000003
+        },
+        {
+          "text": "each",
+          "start": 25.450000000000003,
+          "end": 25.6875
+        },
+        {
+          "text": "statue",
+          "start": 25.6875,
+          "end": 26.25
+        },
+        {
+          "text": "by",
+          "start": 26.25,
+          "end": 26.425
+        },
+        {
+          "text": "its",
+          "start": 26.425,
+          "end": 26.637500000000003
+        },
+        {
+          "text": "best",
+          "start": 26.637500000000003,
+          "end": 26.975
+        },
+        {
+          "text": "reference",
+          "start": 26.975,
+          "end": 27.424999999999997
+        },
+        {
+          "text": "photograph",
+          "start": 27.424999999999997,
+          "end": 28.174999999999997
+        },
+        {
+          "text": ",",
+          "start": 28.174999999999997,
+          "end": 28.275
+        },
+        {
+          "text": "without",
+          "start": 28.275,
+          "end": 28.6625
+        },
+        {
+          "text": "fine-tuning",
+          "start": 28.6625,
+          "end": 29.262500000000003
+        },
+        {
+          "text": "the",
+          "start": 29.262500000000003,
+          "end": 29.35
+        },
+        {
+          "text": "model",
+          "start": 29.35,
+          "end": 30.025
+        },
+        {
+          "text": ".",
+          "start": 30.025,
+          "end": 30.174999999999997
+        }
+      ]
+    },
+    {
+      "id": "pool",
+      "start": 30.5,
+      "end": 49.1,
+      "frames": 558,
+      "speech_seconds": 18.25,
+      "speed": 1.0,
+      "audio_file": "pool-8724a6e7aede.wav",
+      "audio_sha256": "332d4249a9c46f6dc68e6d7aae53baf375fa0797280f9d3c1a8b9bd435f5fa9e",
+      "words": [
+        {
+          "text": "Now",
+          "start": 30.974999999999998,
+          "end": 31.237499999999997
+        },
+        {
+          "text": "add",
+          "start": 31.237499999999997,
+          "end": 31.5
+        },
+        {
+          "text": "more",
+          "start": 31.5,
+          "end": 31.724999999999998
+        },
+        {
+          "text": "candidates",
+          "start": 31.724999999999998,
+          "end": 32.699999999999996
+        },
+        {
+          "text": ".",
+          "start": 32.699999999999996,
+          "end": 32.824999999999996
+        },
+        {
+          "text": "Do",
+          "start": 32.824999999999996,
+          "end": 33.025
+        },
+        {
+          "text": "lookalikes",
+          "start": 33.025,
+          "end": 33.525
+        },
+        {
+          "text": "overwhelm",
+          "start": 33.525,
+          "end": 34.05
+        },
+        {
+          "text": "retrieval",
+          "start": 34.05,
+          "end": 34.925
+        },
+        {
+          "text": "?",
+          "start": 34.925,
+          "end": 35.0375
+        },
+        {
+          "text": "Instead",
+          "start": 35.0375,
+          "end": 35.4375
+        },
+        {
+          "text": "of",
+          "start": 35.4375,
+          "end": 35.525
+        },
+        {
+          "text": "reporting",
+          "start": 35.525,
+          "end": 36.05
+        },
+        {
+          "text": "one",
+          "start": 36.05,
+          "end": 36.2875
+        },
+        {
+          "text": "accuracy",
+          "start": 36.2875,
+          "end": 36.775
+        },
+        {
+          "text": "number",
+          "start": 36.775,
+          "end": 37.3
+        },
+        {
+          "text": ",",
+          "start": 37.3,
+          "end": 37.4
+        },
+        {
+          "text": "we",
+          "start": 37.4,
+          "end": 37.55
+        },
+        {
+          "text": "repeatedly",
+          "start": 37.55,
+          "end": 38.1625
+        },
+        {
+          "text": "sample",
+          "start": 38.1625,
+          "end": 38.6125
+        },
+        {
+          "text": "larger",
+          "start": 38.6125,
+          "end": 39.0
+        },
+        {
+          "text": "candidate",
+          "start": 39.0,
+          "end": 39.525
+        },
+        {
+          "text": "pools",
+          "start": 39.525,
+          "end": 40.125
+        },
+        {
+          "text": ",",
+          "start": 40.125,
+          "end": 40.2375
+        },
+        {
+          "text": "always",
+          "start": 40.2375,
+          "end": 40.65
+        },
+        {
+          "text": "keeping",
+          "start": 40.65,
+          "end": 40.9875
+        },
+        {
+          "text": "the",
+          "start": 40.9875,
+          "end": 41.075
+        },
+        {
+          "text": "correct",
+          "start": 41.075,
+          "end": 41.474999999999994
+        },
+        {
+          "text": "statue",
+          "start": 41.474999999999994,
+          "end": 42.474999999999994
+        },
+        {
+          "text": ".",
+          "start": 42.474999999999994,
+          "end": 42.724999999999994
+        },
+        {
+          "text": "DINOv2",
+          "start": 42.724999999999994,
+          "end": 43.599999999999994
+        },
+        {
+          "text": "'s",
+          "start": 43.599999999999994,
+          "end": 43.7125
+        },
+        {
+          "text": "accuracy",
+          "start": 43.7125,
+          "end": 44.3375
+        },
+        {
+          "text": "falls",
+          "start": 44.3375,
+          "end": 44.6375
+        },
+        {
+          "text": "slowly",
+          "start": 44.6375,
+          "end": 45.25
+        },
+        {
+          "text": ";",
+          "start": 45.25,
+          "end": 45.3875
+        },
+        {
+          "text": "CLIP",
+          "start": 45.3875,
+          "end": 45.65
+        },
+        {
+          "text": "'s",
+          "start": 45.65,
+          "end": 45.724999999999994
+        },
+        {
+          "text": "falls",
+          "start": 45.724999999999994,
+          "end": 46.05
+        },
+        {
+          "text": "faster",
+          "start": 46.05,
+          "end": 46.875
+        },
+        {
+          "text": ".",
+          "start": 46.875,
+          "end": 47.0125
+        },
+        {
+          "text": "The",
+          "start": 47.0125,
+          "end": 47.162499999999994
+        },
+        {
+          "text": "curve",
+          "start": 47.162499999999994,
+          "end": 47.6375
+        },
+        {
+          "text": "is",
+          "start": 47.6375,
+          "end": 47.8
+        },
+        {
+          "text": "the",
+          "start": 47.8,
+          "end": 47.9
+        },
+        {
+          "text": "result",
+          "start": 47.9,
+          "end": 48.65
+        },
+        {
+          "text": ".",
+          "start": 48.65,
+          "end": 48.8
+        }
+      ]
+    },
+    {
+      "id": "location",
+      "start": 49.1,
+      "end": 70.06666666666666,
+      "frames": 629,
+      "speech_seconds": 20.325,
+      "speed": 1.0,
+      "audio_file": "location-28edff6dac6c.wav",
+      "audio_sha256": "7ba8ef2376b76640e6d7144ffd0f82b8b613ad715f7b50c328d012d6a7f24e7d",
+      "words": [
+        {
+          "text": "Surely",
+          "start": 49.55,
+          "end": 49.9
+        },
+        {
+          "text": "location",
+          "start": 49.9,
+          "end": 50.5125
+        },
+        {
+          "text": "solves",
+          "start": 50.5125,
+          "end": 50.925
+        },
+        {
+          "text": "this",
+          "start": 50.925,
+          "end": 51.525
+        },
+        {
+          "text": "?",
+          "start": 51.525,
+          "end": 51.625
+        },
+        {
+          "text": "But",
+          "start": 51.625,
+          "end": 51.7875
+        },
+        {
+          "text": "nearby",
+          "start": 51.7875,
+          "end": 52.2
+        },
+        {
+          "text": "lookalikes",
+          "start": 52.2,
+          "end": 52.675
+        },
+        {
+          "text": "survive",
+          "start": 52.675,
+          "end": 53.1
+        },
+        {
+          "text": "a",
+          "start": 53.1,
+          "end": 53.2125
+        },
+        {
+          "text": "hard",
+          "start": 53.2125,
+          "end": 53.5625
+        },
+        {
+          "text": "geographic",
+          "start": 53.5625,
+          "end": 54.2
+        },
+        {
+          "text": "filter",
+          "start": 54.2,
+          "end": 55.05
+        },
+        {
+          "text": ".",
+          "start": 55.05,
+          "end": 55.1875
+        },
+        {
+          "text": "In",
+          "start": 55.1875,
+          "end": 55.35
+        },
+        {
+          "text": "simulation",
+          "start": 55.35,
+          "end": 56.3
+        },
+        {
+          "text": ",",
+          "start": 56.3,
+          "end": 56.4125
+        },
+        {
+          "text": "a",
+          "start": 56.4125,
+          "end": 56.5625
+        },
+        {
+          "text": "soft",
+          "start": 56.5625,
+          "end": 56.95
+        },
+        {
+          "text": "distance",
+          "start": 56.95,
+          "end": 57.375
+        },
+        {
+          "text": "bonus",
+          "start": 57.375,
+          "end": 57.825
+        },
+        {
+          "text": "works",
+          "start": 57.825,
+          "end": 58.125
+        },
+        {
+          "text": "better",
+          "start": 58.125,
+          "end": 58.875
+        },
+        {
+          "text": ".",
+          "start": 58.875,
+          "end": 59.0625
+        },
+        {
+          "text": "Across",
+          "start": 59.0625,
+          "end": 59.4875
+        },
+        {
+          "text": "294",
+          "start": 59.4875,
+          "end": 60.525
+        },
+        {
+          "text": "placed",
+          "start": 60.525,
+          "end": 60.825
+        },
+        {
+          "text": "statues",
+          "start": 60.825,
+          "end": 61.675
+        },
+        {
+          "text": ",",
+          "start": 61.675,
+          "end": 61.7875
+        },
+        {
+          "text": "DINOv2",
+          "start": 61.7875,
+          "end": 62.7125
+        },
+        {
+          "text": "rises",
+          "start": 62.7125,
+          "end": 63.225
+        },
+        {
+          "text": "from",
+          "start": 63.225,
+          "end": 63.425
+        },
+        {
+          "text": "93.4",
+          "start": 63.425,
+          "end": 65.025
+        },
+        {
+          "text": "to",
+          "start": 65.025,
+          "end": 65.175
+        },
+        {
+          "text": "98.7",
+          "start": 65.175,
+          "end": 66.475
+        },
+        {
+          "text": "percent",
+          "start": 66.475,
+          "end": 67.0625
+        },
+        {
+          "text": "for",
+          "start": 67.0625,
+          "end": 67.2
+        },
+        {
+          "text": "users",
+          "start": 67.2,
+          "end": 67.6375
+        },
+        {
+          "text": "twenty-five",
+          "start": 67.6375,
+          "end": 68.275
+        },
+        {
+          "text": "metres",
+          "start": 68.275,
+          "end": 68.625
+        },
+        {
+          "text": "away",
+          "start": 68.625,
+          "end": 69.325
+        },
+        {
+          "text": ".",
+          "start": 69.325,
+          "end": 69.475
+        }
+      ]
+    },
+    {
+      "id": "verification",
+      "start": 70.06666666666666,
+      "end": 89.46666666666667,
+      "frames": 582,
+      "speech_seconds": 19.025,
+      "speed": 1.0,
+      "audio_file": "verification-f16986c5fc1a.wav",
+      "audio_sha256": "4026feda2a2d613f3383f5288e7d542acc25d56cafb118404d97ec9dfc87df4e",
+      "words": [
+        {
+          "text": "A",
+          "start": 70.49166666666667,
+          "end": 70.56666666666666
+        },
+        {
+          "text": "new",
+          "start": 70.56666666666666,
+          "end": 70.74166666666667
+        },
+        {
+          "text": "photographer",
+          "start": 70.74166666666667,
+          "end": 71.41666666666667
+        },
+        {
+          "text": "brings",
+          "start": 71.41666666666667,
+          "end": 71.74166666666667
+        },
+        {
+          "text": "different",
+          "start": 71.74166666666667,
+          "end": 72.04166666666667
+        },
+        {
+          "text": "viewpoints",
+          "start": 72.04166666666667,
+          "end": 72.76666666666667
+        },
+        {
+          "text": ",",
+          "start": 72.76666666666667,
+          "end": 72.84166666666667
+        },
+        {
+          "text": "backgrounds",
+          "start": 72.84166666666667,
+          "end": 73.54166666666667
+        },
+        {
+          "text": ",",
+          "start": 73.54166666666667,
+          "end": 73.59166666666667
+        },
+        {
+          "text": "and",
+          "start": 73.59166666666667,
+          "end": 73.71666666666667
+        },
+        {
+          "text": "lighting",
+          "start": 73.71666666666667,
+          "end": 74.41666666666667
+        },
+        {
+          "text": ".",
+          "start": 74.41666666666667,
+          "end": 74.55416666666667
+        },
+        {
+          "text": "Accuracy",
+          "start": 74.55416666666667,
+          "end": 75.04166666666667
+        },
+        {
+          "text": "drops",
+          "start": 75.04166666666667,
+          "end": 75.84166666666667
+        },
+        {
+          "text": ".",
+          "start": 75.84166666666667,
+          "end": 75.99166666666667
+        },
+        {
+          "text": "Fewer",
+          "start": 75.99166666666667,
+          "end": 76.34166666666667
+        },
+        {
+          "text": "remaining",
+          "start": 76.34166666666667,
+          "end": 76.79166666666667
+        },
+        {
+          "text": "reference",
+          "start": 76.79166666666667,
+          "end": 77.19166666666666
+        },
+        {
+          "text": "photographs",
+          "start": 77.19166666666666,
+          "end": 77.85416666666667
+        },
+        {
+          "text": "also",
+          "start": 77.85416666666667,
+          "end": 78.21666666666667
+        },
+        {
+          "text": "contribute",
+          "start": 78.21666666666667,
+          "end": 78.74166666666667
+        },
+        {
+          "text": "to",
+          "start": 78.74166666666667,
+          "end": 78.82916666666667
+        },
+        {
+          "text": "that",
+          "start": 78.82916666666667,
+          "end": 79.04166666666667
+        },
+        {
+          "text": "drop",
+          "start": 79.04166666666667,
+          "end": 79.71666666666667
+        },
+        {
+          "text": ".",
+          "start": 79.71666666666667,
+          "end": 79.89166666666667
+        },
+        {
+          "text": "Learned",
+          "start": 79.89166666666667,
+          "end": 80.31666666666666
+        },
+        {
+          "text": "geometric",
+          "start": 80.31666666666666,
+          "end": 80.94166666666666
+        },
+        {
+          "text": "matching",
+          "start": 80.94166666666666,
+          "end": 81.37916666666666
+        },
+        {
+          "text": "checks",
+          "start": 81.37916666666666,
+          "end": 81.84166666666667
+        },
+        {
+          "text": "whether",
+          "start": 81.84166666666667,
+          "end": 82.11666666666667
+        },
+        {
+          "text": "local",
+          "start": 82.11666666666667,
+          "end": 82.46666666666667
+        },
+        {
+          "text": "details",
+          "start": 82.46666666666667,
+          "end": 83.01666666666667
+        },
+        {
+          "text": "line",
+          "start": 83.01666666666667,
+          "end": 83.24166666666667
+        },
+        {
+          "text": "up",
+          "start": 83.24166666666667,
+          "end": 83.61666666666667
+        },
+        {
+          "text": ",",
+          "start": 83.61666666666667,
+          "end": 83.71666666666667
+        },
+        {
+          "text": "improving",
+          "start": 83.71666666666667,
+          "end": 84.17916666666667
+        },
+        {
+          "text": "the",
+          "start": 84.17916666666667,
+          "end": 84.26666666666667
+        },
+        {
+          "text": "ranking",
+          "start": 84.26666666666667,
+          "end": 85.14166666666667
+        },
+        {
+          "text": ".",
+          "start": 85.14166666666667,
+          "end": 85.30416666666667
+        },
+        {
+          "text": "Classical",
+          "start": 85.30416666666667,
+          "end": 85.84166666666667
+        },
+        {
+          "text": "SIFT",
+          "start": 85.84166666666667,
+          "end": 86.36666666666667
+        },
+        {
+          "text": "adds",
+          "start": 86.36666666666667,
+          "end": 86.67916666666667
+        },
+        {
+          "text": "no",
+          "start": 86.67916666666667,
+          "end": 86.91666666666667
+        },
+        {
+          "text": "measurable",
+          "start": 86.91666666666667,
+          "end": 87.44166666666666
+        },
+        {
+          "text": "gain",
+          "start": 87.44166666666666,
+          "end": 87.81666666666666
+        },
+        {
+          "text": "in",
+          "start": 87.81666666666666,
+          "end": 87.90416666666667
+        },
+        {
+          "text": "this",
+          "start": 87.90416666666667,
+          "end": 88.06666666666666
+        },
+        {
+          "text": "comparison",
+          "start": 88.06666666666666,
+          "end": 88.99166666666667
+        },
+        {
+          "text": ".",
+          "start": 88.99166666666667,
+          "end": 89.14166666666667
+        }
+      ]
+    },
+    {
+      "id": "uncertainty",
+      "start": 89.46666666666667,
+      "end": 104.86666666666666,
+      "frames": 462,
+      "speech_seconds": 15.025,
+      "speed": 1.0,
+      "audio_file": "uncertainty-8d18f4d24ab6.wav",
+      "audio_sha256": "78a0ca9900b2329bbc4778aeff40ddfe78ce74ebe111f0c4b75fd0e4906a542f",
+      "words": [
+        {
+          "text": "Finally",
+          "start": 89.89166666666668,
+          "end": 90.39166666666668
+        },
+        {
+          "text": ",",
+          "start": 90.39166666666668,
+          "end": 90.47916666666667
+        },
+        {
+          "text": "high",
+          "start": 90.47916666666667,
+          "end": 90.77916666666667
+        },
+        {
+          "text": "similarity",
+          "start": 90.77916666666667,
+          "end": 91.52916666666667
+        },
+        {
+          "text": "need",
+          "start": 91.52916666666667,
+          "end": 91.74166666666667
+        },
+        {
+          "text": "not",
+          "start": 91.74166666666667,
+          "end": 91.96666666666667
+        },
+        {
+          "text": "mean",
+          "start": 91.96666666666667,
+          "end": 92.19166666666668
+        },
+        {
+          "text": "a",
+          "start": 92.19166666666668,
+          "end": 92.30416666666667
+        },
+        {
+          "text": "known",
+          "start": 92.30416666666667,
+          "end": 92.61666666666667
+        },
+        {
+          "text": "statue",
+          "start": 92.61666666666667,
+          "end": 93.49166666666667
+        },
+        {
+          "text": ".",
+          "start": 93.49166666666667,
+          "end": 93.65416666666667
+        },
+        {
+          "text": "Comparing",
+          "start": 93.65416666666667,
+          "end": 94.12916666666668
+        },
+        {
+          "text": "the",
+          "start": 94.12916666666668,
+          "end": 94.22916666666667
+        },
+        {
+          "text": "best",
+          "start": 94.22916666666667,
+          "end": 94.56666666666668
+        },
+        {
+          "text": "two",
+          "start": 94.56666666666668,
+          "end": 94.74166666666667
+        },
+        {
+          "text": "candidates",
+          "start": 94.74166666666667,
+          "end": 95.37916666666668
+        },
+        {
+          "text": "exposes",
+          "start": 95.37916666666668,
+          "end": 96.04166666666667
+        },
+        {
+          "text": "ambiguity",
+          "start": 96.04166666666667,
+          "end": 97.09166666666667
+        },
+        {
+          "text": ".",
+          "start": 97.09166666666667,
+          "end": 97.25416666666668
+        },
+        {
+          "text": "This",
+          "start": 97.25416666666668,
+          "end": 97.49166666666667
+        },
+        {
+          "text": "margin",
+          "start": 97.49166666666667,
+          "end": 97.91666666666667
+        },
+        {
+          "text": "reduces",
+          "start": 97.91666666666667,
+          "end": 98.50416666666668
+        },
+        {
+          "text": "false",
+          "start": 98.50416666666668,
+          "end": 98.86666666666667
+        },
+        {
+          "text": "acceptance",
+          "start": 98.86666666666667,
+          "end": 99.49166666666667
+        },
+        {
+          "text": "in",
+          "start": 99.49166666666667,
+          "end": 99.57916666666668
+        },
+        {
+          "text": "the",
+          "start": 99.57916666666668,
+          "end": 99.66666666666667
+        },
+        {
+          "text": "research",
+          "start": 99.66666666666667,
+          "end": 100.49166666666667
+        },
+        {
+          "text": ";",
+          "start": 100.49166666666667,
+          "end": 100.61666666666667
+        },
+        {
+          "text": "the",
+          "start": 100.61666666666667,
+          "end": 100.71666666666667
+        },
+        {
+          "text": "browser",
+          "start": 100.71666666666667,
+          "end": 101.16666666666667
+        },
+        {
+          "text": "demo",
+          "start": 101.16666666666667,
+          "end": 101.66666666666667
+        },
+        {
+          "text": "uses",
+          "start": 101.66666666666667,
+          "end": 102.09166666666667
+        },
+        {
+          "text": "a",
+          "start": 102.09166666666667,
+          "end": 102.22916666666667
+        },
+        {
+          "text": "separately",
+          "start": 102.22916666666667,
+          "end": 102.77916666666667
+        },
+        {
+          "text": "measured",
+          "start": 102.77916666666667,
+          "end": 103.22916666666667
+        },
+        {
+          "text": "close-call",
+          "start": 103.22916666666667,
+          "end": 103.81666666666668
+        },
+        {
+          "text": "hint",
+          "start": 103.81666666666668,
+          "end": 104.39166666666668
+        },
+        {
+          "text": ".",
+          "start": 104.39166666666668,
+          "end": 104.54166666666667
+        }
+      ]
+    },
+    {
+      "id": "takeaway",
+      "start": 104.86666666666666,
+      "end": 112.0,
+      "frames": 214,
+      "speech_seconds": 6.775,
+      "speed": 1.0,
+      "audio_file": "takeaway-c2a0dfa468cb.wav",
+      "audio_sha256": "f2fd84b0766da709afd3eda7eeb24e3ec46b361f51522e508fe6ab8070373b9a",
+      "words": [
+        {
+          "text": "The",
+          "start": 105.26666666666667,
+          "end": 105.36666666666666
+        },
+        {
+          "text": "lesson",
+          "start": 105.36666666666666,
+          "end": 105.91666666666667
+        },
+        {
+          "text": ":",
+          "start": 105.91666666666667,
+          "end": 106.02916666666667
+        },
+        {
+          "text": "test",
+          "start": 106.02916666666667,
+          "end": 106.30416666666666
+        },
+        {
+          "text": "the",
+          "start": 106.30416666666666,
+          "end": 106.40416666666667
+        },
+        {
+          "text": "pool",
+          "start": 106.40416666666667,
+          "end": 106.79166666666667
+        },
+        {
+          "text": ",",
+          "start": 106.79166666666667,
+          "end": 106.82916666666667
+        },
+        {
+          "text": "the",
+          "start": 106.82916666666667,
+          "end": 106.91666666666667
+        },
+        {
+          "text": "place",
+          "start": 106.91666666666667,
+          "end": 107.31666666666666
+        },
+        {
+          "text": ",",
+          "start": 107.31666666666666,
+          "end": 107.35416666666667
+        },
+        {
+          "text": "and",
+          "start": 107.35416666666667,
+          "end": 107.45416666666667
+        },
+        {
+          "text": "the",
+          "start": 107.45416666666667,
+          "end": 107.54166666666667
+        },
+        {
+          "text": "photographer",
+          "start": 107.54166666666667,
+          "end": 108.59166666666667
+        },
+        {
+          "text": ".",
+          "start": 108.59166666666667,
+          "end": 108.75416666666666
+        },
+        {
+          "text": "Explore",
+          "start": 108.75416666666666,
+          "end": 109.22916666666667
+        },
+        {
+          "text": "the",
+          "start": 109.22916666666667,
+          "end": 109.31666666666666
+        },
+        {
+          "text": "dataset",
+          "start": 109.31666666666666,
+          "end": 109.89166666666667
+        },
+        {
+          "text": ",",
+          "start": 109.89166666666667,
+          "end": 109.94166666666666
+        },
+        {
+          "text": "and",
+          "start": 109.94166666666666,
+          "end": 110.07916666666667
+        },
+        {
+          "text": "try",
+          "start": 110.07916666666667,
+          "end": 110.37916666666666
+        },
+        {
+          "text": "the",
+          "start": 110.37916666666666,
+          "end": 110.50416666666666
+        },
+        {
+          "text": "identifier",
+          "start": 110.50416666666666,
+          "end": 111.54166666666667
+        },
+        {
+          "text": ".",
+          "start": 111.54166666666667,
+          "end": 111.69166666666666
+        }
+      ]
+    },
+    {
+      "id": "credits",
+      "start": 112,
+      "end": 120,
+      "frames": 240
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.4,
+      "end": 4.3125,
+      "text": "Across Wrocław, bronze dwarves share poses and props."
+    },
+    {
+      "start": 4.3125,
+      "end": 7.75,
+      "text": "Given a photograph, which individual statue are we looking at?"
+    },
+    {
+      "start": 7.75,
+      "end": 10.88,
+      "text": "Meet Doppeldwarf-306."
+    },
+    {
+      "start": 11.425,
+      "end": 15.100000000000001,
+      "text": "A frozen vision model turns each image into a vector: a"
+    },
+    {
+      "start": 15.100000000000001,
+      "end": 17.2875,
+      "text": "numerical visual description."
+    },
+    {
+      "start": 17.2875,
+      "end": 20.25,
+      "text": "Cosine similarity compares these vectors."
+    },
+    {
+      "start": 20.25,
+      "end": 23.15,
+      "text": "Similar directions suggest similar appearance;"
+    },
+    {
+      "start": 23.15,
+      "end": 24.975,
+      "text": "they do not prove identity."
+    },
+    {
+      "start": 24.975,
+      "end": 28.6625,
+      "text": "We rank each statue by its best reference photograph, without"
+    },
+    {
+      "start": 28.6625,
+      "end": 30.38,
+      "text": "fine-tuning the model."
+    },
+    {
+      "start": 30.974999999999998,
+      "end": 32.824999999999996,
+      "text": "Now add more candidates."
+    },
+    {
+      "start": 32.824999999999996,
+      "end": 35.0375,
+      "text": "Do lookalikes overwhelm retrieval?"
+    },
+    {
+      "start": 35.0375,
+      "end": 39.0,
+      "text": "Instead of reporting one accuracy number, we repeatedly sample larger"
+    },
+    {
+      "start": 39.0,
+      "end": 42.724999999999994,
+      "text": "candidate pools, always keeping the correct statue."
+    },
+    {
+      "start": 42.724999999999994,
+      "end": 45.3875,
+      "text": "DINOv2 's accuracy falls slowly;"
+    },
+    {
+      "start": 45.3875,
+      "end": 47.0125,
+      "text": "CLIP 's falls faster."
+    },
+    {
+      "start": 47.0125,
+      "end": 48.980000000000004,
+      "text": "The curve is the result."
+    },
+    {
+      "start": 49.55,
+      "end": 51.625,
+      "text": "Surely location solves this?"
+    },
+    {
+      "start": 51.625,
+      "end": 55.1875,
+      "text": "But nearby lookalikes survive a hard geographic filter."
+    },
+    {
+      "start": 55.1875,
+      "end": 59.0625,
+      "text": "In simulation, a soft distance bonus works better."
+    },
+    {
+      "start": 59.0625,
+      "end": 62.7125,
+      "text": "Across 294 placed statues, DINOv2"
+    },
+    {
+      "start": 62.7125,
+      "end": 66.475,
+      "text": "rises from 93.4 to 98.7"
+    },
+    {
+      "start": 66.475,
+      "end": 69.94666666666666,
+      "text": "percent for users twenty-five metres away."
+    },
+    {
+      "start": 70.49166666666667,
+      "end": 74.55416666666667,
+      "text": "A new photographer brings different viewpoints, backgrounds, and lighting."
+    },
+    {
+      "start": 74.55416666666667,
+      "end": 75.99166666666667,
+      "text": "Accuracy drops."
+    },
+    {
+      "start": 75.99166666666667,
+      "end": 79.89166666666667,
+      "text": "Fewer remaining reference photographs also contribute to that drop."
+    },
+    {
+      "start": 79.89166666666667,
+      "end": 83.71666666666667,
+      "text": "Learned geometric matching checks whether local details line up,"
+    },
+    {
+      "start": 83.71666666666667,
+      "end": 85.30416666666667,
+      "text": "improving the ranking."
+    },
+    {
+      "start": 85.30416666666667,
+      "end": 89.34666666666666,
+      "text": "Classical SIFT adds no measurable gain in this comparison."
+    },
+    {
+      "start": 89.89166666666668,
+      "end": 93.65416666666667,
+      "text": "Finally, high similarity need not mean a known statue."
+    },
+    {
+      "start": 93.65416666666667,
+      "end": 97.25416666666668,
+      "text": "Comparing the best two candidates exposes ambiguity."
+    },
+    {
+      "start": 97.25416666666668,
+      "end": 100.61666666666667,
+      "text": "This margin reduces false acceptance in the research;"
+    },
+    {
+      "start": 100.61666666666667,
+      "end": 104.74666666666666,
+      "text": "the browser demo uses a separately measured close-call hint."
+    },
+    {
+      "start": 105.26666666666667,
+      "end": 108.75416666666666,
+      "text": "The lesson: test the pool, the place, and the photographer."
+    },
+    {
+      "start": 108.75416666666666,
+      "end": 111.88,
+      "text": "Explore the dataset, and try the identifier."
+    }
+  ],
+  "narration_sha256": "65bfe0896116194c378cb17e0df23a47521424e119378dee2497e92d979bc220",
+  "peak": 0.8799999952316284,
+  "rms": 0.09060540795326233
+}

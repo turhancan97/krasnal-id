@@ -1,0 +1,288 @@
+{
+  "video_sha256": "36c647de067b992ad3f7ca82ce0314cd6dfaed1b627a87695be024de43f42e28",
+  "cue_samples": [
+    {
+      "cue": 1,
+      "time": 2.35625,
+      "expected": "Across Wroc\u0142aw, bronze dwarves share poses and props.",
+      "image": "cue-01.png",
+      "text_mask_sha256": "0bab36bdd982a4d412ddb93452806e7cb9da60adf02ef1947cd4a277f7a84161",
+      "ink": 3442
+    },
+    {
+      "cue": 2,
+      "time": 6.03125,
+      "expected": "Given a photograph, which individual statue are we looking at?",
+      "image": "cue-02.png",
+      "text_mask_sha256": "872d73c906f63826faa2ba73013d2bd146fa8bf1ece6c1c447064402c05c2e05",
+      "ink": 3685
+    },
+    {
+      "cue": 3,
+      "time": 9.315000000000001,
+      "expected": "Meet Doppeldwarf-306.",
+      "image": "cue-03.png",
+      "text_mask_sha256": "45a9cf470f8ee75eecb69f8917b5e78ec65ef4653ab5299cff22eb724c51907a",
+      "ink": 3281
+    },
+    {
+      "cue": 4,
+      "time": 13.262500000000001,
+      "expected": "A frozen vision model turns each image into a vector: a",
+      "image": "cue-04.png",
+      "text_mask_sha256": "a9472a2514d816f60ff6a4f66128ae6dc231d6b91b02a0baa5e241d04d62b89d",
+      "ink": 3702
+    },
+    {
+      "cue": 5,
+      "time": 16.19375,
+      "expected": "numerical visual description.",
+      "image": "cue-05.png",
+      "text_mask_sha256": "de5ae21a0e7ad03666d3276182b61fc99c420b1ed554449d4d2d13fc0073b0e2",
+      "ink": 3509
+    },
+    {
+      "cue": 6,
+      "time": 18.76875,
+      "expected": "Cosine similarity compares these vectors.",
+      "image": "cue-06.png",
+      "text_mask_sha256": "d8693f4d99abe3acedc83f96237e20571a65f2623e9e44bb2ef129765eb4309e",
+      "ink": 5208
+    },
+    {
+      "cue": 7,
+      "time": 21.7,
+      "expected": "Similar directions suggest similar appearance;",
+      "image": "cue-07.png",
+      "text_mask_sha256": "5e0e3c4818305e36efe95f76d0ecbf09a2d4353b16b42c9a5a9392452bdff84e",
+      "ink": 2826
+    },
+    {
+      "cue": 8,
+      "time": 24.0625,
+      "expected": "they do not prove identity.",
+      "image": "cue-08.png",
+      "text_mask_sha256": "0082ae9b393762f74a9d47328d9c90d27f036d8f0c82ce348f6522eb8a585f7f",
+      "ink": 3149
+    },
+    {
+      "cue": 9,
+      "time": 26.81875,
+      "expected": "We rank each statue by its best reference photograph, without",
+      "image": "cue-09.png",
+      "text_mask_sha256": "d9a68785b56842e79cf41298e0abdc0a7fe8639d0d50313fa72ca1783ab4b873",
+      "ink": 3810
+    },
+    {
+      "cue": 10,
+      "time": 29.521250000000002,
+      "expected": "fine-tuning the model.",
+      "image": "cue-10.png",
+      "text_mask_sha256": "290c7f5330fce99d57edad501a0be55d14e97bc76ea5c58c06bb611af13a3d93",
+      "ink": 2662
+    },
+    {
+      "cue": 11,
+      "time": 31.9,
+      "expected": "Now add more candidates.",
+      "image": "cue-11.png",
+      "text_mask_sha256": "7ea3daf802a69bb753f89c9171fe02ee1af83f3891d3256e93a9dda031f2d521",
+      "ink": 3450
+    },
+    {
+      "cue": 12,
+      "time": 33.93125,
+      "expected": "Do lookalikes overwhelm retrieval?",
+      "image": "cue-12.png",
+      "text_mask_sha256": "fc01f1c5a9ca0399ca44e7e0f7a3fc3d4f4169a8bb22e4aa85aa001c6c9feff9",
+      "ink": 4455
+    },
+    {
+      "cue": 13,
+      "time": 37.01875,
+      "expected": "Instead of reporting one accuracy number, we repeatedly sample larger",
+      "image": "cue-13.png",
+      "text_mask_sha256": "49ad0e4039daa21649d391d9c031fd80c2f60ccdf11b842f37b94e9b4f12c209",
+      "ink": 4322
+    },
+    {
+      "cue": 14,
+      "time": 40.8625,
+      "expected": "candidate pools, always keeping the correct statue.",
+      "image": "cue-14.png",
+      "text_mask_sha256": "0e167aa46d3e9cccda5384b99adf4ab9b01e7ee647163efbcc2a3037855e43d1",
+      "ink": 3822
+    },
+    {
+      "cue": 15,
+      "time": 44.05625,
+      "expected": "DINOv2 's accuracy falls slowly;",
+      "image": "cue-15.png",
+      "text_mask_sha256": "84341b07a2c7c4ee201bd3ddc4af1665b0cb5267486fc28cb692bb87452fe917",
+      "ink": 3991
+    },
+    {
+      "cue": 16,
+      "time": 46.2,
+      "expected": "CLIP 's falls faster.",
+      "image": "cue-16.png",
+      "text_mask_sha256": "f722224ff71047f0648f770a161c0a43f1c8547ddb6ee8417ca9f0a140aeef87",
+      "ink": 2257
+    },
+    {
+      "cue": 17,
+      "time": 47.99625,
+      "expected": "The curve is the result.",
+      "image": "cue-17.png",
+      "text_mask_sha256": "970e1ee08f2812acd4c5f521610c64513747d5739a518bda0e10a90d8a3d500d",
+      "ink": 2560
+    },
+    {
+      "cue": 18,
+      "time": 50.5875,
+      "expected": "Surely location solves this?",
+      "image": "cue-18.png",
+      "text_mask_sha256": "b53bd92be499bae191cb3fcf5ff798aa5b6822dcf6f5cee4a13840ce5dccbfb9",
+      "ink": 3410
+    },
+    {
+      "cue": 19,
+      "time": 53.40625,
+      "expected": "But nearby lookalikes survive a hard geographic filter.",
+      "image": "cue-19.png",
+      "text_mask_sha256": "a1ace387a816d1abd26870951dfa0c41059b795c53233967f989f6211947fdc6",
+      "ink": 3301
+    },
+    {
+      "cue": 20,
+      "time": 57.125,
+      "expected": "In simulation, a soft distance bonus works better.",
+      "image": "cue-20.png",
+      "text_mask_sha256": "55e3d1d3a3de4f40d93a4086846788e83ed860c3bc3a2dda7de7e5936ef84190",
+      "ink": 3411
+    },
+    {
+      "cue": 21,
+      "time": 60.8875,
+      "expected": "Across 294 placed statues, DINOv2",
+      "image": "cue-21.png",
+      "text_mask_sha256": "f24ee0266431d75ac39b79cfd6a9b88b82f59b6faa0e3d3f761b6129f3a0859e",
+      "ink": 4658
+    },
+    {
+      "cue": 22,
+      "time": 64.59375,
+      "expected": "rises from 93.4 to 98.7",
+      "image": "cue-22.png",
+      "text_mask_sha256": "5cd9923d04d0037203e709134bc852f278ab3cc5c7e6bb3f8ef4677769efce4a",
+      "ink": 2669
+    },
+    {
+      "cue": 23,
+      "time": 68.21083333333333,
+      "expected": "percent for users twenty-five metres away.",
+      "image": "cue-23.png",
+      "text_mask_sha256": "2867d8737aa01e04f601e8468d6a830ba1386362351cb4919c30197c72320548",
+      "ink": 5126
+    },
+    {
+      "cue": 24,
+      "time": 72.52291666666667,
+      "expected": "A new photographer brings different viewpoints, backgrounds, and lighting.",
+      "image": "cue-24.png",
+      "text_mask_sha256": "126d1ef9972849e0503a8432b021d3d86c56dc11753d50524103dd0fafd0e5ad",
+      "ink": 4661
+    },
+    {
+      "cue": 25,
+      "time": 75.27291666666667,
+      "expected": "Accuracy drops.",
+      "image": "cue-25.png",
+      "text_mask_sha256": "d5592d5279d357ed36d97684242430d1c9149362cd9bc1e5adf59c3f13c4ad21",
+      "ink": 2041
+    },
+    {
+      "cue": 26,
+      "time": 77.94166666666666,
+      "expected": "Fewer remaining reference photographs also contribute to that drop.",
+      "image": "cue-26.png",
+      "text_mask_sha256": "9dc4ac0e4483d0d76a338760b28f4aff2155f087bc84dea056de5071f7fc0ffa",
+      "ink": 4162
+    },
+    {
+      "cue": 27,
+      "time": 81.80416666666667,
+      "expected": "Learned geometric matching checks whether local details line up,",
+      "image": "cue-27.png",
+      "text_mask_sha256": "d611a73ec2c59da46dc438387a93ffa36a594a0f9571ffb6774209af103ba30c",
+      "ink": 3956
+    },
+    {
+      "cue": 28,
+      "time": 84.51041666666667,
+      "expected": "improving the ranking.",
+      "image": "cue-28.png",
+      "text_mask_sha256": "108cf135c5bbb5aec3f6129e36c99abc37a3fd0d09688af2dc92f455fe7b29e1",
+      "ink": 2809
+    },
+    {
+      "cue": 29,
+      "time": 87.32541666666667,
+      "expected": "Classical SIFT adds no measurable gain in this comparison.",
+      "image": "cue-29.png",
+      "text_mask_sha256": "fb4b48618debb9e89bfe854b2f58d6c94090c2fda65636bc0ee785e24502c9be",
+      "ink": 3496
+    },
+    {
+      "cue": 30,
+      "time": 91.77291666666667,
+      "expected": "Finally, high similarity need not mean a known statue.",
+      "image": "cue-30.png",
+      "text_mask_sha256": "8423818655943a49c264840bf5409f50e24ae10882718ceb5deb81b5af3788da",
+      "ink": 3789
+    },
+    {
+      "cue": 31,
+      "time": 95.45416666666668,
+      "expected": "Comparing the best two candidates exposes ambiguity.",
+      "image": "cue-31.png",
+      "text_mask_sha256": "e21ad9dcd1597bf2c97765da72e151c30ae27e25597ecb9f0d3235077e6bf7f4",
+      "ink": 3357
+    },
+    {
+      "cue": 32,
+      "time": 98.93541666666667,
+      "expected": "This margin reduces false acceptance in the research;",
+      "image": "cue-32.png",
+      "text_mask_sha256": "c5e9b8c105d6c121ec7236b7bf4612ed685fb60b7191b9f8ce8868a8532dc932",
+      "ink": 3378
+    },
+    {
+      "cue": 33,
+      "time": 102.68166666666667,
+      "expected": "the browser demo uses a separately measured close-call hint.",
+      "image": "cue-33.png",
+      "text_mask_sha256": "9dfb89ee4ae54102c5762c49ee6612d301799bf39224c466459d74c309c044c0",
+      "ink": 4384
+    },
+    {
+      "cue": 34,
+      "time": 107.01041666666666,
+      "expected": "The lesson: test the pool, the place, and the photographer.",
+      "image": "cue-34.png",
+      "text_mask_sha256": "56a2a8b706521ef7c23bab58468f205b6db7dacebe4a07286eff3f7417405b0f",
+      "ink": 3449
+    },
+    {
+      "cue": 35,
+      "time": 110.31708333333333,
+      "expected": "Explore the dataset, and try the identifier.",
+      "image": "cue-35.png",
+      "text_mask_sha256": "96f33b0b215caf71a018d46096e290dbd78c25e2bdbad582e2fd99811c7a04a0",
+      "ink": 5120
+    }
+  ],
+  "method": "Rendered cue samples, nonempty/changed text masks and visual contact sheets",
+  "chapter_transitions": 7,
+  "captions_nonempty_and_changing": true
+}

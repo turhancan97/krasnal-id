@@ -14,7 +14,7 @@ Each photograph retains its own terms. Images are resized WebP copies and are fi
 The photographs and the sculptures are distinct works. Photograph licences do not grant rights in depicted sculptures; the existing dataset disclosure and removal path apply.
 Removal path: `data/image-review.json`.
 
-Narration: Kokoro-82M, Apache-2.0 model and stock voices. Two sample voices are included; the short preview uses af_heart provisionally. No voice has been approved.
+Narration: Kokoro-82M, Apache-2.0 model and stock voices. The owner approved af_heart for the complete film. Both original voice auditions remain in the archived review package.
 Model: https://huggingface.co/hexgrad/Kokoro-82M
 
 Original animation code is covered by the repository MIT licence. That does not replace the photographs' individual terms.

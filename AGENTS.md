@@ -925,8 +925,9 @@ mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
 - **The video starts with an approval stage.** `video/explainer/review.html` is a local review
   surface outside the published site. It presents a 226-word sourced script, eight storyboard
   frames, two 15-second stock-voice samples and a ten-second motion study. The complete film and
-  project-page player wait for the owner's explicit approval of script, storyboard and voice;
-  scene times are a 120-second budget, not measured timings for full narration.
+  project-page player originally waited for approval. The owner approved the script, storyboard
+  and `af_heart` voice; §6.11 records production. These initial scene times are a 120-second
+  budget, not measured timings for full narration.
 - **Source is separate from the research package.** `story.json` defines narration, timing budgets
   and visual treatment; `claims.json` records existing research values and source-file hashes;
   `credits.json` selects exactly the four existing teaser photographs with per-file rights and
@@ -961,6 +962,54 @@ mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
   uses byte-range HTTP, which Python's basic preview server does not supply. Lint and formatting
   pass repository-wide; source/rights hashes and both reference binary digests match. These are
   review-package checks, not completion of the full-film acceptance tests or an audio audition.
+
+### 6.11 Approved explainer film and player (2026-11-09)
+
+- **Approval binds the script and voice.** `approval.json` records the owner's “Approve with
+  af_heart” response and the exact `story.json` SHA-256. The 226-word narration is unchanged.
+  `story.json` retains its original review-stage status as a historical snapshot; the approval
+  record is authoritative for production. Technical labels use documented phoneme aliases while
+  captions retain the approved spelling.
+- **Audio determines animation timing.** Kokoro runs locally at natural speed 1.0, with four CPU
+  threads inside the existing allocation. Seven speech segments take 108.25 seconds in total;
+  the frame-aligned schedule gives them 112 seconds including breathing room, followed by eight
+  seconds of stationary credits. The film is exactly 120 seconds, 3,600 frames at 30 fps and
+  1920×1080, H.264/AAC with fast-start metadata. Downloaded models and intermediate WAV/render
+  files remain outside tracked source. No scientific inference or research rerun is involved.
+- **Captions are timed to words, including still frames.** Thirty-five cues preserve every
+  approved word in at most two lines, burned into a reserved bottom band; matching SRT, WebVTT
+  and a plain transcript ship beside the movie. Manim only treats an updater as time-based if its
+  argument is literally named `dt`: omitting that froze subtitles during `wait()` despite correct
+  sidecar timestamps. Both preview and full scene now use `dt`, with an explicit updater guard.
+  Punctuation stays attached to a word; a regression test prevents punctuation-only flashes.
+- **Motion preserves source appearance.** Headings fade between phrases instead of morphing
+  unrelated glyphs. Photo emphasis uses a small scale pulse: Manim's default `Indicate` colour
+  would tint the photographs. The exact supplied palette, illustrative labels, simulated-location
+  qualification and four individually credited teaser photographs remain unchanged.
+- **The native player is entirely static.** The project page places it between teaser and
+  abstract, reserves its aspect ratio and supplies controls, inline playback, a poster and
+  `preload="none"`, without autoplay. Transcript, MP4, subtitle and full rights links are beside
+  it. `docs/media/` is self-hosted; no runtime narration service or external video player loads.
+  The identifier and its model assets are untouched. Only the approved project-page hash is
+  exempted from the original review snapshot guard; all research and model guards still apply.
+- **Verification distinguishes automated checks from listening.** Five offline protocol tests
+  cover duration budgeting, refusal to truncate or accelerate speech, caption preservation,
+  punctuation grouping and approval invalidation. Media checks fully decode the film, inspect
+  codecs, frame count, size and metadata, compare all subtitle words and verify static-credit
+  duration. Frame sampling checks every subtitle midpoint and all seven scene transitions;
+  independent local automatic transcription and correlation against the decoded AAC check the
+  delivered narration. Final export maps the lossless master directly, avoiding the 21 ms
+  encoder delay found in Manim's intermediate soundtrack. These establish signal and text
+  integrity, not a human pronunciation or listening pass. Receipts live in `production/` and
+  beside the delivered assets.
+- **Delivered checks:** the MP4 is 4,986,753 bytes. Chromium passes playback, seeking, Space-key
+  play/pause, fullscreen, downloads, credit links, transcript content and stable player dimensions.
+  The 1280 px and 390 px layouts were inspected in both themes without overflow or broken images;
+  the movie remains light in either theme. All 1,718 referenced local assets/links load, five
+  protocol tests and repository lint/format checks pass, research source hashes match, and both
+  reference binary SHA-256 values remain unchanged. No new venue prose is present. Browser seek
+  operations cancel prior MP4 byte-range requests normally; there are no unexpected request
+  failures or page errors. A human listening pass was not possible in this environment.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
@@ -2263,11 +2312,12 @@ krasnal-id/
 │   ├── app.js                 # browser inference, held-out examples, location and close-call hints
 │   ├── retrieval.mjs          # shared vector-only ranking and geographic weighting
 │   ├── matches-map.mjs        # lazy map library, ranked markers and co-location context
+│   ├── media/                 # explainer MP4, poster, captions, transcript, credits and receipt
 │   ├── assets/                # generated reference vectors and thumbnails
 │   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
 │   ├── demo/                  # full build, metadata-only calibration and vector-contract tests
 │   └── figures/               # published figures, including the copied paper figures (§6.7)
-├── video/explainer/           # sourced script, Manim review scenes, locked tools and approval package
+├── video/explainer/           # approved script, Manim film/review scenes, locked tools and QA receipts
 ├── src/krasnal_id/
 │   ├── cli.py                 # unified Typer CLI
 │   ├── config.py              # Hydra composition + Pydantic validation

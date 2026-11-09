@@ -1,0 +1,13 @@
+Across Wrocław, bronze dwarves share poses and props. Given a photograph, which individual statue are we looking at? Meet Doppeldwarf-306.
+
+A frozen vision model turns each image into a vector: a numerical visual description. Cosine similarity compares these vectors. Similar directions suggest similar appearance; they do not prove identity. We rank each statue by its best reference photograph, without fine-tuning the model.
+
+Now add more candidates. Do lookalikes overwhelm retrieval? Instead of reporting one accuracy number, we repeatedly sample larger candidate pools, always keeping the correct statue. DINOv2's accuracy falls slowly; CLIP's falls faster. The curve is the result.
+
+Surely location solves this? But nearby lookalikes survive a hard geographic filter. In simulation, a soft distance bonus works better. Across 294 placed statues, DINOv2 rises from 93.4 to 98.7 percent for users twenty-five metres away.
+
+A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison.
+
+Finally, high similarity need not mean a known statue. Comparing the best two candidates exposes ambiguity. This margin reduces false acceptance in the research; the browser demo uses a separately measured close-call hint.
+
+The lesson: test the pool, the place, and the photographer. Explore the dataset, and try the identifier.

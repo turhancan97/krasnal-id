@@ -1,0 +1,124 @@
+WEBVTT
+
+00:00:00.400 --> 00:00:04.312
+Across Wrocław, bronze dwarves share poses
+and props.
+
+00:00:04.312 --> 00:00:07.750
+Given a photograph, which individual statue
+are we looking at?
+
+00:00:07.750 --> 00:00:10.880
+Meet Doppeldwarf-306.
+
+00:00:11.425 --> 00:00:15.100
+A frozen vision model turns each image into
+a vector: a
+
+00:00:15.100 --> 00:00:17.288
+numerical visual description.
+
+00:00:17.288 --> 00:00:20.250
+Cosine similarity compares these vectors.
+
+00:00:20.250 --> 00:00:23.150
+Similar directions suggest similar
+appearance;
+
+00:00:23.150 --> 00:00:24.975
+they do not prove identity.
+
+00:00:24.975 --> 00:00:28.662
+We rank each statue by its best reference
+photograph, without
+
+00:00:28.662 --> 00:00:30.380
+fine-tuning the model.
+
+00:00:30.975 --> 00:00:32.825
+Now add more candidates.
+
+00:00:32.825 --> 00:00:35.038
+Do lookalikes overwhelm retrieval?
+
+00:00:35.038 --> 00:00:39.000
+Instead of reporting one accuracy number, we
+repeatedly sample larger
+
+00:00:39.000 --> 00:00:42.725
+candidate pools, always keeping the correct
+statue.
+
+00:00:42.725 --> 00:00:45.388
+DINOv2 's accuracy falls slowly;
+
+00:00:45.388 --> 00:00:47.012
+CLIP 's falls faster.
+
+00:00:47.012 --> 00:00:48.980
+The curve is the result.
+
+00:00:49.550 --> 00:00:51.625
+Surely location solves this?
+
+00:00:51.625 --> 00:00:55.188
+But nearby lookalikes survive a hard
+geographic filter.
+
+00:00:55.188 --> 00:00:59.062
+In simulation, a soft distance bonus works
+better.
+
+00:00:59.062 --> 00:01:02.712
+Across 294 placed statues, DINOv2
+
+00:01:02.712 --> 00:01:06.475
+rises from 93.4 to 98.7
+
+00:01:06.475 --> 00:01:09.947
+percent for users twenty-five metres away.
+
+00:01:10.492 --> 00:01:14.554
+A new photographer brings different
+viewpoints, backgrounds, and lighting.
+
+00:01:14.554 --> 00:01:15.992
+Accuracy drops.
+
+00:01:15.992 --> 00:01:19.892
+Fewer remaining reference photographs also
+contribute to that drop.
+
+00:01:19.892 --> 00:01:23.717
+Learned geometric matching checks whether
+local details line up,
+
+00:01:23.717 --> 00:01:25.304
+improving the ranking.
+
+00:01:25.304 --> 00:01:29.347
+Classical SIFT adds no measurable gain in
+this comparison.
+
+00:01:29.892 --> 00:01:33.654
+Finally, high similarity need not mean a
+known statue.
+
+00:01:33.654 --> 00:01:37.254
+Comparing the best two candidates exposes
+ambiguity.
+
+00:01:37.254 --> 00:01:40.617
+This margin reduces false acceptance in the
+research;
+
+00:01:40.617 --> 00:01:44.747
+the browser demo uses a separately measured
+close-call hint.
+
+00:01:45.267 --> 00:01:48.754
+The lesson: test the pool, the place, and
+the photographer.
+
+00:01:48.754 --> 00:01:51.880
+Explore the dataset, and try the identifier.

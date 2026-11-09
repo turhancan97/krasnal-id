@@ -60,7 +60,7 @@ def cues_for(text, results, offset=0):
     last_end = 0
     for word, begin, end in tokens:
         candidate = " ".join([*words, word])
-        if words and (len(candidate) > 76 or end - start > 4.0):
+        if words and re.search(r"\w", word) and (len(candidate) > 76 or end - start > 4.0):
             cues.append({"start": start, "end": last_end, "text": " ".join(words)})
             words = []
             start = None
@@ -68,14 +68,14 @@ def cues_for(text, results, offset=0):
             start = begin
         words.append(word)
         last_end = end
-        if re.search(r"[.!?]$", word):
+        if re.search(r"[.!?;]$", word):
             cues.append({"start": start, "end": end, "text": " ".join(words)})
             words = []
             start = None
     if words:
         cues.append({"start": start, "end": last_end, "text": " ".join(words)})
 
-    # The preview contains no phonetic aliases. Normalise only token spacing.
+    # Preserve canonical graphemes, including alias labels; normalise only token spacing.
     def normalise(value):
         return re.sub(r"\W+", "", value).lower()
 

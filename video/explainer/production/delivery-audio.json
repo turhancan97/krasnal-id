@@ -1,0 +1,37 @@
+{
+  "delivered_peak": 0.880950927734375,
+  "credits_rms": 0.0,
+  "video_sha256": "36c647de067b992ad3f7ca82ce0314cd6dfaed1b627a87695be024de43f42e28",
+  "master_audio_sha256": "65bfe0896116194c378cb17e0df23a47521424e119378dee2497e92d979bc220",
+  "chapters": [
+    {
+      "id": "hook",
+      "correlation": 0.9997456669807434
+    },
+    {
+      "id": "retrieval",
+      "correlation": 0.9999158978462219
+    },
+    {
+      "id": "pool",
+      "correlation": 0.999934196472168
+    },
+    {
+      "id": "location",
+      "correlation": 0.9999298453330994
+    },
+    {
+      "id": "verification",
+      "correlation": 0.9999336004257202
+    },
+    {
+      "id": "uncertainty",
+      "correlation": 0.9999115467071533
+    },
+    {
+      "id": "takeaway",
+      "correlation": 0.9998664855957031
+    }
+  ],
+  "method": "Decoded delivered AAC compared to the approved natural-speed master"
+}

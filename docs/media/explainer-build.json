@@ -1,0 +1,32 @@
+{
+  "duration_s": 120.0,
+  "frames": 3600,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "fast_start": true,
+  "bytes": 4986753,
+  "voice": "af_heart",
+  "speed": 1.0,
+  "burned_in_english_subtitles": true,
+  "subtitle_cues": 35,
+  "credits_start_s": 112,
+  "approved_story_sha256": "3e3c888231a534fb718b83f1ea39213a7c5b99c73677bc5b4aa6205078b204dc",
+  "source_sha256": {
+    "RESULTS.md": "173f5c18bc4180b54bf7bdfa2db71338de7f3d14282247b24919c3d29c6bb4f1",
+    "docs/assets/references.json": "70d9c4fde03ffe26b1630b22a43522910ba6611a66b12cc78c74c5fd207b7bbc"
+  },
+  "model_revision": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "assets_sha256": {
+    "explainer-credits.html": "4531c3c34250157542232673894986cd125e22b03d858d418255e1e7cbe9cdd9",
+    "explainer-credits.json": "aeb23f5bcd5d48c8e868e0f993dce5ff9896b466e03d7b5e997f461e60a0ed05",
+    "explainer-poster.webp": "abc0a29ee76e9c56e1edd82fd6a1a871d2c81f5bcaefdbf0903fcfda7147739d",
+    "explainer-transcript.html": "20bbbbaba60d8359dfbd5e5b57bd078a74686f2924e5287a010fe081567d658d",
+    "explainer-transcript.txt": "3d99050c5b9ddb5f8e989cf3c0bb36dc2b9a08598987067a50c9d340bbc66f27",
+    "explainer.en.srt": "7a8c9145e43ba06261517ac759854360e0f8f27db00307e84695007ca518def3",
+    "explainer.en.vtt": "a44f1988bbc156aa4e206a4ac29ee2809dcfed6af39607f7c04b81fd83d85b1c",
+    "explainer.mp4": "36c647de067b992ad3f7ca82ce0314cd6dfaed1b627a87695be024de43f42e28"
+  }
+}

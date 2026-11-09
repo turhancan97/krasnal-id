@@ -499,7 +499,7 @@ class Preview(Scene):
             active = [-1]
             subtitles = caption("")
 
-            def update_subtitles(mob):
+            def update_subtitles(mob, dt):
                 chosen = next(
                     (i for i, c in enumerate(cues) if c["start"] <= self.time < c["end"]), -1
                 )

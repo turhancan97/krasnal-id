@@ -24,11 +24,22 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- The approved two-minute Doppeldwarf-306 explainer, narrated locally with Kokoro `af_heart`,
+  with eight animated chapters, word-timed burned captions and eight seconds of credits.
+  A responsive native player sits between the project-page teaser and abstract, reserves its
+  dimensions and downloads no movie before playback. The self-hosted MP4 has a poster,
+  transcript, SRT/WebVTT and per-photograph source/licence/modification credits.
+- Reproducible full-film sources and approval checks, natural-speed audio scheduling, atomic
+  H.264/AAC export, independent transcription, delivered-audio correlation and caption/transition
+  frame checks. Five offline tests cover timing, caption grouping and approval validity.
+  Time-based subtitle updaters prevent frozen captions during still scenes; photograph emphasis
+  preserves the original colours. Research artifacts and reference vectors remain unchanged.
+
 - A local explainer review package under `video/explainer/`, with a sourced 226-word script,
   eight-scene storyboard, Manim motion study, two Kokoro stock-voice auditions, per-photograph
   credits and independently locked rendering tools. The palette matches the supplied RGB values
-  exactly; research results and illustrative diagrams are distinguished. The full film and
-  project-page integration wait for owner approval, and nothing is published.
+  exactly; research results and illustrative diagrams are distinguished. Owner approval is
+  recorded separately for the completed film; nothing is pushed or published.
   The rendered package includes eight full-resolution frames, a clean poster, two exact
   15-second WAVs and a 10-second 1080p H.264/AAC preview with burned captions and SRT/WebVTT.
   Browser media controls, four responsive layouts, source integrity and repository lint/format

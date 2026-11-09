@@ -298,6 +298,13 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
 .photo-credits{margin-top:1rem; color:var(--ink-2); font-size:.8rem}
 .photo-credits ul{margin:.7rem 0 .5rem 1.25rem; list-style:disc}
 .photo-credits a{overflow-wrap:anywhere}
+/* Self-hosted explainer: intrinsic dimensions reserve space before playback. */
+.project-page .project-video{display:block; width:100%; height:auto; aspect-ratio:16/9;
+  border:1px solid var(--rule); border-radius:8px; background:#F7F8FA}
+.project-page .video-summary{max-width:50rem; color:var(--ink-2); margin-bottom:1.3rem}
+.project-page .video-note{font-size:.86rem; color:var(--ink-2); margin-top:.85rem; line-height:1.6}
+.project-page .video-links{display:flex; flex-wrap:wrap; gap:.55rem 1.2rem; margin-top:.7rem;
+  font-size:.85rem}
 .project-band{background:var(--surface); border-block:1px solid var(--rule-soft)}
 .project-page .content{color:var(--ink-2); line-height:1.8}
 .project-page .content strong{color:var(--ink); font-weight:600}

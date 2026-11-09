@@ -2,7 +2,7 @@
 
 226 words · English · 120-second production budget including credits.
 
-Status: awaiting owner approval. Scene timings are budgets, not measured full-narration timings.
+Approved by the owner with af_heart narration. Scene timings are budgets, not measured full-narration timings.
 
 ## 1. Which dwarf is this? (0-12 s)
 

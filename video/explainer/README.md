@@ -1,59 +1,58 @@
-# Doppeldwarf-306 explainer — review package
+# Doppeldwarf-306 explainer
 
-This is the first approval stage of a two-minute explainer. Open [review.html](review.html) to
-review the script, eight storyboard frames, two 15-second voice samples and a 10-second motion
-study. The complete video has **not** been rendered and the project page has **not** been changed.
+The owner approved the 226-word script, eight storyboard frames, motion style and **af_heart**
+voice. The complete film is `docs/media/explainer.mp4`, embedded between the existing teaser and
+abstract on the project page. It is 120 seconds at 1920×1080, 30 fps, H.264/AAC, with fast-start
+playback, natural-speed narration and burned-in English subtitles. Credits occupy the final eight
+seconds. SRT, WebVTT, a transcript and linked photograph/narration credits accompany the movie.
 
-The story is 226 words, with a 120-second production budget including eight seconds of credits.
-Timings in `story.json` are budgets, not measured timings for the full narration. The short preview
-uses `af_heart` provisionally; the final voice has not been chosen. Captions are already burned into
-the preview, with matching downloadable SRT and WebVTT. The samples contain the same words but use
-each voice's natural delivery; end padding makes both files exactly 15 seconds without truncation.
+The original [review package](review.html), two 15-second voice auditions and ten-second motion
+study remain as the approved reference. `story.json` preserves that review snapshot;
+`approval.json` is the current approval record, bound to the snapshot's SHA-256. The narration
+text has not been edited after approval.
 
-## Review locally
+## View locally
 
-From the repository root:
+From the repository root, run `python3 -m http.server 8765 --directory docs` and open
+`http://localhost:8765/#explainer`. Python's basic server is sufficient for playback. Seek tests
+need an HTTP server with byte-range support, matching the static hosting transport.
 
-```bash
-python3 -m http.server 8765 --directory .
-```
+For the historical review page, serve the repository root instead and open
+`http://localhost:8765/video/explainer/review.html`. That page refers to fonts and source documents
+outside `docs/` and is not part of the published site.
 
-Open `http://localhost:8765/video/explainer/review.html`. A repository-root server is necessary
-because the review's fonts and source links refer to existing repository files. This review page
-is outside `docs/` and is not part of the published website. Python's basic server is sufficient
-for viewing and playback. Seek testing needs an HTTP server with byte-range support; the browser
-checks use a local range-capable server, matching the static hosting transport.
+## Source and provenance
 
-Please review the narration and factual emphasis, the motion and light-background visual style,
-and the two voices. Choose `af_heart` or `am_michael`, or request a revision. Listen specifically to
-Wrocław, Doppeldwarf-306 and cosine similarity. Technical checks cannot approve pronunciation.
+- `story.json` defines the unchanged narration, original timing budget and exact eight-colour
+  palette; `script.md` is its readable review copy.
+- `approval.json` records the owner's choice and refuses a changed story. `pronunciations.json`
+  supplies explicit phonemes for names/acronyms while keeping the original subtitle words.
+- `film_audio.py` synthesizes seven chapters at speed 1.0, caches each by spoken text/model/voice,
+  and allocates whole video frames around measured speech. Spare frames fill the 112-second
+  content budget, followed by eight stationary seconds of credits. Speech is neither cut nor
+  accelerated; narration exceeding the budget is refused.
+- `production/timing.json` records chapter boundaries, synthesis word timestamps and caption
+  cues. `film_scenes.py` uses those word positions to time the visual highlights and transitions.
+- `film.py` exports the movie, captions, poster and accessible companion pages, then checks actual
+  codec, duration, dimensions, frame count, byte size, subtitle words and fast-start layout.
+- `claims.json` holds the existing measured pool-size values, source hashes and protected demo/
+  research inputs. Only the project-page edit is permitted by the full-film approval; the other
+  protected hashes must still match. `docs/media/explainer-build.json` records the shipped assets.
+- `credits.json` selects the four existing teaser photographs with full attribution, source,
+  licence, modification and checksum fields. See [CREDITS.md](CREDITS.md). Photograph licences do
+  not grant rights in the depicted sculptures; the existing disclosure and removal path apply.
+- `model-lock.json` pins the exact Kokoro configuration, weights and stock voices. Models and
+  intermediate WAVs/renders remain in the external task cache, outside tracked source.
 
-## Sources and rights
+The vector directions, similarity bars, geographic positions and feature connections are labelled
+illustrative. Pool curves contain the published measured points. Location findings are labelled
+as simulations over 294 placed statues. Research uncertainty evaluation and the browser demo's
+close-call hint are distinguished. The film makes no street-photo accuracy claim.
 
-- `story.json` is the editable narration, scene budget, visual treatment and exact eight-colour
-  palette. `script.md` and `review/transcript.txt` are generated from it.
-- `claims.json` holds existing research table values and source-file digests. The build refuses
-  changed sources until the claims have been reviewed deliberately. The pool-size plot uses the
-  rounded published table, without inventing intermediate measurements or uncertainty bands.
-- `credits.json` names the four existing teaser photographs with author, licence, source,
-  modifications and checksums. See [CREDITS.md](CREDITS.md) for linked attribution and depicted-work
-  disclosure. Original code is MIT; photograph terms stay separate.
-- `model-lock.json` pins the Kokoro repository revision and SHA-256 of its configuration, weights
-  and both stock voices. The model and voice files remain outside this repository.
-- `review/audio-receipt.json` records voice, speed, speech length and audio hashes.
-  `review/checks.json` records actual frame, codec, duration and source-integrity checks.
+## Reproduce without changing the research environment
 
-The vector directions, similarity bars, geographic layout and feature connections are explicitly
-illustrative. Research location results are simulations over 294 placed statues. The browser
-identifier has its own measurements and its own close-call calibration. The script does not
-promise that field photographs score like the Commons dataset, or that all error comes from
-lookalike families or photographer style.
-
-## Reproduce in an isolated environment
-
-Do not install these packages into the research environment. On Linux, reproduce the native
-prefix using `native-linux-64.lock`; it records the exact conda-forge builds used here.
-For another platform, start from `native-environment.yml`, then resolve a native lock there.
+Create a standalone prefix using the exact native Linux lock. Other platforms can start from
+`native-environment.yml` and resolve their own native lock.
 
 ```bash
 conda create --prefix /path/to/explainer-env --file video/explainer/native-linux-64.lock
@@ -62,40 +61,51 @@ export PKG_CONFIG_PATH="$EXPLAINER_ENV/lib/pkgconfig:$EXPLAINER_ENV/share/pkgcon
 uv pip sync --python "$EXPLAINER_ENV/bin/python" --torch-backend cpu video/explainer/requirements.lock
 ```
 
-`requirements.lock` locks Python packages with hashes; its CPU-only torch index is explicit.
-The original inputs are `requirements.in`. Only intentional dependency updates should resolve it
-again with `uv pip compile --torch-backend cpu --generate-hashes`.
-
-On gmum, use your own running four-CPU allocation:
+Python dependencies are hash-locked independently of the root project, with CPU-only torch.
+Manim uses bundled TeX Gyre Heros fonts without a LaTeX installation. On gmum, run inside your own
+four-CPU allocation:
 
 ```bash
 export EXPLAINER_ENV=/shared/results/common/kargin/projects/krasnal-id/cache/explainer-env
 export EXPLAINER_CACHE=/shared/results/common/kargin/projects/krasnal-id/cache/explainer-review
-video/explainer/run_review.sh YOUR_CPU_JOB_ID all
+video/explainer/run_film.sh YOUR_CPU_JOB_ID all
 ```
 
-The wrapper limits threads, runs inside the allocation, and stores models and intermediate renders
-in the external cache. The existing research package, data, results, embedding binaries and model
-descriptors are never written. `sources` and `docs` need only the Python standard library:
+Individual build stages are `audio`, `assets`, `render`, `check`, `inspect` and `delivery`, in that order.
+`inspect` samples every caption and chapter transition; `delivery` compares decoded AAC with the
+approved master audio. Both run after the final encode and write verification receipts.
+The optional `transcribe` stage reruns the pinned local Whisper verification over the cached WAVs. The wrapper limits
+threads, uses the existing allocation and stores model/render caches outside the repository.
+The build never writes dataset, results, embedding binaries or model descriptors.
+
+Offline protocol tests need only the Python standard library:
 
 ```bash
-python3 video/explainer/build_review.py sources
-python3 video/explainer/build_review.py docs
+python3 -m unittest discover -s video/explainer -p test_film.py -v
 ```
 
-The individual allocated stages are `voices`, `frames`, `preview` and `check`. They must run in
-that order after a source change. The eight frames use Manim Community with bundled TeX Gyre Heros
-fonts; no LaTeX installation or external animation plugin is needed. Only selected review outputs
-are tracked; all intermediate frames, downloaded weights and render caches stay outside source.
+To rebuild the historical review documentation after the approved page edit, use
+`python3 video/explainer/build_review.py docs --allow-page-change`. That flag verifies the approval
+and exempts only the project page from the original review snapshot guard. `run_review.sh` remains
+the original review-stage recipe; it deliberately checks the original page unless the flag is
+passed to the Python stages directly.
 
-## After approval
+## Validation records
 
-Implement the complete film from the approved script and selected voice, first measuring audio
-and subtitle timing. Keep the full film at or below 120 seconds; trim prose rather than rush the
-voice. Export 1920×1080 at 30 fps, H.264/AAC, fast-start MP4, with a target below 25 MB, plus captions,
-transcript and linked credits. The final native player belongs between the existing teaser and
-abstract, with poster, controls, inline playback, no autoplay and `preload="none"`.
+The media receipt records the actual delivered movie and its hashes. Final export takes audio
+directly from the lossless master, avoiding the encoder delay of Manim's intermediate soundtrack.
+To rerun Chromium checks, install Playwright in an external scratch directory and serve `docs/`
+with byte-range HTTP support, then run:
 
-That second stage includes complete soundtrack and transition review, mobile caption checks,
-playback/seeking/fullscreen/keyboard tests and project-page screenshots in both themes. There is
-deliberately no full-film render or publication command in this review builder.
+```bash
+PLAYWRIGHT_MODULE=/path/to/scratch/node_modules/playwright \
+EXPLAINER_QA=/path/to/external/screenshots \
+EXPLAINER_SITE_URL=http://127.0.0.1:8765/ \
+node video/explainer/verify_browser.cjs
+```
+
+The browser receipt includes the movie hash and screenshot paths. Browser checks exercise
+playback, byte-range seeking, keyboard play/pause, fullscreen, downloads and the four desktop/
+mobile theme layouts. Frame samples cover each chapter and transition. Audio signal/timing and
+an independent local automatic transcription are separate checks; automatic transcription is
+not a human listening pass. Nothing in these scripts pushes or publishes the website.

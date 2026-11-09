@@ -29,8 +29,12 @@ def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def validate_sources():
+def validate_sources(allow_page_change=False):
     story, claims, credits = load("story.json"), load("claims.json"), load("credits.json")
+    if allow_page_change:
+        approval = load("approval.json")
+        assert approval["story_sha256"] == sha(HERE / "story.json")
+        assert approval["approval_text"] == "Approve with af_heart"
     assert story["status"] == "awaiting-owner-review", (
         "This build is only for the unapproved review package"
     )
@@ -55,6 +59,8 @@ def validate_sources():
     assert 210 <= sum(len(s["narration"].split()) for s in story["scenes"]) <= 240
     assert len(credits["photographs"]) <= 4
     for filename, checksum in claims["protected_sha256"].items():
+        if allow_page_change and filename == "docs/index.html":
+            continue
         assert sha(REPO / filename) == checksum, (
             f"Protected research/demo input changed: {filename}"
         )
@@ -96,8 +102,8 @@ def validate_sources():
     )
 
 
-def write_docs():
-    validate_sources()
+def write_docs(allow_page_change=False):
+    validate_sources(allow_page_change=allow_page_change)
     REVIEW.mkdir(exist_ok=True)
     story, claims, credits = load("story.json"), load("claims.json"), load("credits.json")
     words = sum(len(s["narration"].split()) for s in story["scenes"])
@@ -127,6 +133,14 @@ def write_docs():
                     "",
                 ]
             )
+    if allow_page_change:
+        lines = [
+            line.replace(
+                "Status: awaiting owner approval.",
+                "Approved by the owner with af_heart narration.",
+            )
+            for line in lines
+        ]
     (HERE / "script.md").write_text("\n".join(lines))
     (REVIEW / "transcript.txt").write_text(
         "\n\n".join(s["narration"] for s in story["scenes"] if s["narration"]) + "\n"
@@ -162,6 +176,16 @@ def write_docs():
             "That does not replace the photographs' individual terms.",
         ]
     )
+    if allow_page_change:
+        lines = [
+            line.replace(
+                "Two sample voices are included; the short preview uses af_heart provisionally. "
+                "No voice has been approved.",
+                "The owner approved af_heart for the complete film. "
+                "Both original voice auditions remain in the archived review package.",
+            )
+            for line in lines
+        ]
     (HERE / "CREDITS.md").write_text("\n".join(lines) + "\n")
     cards = []
     for i, scene in enumerate(story["scenes"], 1):
@@ -212,10 +236,25 @@ def write_docs():
         .replace("PALETTE", palette)
         .replace("PHOTO_LINKS", photo_links)
     )
+    if allow_page_change:
+        page = page.replace("Draft · awaiting your review", "Approved · af_heart selected")
+        page = page.replace("What needs your decision", "Approved reference")
+        page = page.replace(
+            "Does the script tell the right story? Does the motion feel right? "
+            "Which voice do you prefer: af_heart or am_michael?",
+            "The owner approved the script, storyboard and motion style, with af_heart narration.",
+        )
+        page = page.replace(
+            "The complete video and project-page player will be built after your approval. "
+            "Nothing here is published.",
+            '<a href="../../docs/index.html#explainer">'
+            "Open the complete film on the project page</a>. "
+            "The two short auditions and the motion study are retained as the approved reference.",
+        )
     (HERE / "review.html").write_text(page.rstrip() + "\n")
 
 
-def run_manim(cache, scene, output, static=False, index=None):
+def run_manim(cache, scene, output, static=False, index=None, scene_file=None):
     env = {**os.environ, "EXPLAINER_CACHE": str(cache)}
     if index is not None:
         env["EXPLAINER_FRAME"] = str(index)
@@ -232,7 +271,7 @@ def run_manim(cache, scene, output, static=False, index=None):
     ]
     if static:
         args.append("-s")
-    args.extend([str(HERE / "scenes.py"), scene])
+    args.extend([str(scene_file or HERE / "scenes.py"), scene])
     subprocess.run(args, check=True, env=env, cwd=HERE, stdin=subprocess.DEVNULL)
     suffix = "png" if static else "mp4"
     matches = list((cache / "manim").rglob(f"{output}.{suffix}"))
@@ -326,19 +365,19 @@ def render_preview(cache):
     )
 
 
-def check_outputs():
+def check_outputs(allow_page_change=False):
     import av
     import numpy as np
     import soundfile as sf
     from PIL import Image
 
-    validate_sources()
+    validate_sources(allow_page_change=allow_page_change)
     story = load("story.json")
     receipt = {
-        "status": "awaiting-owner-review",
+        "status": "approved-reference" if allow_page_change else "awaiting-owner-review",
         "narration_words": sum(len(s["narration"].split()) for s in story["scenes"]),
-        "full_video_rendered": False,
-        "project_page_modified": False,
+        "full_video_rendered": (REPO / "docs/media/explainer.mp4").is_file(),
+        "project_page_modified": allow_page_change,
         "frames": [],
         "voices": [],
     }
@@ -394,13 +433,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=["sources", "docs", "frames", "preview", "check"])
     parser.add_argument("--cache", type=Path)
+    parser.add_argument("--allow-page-change", action="store_true")
     args = parser.parse_args()
     if args.stage == "sources":
-        validate_sources()
+        validate_sources(allow_page_change=args.allow_page_change)
     elif args.stage == "docs":
-        write_docs()
+        write_docs(allow_page_change=args.allow_page_change)
     elif args.stage == "check":
-        check_outputs()
+        check_outputs(allow_page_change=args.allow_page_change)
     else:
         if args.cache is None:
             parser.error("--cache is required for rendering")
