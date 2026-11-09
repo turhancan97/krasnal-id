@@ -2021,7 +2021,8 @@ krasnal-id/
 ├── CITATION.cff               # how to cite; its licence field covers the code only
 ├── CONTRIBUTING.md
 ├── LICENSE                    # MIT applies to original source code only
-├── README.md
+├── README.md                  # short landing page; the detail lives in guide/
+├── guide/                     # pipeline, experiments, demos, dataset and development guides
 ├── RESULTS.md                 # the complete written record of every experiment
 ├── pyproject.toml             # exact direct dependency pins and tool configuration
 ├── uv.lock                    # locked transitive dependency graph
@@ -2042,7 +2043,7 @@ krasnal-id/
 │   ├── app.js                 # ONNX inference, retrieval, and the co-location warning
 │   ├── chart.js               # the figures the page draws from the result artifacts
 │   ├── assets/                # generated reference vectors and thumbnails
-│   ├── brand/                 # tracked lockups and the script that generates them
+│   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
 │   ├── demo/                  # the build that produces docs/assets
 │   └── figures/               # figures selected for publication
 ├── src/krasnal_id/

@@ -15,7 +15,7 @@ environment. Install only the extras needed for the task.
 
 1. Follow the strict v0.1–v0.3 build order in `AGENTS.md`.
 2. Add or update tests with every implemented behavior.
-3. Run all checks listed in the README before submitting a change.
+3. Run all checks listed in [guide/development.md](guide/development.md) before submitting a change.
 4. Update `AGENTS.md` when a project decision changes.
 5. Record material completed work under `Unreleased` in `CHANGELOG.md`.
 

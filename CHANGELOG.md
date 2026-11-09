@@ -10,6 +10,18 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- `README.md` is a short landing page: the Doppeldwarf-306 lockup, badges, headline results, a
+  quick start and a documentation table. Its command walkthroughs moved verbatim into `guide/`
+  (`pipeline.md`, `experiments.md`, `demo.md`, `dataset.md`, `development.md`), and
+  `guide/experiments.md` gains short entries for the experiments the README never documented:
+  photographer gap, re-ranking, recall, geometry-first, held-out validation and the paradigm study.
+- The README header and the website (favicon, header mark, link preview) use the new
+  Doppeldwarf-306 mark: two identical gnomes, one a colour-swapped twin, in the corpus colours.
+  `docs/brand/doppeldwarf.py` generates its light and dark marks, lockups and social preview from
+  the vendored TeX Gyre Heros; the Krasnal-ID mark stays in `docs/brand/` as an archive.
+
 ## [0.20.0] - 2026-11-09
 
 The headline results were put under test, and the backbone comparison grew from four models to

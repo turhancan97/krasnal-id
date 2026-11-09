@@ -1133,5 +1133,5 @@ uv run krasnal-id visualize open-set
 Every experiment writes a structured JSON artifact to `results/`. Embeddings are cached by image
 content hash and backbone revision, so nothing is recomputed between runs. The probe fits 1,691
 classifiers per backbone and takes about 1.5 hours; everything else runs in minutes. See the
-[README](README.md) for the full command reference and [AGENTS.md](AGENTS.md) for the recorded
+[guides](guide/README.md) for the full command reference and [AGENTS.md](AGENTS.md) for the recorded
 design decisions behind each of these choices.
