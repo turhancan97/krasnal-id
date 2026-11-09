@@ -797,6 +797,13 @@ already on screen rather than asking for it again.
   `index.html` with a canonical link and visible fallback. `docs/chart.js` is deleted with no
   remaining site references. Current identifier links in the README, results and demo guide
   target `demo.html`; historical changelog entries retain their original paths.
+- **Presentation verification (2026-11-09):** all three pages and their local HTML targets
+  returned HTTP 200; relative links in the README, guides and site resolved. Chromium screenshots
+  at 1280 and 390 pixels in both system themes were inspected, with no horizontal overflow or
+  page errors. Clipboard, legacy-copy and manual-selection paths were exercised. `app.js` is
+  byte-identical to the previous version. The browser probe self-test was blocked by automatic
+  approval review because it executes a model on the shared login node; no inference pass is
+  claimed. Both self-test URL modes remain wired by the unchanged script.
 - **This is a presentation-only change.** No data, results-directory artifact, paper source,
   embedding, generated demo asset, export or deployed site is rebuilt or changed.
 

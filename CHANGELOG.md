@@ -14,8 +14,10 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 - The GitHub Pages front door is a research project page using the Academic Project Page
   Template structure and pinned Bulma styling, the Doppeldwarf-306 lockup, a resolved abstract,
-  six copied figures, attributed teaser photographs, dataset terms and a copyable software
-  citation. Shared theme tokens support light and dark layouts.
+  six copied figures with descriptions of their actual panels, attributed teaser photographs,
+  dataset terms and a copyable software citation, including a selected-text fallback when browser
+  clipboard access is unavailable.
+  Shared theme tokens support light and dark layouts.
 - The browser identifier moves to `docs/demo.html`, with a project-page backlink and unchanged
   inference, model switching and self-test paths. Current documentation links point there;
   `findings.html` becomes a redirect to the project page, and the unreferenced `docs/chart.js`

@@ -26,6 +26,8 @@ copyButton.addEventListener("click", async () => {
     let copied = false;
     try {
       copied = document.execCommand("copy");
+    } catch {
+      copied = false;
     } finally {
       field.remove();
       copyButton.focus({ preventScroll: true });
