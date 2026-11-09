@@ -9,7 +9,7 @@
   --ground:#F1F3F4; --surface:#FFFFFF; --raised:#FFFFFF; --plate:#FFFFFF;
   --ink:#182126; --ink-2:#47535A; --ink-3:#76838A;
   --rule:#DDE1E3; --rule-soft:#E9ECEE;
-  --red:#cf4832; --blue:#2578AF; --logo-red:#cf4832; --logo-blue:#3a7eab;
+  --red:#cf4832; --blue:#2578AF; --mark-beard:#1F2328; --mark-twin:#57606A;
   --good:#1F7A5C;
   --shadow:0 1px 2px rgba(24,33,38,.05),0 10px 26px -14px rgba(24,33,38,.2);
   --measure:38rem; --wide:56rem;
@@ -18,7 +18,7 @@
   --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
   --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
   --rule:#262E33; --rule-soft:#1E252A;
-  --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+  --red:#e05a45; --blue:#3E9BD2; --mark-beard:#E6EDF3; --mark-twin:#8C959F;
   --good:#4FBF97;
   --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
 }}
@@ -26,7 +26,7 @@
   --ground:#12171A; --surface:#1A2024; --raised:#212930; --plate:#F4F5F6;
   --ink:#E3E7E9; --ink-2:#AEB8BD; --ink-3:#7D888E;
   --rule:#262E33; --rule-soft:#1E252A;
-  --red:#e05a45; --blue:#3E9BD2; --logo-red:#e05a45; --logo-blue:#6aa8cf;
+  --red:#e05a45; --blue:#3E9BD2; --mark-beard:#E6EDF3; --mark-twin:#8C959F;
   --good:#4FBF97;
   --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.75);
 }
@@ -64,7 +64,7 @@ code{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--ru
 
 header{display:flex; flex-direction:column; gap:1.1rem}
 .brandrow{display:flex; align-items:center; gap:.7rem}
-.brandrow svg{width:34px; height:34px; flex:none; display:block}
+.brandrow svg{width:37px; height:34px; flex:none; display:block}
 .facts{display:flex; flex-wrap:wrap; gap:.4rem 1.1rem;
        font-family:"IBM Plex Mono",monospace; font-size:.75rem; color:var(--ink-3)}
 
