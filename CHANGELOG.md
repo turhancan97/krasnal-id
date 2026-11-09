@@ -21,7 +21,8 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 - The browser identifier moves to `docs/demo.html`, with a project-page backlink and unchanged
   inference, model switching and self-test paths. Current documentation links point there;
   `findings.html` becomes a redirect to the project page, and the unreferenced `docs/chart.js`
-  is removed. `RESULTS.md` remains the complete research record.
+  is removed. `RESULTS.md` remains the complete research record. Chromium's eight-probe DINOv2
+  self-test passes at the new URL (mean cosine agreement 0.9890, minimum 0.9806).
 - `README.md` is a short landing page: the Doppeldwarf-306 lockup, badges, headline results, a
   quick start and a documentation table. Its command walkthroughs moved verbatim into `guide/`
   (`pipeline.md`, `experiments.md`, `demo.md`, `dataset.md`, `development.md`), and

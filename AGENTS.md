@@ -801,9 +801,10 @@ already on screen rather than asking for it again.
   returned HTTP 200; relative links in the README, guides and site resolved. Chromium screenshots
   at 1280 and 390 pixels in both system themes were inspected, with no horizontal overflow or
   page errors. Clipboard, legacy-copy and manual-selection paths were exercised. `app.js` is
-  byte-identical to the previous version. The browser probe self-test was blocked by automatic
-  approval review because it executes a model on the shared login node; no inference pass is
-  claimed. Both self-test URL modes remain wired by the unchanged script.
+  byte-identical to the previous version. After explicit approval for the bounded browser check,
+  `demo.html?selftest=1` passed all eight DINOv2 probes: cosine agreement mean 0.9890, minimum
+  0.9806, above the 0.95 threshold, with no page errors or failed requests. Both self-test URL
+  modes remain wired by the unchanged script; the full mode was not run.
 - **This is a presentation-only change.** No data, results-directory artifact, paper source,
   embedding, generated demo asset, export or deployed site is rebuilt or changed.
 
