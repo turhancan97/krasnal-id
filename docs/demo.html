@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="identifier-page">
 <div class="page">
 
   <header>
@@ -42,6 +42,12 @@
       project&rsquo;s findings are about. DINOv2 is the smaller download <em>and</em> the more
       accurate one.</p>
 
+      <div class="example-section">
+        <p class="examples-heading">Try an example</p>
+        <div class="examples" id="examples" aria-label="Example photographs"></div>
+        <p class="examples-note">Examples are photographs from the dataset, scored with that photograph held out.</p>
+      </div>
+
       <div class="drop" id="drop">
         <div class="actions">
           <label for="file"><button class="primary" type="button" id="pick">Choose a photo</button></label>
@@ -50,11 +56,20 @@
           <input type="file" id="camera" accept="image/*" capture="environment">
         </div>
         <p>or drop one here</p>
-        <div class="examples" id="examples"><span>try one:</span></div>
+      </div>
+
+      <div class="location-panel">
+        <label class="location-control"><input id="use-location" type="checkbox" role="switch">
+          <span>Use my location to favour nearby statues</span></label>
+        <p id="location-status" role="status" aria-live="polite">Off. Your photograph alone determines the ranking.</p>
+        <details>
+          <summary>Why use location as a weight?</summary>
+          <p>The <a href="https://github.com/turhancan97/krasnal-id/blob/main/RESULTS.md">research pipeline’s simulations</a> found that restricting candidates to nearby statues helps less than random narrowing, because some lookalikes stand together; weighting by distance helps while keeping every statue eligible. These simulation results are separate from this identifier’s measured photograph-only accuracy.</p>
+        </details>
       </div>
 
       <div class="status" id="status" role="status" aria-live="polite">
-        <span id="status-text">The model downloads once, on your first identification.</span>
+        <span id="status-text">Choose an example, or upload a photograph.</span>
         <span class="bar" id="bar" hidden><i id="bar-fill"></i></span>
       </div>
 
@@ -64,8 +79,11 @@
           <div class="meta">
             <span class="t" id="query-title">Closest matches</span>
             <span class="s" id="query-sub"></span>
+            <span class="s" id="query-credit" hidden></span>
           </div>
         </div>
+        <p class="ranking-note" id="ranking-note"></p>
+        <p class="photo-alone" id="photo-alone" hidden></p>
         <ol class="results" id="hits"></ol>
         <div class="note" id="colocated" hidden>
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
@@ -75,9 +93,21 @@
           </svg>
           <span id="colocated-text"></span>
         </div>
+        <section class="map-panel" aria-labelledby="map-heading">
+          <h2 id="map-heading">Where the matches stand</h2>
+          <p class="map-status" id="map-status" role="status">The map loads with your first result.</p>
+          <div class="matches-map" id="matches-map" aria-label="Map of the closest statue matches"></div>
+          <div class="map-legend">
+            <span><i class="legend-pin stated" aria-hidden="true"></i> Wikidata position</span>
+            <span><i class="legend-pin estimated" aria-hidden="true"></i> Position estimated from photographs</span>
+            <span><i class="legend-pin first" aria-hidden="true"></i> First match</span>
+            <span><i class="legend-position" aria-hidden="true"></i> Your position, when enabled</span>
+          </div>
+          <p class="map-privacy">Map tiles load from OpenStreetMap, which sees which map area is shown. Your exact GPS coordinates and photograph stay in this browser.</p>
+        </section>
       </div>
 
-      <p class="privacy">Your photograph never leaves this device. Everything runs locally.</p>
+      <p class="privacy">Your photograph is never uploaded. Location is optional and stays in this browser. OpenStreetMap receives requests for the map area shown.</p>
     </div>
   </section>
 

@@ -846,6 +846,44 @@ already on screen rather than asking for it again.
   The selected IDs are `commons-4074360`, `commons-33580401`, `commons-30095904`,
   `commons-15801714`, `commons-114315993`, `commons-175031164`, all distinct statues.
   The full rule is stored beside the list in `references.json.examples`.
+- **Examples never re-embed their thumbnails.** Each button uses the active backbone's stored
+  vector and excludes its own image index from the reference gallery. Every example thumbnail
+  and selected query carries source/photographer and licence links. Both model switches re-rank
+  the same query; uploaded-query vectors are cached per backbone so changing location reuses
+  cosine scores. Even transformers.js is lazy until an upload or embedding self-test needs it.
+  Request versions prevent a late query from replacing a newer answer.
+- **Location is an explicit, one-shot opt-in.** The switch starts off, calls
+  `getCurrentPosition` once per activation, never watches, and discards late callbacks after
+  being switched off. A reported accuracy above 100 m or a nearest placed statue beyond 2 km
+  leaves the ranking unweighted, with a reason. Valid positions stay in browser memory. Every
+  statue remains eligible: its best-image cosine receives `0.2 * exp(-distance_m / 200)` if it
+  is placed and zero otherwise. Haversine uses a 6,371,008.8 m Earth radius. Equal weighted
+  scores keep plain cosine order. The probe self-test asserts exact weight-zero equivalence
+  for all six examples. The page names the photograph-only winner when weighting changes it,
+  labels weighted scores as including a bonus, and links the research simulations separately.
+- **Close-call hints always describe the photograph alone.** They appear under the first result
+  when its plain top-two cosine margin is below the active backbone's threshold, naming the
+  plain runner-up. With location active the note explicitly says “Photograph-only close call”;
+  it never applies photograph-only calibration to a weighted margin. Accuracy is shown to two
+  decimal places, which keeps the just-below-80% groups from rounding to 80.0%. The page says
+  these are held-out dataset measurements rather than measured probabilities for a visitor's
+  photo, and never rejects an answer.
+- **The map loads with the first result.** `matches-map.mjs` loads Leaflet 1.9.4 JS and CSS from
+  cdnjs, both with CDN-provided SHA-512 integrity hashes and anonymous CORS. The map reserves
+  its height before the library loads; map failure leaves the photograph results usable.
+  Top-five placed matches have numbered markers, mustard for rank one, solid round markers
+  for Wikidata and dashed squares for positions estimated from photographs. A shaded halo,
+  group count and context markers expose the existing co-location warning's group; the map
+  does not pretend overlapping statues are one. An opted-in, usable user fix is a local blue
+  marker. Standard OpenStreetMap tiles carry visible contributor attribution. The privacy text
+  explicitly distinguishes photographs and exact GPS (kept local) from tile requests, which
+  disclose the viewed map area to OpenStreetMap. No extra map plugin or tile prefetch is used.
+- **Browser verification:** all eight DINOv2 probes pass (mean cosine agreement 0.9890, minimum
+  0.9806), including the six-example weight-zero control. Chromium verifies held-out examples
+  and both backbones without model downloads, map markers and attribution, close-call hints,
+  one-shot mocked location, the changed-ranking explanation, and both distance/accuracy guards.
+  Screenshots at 1280 and 390 pixels in both themes were inspected without horizontal overflow,
+  clipping or broken images. The full embedding self-test remains available and was not run.
 - **Verification:** metadata-only build reproduced both backbone measurements; binary SHA-256
   checks matched before and after. Five Node tests cover withheld queries, stable ties, the
   weight-zero control, unplaced statues, nonmonotonic threshold selection, tied margins,
@@ -2149,8 +2187,9 @@ krasnal-id/
 │   ├── findings.html          # redirect to the project page
 │   ├── style.css              # shared theme, identifier and scoped Bulma styles
 │   ├── project.js             # title synchronization and citation copying
-│   ├── app.js                 # ONNX inference, retrieval, and the co-location warning
+│   ├── app.js                 # browser inference, held-out examples, location and close-call hints
 │   ├── retrieval.mjs          # shared vector-only ranking and geographic weighting
+│   ├── matches-map.mjs        # lazy map library, ranked markers and co-location context
 │   ├── assets/                # generated reference vectors and thumbnails
 │   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
 │   ├── demo/                  # full build, metadata-only calibration and vector-contract tests

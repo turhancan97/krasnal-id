@@ -350,3 +350,62 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
   .dataset-facts span{font-size:.75rem; line-height:1.4}
   .project-page pre.citation{padding:1rem; font-size:.72rem}
 }
+
+/* ---------- identifier: examples, optional location, close calls and map ---------- */
+.identifier-page .examples{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.6rem}
+.examples-heading{font-weight:600; font-size:.94rem; margin-bottom:.6rem}
+.example-section{min-width:0}
+.example-tile{min-width:0; display:flex; flex-direction:column; gap:.3rem}
+.example-button{padding:0; border:2px solid var(--rule); border-radius:7px; overflow:hidden;
+  background:var(--ground); width:100%; min-width:0; aspect-ratio:1; display:block}
+.identifier-page .example-button img{display:block; width:100%; height:100%; object-fit:cover;
+  border:0; border-radius:0}
+.example-button[aria-pressed=true]{border-color:var(--blue)}
+.example-credit{font-size:.61rem; line-height:1.35; color:var(--ink-2); min-width:0}
+.example-credit a{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  color:var(--ink-2)}
+.examples-note{font-size:.76rem; color:var(--ink-2); line-height:1.5; margin-top:.65rem}
+.location-panel{display:flex; flex-direction:column; gap:.55rem; padding:.9rem;
+  border:1px solid var(--rule); border-radius:8px; background:var(--ground)}
+.location-control{display:flex; align-items:flex-start; gap:.65rem; font-size:.9rem; cursor:pointer;
+  font-weight:500; line-height:1.45}
+.location-control input{width:1.1rem; height:1.1rem; margin:.12rem 0 0; flex:none; accent-color:var(--blue)}
+#location-status,.location-panel details p{font-size:.78rem; line-height:1.5; color:var(--ink-2)}
+.location-panel details{padding-top:.5rem}
+.location-panel summary{font-size:.65rem; line-height:1.5; letter-spacing:.04em}
+.location-panel details[open] summary{margin-bottom:.6rem}
+#result{display:flex; flex-direction:column; gap:.9rem}
+.ranking-note,.photo-alone{font-size:.8rem; color:var(--ink-2); line-height:1.5}
+.query .meta{overflow-wrap:anywhere}
+.query .meta .s a{color:var(--ink-2)}
+.close-call{grid-column:1/-1; border-top:1px solid var(--rule); padding-top:.65rem;
+  font-size:.82rem; line-height:1.5; color:var(--ink-2)}
+.close-call p+p{font-size:.73rem; margin-top:.3rem}
+.close-call strong{font-weight:600; color:var(--ink)}
+.map-panel{padding-top:.5rem; gap:.7rem; min-width:0}
+.map-panel h2{font-size:1.05rem}
+.map-status{font-size:.76rem; color:var(--ink-2); min-height:2.7em; line-height:1.4}
+.matches-map{height:19rem; width:100%; position:relative; z-index:0; background:var(--rule-soft);
+  border:1px solid var(--rule); border-radius:8px; overflow:hidden; font-family:inherit}
+.map-legend{display:flex; flex-wrap:wrap; gap:.5rem 1rem; color:var(--ink-2); font-size:.7rem; line-height:1.4}
+.map-legend>span{display:inline-flex; align-items:center; gap:.4rem}
+.legend-pin{width:13px; height:13px; display:inline-block; border:2px solid var(--ink-2);
+  border-radius:50%; background:var(--surface); flex:none}
+.legend-pin.estimated{border-style:dashed; border-radius:3px}
+.legend-pin.first{background:#EAB34D; border-color:#1F2328}
+.legend-position{width:12px; height:12px; border:2px solid white; border-radius:50%; background:#2578AF;
+  box-shadow:0 0 0 1px var(--rule); flex:none}
+.map-privacy{font-size:.73rem; color:var(--ink-2); line-height:1.5}
+.match-marker{background:none; border:0}
+.match-pin{width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border:2px solid #1F2328; border-radius:50%; background:white; color:#1F2328;
+  font:600 14px "IBM Plex Sans",sans-serif; box-shadow:0 1px 4px #0005}
+.match-pin.estimated{border-style:dashed; border-radius:6px}
+.match-pin.first{background:#EAB34D; border-width:3px}
+.group-map-label{font-family:inherit; color:#1F2328; background:#fff7df; border-color:#B87A12}
+@media (max-width:30rem){
+  .identifier-page .examples{grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem}
+  .example-credit{font-size:.65rem}
+  .matches-map{height:18rem}
+  .location-panel{padding:.8rem}
+}

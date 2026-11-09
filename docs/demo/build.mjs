@@ -20,13 +20,15 @@
  *
  *   cd docs/demo && npm install && node build.mjs
  *
+ * Metadata only, without model imports or image writes:
+ *   node build.mjs --metadata-only
+ *
  * Model weights are fetched from the Hugging Face CDN on first run and cached.
  */
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { BACKBONES, unitVector, vectorFile } from "../backbones.mjs";
 import { resizeToShortestEdge } from "../resize.mjs";
-
 
 const REPO = resolve(import.meta.dirname, "../..");
 const OUT = join(REPO, "docs/assets");
@@ -35,9 +37,6 @@ const THUMBS = join(OUT, "thumbs");
 const THUMB_LONG_SIDE = 320;
 const CO_LOCATED_METRES = 25;
 const SELF_TEST_COUNT = 8;
-
-// Resolved here rather than in backbones.mjs because the browser loads
-// transformers.js from a CDN and this file loads it from npm.
 
 // Measured on this dataset, embedding DINOv2 q4 where the build actually had
 // four usable CPUs:

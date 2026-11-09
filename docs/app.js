@@ -18,23 +18,22 @@
  * Nothing is uploaded. The photograph is decoded, scaled, embedded and compared
  * entirely on this device.
  */
-import {
-  AutoModel,
-  AutoProcessor,
-  CLIPVisionModelWithProjection,
-  RawImage,
-  env,
-} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
 import { BACKBONES, DEFAULT_BACKBONE, backbone, unitVector, vectorFile } from "./backbones.mjs";
 import { resizeToShortestEdge } from "./resize.mjs";
+import { rankStatues, weightByLocation, distanceMetres } from "./retrieval.mjs";
 
 const TOP_K = 5;
 
-// Resolved here rather than in backbones.mjs because the build loads
-// transformers.js from npm and this file loads it from a CDN.
-const CLASSES = { AutoModel, CLIPVisionModelWithProjection };
-
-env.allowLocalModels = false;
+// Examples use stored vectors, so the model library is unnecessary until an
+// uploaded photo or an embedding self-test needs it.
+let transformerTask;
+async function transformerLibrary() {
+  transformerTask ??= import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1").then((library) => {
+    library.env.allowLocalModels = false;
+    return library;
+  }).catch((error) => { transformerTask = null; throw error; });
+  return transformerTask;
+}
 
 const el = (id) => document.getElementById(id);
 const statusText = el("status-text");
@@ -51,6 +50,12 @@ const pending = new Map();
 /** The last thing identified, so switching backbones can re-rank it. */
 let lastQuery = null;
 let objectUrl = null;
+let lastRanking = null;
+let requestVersion = 0;
+let locationRequest = 0;
+let userPosition = null;
+let mapModule = null;
+let dwarfById = new Map();
 
 function say(message, isError = false) {
   statusText.textContent = message;
@@ -76,6 +81,10 @@ async function loadMetadata() {
   const response = await fetch("assets/references.json");
   if (!response.ok) throw new Error("reference data is unavailable");
   meta = await response.json();
+  if (!meta.location_prior || !meta.close_call || !meta.examples?.image_ids) {
+    throw new Error("reference metadata is outdated — reload without cache");
+  }
+  dwarfById = new Map(meta.dwarfs.map((d) => [d.id, d]));
   if (!available().length) throw new Error("this build shipped no reference vectors");
   if (!meta.backbones[current]) current = available()[0].id;
 }
@@ -113,8 +122,11 @@ async function loadModel(id) {
   if (pending.has(id)) return pending.get(id);
   const spec = backbone(id);
   const task = (async () => {
+    const library = await transformerLibrary();
+    const { AutoProcessor } = library;
     const seen = new Map();
     const onProgress = (item) => {
+      if (id !== current) return;
       if (item.status === "progress" && item.total) {
         seen.set(item.file, item.loaded / item.total);
         const mean = [...seen.values()].reduce((a, b) => a + b, 0) / seen.size;
@@ -125,7 +137,7 @@ async function loadModel(id) {
         );
       }
     };
-    const ModelClass = CLASSES[spec.className];
+    const ModelClass = library[spec.className];
     if (!ModelClass) throw new Error(`no model class named ${spec.className}`);
     const [processor, model] = await Promise.all([
       AutoProcessor.from_pretrained(spec.modelId, { progress_callback: onProgress }),
@@ -189,6 +201,7 @@ async function readScaled(source, shortestEdge) {
     pixels.height,
     shortestEdge,
   );
+  const { RawImage } = await transformerLibrary();
   return new RawImage(scaled.data, scaled.width, scaled.height, 4);
 }
 
@@ -201,26 +214,14 @@ async function embedSource(source, id = current) {
   return unitVector(spec.pool(output));
 }
 
-/** Rank distinct dwarves by their best-matching reference photograph. */
-function rank(query, vectors) {
-  const best = new Map();
-  for (let i = 0; i < vectors.length; i += 1) {
-    const reference = vectors[i];
-    let dot = 0;
-    for (let d = 0; d < query.length; d += 1) dot += query[d] * reference[d];
-    const image = meta.images[i];
-    const currentBest = best.get(image.dwarf);
-    if (!currentBest || dot > currentBest.score) best.set(image.dwarf, { score: dot, image });
-  }
-  return [...best.values()].sort((a, b) => b.score - a.score).slice(0, TOP_K);
-}
-
 function renderHits(hits) {
   const list = el("hits");
   list.textContent = "";
   hits.forEach((hit, index) => {
     const item = document.createElement("li");
     item.className = index === 0 ? "hit top" : "hit";
+    item.dataset.imageId = hit.image.id;
+    item.dataset.dwarf = hit.image.dwarf;
     const credit = `${hit.image.author} · ${hit.image.license}`;
     item.innerHTML = `
       <span class="rank">${index + 1}</span>
@@ -233,6 +234,7 @@ function renderHits(hits) {
       </span>
       <span class="score">${hit.score.toFixed(3)}</span>`;
     item.querySelector(".name").textContent = hit.image.name;
+    item.querySelector(".score").title = `Photograph cosine ${hit.cosine.toFixed(3)}; location bonus ${(hit.score-hit.cosine).toFixed(3)}`;
     const link = item.querySelector(".credit a");
     link.textContent = credit;
     link.href = hit.image.source_url;
@@ -275,10 +277,20 @@ async function runSelfTest() {
     say(`This build shipped no self-test probes for ${spec.label}.`, true);
     return;
   }
+  const vectors = await loadVectors(spec.id);
+  const position = meta.dwarfs.find((d) => Number.isFinite(d.lat));
+  for (const imageId of meta.examples.image_ids) {
+    const index = meta.images.findIndex((image) => image.id === imageId);
+    const plain = rankStatues(vectors[index], vectors, meta.images, index);
+    const control = weightByLocation(plain, dwarfById, position, { ...meta.location_prior, weight:0 });
+    if (control.length !== plain.length || control.some((hit,i) => hit.image.id !== plain[i].image.id || hit.score !== plain[i].score)) {
+      throw new Error("Weight-0 location control changed the plain cosine ranking");
+    }
+  }
   const agreements = [];
   for (const [index, probe] of probes.entries()) {
     say(`Self-test ${index + 1}/${probes.length} on ${spec.label}…`);
-    const vector = await embedSource(`assets/thumbs/${probe.thumb}`);
+    const vector = await embedSource(`assets/thumbs/${probe.thumb}`, spec.id);
     let dot = 0;
     for (let d = 0; d < vector.length; d += 1) dot += vector[d] * probe.vector[d];
     agreements.push(dot);
@@ -299,7 +311,7 @@ async function runSelfTest() {
   const broken = agreements[0] < BROKEN_BELOW;
   say(
     `Self-test on ${spec.label}: ${probes.length} probes, cosine agreement mean ` +
-      `${mean.toFixed(4)}, min ${agreements[0].toFixed(4)} — ` +
+      `${mean.toFixed(4)}, min ${agreements[0].toFixed(4)}; weight-0 location control passed for ${meta.examples.image_ids.length} examples — ` +
       (broken
         ? "far below the 0.95 this should never cross. The model export is wrong, " +
           "not merely decoding differently."
@@ -357,44 +369,126 @@ async function runFullSelfTest() {
   );
 }
 
+/** Cache this query by backbone: location toggles never load a model or re-embed it. */
 async function identify(source, label) {
-  lastQuery = { source, label };
-  try {
-    say("Preparing…");
-    const [vectors] = await Promise.all([loadVectors(current), loadModel(current)]);
-    say("Looking…");
-    const query = await embedSource(source);
-    const hits = rank(query, vectors);
+  lastQuery = { source, label, vectors: new Map() };
+  await identifyQuery(lastQuery);
+}
 
-    if (typeof source === "string") {
-      el("query-img").src = source;
+async function identifyExample(imageId) {
+  const index = meta.images.findIndex((image) => image.id === imageId);
+  if (index < 0) throw new Error("Example is absent from the reference metadata");
+  const image = meta.images[index];
+  lastQuery = { source: `assets/thumbs/${image.thumb}`, label: `Example — ${image.name}`, index, image, vectors: new Map() };
+  for (const button of el("examples").querySelectorAll("button")) {
+    button.setAttribute("aria-pressed", String(button.dataset.imageId === imageId));
+  }
+  await identifyQuery(lastQuery);
+}
+
+async function identifyQuery(query) {
+  const id = current;
+  const request = ++requestVersion;
+  try {
+    say(query.image ? "Scoring the held-out example…" : "Preparing…");
+    el("result").setAttribute("aria-busy", "true");
+    const vectors = await loadVectors(id);
+    let vector = query.vectors.get(id);
+    if (!vector) {
+      vector = query.image ? vectors[query.index] : await embedSource(query.source, id);
+      query.vectors.set(id, vector);
+    }
+    if (request !== requestVersion) return;
+    const plain = rankStatues(vector, vectors, meta.images, query.index ?? -1);
+    lastRanking = { plain, query, backbone: id };
+    if (typeof query.source === "string") {
+      el("query-img").src = query.source;
     } else {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
-      objectUrl = URL.createObjectURL(source);
+      objectUrl = URL.createObjectURL(query.source);
       el("query-img").src = objectUrl;
     }
-    el("query-sub").textContent = label;
-    renderHits(hits);
-    renderCoLocated(hits);
+    el("query-sub").textContent = query.label;
+    const credit = el("query-credit");
+    credit.replaceChildren(); credit.hidden = !query.image;
+    if (query.image) appendCredit(credit, query.image);
+    else for (const button of el("examples").querySelectorAll("button")) button.setAttribute("aria-pressed", "false");
     el("result").hidden = false;
-    say(
-      `${backbone(current).label} compared it against ${meta.images.length} reference ` +
-        `photographs of ${meta.dwarfs.length} dwarves.`,
-    );
+    renderCurrentRanking();
+    say(`${backbone(id).label} compared it against ${meta.images.length - (query.image ? 1 : 0)} reference photographs of ${meta.dwarfs.length} dwarves.${query.image ? " The example photograph was held out; no model download was needed." : ""}`);
   } catch (error) {
-    console.error(error);
-    progress(null);
-    // The previous ranking is deliberately left on screen while a new one is
-    // computed, so switching backbones does not flash an empty card. That makes
-    // hiding it on failure necessary: a stale ranking under an error message
-    // reads as the answer to the thing that just failed.
+    if (request !== requestVersion) return;
+    console.error(error); progress(null); lastRanking = null;
     el("result").hidden = true;
-    say(
-      `Could not identify that photograph: ${error.message}. ` +
-        "If this device is low on memory, try a desktop browser.",
-      true,
-    );
+    say(`Could not identify that photograph: ${error.message}. If this device is low on memory, try a desktop browser.`, true);
+  } finally {
+    if (request === requestVersion) el("result").setAttribute("aria-busy", "false");
   }
+}
+
+function renderCurrentRanking() {
+  if (!lastRanking || lastRanking.backbone !== current) return;
+  const { plain } = lastRanking;
+  const position = el("use-location").checked ? userPosition : null;
+  const hits = weightByLocation(plain, dwarfById, position, meta.location_prior).slice(0, TOP_K);
+  renderHits(hits); renderCoLocated(hits);
+  el("ranking-note").textContent = position ? "Ranked by photograph plus location; scores include a distance bonus." : "Ranked by photograph alone; scores are cosine similarity.";
+  const alone = el("photo-alone");
+  alone.hidden = hits[0].image.dwarf === plain[0].image.dwarf;
+  alone.textContent = `The photograph alone ranked ${plain[0].image.name} first.`;
+  renderCloseCall(plain, Boolean(position));
+  mapModule ??= import("./matches-map.mjs");
+  mapModule.then((module) => module.renderMatchesMap(hits, meta, position)).catch(() => {
+    mapModule = null; el("map-status").textContent = "Map unavailable. The photograph matches above still work.";
+  });
+}
+
+function renderCloseCall(plain, weighted) {
+  const calibration = meta.close_call[current];
+  const margin = plain[0].cosine - plain[1].cosine;
+  if (margin >= calibration.threshold) return;
+  const note = document.createElement("div"); note.className = "close-call";
+  note.dataset.margin = String(margin);
+  const heading = document.createElement("p");
+  heading.append(weighted ? "Photograph-only close call — could also be " : "Close call — could also be ");
+  const name = document.createElement("strong"); name.textContent = plain[1].image.name;
+  heading.append(name, ".");
+  const detail = document.createElement("p");
+  detail.textContent = `On the dataset, the photograph-only first guess is right ${(100 * calibration.top_1_below).toFixed(2)}% of the time when this close. This describes held-out dataset photographs, not a measured chance for your photo.`;
+  note.append(heading, detail); el("hits").firstElementChild.append(note);
+}
+
+function wireLocation() {
+  const control = el("use-location");
+  const status = el("location-status");
+  control.addEventListener("change", () => {
+    const ticket = ++locationRequest;
+    userPosition = null; renderCurrentRanking();
+    if (!control.checked) {
+      status.textContent = "Off. Your photograph alone determines the ranking."; return;
+    }
+    if (!navigator.geolocation) {
+      status.textContent = "Location is unavailable in this browser; photograph alone is used."; return;
+    }
+    status.textContent = "Getting your location once…";
+    navigator.geolocation.getCurrentPosition((fix) => {
+      if (ticket !== locationRequest || !control.checked) return;
+      const { latitude:lat, longitude:lon, accuracy } = fix.coords;
+      if (![lat,lon,accuracy].every(Number.isFinite) || accuracy < 0 || accuracy > 100) {
+        status.textContent = "Location accuracy is worse than 100 m; photograph alone is used.";
+      } else {
+        const position = {lat,lon};
+        const nearest = Math.min(...meta.dwarfs.filter((d)=>Number.isFinite(d.lat)&&Number.isFinite(d.lon)).map((d)=>distanceMetres(position,d)));
+        if (nearest > 2000) status.textContent = "You seem to be away from Wrocław’s statues; location not used.";
+        else { userPosition = position; status.textContent = "Location is favouring nearby statues. All statues remain eligible."; }
+      }
+      renderCurrentRanking();
+    }, (error) => {
+      if (ticket !== locationRequest || !control.checked) return;
+      status.textContent = error.code === 1 ? "Location permission was denied; photograph alone is used." : "Could not get your location; photograph alone is used.";
+      renderCurrentRanking();
+    }, { enableHighAccuracy:true, maximumAge:0, timeout:10000 });
+  });
 }
 
 /** Say what the page is waiting for, given what is already downloaded. */
@@ -402,7 +496,7 @@ function readyMessage() {
   const spec = backbone(current);
   return modelCache.has(current)
     ? `${spec.label} is loaded and ready.`
-    : `${spec.label} downloads once, on your first identification — ${spec.downloadMb} MB.`;
+    : `${spec.label} downloads once, when you identify an uploaded photo — ${spec.downloadMb} MB.`;
 }
 
 /**
@@ -417,7 +511,7 @@ async function selectBackbone(id) {
   current = id;
   renderModelChoice();
   renderFacts();
-  if (lastQuery) await identify(lastQuery.source, lastQuery.label);
+  if (lastQuery) await identifyQuery(lastQuery);
   else say(readyMessage());
 }
 
@@ -482,21 +576,30 @@ function wireInputs() {
   });
 }
 
-/** Offer a few reference photographs so the demo can be tried without one. */
+/** Each thumbnail and selected query retains its own photographer and licence. */
+function appendCredit(parent, image, stacked = false) {
+  const author = document.createElement("a");
+  author.href = image.source_url; author.textContent = image.author; author.title = image.author;
+  const licence = document.createElement("a");
+  licence.href = image.license_url; licence.textContent = image.license;
+  for (const link of [author,licence]) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
+  if (stacked) parent.append(author, licence);
+  else parent.append(author, document.createTextNode(" · "), licence);
+}
+
 function renderExamples() {
-  const row = el("examples");
-  const picks = ["Q136290068", "Q11823412", "Q136341163", "Q65742089"]
-    .map((id) => meta.images.find((image) => image.dwarf === id))
-    .filter(Boolean);
-  for (const image of picks) {
-    const thumb = document.createElement("img");
-    thumb.src = `assets/thumbs/${image.thumb}`;
-    thumb.alt = `Example: ${image.name}`;
-    thumb.title = image.name;
-    thumb.addEventListener("click", () =>
-      identify(`assets/thumbs/${image.thumb}`, `example — ${image.name}`),
-    );
-    row.appendChild(thumb);
+  const row = el("examples"); row.replaceChildren();
+  for (const id of meta.examples.image_ids) {
+    const image = meta.images.find((entry) => entry.id === id);
+    if (!image) throw new Error(`Missing example ${id}`);
+    const tile = document.createElement("div"); tile.className = "example-tile";
+    const button = document.createElement("button"); button.className = "example-button"; button.type = "button";
+    button.dataset.imageId = id; button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-label", `Try ${image.name}`); button.title = image.name;
+    const thumb = document.createElement("img"); thumb.src = `assets/thumbs/${image.thumb}`; thumb.alt = image.name;
+    button.append(thumb); button.addEventListener("click", () => identifyExample(id));
+    const credit = document.createElement("div"); credit.className = "example-credit"; appendCredit(credit,image,true);
+    tile.append(button,credit); row.append(tile);
   }
 }
 
@@ -505,13 +608,14 @@ loadMetadata()
     renderModelChoice();
     renderFacts();
     wireInputs();
+    wireLocation();
     renderExamples();
     say(readyMessage());
     const mode = new URLSearchParams(location.search).get("selftest");
-    if (mode === "full") runFullSelfTest();
-    else if (mode !== null) runSelfTest();
+    if (mode === "full") return runFullSelfTest();
+    else if (mode !== null) return runSelfTest();
   })
   .catch((error) => {
     console.error(error);
-    say(`The reference data could not be loaded: ${error.message}`, true);
+    say(`The reference data or self-test could not be completed: ${error.message}`, true);
   });

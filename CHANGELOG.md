@@ -17,6 +17,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   for 294 statues, a verified exponential location prior, per-backbone close-call statistics and
   six examples selected deterministically from the shipped DINOv2 vectors. Shared vector-only
   ranking and five Node contract tests require no model or image decoder.
+- The identifier has six credited, keyboard-accessible examples scored from stored vectors with
+  their own photograph held out, optional one-shot location weighting with accuracy/distance
+  guards, an attributed match map with coordinate-source markers and co-location context, and
+  per-backbone photograph-only close-call hints. Location changes reuse cached photo scores;
+  the page names the photo-only winner when weighting changes it. Map-area tile requests are
+  disclosed separately from local photographs and exact GPS. Leaflet 1.9.4 and transformers.js
+  load only when needed; the former has CDN integrity hashes. Browser probes pass, including
+  an exact weight-zero control, while the reference binaries remain unchanged.
 
 ### Changed
 
