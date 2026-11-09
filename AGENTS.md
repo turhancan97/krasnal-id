@@ -867,7 +867,10 @@ already on screen rather than asking for it again.
   it never applies photograph-only calibration to a weighted margin. Accuracy is shown to two
   decimal places, which keeps the just-below-80% groups from rounding to 80.0%. The page says
   these are held-out dataset measurements rather than measured probabilities for a visitor's
-  photo, and never rejects an answer.
+  photo, and never rejects an answer. If location changes the winner, name both photograph-only
+  candidates (“X or Y”) so the note cannot suggest the displayed winner as its own alternative.
+  The location explanation cites the 100 m simulation over 294 placed statues (93.4% to 95.4%),
+  explicitly distinguished from the browser's measurements.
 - **The map loads with the first result.** `matches-map.mjs` loads Leaflet 1.9.4 JS and CSS from
   cdnjs, both with CDN-provided SHA-512 integrity hashes and anonymous CORS. The map reserves
   its height before the library loads; map failure leaves the photograph results usable.

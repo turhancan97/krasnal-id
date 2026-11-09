@@ -64,7 +64,7 @@
         <p id="location-status" role="status" aria-live="polite">Off. Your photograph alone determines the ranking.</p>
         <details>
           <summary>Why use location as a weight?</summary>
-          <p>The <a href="https://github.com/turhancan97/krasnal-id/blob/main/RESULTS.md">research pipeline’s simulations</a> found that restricting candidates to nearby statues helps less than random narrowing, because some lookalikes stand together; weighting by distance helps while keeping every statue eligible. These simulation results are separate from this identifier’s measured photograph-only accuracy.</p>
+          <p>The <a href="https://github.com/turhancan97/krasnal-id/blob/main/RESULTS.md">research pipeline’s simulations</a> found that nearby-only filtering hurts relative to random narrowing because some lookalikes stand together; a soft distance weight keeps every statue eligible. In simulation, DINOv2 top-1 rose from 93.4% to 95.4% for users 100 m away over 294 placed statues — a research result, separate from this identifier’s measured photograph-only accuracy.</p>
         </details>
       </div>
 

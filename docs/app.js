@@ -436,21 +436,29 @@ function renderCurrentRanking() {
   const alone = el("photo-alone");
   alone.hidden = hits[0].image.dwarf === plain[0].image.dwarf;
   alone.textContent = `The photograph alone ranked ${plain[0].image.name} first.`;
-  renderCloseCall(plain, Boolean(position));
+  renderCloseCall(plain, Boolean(position), hits[0].image.dwarf !== plain[0].image.dwarf);
   mapModule ??= import("./matches-map.mjs");
   mapModule.then((module) => module.renderMatchesMap(hits, meta, position)).catch(() => {
     mapModule = null; el("map-status").textContent = "Map unavailable. The photograph matches above still work.";
   });
 }
 
-function renderCloseCall(plain, weighted) {
+function renderCloseCall(plain, weighted, winnerChanged) {
   const calibration = meta.close_call[current];
   const margin = plain[0].cosine - plain[1].cosine;
   if (margin >= calibration.threshold) return;
   const note = document.createElement("div"); note.className = "close-call";
   note.dataset.margin = String(margin);
   const heading = document.createElement("p");
-  heading.append(weighted ? "Photograph-only close call — could also be " : "Close call — could also be ");
+  // A geographic winner can be the photo runner-up. Name both photo candidates
+  // explicitly in that case, rather than suggesting the displayed winner again.
+  if (winnerChanged) {
+    heading.append("Photograph-only close call — ");
+    const first = document.createElement("strong"); first.textContent = plain[0].image.name;
+    heading.append(first, " or ");
+  } else {
+    heading.append(weighted ? "Photograph-only close call — could also be " : "Close call — could also be ");
+  }
   const name = document.createElement("strong"); name.textContent = plain[1].image.name;
   heading.append(name, ".");
   const detail = document.createElement("p");

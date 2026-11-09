@@ -26,6 +26,14 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   load only when needed; the former has CDN integrity hashes. Browser probes pass, including
   an exact weight-zero control, while the reference binaries remain unchanged.
 
+### Fixed
+
+- When location changes the identifier's winner, the close-call hint names both photograph-only
+  candidates instead of suggesting the displayed winner as its own alternative. The location
+  explanation now gives the sourced 100 m simulation result, labelled separately from browser
+  accuracy. Rechecked metadata calibration, all six examples on both backbones, location guards,
+  map attribution and four responsive theme screenshots; reference binaries are unchanged.
+
 ### Changed
 
 - The GitHub Pages front door is a research project page using the Academic Project Page
