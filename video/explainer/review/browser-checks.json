@@ -1,0 +1,82 @@
+{
+  "interactions": {
+    "preloadNone": true,
+    "noExternalRequests": true,
+    "playback": true,
+    "seeking": true,
+    "keyboard": true,
+    "fullscreen": true,
+    "download": true,
+    "media": {
+      "width": 1920,
+      "height": 1080,
+      "duration": 10,
+      "paused": false
+    },
+    "voices": [
+      {
+        "src": "review/voice-af_heart.wav",
+        "duration": 15,
+        "error": null
+      },
+      {
+        "src": "review/voice-am_michael.wav",
+        "duration": 15,
+        "error": null
+      }
+    ],
+    "errors": [],
+    "failedRequests": []
+  },
+  "screenshots": [
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "dimensions": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "brokenImages": []
+      },
+      "errors": [],
+      "file": "review-1280-light.png"
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "dimensions": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "brokenImages": []
+      },
+      "errors": [],
+      "file": "review-1280-dark.png"
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390,
+        "brokenImages": []
+      },
+      "errors": [],
+      "file": "review-390-light.png"
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390,
+        "brokenImages": []
+      },
+      "errors": [],
+      "file": "review-390-dark.png"
+    }
+  ],
+  "tested_preview_sha256": "12b381ccb385fc92e2bb5cec299ae073af372a2638b762b2d26d9cb5d0d8553b",
+  "http_transport": "Local static HTTP with byte-range support",
+  "audition_status": "Technical audio checks passed; owner pronunciation and delivery approval pending",
+  "visual_inspection": "Eight frames, preview transitions, four layouts and unobstructed mobile captions inspected",
+  "screenshots_cache_subdirectory": "qa"
+}

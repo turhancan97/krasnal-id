@@ -952,6 +952,15 @@ mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
 - **Attribution travels with the review.** Every photograph has author, source and licence links,
   a modification disclosure and a full credit entry; original animation code does not replace
   those image terms. The existing depicted-sculpture disclosure and removal path still apply.
+- **Review verification:** eight 1920×1080 storyboard frames and a clean poster were inspected.
+  Both WAV auditions are exactly 15 seconds at 24 kHz; the captioned MP4 is exactly 10 seconds,
+  300 frames at 30 fps, H.264/AAC, fast-start and 757,312 bytes. Chromium passes playback,
+  seeking, keyboard play/pause, fullscreen, both audio clips and downloads, with no page errors
+  or failed requests. Layouts at 1280 and 390 pixels in both system themes have no overflow or
+  broken images; the film and review keep their chosen light background. The local seek check
+  uses byte-range HTTP, which Python's basic preview server does not supply. Lint and formatting
+  pass repository-wide; source/rights hashes and both reference binary digests match. These are
+  review-package checks, not completion of the full-film acceptance tests or an audio audition.
 
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.

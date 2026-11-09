@@ -29,6 +29,10 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
   credits and independently locked rendering tools. The palette matches the supplied RGB values
   exactly; research results and illustrative diagrams are distinguished. The full film and
   project-page integration wait for owner approval, and nothing is published.
+  The rendered package includes eight full-resolution frames, a clean poster, two exact
+  15-second WAVs and a 10-second 1080p H.264/AAC preview with burned captions and SRT/WebVTT.
+  Browser media controls, four responsive layouts, source integrity and repository lint/format
+  checks pass; the existing site and reference vectors are unchanged.
 
 - Metadata-only browser-asset calibration, with image-order and binary-hash guards, atomic JSON
   output and stored-measurement reproduction to 1e-12. Metadata now carries sourced coordinates

@@ -289,7 +289,7 @@ def render_preview(cache):
             lines.extend(
                 [f"{timestamp(cue['start'], sep)} --> {timestamp(cue['end'], sep)}", *wrapped, ""]
             )
-        (REVIEW / f"preview.{kind}").write_text("\n".join(lines) + "\n")
+        (REVIEW / f"preview.{kind}").write_text("\n".join(lines).rstrip() + "\n")
     source = run_manim(cache, "Preview", "motion-study")
     ffmpeg = Path(sys.executable).parent / "ffmpeg"
     subprocess.run(

@@ -1,0 +1,44 @@
+{
+  "model_revision": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "sample_rate": 24000,
+  "synthetic": true,
+  "approved_voice": null,
+  "audio": [
+    {
+      "file": "voice-af_heart.wav",
+      "voice": "af_heart",
+      "speed": 1.0,
+      "speech_seconds": 11.5,
+      "duration_s": 15,
+      "peak": 0.8799999952316284,
+      "rms": 0.06260614842176437,
+      "sha256": "215f0919184f3685753d64fc62838b0d472c9233d96eb0c81c32e46f55642ab7",
+      "text": "Which dwarf is this? Across Wrocław, many statues look alike. Doppeldwarf-306 compares their photographs using cosine similarity. Now add more candidates.",
+      "spoken_text": "Which dwarf is this? Across [Wrocław](/vɹˈɔtswɑf/), many statues look alike. Doppel dwarf three oh six compares their photographs using cosine similarity. Now add more candidates."
+    },
+    {
+      "file": "voice-am_michael.wav",
+      "voice": "am_michael",
+      "speed": 1.0,
+      "speech_seconds": 12.525,
+      "duration_s": 15,
+      "peak": 0.8799999952316284,
+      "rms": 0.05349941924214363,
+      "sha256": "ac00d87cbcd00dceeff8028ca4851df3b3f4c68d5a07b92706585360548f53b9",
+      "text": "Which dwarf is this? Across Wrocław, many statues look alike. Doppeldwarf-306 compares their photographs using cosine similarity. Now add more candidates.",
+      "spoken_text": "Which dwarf is this? Across [Wrocław](/vɹˈɔtswɑf/), many statues look alike. Doppel dwarf three oh six compares their photographs using cosine similarity. Now add more candidates."
+    },
+    {
+      "file": "preview.wav",
+      "voice": "af_heart",
+      "speed": 1.0,
+      "speech_seconds": 8.425,
+      "duration_s": 10,
+      "peak": 0.8799999952316284,
+      "rms": 0.0954090803861618,
+      "sha256": "1ce153832b6760ff9fbf357ec902b3ae98d1eabe8c450daca1c4cf0597c85167",
+      "text": "Which dwarf is this? A photograph becomes a visual fingerprint. We compare directions, then rank the statues by similarity.",
+      "spoken_text": "Which dwarf is this? A photograph becomes a visual fingerprint. We compare directions, then rank the statues by similarity."
+    }
+  ]
+}
