@@ -1769,6 +1769,9 @@ ones worth keeping as rules:
   so no label runs into the next column. The camera-gap figures for DINOv3 and SigLIP 2 that the
   Limitations cite are now in the supplement through `--extra cg3=…`/`cgs=…`.
 - **The body now fills exactly eight pages**; any later addition must be paid for by a cut.
+  Check which page the Conclusion ends on after every edit, not only the unresolved-reference
+  count. And any sentence that names Figure 2(a)'s pairs must be checked against the render, since
+  the figure is redrawn from an artifact and the prose is not.
 
 **Second read (same day), after the fixes above.** It found what the first pass introduced or left:
 
@@ -1798,32 +1801,6 @@ ones worth keeping as rules:
   diacritics restored; Video Google's "vol.2" dropped.
 - **Paid for in cuts**: eight lines of repetition and secondary detail, so the body again ends on
   page 8 with references from page 9.
-
-### 7.20 Fresh-eyes read before submission (2026-11-08)
-
-An independent agent read only the two rendered PDFs, without the decision record, and found the
-seams that three rounds of in-place edits had left. All were fixed in the manuscript; the ones
-that touched code or that a later edit could reintroduce are recorded here.
-
-- **Figure 2(a) had drifted from the text.** It is drawn straight from DINOv2's confusion ranking,
-  whose second pair was a group class against its own member, while the text still described the
-  pairs of an earlier draft. `paper_figures.shown_confusions` now fixes the rule the caption
-  states: the most frequent confusions in the artifact's order, skipping a group and its own
-  member (from the packaged `workshop_validation` groups) and any pair naming a statue already
-  shown. That gives Słupniki Solne → Oławskie, the fountain pair, and Bartonik → Pomagajek.
-  **Any sentence that names the figure's pairs must be checked against the render.**
-- **Typed point estimates beside generated intervals disagree in sign.** The slopes were typed as
-  positive costs next to negative `\wvci` intervals. A sentence that cites a generated interval
-  must cite the generated point too.
-- **The body has no slack.** Every addition in these rounds was paid for by cutting repetition;
-  after this read the Conclusion ends on page 8 with nothing to spare. Check the page of the
-  Conclusion after every edit, not only the unresolved-reference count.
-- **Claims tightened, not results changed**: invariance-trained models "lead on accuracy and
-  rejection" rather than "every measure"; masked-prediction models fail "under a fixed pooling
-  rule", and I-JEPA is no longer called a pixel reconstructor; the location filter and random
-  pool are both stated as simulations centred on the true statue; ViT-L's significant 2.6-point
-  unseen-photographer gain is reported beside its null recall result; rejection has its own
-  protocol paragraph in the main text.
 
 ## 8. Build order (strict, versioned)
 - **v0.1**: data pipeline (Wikidata query → Commons pull → filtered manifest) + embedding extraction + basic k-NN retrieval + baseline top-1/top-5/MRR metrics.
