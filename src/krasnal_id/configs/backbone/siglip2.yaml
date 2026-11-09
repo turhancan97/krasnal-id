@@ -1,0 +1,12 @@
+# A current language-aligned backbone at the same size class as dinov2 and dinov3
+# (ViT-B/16, 224 px), so CLIP's weakness can be attributed to language alignment
+# rather than to an old checkpoint (AGENTS.md §7.15). Experiment-only, like dinov3:
+# named in no export or visualisation list. Not gated; Apache-2.0; the pinned
+# commit serves model.safetensors. Its processor squashes to 224x224 with no crop.
+name: siglip2
+family: siglip
+model_id: google/siglip2-base-patch16-224
+revision: 75de2d55ec2d0b4efc50b3e9ad70dba96a7b2fa2
+preprocessing_id: transformers-auto-image-processor
+device: auto
+batch_size: 16

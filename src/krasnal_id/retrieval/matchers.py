@@ -136,17 +136,7 @@ class DiskLightGlueMatcher:
                 "the disk-lightglue matcher needs the match extra; run uv sync --extra match"
             ) from error
         self._torch = torch
-        resolved = self._device_request
-        if resolved == "auto":
-            resolved = "cuda" if usable_cuda(torch) else "cpu"
-        if resolved == "cuda" and not torch.cuda.is_available():
-            raise RerankError("CUDA was requested for the matcher but is not available")
-        if resolved == "cuda" and not usable_cuda(torch):
-            raise RerankError(
-                "CUDA is present but this torch build has no kernels for the device: "
-                f"{torch.cuda.get_device_capability(0)} against {torch.cuda.get_arch_list()}"
-            )
-        self._device = torch.device(resolved)
+        self._device = resolve_torch_device(self._device_request, torch)
         self._disk = DISK.from_pretrained("depth").to(self._device).eval()
         self._matcher = LightGlueMatcher("disk").to(self._device).eval()
 
@@ -228,6 +218,123 @@ class DiskLightGlueMatcher:
         return len(self._described)
 
 
+# LoFTR's evidence settings. They are part of what an inlier count *means*, so they
+# are fixed constants rather than options: changing either must change the matcher's
+# name, and with it the journal identity, or a resume would mix two definitions.
+LOFTR_LONG_SIDE = 840  # LoFTR's own outdoor evaluation scale; memory grows with tokens
+# kornia's own coarse-match threshold, so no extra filter: the matcher runs as
+# released, as DISK runs at LightGlue's defaults. A stricter 0.5 separated the one
+# Słupniki pair used as a smoke test better (5 inliers to 0, against 15 to 11), and
+# choosing it on that evidence would have been tuning on a test query.
+LOFTR_MIN_CONFIDENCE = 0.2
+
+
+def resolve_torch_device(request: str, torch: Any) -> Any:
+    """Turn a device request into a device this torch build can really run on."""
+    resolved = request
+    if resolved == "auto":
+        resolved = "cuda" if usable_cuda(torch) else "cpu"
+    if resolved == "cuda" and not torch.cuda.is_available():
+        raise RerankError("CUDA was requested for the matcher but is not available")
+    if resolved == "cuda" and not usable_cuda(torch):
+        raise RerankError(
+            "CUDA is present but this torch build has no kernels for the device: "
+            f"{torch.cuda.get_device_capability(0)} against {torch.cuda.get_arch_list()}"
+        )
+    return torch.device(resolved)
+
+
+class LoftrMatcher:
+    """Detector-free dense matching by LoFTR, via kornia (AGENTS.md section 7.15).
+
+    The third matcher, added because a reviewer asked whether a dense,
+    detector-free matcher does better than keypoints on specular, low-texture
+    bronze. It does not fit "describe once, score many": LoFTR's network runs on
+    the *pair*, so `get` caches only the prepared grayscale image and all the
+    work happens in `correspondences`. Matches below `LOFTR_MIN_CONFIDENCE` (LoFTR's
+    own threshold) are dropped, at most `max_keypoints` of the rest are kept by confidence, and the
+    survivors go through the same homography check as SIFT and DISK.
+
+    Kornia's LoFTR "outdoor" weights are released under Apache-2.0 with kornia;
+    they reach no `docs/` deliverable either way.
+    """
+
+    def __init__(self, device: str = "auto", max_keypoints: int = LEARNED_KEYPOINTS) -> None:
+        self._device_request = device
+        self.max_keypoints = max_keypoints
+        self._model: Any | None = None
+        self._torch: Any | None = None
+        self._device: Any | None = None
+        self._prepared: dict[str, Any] = {}
+
+    @property
+    def name(self) -> str:
+        """Return the matcher's artifact identity."""
+        return "loftr"
+
+    def _ensure_loaded(self) -> None:
+        """Import kornia and load weights once, only when a pair is scored."""
+        if self._model is not None:
+            return
+        try:
+            import torch
+            from kornia.feature import LoFTR
+        except ImportError as error:  # pragma: no cover - exercised by the extra's absence
+            raise RerankError(
+                "the loftr matcher needs the match extra; run uv sync --extra match"
+            ) from error
+        self._torch = torch
+        self._device = resolve_torch_device(self._device_request, torch)
+        self._model = LoFTR(pretrained="outdoor").to(self._device).eval()
+
+    def get(self, image_id: str, path: Path) -> Any:
+        """Return one image as a grayscale tensor, kept on the CPU until a pair needs it."""
+        cached = self._prepared.get(image_id)
+        if cached is not None:
+            return cached
+        import cv2
+
+        self._ensure_loaded()
+        assert self._torch is not None
+        image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            raise RerankError(f"could not read {path} as an image")
+        height, width = image.shape[:2]
+        scale = min(1.0, LOFTR_LONG_SIDE / max(height, width))
+        # LoFTR's coarse level is one eighth of the input, so both sides must divide by 8.
+        size = (max(8, int(width * scale) // 8 * 8), max(8, int(height * scale) // 8 * 8))
+        image = cv2.resize(image, size, interpolation=cv2.INTER_AREA)
+        prepared = self._torch.from_numpy(image.astype(np.float32) / 255.0)[None, None]
+        self._prepared[image_id] = prepared
+        return prepared
+
+    def inliers(self, query: Any, candidate: Any) -> int:
+        """Return how many LoFTR correspondences survive a RANSAC homography."""
+        return self.correspondences(query, candidate).inliers
+
+    def correspondences(self, query: Any, candidate: Any) -> Correspondences:
+        """Return where LoFTR matched, and which matches the homography kept."""
+        self._ensure_loaded()
+        assert self._model is not None
+        assert self._torch is not None
+        with self._torch.inference_mode():
+            found = self._model(
+                {"image0": query.to(self._device), "image1": candidate.to(self._device)}
+            )
+        confidence = found["confidence"].float().cpu().numpy()
+        keep = np.flatnonzero(confidence >= LOFTR_MIN_CONFIDENCE)
+        keep = keep[np.argsort(-confidence[keep], kind="stable")][: self.max_keypoints]
+        if keep.size < MINIMUM_CORRESPONDENCES:
+            return empty_correspondences()
+        source = found["keypoints0"].cpu().numpy()[keep].astype(np.float32)
+        target = found["keypoints1"].cpu().numpy()[keep].astype(np.float32)
+        return _verify(source, target)
+
+    def __len__(self) -> int:
+        """Return how many images have been prepared so far."""
+        return len(self._prepared)
+
+
 def create_matcher(name: str, max_keypoints: int, device: str = "auto") -> LocalMatcher:
     """Build one matcher by name, without importing what it does not need."""
     if name == "sift":
@@ -236,4 +343,6 @@ def create_matcher(name: str, max_keypoints: int, device: str = "auto") -> Local
         return FeatureCache(max_keypoints)
     if name == "disk-lightglue":
         return DiskLightGlueMatcher(device=device, max_keypoints=max_keypoints)
+    if name == "loftr":
+        return LoftrMatcher(device=device, max_keypoints=max_keypoints)
     raise RerankError(f"unsupported matcher: {name}")

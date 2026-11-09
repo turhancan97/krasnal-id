@@ -177,7 +177,7 @@ def count_inliers(query: LocalFeatures, candidate: LocalFeatures) -> int:
     return match_features(query, candidate).inliers
 
 
-def blended_score(cosine: float, inliers: int, weight: float) -> float:
+def blended_score(cosine: float, inliers: int, weight: float, cap: int = INLIER_CAP) -> float:
     """Combine appearance and geometry into one score.
 
     At `weight` zero this is the cosine similarity unchanged, which is the
@@ -186,7 +186,9 @@ def blended_score(cosine: float, inliers: int, weight: float) -> float:
     """
     if weight < 0.0:
         raise RerankError(f"the blend weight cannot be negative, got {weight}")
-    return cosine + weight * min(inliers, INLIER_CAP) / INLIER_CAP
+    if cap < 1:
+        raise RerankError(f"the inlier cap must be positive, got {cap}")
+    return cosine + weight * min(inliers, cap) / cap
 
 
 class FeatureCache:

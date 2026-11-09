@@ -10,7 +10,10 @@ hues are the author's palette (2026-11-05). The categorical subsets actually use
 were checked with the dataviz skill's validator against a white page, for lightness,
 chroma, colour-vision-deficiency separation and normal-vision separation:
 
-* backbones -- blue, orange, teal: all checks pass;
+* backbones -- blue, orange, teal, deep purple: all checks pass. SigLIP 2's
+  ``#7B3FA0`` is one step deeper than the author's purple, which sits 9.2 from
+  blue under full colour vision (floor 15) and so cannot stand beside it; found by
+  running candidates through the validator, worst pair 19.4;
 * matchers  -- pink, purple: all checks pass.
 
 Teal is one step deeper than the author's ``#55A398``, which reads grey on paper
@@ -18,7 +21,7 @@ Teal is one step deeper than the author's ``#55A398``, which reads grey on paper
 Mustard and yellow fail the lightness band on white and are kept for fills and
 highlights, never for thin lines or small points.
 
-**Figures are drawn at the size they are printed.** The CVWW kit's text block is
+**Figures are drawn at the size they are printed.** The short-paper author kit's text block is
 17 cm wide with a 0.8 cm gutter, so a column is 8.1 cm and the full width 17 cm.
 A figure drawn at those widths and placed at ``\\linewidth`` is never scaled, so
 the 7 pt tick labels below really are 7 pt on the page, in every figure.
@@ -37,6 +40,7 @@ APPLE_MUSTARD = "#EAB34D"  # fills and highlights only: too light for lines on w
 APPLE_ORANGE = "#FF7F50"
 APPLE_GREEN = "#34C759"
 APPLE_YELLOW = "#FFCC00"  # fills and highlights only
+DEEP_PURPLE = "#7B3FA0"  # SigLIP 2: the author's purple, deepened until it parts from blue
 
 # --- ink: text and structure wear neutrals, never a series colour -----------
 INK = "#1F2328"  # titles, values, direct labels
@@ -46,13 +50,26 @@ GRID = "#E6E8EB"
 NEUTRAL_FILL = "#C9D1D9"  # data that is not an entity: corpus statistics, statues on a map
 
 # --- entities ---------------------------------------------------------------
-BACKBONE_COLOUR = {"dinov2": APPLE_BLUE, "clip": APPLE_ORANGE, "dinov3": APPLE_TEAL}
-BACKBONE_LABEL = {"dinov2": "DINOv2", "clip": "CLIP", "dinov3": "DINOv3"}
+BACKBONE_COLOUR = {
+    "dinov2": APPLE_BLUE,
+    "clip": APPLE_ORANGE,
+    "dinov3": APPLE_TEAL,
+    "siglip2": DEEP_PURPLE,
+}
+BACKBONE_LABEL = {"dinov2": "DINOv2", "clip": "CLIP", "dinov3": "DINOv3", "siglip2": "SigLIP 2"}
 # A second encoding beside colour, so identity never rests on hue alone.
-BACKBONE_MARKER = {"dinov2": "o", "clip": "s", "dinov3": "^"}
+BACKBONE_MARKER = {"dinov2": "o", "clip": "s", "dinov3": "^", "siglip2": "D"}
 MATCHER_COLOUR = {"sift": APPLE_PINK, "disk-lightglue": APPLE_PURPLE}
 MATCHER_LABEL = {"sift": "SIFT", "disk-lightglue": "DISK + LightGlue"}
 MATCHER_MARKER = {"sift": "o", "disk-lightglue": "s"}
+# The corpus itself -- statues, their photographs, their positions -- is the one
+# thing every figure shows that is not a backbone or a matcher, so it takes the
+# one hue no entity owns. Deep mustard for points and lines (validated on white:
+# lightness, chroma and separation from the grey it stands beside all pass);
+# the author's mustard, too light for a line, for fills only.
+CORPUS_ACCENT = "#B87A12"
+CORPUS_FILL = APPLE_MUSTARD
+CORPUS_MUTED = "#9AA3AD"  # the corpus's unhighlighted points, beside CORPUS_ACCENT
 CORRECT = APPLE_GREEN  # a correct retrieval, always with a check mark and a heavier frame
 WRONG = INK_MUTED  # a wrong one, always with a cross
 
@@ -84,8 +101,10 @@ class Layout:
     backbones: tuple[str, ...]
 
 
-# The CVWW 2027 kit: 17 cm text block, 0.8 cm gutter.
-CVWW = Layout("cvww", column=8.1 / 2.54, full=17.0 / 2.54, backbones=("dinov2", "clip", "dinov3"))
+# The short-paper author kit: 17 cm text block, 0.8 cm gutter.
+CVWW = Layout(
+    "cvww", column=8.1 / 2.54, full=17.0 / 2.54, backbones=("dinov2", "clip", "dinov3", "siglip2")
+)
 # The journal draft, unchanged in size and content: it never introduced DINOv3.
 JOURNAL = Layout("journal", column=4.8, full=7.2, backbones=("dinov2", "clip"))
 LAYOUTS = {layout.name: layout for layout in (CVWW, JOURNAL)}

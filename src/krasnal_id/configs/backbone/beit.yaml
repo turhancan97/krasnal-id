@@ -1,0 +1,11 @@
+# §7.17 masked image modelling: BEiT ViT-B/16 self-supervised on ImageNet-22k, no
+# fine-tuning. Pooling is the model's own pooled output (BEiT's mean of patch
+# tokens). Apache-2.0.
+name: beit
+family: transformers
+model_id: microsoft/beit-base-patch16-224-pt22k
+revision: 49128b46539bd7dfad519b5e1014b050edabd9f6
+preprocessing_id: transformers-auto-image-processor;pool=model
+pooling: model
+device: auto
+batch_size: 32

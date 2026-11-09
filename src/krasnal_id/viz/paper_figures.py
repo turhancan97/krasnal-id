@@ -18,6 +18,7 @@ figure shows; the journal draft keeps its own, unchanged.
 
 import json
 import textwrap
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -105,7 +106,21 @@ class Sources:
     manifest: Path
     # Backbones whose artifacts live in `results_dir/<name>/` rather than in
     # `results_dir/`, so that no figure glob over `results/` picks them up (§7.12).
-    separate: tuple[str, ...] = ("dinov3",)
+    separate: tuple[str, ...] = ("dinov3", "siglip2")
+    # The workshop validation artifact, for figures that show a section 7.15 result.
+    # Named explicitly rather than found by a glob, because several revisions sit
+    # side by side and a figure must not quietly draw a superseded one.
+    validation: Path | None = None
+
+    def validation_metrics(self) -> dict[str, float]:
+        """The validation artifact's metrics by name, or an error naming the flag."""
+        if self.validation is None or not self.validation.is_file():
+            raise PaperFigureError(
+                f"the short-paper figures need the validation artifact; pass --validation "
+                f"(got {self.validation})"
+            )
+        payload = json.loads(self.validation.read_text(encoding="utf-8"))
+        return {str(m["name"]): float(m["value"]) for m in payload["metrics"]}
 
     def _directory(self, stem: str) -> Path:
         for name in self.separate:
@@ -273,13 +288,36 @@ def dataset_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> 
     them is a backbone, so nothing here wears a backbone's colour.
     """
     plt = _pyplot()
-    figure = plt.figure(figsize=(layout.full, layout.full * 0.42), layout="constrained")
-    panels = figure.subfigures(1, 3, width_ratios=(0.95, 1.15, 1.2), wspace=0.03)
+    figure = plt.figure(figsize=(layout.full, layout.full * 0.47), layout="constrained")
+    panels = figure.subfigures(1, 3, width_ratios=(1.2, 1.2, 1.0), wspace=0.03)
     manifest = sources.dataset()
 
-    _confused_pairs_panel(panels[0], sources, manifest)
+    arrows = _confused_pairs_panel(panels[0], sources, manifest)
     _placement_panel(panels[1], sources, manifest)
     _photographer_panel(panels[2], manifest)
+
+    # The arrows' labels are placed once the layout is final: the gap between a
+    # pair's photographs is only known after constrained layout has sized them.
+    figure.canvas.draw()
+    to_figure = figure.transFigure.inverted()
+    for left, right, above, below in arrows:
+        # Through display coordinates: an axes in a subfigure reports its position
+        # relative to that subfigure, not to the figure the text is placed on.
+        box_l = left.get_window_extent().transformed(to_figure)
+        box_r = right.get_window_extent().transformed(to_figure)
+        x = (box_l.x1 + box_r.x0) / 2
+        y = (box_l.y0 + box_l.y1) / 2
+        for text, offset, colour in ((above, 0.022, style.INK), (below, -0.022, style.INK_MUTED)):
+            figure.text(
+                x,
+                y + offset,
+                text,
+                ha="center",
+                va="bottom" if offset > 0 else "top",
+                fontsize=style.SIZE_ANNOTATION - 0.5,
+                color=colour,
+                in_layout=False,
+            )
 
     written = _save(figure, output)
     plt.close(figure)
@@ -302,8 +340,53 @@ def _subfigure_tag(panel: Any, letter: str) -> None:
     )
 
 
-def _confused_pairs_panel(panel: Any, sources: Sources, manifest: DatasetManifest) -> None:
-    """Panel (a) -- the pairs the retrieval actually confuses, photographed."""
+def group_links() -> set[frozenset[str]]:
+    """Every (group class, own member) pair, from the packaged group definitions.
+
+    A group statue confused with one of its own members is a labelling overlap,
+    not two lookalike statues, so panel (a) never shows one.
+    """
+    from krasnal_id.config import WorkshopValidationConfig, load_config
+
+    settings = load_config(["experiment=workshop_validation"]).experiment
+    assert isinstance(settings, WorkshopValidationConfig)
+    return {
+        frozenset((group, member))
+        for group, members in settings.groups.items()
+        for member in members
+    }
+
+
+def shown_confusions(
+    pairs: Sequence[Mapping[str, Any]], groups: set[frozenset[str]]
+) -> list[Mapping[str, Any]]:
+    """The most frequent confusions, as recorded, that panel (a) draws.
+
+    In the artifact's order (most misidentifications first), skipping a group
+    and its own member, and any pair naming a statue already shown, so each
+    photograph appears once and every pair is two different sculptures.
+    """
+    shown: list[Mapping[str, Any]] = []
+    seen: set[str] = set()
+    for pair in pairs:
+        ids = {str(pair["true_dwarf_id"]), str(pair["confused_dwarf_id"])}
+        if frozenset(ids) in groups or ids & seen:
+            continue
+        shown.append(pair)
+        seen |= ids
+        if len(shown) == CONFUSED_PAIRS_SHOWN:
+            return shown
+    raise PaperFigureError(f"fewer than {CONFUSED_PAIRS_SHOWN} distinct confusions to show")
+
+
+def _confused_pairs_panel(
+    panel: Any, sources: Sources, manifest: DatasetManifest
+) -> list[tuple[Any, Any, str, str]]:
+    """Panel (a) -- the pairs the retrieval actually confuses, photographed.
+
+    Returns each pair's two axes and the arrow's labels, which are placed after
+    the layout is final.
+    """
     names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
     # The class's widest-framed photograph, ties broken by image ID: landscape
     # first, then nearest to square. A centre crop of a portrait frame returns
@@ -322,9 +405,27 @@ def _confused_pairs_panel(panel: Any, sources: Sources, manifest: DatasetManifes
 
     from matplotlib.patches import ConnectionPatch
 
-    pairs = sources.records("confusion-dinov2", "pairs")[:CONFUSED_PAIRS_SHOWN]
-    axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.3})
+    pairs = shown_confusions(sources.records("confusion-dinov2", "pairs"), group_links())
+    axes = panel.subplots(CONFUSED_PAIRS_SHOWN, 2, gridspec_kw={"wspace": 0.12, "hspace": 0.22})
+    arrows: list[tuple[Any, Any, str, str]] = []
+    # The denominator is every query of the left statue: leave-one-out queries each
+    # of its photographs once. The artifact's own `queries` counts only the queries
+    # whose strongest rival was the right statue, which reads as an impossible
+    # "2 of 2" for a statue with seven photographs.
+    photographs: dict[str, int] = {}
+    for image in manifest.images:
+        photographs[image.dwarf_id] = photographs.get(image.dwarf_id, 0) + 1
     for row, pair in zip(axes, pairs, strict=True):
+        separation = float(pair["separation_metres"])
+        total = photographs[str(pair["true_dwarf_id"])]
+        arrows.append(
+            (
+                row[0],
+                row[1],
+                f"{pair['misidentifications']} of {total} queries",
+                "same plinth" if separation < 1.0 else f"{separation:.0f} m apart",
+            )
+        )
         ids = (str(pair["true_dwarf_id"]), str(pair["confused_dwarf_id"]))
         for cell, dwarf_id in zip(row, ids, strict=True):
             if dwarf_id not in chosen:
@@ -333,8 +434,11 @@ def _confused_pairs_panel(panel: Any, sources: Sources, manifest: DatasetManifes
             cell.set_xticks([])
             cell.set_yticks([])
             cell.grid(False)
+            # A hairline frame, so a pale sky or wall does not dissolve into the page.
             for spine in cell.spines.values():
-                spine.set_visible(False)
+                spine.set_visible(True)
+                spine.set_edgecolor(style.NEUTRAL_FILL)
+                spine.set_linewidth(0.6)
             name = names.get(dwarf_id, dwarf_id)
             # Wrapped rather than trimmed: the pairs differ in exactly the words a
             # truncation drops (Solne, Oławskie), and one line overflows a thumbnail.
@@ -356,9 +460,9 @@ def _confused_pairs_panel(panel: Any, sources: Sources, manifest: DatasetManifes
                 xyB=(-0.06, 0.5),
                 coordsB="axes fraction",
                 axesB=row[1],
-                arrowstyle="-|>,head_length=0.35,head_width=0.2",
-                color=style.INK_SECONDARY,
-                linewidth=0.8,
+                arrowstyle="-|>,head_length=0.4,head_width=0.22",
+                color=style.CORPUS_ACCENT,
+                linewidth=1.0,
                 shrinkA=0,
                 shrinkB=0,
                 # Out of the layout, or constrained layout shrinks the photographs
@@ -367,25 +471,76 @@ def _confused_pairs_panel(panel: Any, sources: Sources, manifest: DatasetManifes
             )
         )
     _subfigure_tag(panel, "a")
+    return arrows
 
 
 def _placement_panel(panel: Any, sources: Sources, manifest: DatasetManifest) -> None:
     """Panel (b) -- where the statues stand, and what a pool radius covers."""
+    located = [
+        (dwarf, dwarf.coordinates) for dwarf in manifest.dwarfs if dwarf.coordinates is not None
+    ]
     placed = np.array(
-        [
-            (dwarf.coordinates.latitude, dwarf.coordinates.longitude)
-            for dwarf in manifest.dwarfs
-            if dwarf.coordinates is not None
-        ],
-        dtype=float,
+        [(point.latitude, point.longitude) for _, point in located],
+        dtype=np.float64,
     )
+    # Where a position came from is the one property of a point the reader should
+    # see: Wikidata's are authoritative, the rest are the median of the camera
+    # positions in a statue's own photographs (section 3).
+    from_wikidata = np.array([dwarf.coordinate_source == "wikidata" for dwarf, _ in located])
     origin = (float(np.median(placed[:, 0])), float(np.median(placed[:, 1])))
     east, north = _local_metres(placed, origin)
 
     axes = panel.subplots()
     axes.grid(False)
-    axes.scatter(
-        east / 1000, north / 1000, s=3.5, color=style.INK_SECONDARY, alpha=0.55, linewidths=0
+
+    def draw(target: Any, size: float) -> None:
+        target.scatter(
+            east[~from_wikidata] / 1000,
+            north[~from_wikidata] / 1000,
+            s=size,
+            color=style.CORPUS_MUTED,
+            alpha=0.75,
+            linewidths=0,
+        )
+        target.scatter(
+            east[from_wikidata] / 1000,
+            north[from_wikidata] / 1000,
+            s=size * 2.2,
+            color=style.CORPUS_ACCENT,
+            edgecolors="white",
+            linewidths=0.4,
+            zorder=3,
+        )
+
+    draw(axes, 4.0)
+    from matplotlib.lines import Line2D
+
+    axes.legend(
+        handles=[
+            Line2D(
+                [],
+                [],
+                marker="o",
+                linestyle="none",
+                markersize=3.6,
+                color=style.CORPUS_ACCENT,
+                label=f"Wikidata ({int(from_wikidata.sum())})",
+            ),
+            Line2D(
+                [],
+                [],
+                marker="o",
+                linestyle="none",
+                markersize=2.6,
+                color=style.CORPUS_MUTED,
+                label=f"photo positions ({int((~from_wikidata).sum())})",
+            ),
+        ],
+        loc="lower right",
+        fontsize=style.SIZE_ANNOTATION - 0.5,
+        frameon=False,
+        handletextpad=0.2,
+        borderaxespad=0.1,
     )
     axes.set_aspect("equal")
     axes.set_xlabel("km east of the corpus centre")
@@ -414,7 +569,7 @@ def _placement_panel(panel: Any, sources: Sources, manifest: DatasetManifest) ->
         spine.set_visible(True)
         spine.set_edgecolor(style.INK_SECONDARY)
         spine.set_linewidth(0.6)
-    inset.scatter(east / 1000, north / 1000, s=6, color=style.INK_SECONDARY, linewidths=0)
+    draw(inset, 7.0)
     inset.set_aspect("equal")
     for _, radius in radii:
         inset.add_patch(
@@ -434,7 +589,7 @@ def _placement_panel(panel: Any, sources: Sources, manifest: DatasetManifest) ->
         color=style.INK,
         bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.8, "alpha": 0.85},
     )
-    axes.indicate_inset_zoom(inset, edgecolor=style.INK_SECONDARY, linewidth=0.6, alpha=0.9)
+    axes.indicate_inset_zoom(inset, edgecolor=style.INK_MUTED, linewidth=0.6, alpha=0.9)
     _subfigure_tag(panel, "b")
 
 
@@ -484,7 +639,10 @@ def _photographer_panel(panel: Any, manifest: DatasetManifest) -> None:
 
     axes = panel.subplots()
     positions = np.arange(len(IMAGE_COUNT_BINS), dtype=float)
-    bars = axes.bar(positions, counts, 0.66, color=style.NEUTRAL_FILL)
+    # A white edge is the surface gap between neighbouring fills.
+    bars = axes.bar(
+        positions, counts, 0.72, color=style.CORPUS_FILL, edgecolor="white", linewidth=0.8
+    )
     for bar, share in zip(bars, shares, strict=True):
         axes.text(
             bar.get_x() + bar.get_width() / 2,
@@ -493,9 +651,11 @@ def _photographer_panel(panel: Any, manifest: DatasetManifest) -> None:
             ha="center",
             va="bottom",
             fontsize=style.SIZE_ANNOTATION,
-            color=style.INK_SECONDARY,
+            color=style.INK,
         )
-    axes.set_ylim(0, max(counts) * 1.16)
+    axes.set_ylim(0, max(counts) * 1.24)
+    # Ticks stop at the tallest bar, so the note above them has clear space.
+    axes.set_yticks([tick for tick in range(0, max(counts) + 1, 20)])
     axes.set_xticks(positions)
     axes.set_xticklabels(labels)
     axes.set_xlabel("Photographs of the statue")
@@ -503,7 +663,7 @@ def _photographer_panel(panel: Any, manifest: DatasetManifest) -> None:
     axes.text(
         0.98,
         0.97,
-        "label: share from the\nmost prolific photographer",
+        "% = main photographer's share",
         transform=axes.transAxes,
         ha="right",
         va="top",
@@ -571,7 +731,8 @@ def geography_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     )
 
     pools = (2, 3, 5, 8, 10, 15, 20, 50, 100, 200)
-    for backbone in _measured(sources, layout, "geo_ablation-{backbone}"):
+    present_geo = _measured(sources, layout, "geo_ablation-{backbone}")
+    for backbone in present_geo:
         art = sources.load(f"geo_ablation-{backbone}")
         diffs, seen = [], []
         for pool in pools:
@@ -591,7 +752,7 @@ def geography_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     left.set_ylabel(style.minus("Geographic - random (points)"))
     # Above the plot: the three curves cross the whole plotting area between them,
     # so no corner inside it is clear of a line.
-    left.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3)
+    left.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(present_geo))
     style.panel_tag(left, "a")
 
     enriched = _measured(sources, layout, "confusion-{backbone}")
@@ -741,29 +902,82 @@ def matcher_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> 
 def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> Path:
     """Fig. 7 -- the system cannot decline to answer, on either signal."""
     plt = _pyplot()
-    figure, (left, right) = plt.subplots(
-        1, 2, figsize=(layout.full, layout.full * 0.33), layout="constrained"
-    )
-
-    targets = (90, 95, 99)
-    present = _measured(sources, layout, "open_set-{backbone}")
-    for backbone in present:
-        art = sources.load(f"open_set-{backbone}")
-        known = [art.get(f"target_{t}_known_acceptance") * 100 for t in targets]
-        false = [art.get(f"target_{t}_false_acceptance") * 100 for t in targets]
-        _line(
-            left,
-            false,
-            known,
-            backbone,
-            f"{BACKBONE_LABEL[backbone]} (AUROC {art.get('auroc'):.3f})",
+    if layout.name == "cvww":
+        # One column: the paper shows the margin comparison and states the
+        # geometry result in a sentence (section 7.15).
+        figure, left = plt.subplots(
+            figsize=(layout.column, layout.column * 0.62), layout="constrained"
         )
-    left.set_xlabel("Unknown statues wrongly accepted (%)")
-    left.set_ylabel("Known statues accepted (%)")
-    # The three operating points sit on the tick marks, so the axis labels them;
-    # per-point labels overprinted where the backbones converge at 99%.
-    left.set_yticks(targets)
-    left.legend(loc="upper left")
+        right = None
+    else:
+        figure, (left, right) = plt.subplots(
+            1, 2, figsize=(layout.full, layout.full * 0.33), layout="constrained"
+        )
+
+    present = _measured(sources, layout, "open_set-{backbone}")
+    if layout.name == "cvww":
+        # Section 7.15: cosine against the margin score at 90% known acceptance.
+        # Bars, not curves: every operating point shares the 90% row, where markers
+        # and arrows overprinted one another; and at 95% and 99% every backbone
+        # accepts nearly every unknown statue, which says nothing.
+        validation = sources.validation_metrics()
+        width, offsets = _grouped(2)
+        positions = np.arange(len(present), dtype=float)
+        for index, backbone in enumerate(present):
+            colour = BACKBONE_COLOUR[backbone]
+            values = (
+                sources.load(f"open_set-{backbone}").get("target_90_false_acceptance") * 100,
+                validation[f"{backbone}_reject_margin_false_acceptance_90"] * 100,
+            )
+            for offset, value, hatch in zip(offsets, values, ("", "////"), strict=True):
+                bars = left.bar(
+                    [positions[index] + offset],
+                    [value],
+                    width * 0.92,
+                    color="white" if hatch else colour,
+                    edgecolor=colour,
+                    hatch=hatch,
+                    linewidth=0.9,
+                )
+                _bar_labels(left, bars, "%.1f")
+        left.set_xticks(positions)
+        left.set_xticklabels([BACKBONE_LABEL[b] for b in present])
+        left.set_ylabel("Unknown statues accepted (%)")
+        left.set_ylim(0, 80)
+        # The legend names the encoding, in ink: colour already names the backbone.
+        from matplotlib.patches import Patch
+
+        left.legend(
+            handles=[
+                Patch(facecolor=style.INK_MUTED, edgecolor=style.INK_MUTED, label="Cosine"),
+                Patch(facecolor="white", edgecolor=style.INK_MUTED, hatch="////", label="Margin"),
+            ],
+            loc="upper right",
+            title="At 90% known acceptance",
+            title_fontsize=style.SIZE_LEGEND,
+        )
+    else:
+        targets = (90, 95, 99)
+        for backbone in present:
+            art = sources.load(f"open_set-{backbone}")
+            known = [art.get(f"target_{t}_known_acceptance") * 100 for t in targets]
+            false = [art.get(f"target_{t}_false_acceptance") * 100 for t in targets]
+            _line(
+                left,
+                false,
+                known,
+                backbone,
+                f"{BACKBONE_LABEL[backbone]} (AUROC {art.get('auroc'):.3f})",
+            )
+        left.set_xlabel("Unknown statues wrongly accepted (%)")
+        left.set_ylabel("Known statues accepted (%)")
+        # The three operating points sit on the tick marks, so the axis labels them.
+        left.set_yticks(targets)
+        left.legend(loc="upper left")
+    if right is None:
+        written = _save(figure, output)
+        plt.close(figure)
+        return written
     style.panel_tag(left, "a")
 
     # Two regimes of one backbone: DINOv2's blue, full and as a light tint.
@@ -772,8 +986,8 @@ def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     positions = np.arange(len(signals), dtype=float)
     art = sources.load("open_set_geometry-dinov2")
     for offset, regime, colour, label in (
-        (offsets[0], "standard", BACKBONE_COLOUR["dinov2"], "DINOv2, all references"),
-        (offsets[1], "photographer_disjoint", "#B9CAFF", "DINOv2, photographer withheld"),
+        (offsets[0], "standard", BACKBONE_COLOUR["dinov2"], "All references"),
+        (offsets[1], "photographer_disjoint", "#B9CAFF", "Photographer withheld"),
     ):
         bars = right.bar(
             positions + offset,
@@ -786,7 +1000,7 @@ def rejection_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     _reference(right, 0.5)
     right.set_xticks(positions)
     right.set_xticklabels(("Appearance", "Geometry", "Blended"))
-    right.set_ylabel("AUROC, known vs unknown")
+    right.set_ylabel("DINOv2 AUROC, known vs unknown")
     right.set_ylim(0.4, 1.02)
     right.legend(loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.14))
     style.panel_tag(right, "b")

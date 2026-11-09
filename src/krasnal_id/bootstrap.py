@@ -17,7 +17,7 @@ Two rules make the intervals mean what a reader assumes:
   the ordinary per-photograph accuracy every other number in the project reports.
 
 `krasnal_id.experiments.field_gap` introduced this for the field photographs; it
-lives here so the workshop validation and the field gap cannot drift apart.
+lives here so `workshop_validation` and the field gap cannot drift apart.
 """
 
 import zlib

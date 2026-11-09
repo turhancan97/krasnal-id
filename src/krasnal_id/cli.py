@@ -124,7 +124,12 @@ from krasnal_id.viz.open_set_plot import create_open_set_plot
 from krasnal_id.viz.paper_figures import PUBLICATION_DPI, PaperFigureError, Sources, draw_all
 from krasnal_id.viz.paper_tables import write_all as write_paper_tables
 from krasnal_id.viz.retrieval_examples import create_retrieval_examples_plot
-from krasnal_id.viz.workshop_tables import WorkshopTableError, write_workshop_outputs
+from krasnal_id.viz.workshop_tables import (
+    WorkshopTableError,
+    write_extra_numbers,
+    write_sensitivity_outputs,
+    write_workshop_outputs,
+)
 
 
 def _read_manifest(path: Path) -> DatasetManifest:
@@ -672,6 +677,31 @@ def export_kaggle(
         f"    kaggle datasets version -p {result.paths.root} --dir-mode zip "
         f'-m "manifest {result.manifest_sha256[:12]}"'
     )
+
+
+@embeddings_app.command("extract-regions")
+def extract_region_vectors(override: OverrideOption = None) -> None:
+    """Write CLS plus 2x2 and 3x3 grid-pooled patch vectors for every admitted image.
+
+    For the multi-vector baseline of AGENTS.md section 7.18 only; the file sits
+    beside the embedding cache as `regions-<backbone>.npz` and nothing else reads it.
+    """
+    from krasnal_id.embeddings.regions import RegionExtractionError, extract_regions
+
+    config = load_config(override or [])
+    configure_logging(config.logging)
+    output = Path(config.paths.embeddings_dir) / f"regions-{config.backbone.name}.npz"
+    try:
+        written = extract_regions(
+            _read_manifest(config.paths.manifest_path),
+            config.backbone,
+            output,
+            config.backbone.batch_size,
+        )
+    except (RegionExtractionError, EmbeddingExtractionError) as error:
+        typer.echo(f"Region extraction error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    typer.echo(f"Region vectors complete: {written}")
 
 
 @embeddings_app.command("extract")
@@ -1324,6 +1354,10 @@ def visualize_paper_figures(
     layout: Annotated[
         str, typer.Option(help="Figure sizes and backbones: journal or cvww.")
     ] = "journal",
+    validation: Annotated[
+        Path | None,
+        typer.Option(help="The validation artifact the short-paper figures draw from."),
+    ] = None,
     override: OverrideOption = None,
 ) -> None:
     """Draw the manuscript's data-derived figures at publication density.
@@ -1337,6 +1371,7 @@ def visualize_paper_figures(
         sources = Sources(
             results_dir=Path(config.paths.results_dir),
             manifest=Path(config.paths.manifest_path),
+            validation=validation,
         )
         written = draw_all(sources, output_dir, layout_named(layout))
     except (PaperFigureError, FigureStyleError) as error:
@@ -1380,12 +1415,21 @@ def visualize_workshop_tables(
     output_dir: Annotated[Path, typer.Option(help="Where to write the fragments.")] = Path(
         "paper-cvww/generated"
     ),
+    extra: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--extra",
+            help="PREFIX=PATH: another validation artifact whose metrics are written to "
+            "extra-numbers.tex as \\wv{PREFIX_<metric>}. Repeat for several.",
+        ),
+    ] = None,
     override: OverrideOption = None,
 ) -> None:
-    """Emit the CVWW manuscript's numbers and tables from the validation artifact.
+    """Emit the paper's numbers and tables from the validation artifact.
 
     The prose cites intervals by metric name through the macro file this writes,
-    so none of them is transcribed.
+    so none of them is transcribed. `--extra` adds the numbers of other runs, such
+    as the DINOv3 re-ranking check, under a prefix so they cannot collide.
     """
     config = load_config(["experiment=workshop_validation", *(override or [])])
     configure_logging(config.logging)
@@ -1397,12 +1441,62 @@ def visualize_workshop_tables(
     )
     try:
         written = write_workshop_outputs(validation, output_dir)
+        if extra:
+            written += (write_extra_numbers(extra, output_dir),)
+        # The second reviewer's sensitivity runs, when any exist beside the artifact.
+        written += write_sensitivity_outputs(Path(config.paths.results_dir), output_dir)
     except WorkshopTableError as error:
         typer.echo(f"Workshop table error: {error}", err=True)
         raise typer.Exit(code=2) from error
     for path in written:
         typer.echo(f"  {path}")
     typer.echo(f"Workshop tables complete: {len(written)} written")
+
+
+@visualize_app.command("family")
+def visualize_family(
+    root: Annotated[
+        Path, typer.Option(help="The family study's results directory (section 7.17).")
+    ] = Path("results/family"),
+    figure: Annotated[Path, typer.Option(help="Where to write the forest plot.")] = Path(
+        "paper-cvww/figures/fig-family.png"
+    ),
+    output_dir: Annotated[Path, typer.Option(help="Where to write the TeX fragments.")] = Path(
+        "paper-cvww/generated"
+    ),
+    width_cm: Annotated[float, typer.Option("--width-cm", help="Printed width.")] = 17.0,
+    curves: Annotated[
+        Path, typer.Option(help="Where to write the supplement's full curves, by paradigm.")
+    ] = Path("paper-cvww/figures/figS-family-curves.png"),
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+) -> None:
+    """Draw the pretraining-family figure and write its numbers and table.
+
+    Reads the family validation (`<root>/validation/`) and each backbone's released
+    artifacts under `<root>/<backbone>/`; nothing is computed here.
+    """
+    from krasnal_id.viz.family_plot import render_family_curves, render_family_figure
+    from krasnal_id.viz.workshop_tables import (
+        WorkshopTableError,
+        load_metrics,
+        write_family_outputs,
+    )
+
+    validation = root / "validation" / "workshop_validation-dinov2.json"
+    try:
+        written = write_family_outputs(validation, root, output_dir)
+        metrics = {
+            name: {"value": m["value"], "lower_bound": m["lower"], "upper_bound": m["upper"]}
+            for name, m in load_metrics(validation).items()
+        }
+        path = render_family_figure(metrics, figure, width_cm / 2.54, dpi)
+        curves_path = render_family_curves(root, metrics, curves, width_cm / 2.54, dpi)
+    except (WorkshopTableError, VisualizationError) as error:
+        typer.echo(f"Family figure error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for item in (*written, path, curves_path):
+        typer.echo(f"  {item}")
+    typer.echo("Family figure complete")
 
 
 @visualize_app.command("matches")
@@ -1446,6 +1540,144 @@ def visualize_matches(
     typer.echo(f"Match figure written: {path}")
 
 
+@visualize_app.command("teaser")
+def visualize_teaser(
+    family: Annotated[
+        list[str],
+        typer.Option("--family", help="Repeat once per statue of one lookalike family."),
+    ],
+    output: Annotated[Path, typer.Option(help="Where to write the figure.")] = Path(
+        "paper-cvww/figures/fig0-teaser.jpg"
+    ),
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+    width_cm: Annotated[
+        float | None,
+        typer.Option("--width-cm", help="Printed width; defaults to a short-paper column."),
+    ] = None,
+    override: OverrideOption = None,
+) -> None:
+    """Draw the page-1 teaser: the family query answered correctly by the smallest margin."""
+    from krasnal_id.viz.teaser import create_teaser
+
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        path, teaser = create_teaser(config, family, output, dpi, width_cm)
+    except (VisualizationError, EmbeddingStoreError) as error:
+        typer.echo(f"Teaser error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    typer.echo(f"Teaser query {teaser.query_image_id}, margin {teaser.margin:.3f}: {path}")
+    for candidate in teaser.candidates:
+        mark = "correct" if candidate.correct else "wrong"
+        typer.echo(f"  {candidate.display_name}: {candidate.similarity:.3f} ({mark})")
+
+
+@visualize_app.command("teaser-matches")
+def visualize_teaser_matches(
+    family: Annotated[
+        list[str],
+        typer.Option("--family", help="The teaser's lookalike family, as for visualize teaser."),
+    ],
+    output: Annotated[Path, typer.Option(help="Where to write the figure.")] = Path(
+        "paper-cvww/figures/figS-matches.jpg"
+    ),
+    matcher: Annotated[
+        list[str] | None,
+        typer.Option("--matcher", "-m", help="Repeat once per matcher column."),
+    ] = None,
+    width_cm: Annotated[float, typer.Option("--width-cm", help="Printed width.")] = 17.0,
+    device: Annotated[str, typer.Option(help="auto, cpu or cuda.")] = "auto",
+    dpi: Annotated[int, typer.Option(min=72, help="Output density.")] = 300,
+    override: OverrideOption = None,
+) -> None:
+    """The teaser's query matched against its correct statue and its lookalike.
+
+    The pair is the teaser's, chosen by its stated rule, so nothing here is picked
+    by eye: row one is the correct statue's best photograph, row two the closest
+    other statue's.
+    """
+    from krasnal_id.config import WorkshopValidationConfig
+    from krasnal_id.embeddings.store import load_embedding_matrix
+    from krasnal_id.experiments.baseline_accuracy import load_evaluation_inputs
+    from krasnal_id.experiments.workshop_validation import (
+        eligible_queries,
+        journal_path,
+        load_journal_strictly,
+        packaged,
+    )
+    from krasnal_id.viz.match_plot import draw_match_grid
+    from krasnal_id.viz.matcher_examples import matched_photograph, select_rescue
+    from krasnal_id.viz.teaser import create_teaser_selection
+
+    config = load_config(["experiment=visualization", *(override or [])])
+    configure_logging(config.logging)
+    try:
+        manifest, split = load_evaluation_inputs(
+            config.paths.manifest_path, config.paths.evaluation_split_path
+        )
+        matrix = load_embedding_matrix(manifest, config.backbone, Path(config.paths.embeddings_dir))
+        names = {dwarf.dwarf_id: dwarf.display_name for dwarf in manifest.dwarfs}
+        paths = {image.image_id: Path(image.local_path) for image in manifest.images}
+        settings = packaged(WorkshopValidationConfig, "workshop_validation")
+        evidence = load_journal_strictly(
+            journal_path(
+                Path(config.paths.results_dir) / "journals",
+                split,
+                config.backbone.name,
+                "disk-lightglue",
+                settings,
+            ),
+            eligible_queries(split, manifest),
+        )
+        rescue = select_rescue(evidence)
+        query_path = paths[rescue.query_image_id]
+        teaser = create_teaser_selection(config, family)
+        right, wrong = teaser.candidates[0], teaser.candidates[1]
+        if not right.correct:
+            raise VisualizationError("the teaser's best candidate is not the correct statue")
+        rows = (
+            (
+                f"Rescue, correct: {names[rescue.correct_dwarf_id]}",
+                query_path,
+                matched_photograph(
+                    rescue.query_image_id, rescue.correct_dwarf_id, split, manifest, matrix
+                ),
+            ),
+            (
+                f"Rescue, cosine's choice: {names[rescue.cosine_choice_dwarf_id]}",
+                query_path,
+                matched_photograph(
+                    rescue.query_image_id, rescue.cosine_choice_dwarf_id, split, manifest, matrix
+                ),
+            ),
+            (f"Failure, correct: {right.display_name}", teaser.query_local_path, right.local_path),
+            (
+                f"Failure, lookalike: {wrong.display_name}",
+                teaser.query_local_path,
+                wrong.local_path,
+            ),
+        )
+        typer.echo(
+            f"Rescue: {rescue.query_image_id}, {rescue.correct_inliers} verified matches for the "
+            f"correct statue against at most {rescue.best_wrong_inliers} for any other"
+        )
+        path, counts = draw_match_grid(
+            rows,
+            tuple(matcher or ("sift", "disk-lightglue")),
+            output,
+            DETECT_LONG_SIDE,
+            width_cm / 2.54,
+            device=device,
+            dpi=dpi,
+        )
+    except (VisualizationError, EmbeddingStoreError, MatchPlotError, RerankError) as error:
+        typer.echo(f"Teaser match error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+    for (row, name), inliers in sorted(counts.items()):
+        typer.echo(f"  {rows[row][0]} | {name}: {inliers} verified matches")
+    typer.echo(f"Teaser match figure written: {path}")
+
+
 @visualize_app.command("retrieval-examples")
 def visualize_retrieval_examples(
     group: Annotated[
@@ -1460,7 +1692,8 @@ def visualize_retrieval_examples(
     width_cm: Annotated[
         float | None,
         typer.Option(
-            "--width-cm", help="Printed width; defaults to a CVWW column (top 1) or page (top 5)."
+            "--width-cm",
+            help="Printed width; defaults to a short-paper column (top 1) or page (top 5).",
         ),
     ] = None,
     override: OverrideOption = None,

@@ -12,7 +12,7 @@ def test_cvww_widths_match_the_kit() -> None:
     # placed at \linewidth and never scaled.
     assert style.CVWW.full * 2.54 == pytest.approx(17.0)
     assert style.CVWW.column * 2.54 == pytest.approx(8.1)
-    assert style.CVWW.backbones == ("dinov2", "clip", "dinov3")
+    assert style.CVWW.backbones == ("dinov2", "clip", "dinov3", "siglip2")
 
 
 def test_journal_layout_keeps_its_two_backbones() -> None:

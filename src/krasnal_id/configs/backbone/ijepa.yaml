@@ -1,0 +1,11 @@
+# §7.17 joint-embedding predictive architecture. I-JEPA is released only at
+# ViT-H/14 and larger, so this is the one cell that is not ViT-B; the paper flags
+# its size. No class token: the patch tokens are averaged. CC-BY-NC-4.0.
+name: ijepa
+family: transformers
+model_id: facebook/ijepa_vith14_1k
+revision: f157467ea509bc356ff9f61fd3c0d840eec5e04e
+preprocessing_id: transformers-auto-image-processor;pool=mean
+pooling: mean
+device: auto
+batch_size: 16

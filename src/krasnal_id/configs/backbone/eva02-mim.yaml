@@ -1,0 +1,11 @@
+# §7.17 masked image modelling: EVA-02 ViT-B/14, MIM-pretrained on ImageNet-22k.
+# Its reconstruction target is EVA-CLIP features, so it sits between MIM and
+# distillation; the paper says so. Pooling is timm's released head pooling. MIT.
+name: eva02-mim
+family: timm
+model_id: timm/eva02_base_patch14_224.mim_in22k
+revision: 0ecfe3fab2be96198054b55157bd448097ba1828
+preprocessing_id: timm-data-config;pool=model
+pooling: model
+device: auto
+batch_size: 32

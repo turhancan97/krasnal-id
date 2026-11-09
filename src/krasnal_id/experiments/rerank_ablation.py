@@ -51,7 +51,7 @@ from krasnal_id.photographers import (
 )
 from krasnal_id.retrieval.knn import cosine_knn
 from krasnal_id.retrieval.matchers import LocalMatcher
-from krasnal_id.retrieval.rerank import FeatureCache, blended_score
+from krasnal_id.retrieval.rerank import INLIER_CAP, FeatureCache, blended_score
 
 # How often a long sweep says where it has got to.
 PROGRESS_EVERY = 50
@@ -83,21 +83,21 @@ class QueryEvidence:
     # the top-k at all, so no blend weight can rescue it.
     baseline_rank: int
 
-    def ranked(self, weight: float) -> tuple[str, ...]:
+    def ranked(self, weight: float, cap: int = INLIER_CAP) -> tuple[str, ...]:
         """Order the candidates under one blend weight.
 
         Ties are broken by the global order, which is what makes weight zero
         reproduce the baseline instead of shuffling equal scores.
         """
         scored = [
-            (-blended_score(candidate.cosine, candidate.inliers, weight), position)
+            (-blended_score(candidate.cosine, candidate.inliers, weight, cap), position)
             for position, candidate in enumerate(self.candidates)
         ]
         return tuple(self.candidates[position].dwarf_id for _, position in sorted(scored))
 
-    def rank_of_truth(self, weight: float, truth: str) -> int:
+    def rank_of_truth(self, weight: float, truth: str, cap: int = INLIER_CAP) -> int:
         """Return the correct statue's one-based rank, or 0 if it is absent."""
-        order = self.ranked(weight)
+        order = self.ranked(weight, cap)
         return order.index(truth) + 1 if truth in order else 0
 
 

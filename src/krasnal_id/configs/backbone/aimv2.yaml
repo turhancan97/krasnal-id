@@ -1,0 +1,11 @@
+# §7.17 autoregressive: AIMv2, pretrained only. Its smallest release is ViT-L/14,
+# and its decoder also predicts caption tokens, so it is multimodal autoregressive;
+# the paper flags both. No class token: patch tokens averaged. Apple ASCL licence.
+name: aimv2
+family: timm
+model_id: timm/aimv2_large_patch14_224.apple_pt
+revision: 4ecf1a8825bbd2b5a334523c67c428b6b9a34ca1
+preprocessing_id: timm-data-config;pool=mean
+pooling: mean
+device: auto
+batch_size: 16

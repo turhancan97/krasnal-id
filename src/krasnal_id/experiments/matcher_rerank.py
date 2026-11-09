@@ -35,6 +35,7 @@ from krasnal_id.experiments.contracts import ExperimentResult, MetricSummary
 from krasnal_id.experiments.rerank_ablation import QueryEvidence, collect_evidence
 from krasnal_id.models import EvaluationSplit
 from krasnal_id.retrieval.matchers import create_matcher
+from krasnal_id.retrieval.rerank import INLIER_CAP
 from krasnal_id.statistics import exact_mcnemar_p_value
 
 
@@ -87,6 +88,7 @@ def best_weight(
     truths: dict[str, str],
     weights: tuple[float, ...],
     cut_off: int,
+    cap: int = INLIER_CAP,
 ) -> tuple[float, float]:
     """Return the weight with the highest accuracy at one cut-off, and that accuracy.
 
@@ -98,7 +100,7 @@ def best_weight(
         hits = sum(
             1
             for item in evidence
-            if 0 < item.rank_of_truth(weight, truths[item.query_image_id]) <= cut_off
+            if 0 < item.rank_of_truth(weight, truths[item.query_image_id], cap) <= cut_off
         )
         scored.append((hits / len(evidence), weight))
     accuracy, weight = max(scored, key=lambda pair: (pair[0], -pair[1]))

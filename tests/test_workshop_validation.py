@@ -115,12 +115,15 @@ def _world(
 
 
 def _write_journals(
-    root: Path, split: EvaluationSplit, evidence: dict[str, dict[str, QueryEvidence]]
+    root: Path,
+    split: EvaluationSplit,
+    evidence: dict[str, dict[str, QueryEvidence]],
+    top_k: int | None = None,
 ) -> Path:
     journals = root / "journals"
     journals.mkdir(parents=True, exist_ok=True)
     for matcher, items in evidence.items():
-        path = journal_path(journals, split, "dinov2", matcher, _settings())
+        path = journal_path(journals, split, "dinov2", matcher, _settings(), top_k)
         path.write_text(
             "".join(json.dumps(evidence_to_row(item)) + "\n" for item in items.values()),
             encoding="utf-8",
@@ -324,6 +327,11 @@ def _paths(tmp_path: Path, manifest: DatasetManifest, split: EvaluationSplit) ->
         "-oexperiment.folds=3",
         "-oexperiment.bootstrap_resamples=200",
         "-oexperiment.parts=[rerank]",
+        # The two-matcher world these tests build; section 7.15's third matcher and
+        # wide shortlist have their own test below.
+        "-oexperiment.matchers=[sift,disk-lightglue]",
+        "-oexperiment.wide_matchers=[]",
+        "-oexperiment.extra_pairs=[]",
         "-ologging.json_output=false",
     ]
 
@@ -346,11 +354,44 @@ def test_the_validation_never_builds_a_matcher_or_loads_a_model(
 
     assert result.exit_code == 0, result.output
     assert "cv_disk-lightglue_vs_cosine_top_1_gain" in result.output
-    written = tmp_path / "cvww_revision" / "workshop_validation-dinov2.json"
+    written = tmp_path / "cvww_revision3" / "workshop_validation-dinov2.json"
     payload = json.loads(written.read_text(encoding="utf-8"))
     assert len(payload["fold_weights"]) == 2 * 3
     # Nothing is written beside the released artifacts.
     assert not (tmp_path / "workshop_validation-dinov2.json").exists()
+
+
+def test_a_third_matcher_and_a_wider_shortlist_are_validated_the_same_way(
+    tmp_path: Path,
+) -> None:
+    manifest, split, _, evidence = _world(tmp_path)
+    _write_journals(tmp_path, split, {**evidence, "loftr": evidence["disk-lightglue"]})
+    _write_journals(tmp_path, split, evidence, top_k=50)
+    arguments = [
+        argument
+        for argument in _paths(tmp_path, manifest, split)
+        if not argument.startswith(
+            ("-oexperiment.matchers", "-oexperiment.wide_matchers", "-oexperiment.extra_pairs")
+        )
+    ]
+
+    result = runner.invoke(app, ["experiment", "workshop-validation", *arguments])
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(
+        (tmp_path / "cvww_revision3" / "workshop_validation-dinov2.json").read_text("utf-8")
+    )
+    metrics = {m["name"]: m["value"] for m in payload["metrics"]}
+    # LoFTR here carries DISK's evidence, so the extra pair shows no difference.
+    assert metrics["cv_loftr_vs_disk-lightglue_top_1_gain"] == 0.0
+    assert (
+        metrics["cv_loftr_vs_cosine_top_1_gain"]
+        == metrics["cv_disk-lightglue_vs_cosine_top_1_gain"]
+    )
+    # The wider shortlist is reported under its own prefix, never over the main names.
+    assert metrics["cv_k50_disk-lightglue_top_1"] == metrics["cv_disk-lightglue_top_1"]
+    assert "cv_k50_loftr_top_1" not in metrics
+    assert {f"cv_k50_sift_fold_{fold}_weight" for fold in range(3)} <= set(metrics)
 
 
 def test_missing_evidence_is_reported_with_the_command_that_writes_it(tmp_path: Path) -> None:

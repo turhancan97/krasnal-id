@@ -1,0 +1,11 @@
+# §7.17 masked image modelling: MAE ViT-B/16, pretrained only (no fine-tuning).
+# Its class token is not a trained summary, so the patch tokens are averaged.
+# CC-BY-NC-4.0 weights: research use only, never shipped to docs/.
+name: mae
+family: timm
+model_id: timm/vit_base_patch16_224.mae
+revision: a64dffd137c0cc3b09d9a1f55fa70fbddd3bf53a
+preprocessing_id: timm-data-config;pool=mean
+pooling: mean
+device: auto
+batch_size: 32

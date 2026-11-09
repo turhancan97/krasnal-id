@@ -19,6 +19,8 @@ from krasnal_id.embeddings.backbone import (
 from krasnal_id.embeddings.cache import EmbeddingCache, EmbeddingCacheKey
 from krasnal_id.embeddings.clip import ClipBackbone
 from krasnal_id.embeddings.dinov2 import CLS_TOKEN_FAMILIES, DinoV2Backbone
+from krasnal_id.embeddings.generic import TimmBackbone, TransformersBackbone
+from krasnal_id.embeddings.siglip import SiglipBackbone
 from krasnal_id.embeddings.store import cache_key_for
 from krasnal_id.image_io import upright_rgb
 from krasnal_id.models import DatasetManifest
@@ -82,6 +84,12 @@ def create_backbone(config: BackboneConfig) -> EmbeddingBackbone:
         return DinoV2Backbone(config)
     if config.family == "clip":
         return ClipBackbone(config)
+    if config.family == "siglip":
+        return SiglipBackbone(config)
+    if config.family == "timm":
+        return TimmBackbone(config)
+    if config.family == "transformers":
+        return TransformersBackbone(config)
     raise EmbeddingConfigurationError(f"unsupported backbone family: {config.family}")
 
 

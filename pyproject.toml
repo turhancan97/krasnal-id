@@ -29,7 +29,13 @@ dependencies = [
 
 [project.optional-dependencies]
 ml = [
+    # einops and open-clip-torch only for C-RADIOv3: its pinned remote code imports
+    # both, and transformers refuses to load it without them, although open_clip is
+    # used only by text adaptors this project never builds (AGENTS.md §7.17).
+    "einops==0.8.2",
+    "open-clip-torch==3.3.0",
     "torch==2.13.0",
+    "timm==1.0.30",
     "torchvision==0.28.0",
     "transformers==5.15.1",
 ]

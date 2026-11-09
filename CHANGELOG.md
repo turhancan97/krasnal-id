@@ -16,10 +16,84 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Added
 
+- Third internal review (AGENTS.md §7.19): `embeddings extract-regions` writes CLS plus
+  grid-pooled patch vectors; the `multi_region`, `strata` and `gated` parts of `experiment
+  workshop-validation` score a late-interaction multi-vector baseline, unseen-photographer top-1
+  by remaining references, and margin-gated verification. `visualize workshop-tables` writes
+  `reviewer-strata.tex`, `reviewer-gated.tex` and `reviewer-multiregion.tex`, and the
+  thirteen-backbone table gains top-5, MRR and unseen-photographer R@10.
+
+- Sensitivity checks for the second internal review (AGENTS.md §7.18):
+  `experiment.soft_prior_kernel` (exponential or Gaussian) and `experiment.rerank_inlier_cap`
+  for `experiment workshop-validation`, both defaulting to the published values. `visualize
+  workshop-tables` writes `reviewer-kernel.tex`, `reviewer-cap.tex` and `sens-numbers.tex` from
+  any `results/cvww_sens_*` runs. The held-out soft-prior gain holds at 97.7-98.8% top-1 across
+  kernels and scales, and learned-matcher gains hold for caps of 20 to 240.
+
+- `visualize workshop-tables --extra PREFIX=PATH` writes another validation artifact's metrics to
+  `extra-numbers.tex` under its own prefix (the DINOv3 re-ranking check as `\wv{v3_*}`), refusing a
+  repeated prefix or the family study's `fam`.
+- `visualize family` also draws the supplement's full curves for all thirteen backbones
+  (`--curves`, default `figS-family-curves.png`): one row per paradigm, top-1 against pool size and
+  location minus random, each row on its own scale so the reconstruction models' fall does not
+  flatten the rest. Main Figures 5 and 6 keep the four backbones used throughout and say so.
+- The pretraining-paradigm study's results: all thirteen backbones' suites and their validation
+  under `results/family/`, the forest-plot figure, and `RESULTS.md` §17.
+
+- **Nine backbones for a pretraining-family study** (AGENTS.md §7.17): DINO v1, MAE, BEiT,
+  EVA-02 (MIM), I-JEPA, CLIP B/16, C-RADIOv3-B, AIMv2 and a supervised ViT-B/16, each pinned to a
+  commit and experiment-only. Two generic adapters in `embeddings/generic.py` run them: `timm`
+  (weights loaded strictly from the pinned `model.safetensors`) and `transformers` (with
+  `trust_remote_code` for RADIO only, approved after its code was read). `BackboneConfig.pooling`
+  names the pooling rule and must appear in `preprocessing_id`, so the cache key distinguishes
+  poolings; `processor_kwargs` carries RADIO's `do_resize=True`. `timm`, `einops` and
+  `open-clip-torch` join the `ml` extra, the last two only because RADIO's code imports them.
+  Vectors for all nine are extracted for the 1,691 references.
+- `krasnal-id visualize family` draws the family forest plot from `results/family/validation/`
+  and writes `family-numbers.tex` (every number as `\wv{fam_<model>_<metric>}`, prefixed so the
+  family run's re-measured DINOv2 never collides with `numbers.tex`), a compact per-model table
+  and a roster of all thirteen checkpoints with revision, pooling, input, width and licence.
+  Numbers with no statue interval (unseen-photographer top-1, recall, cosine false acceptance)
+  are carried as points, never with a Wilson interval passed off as a statue one.
+
+- `krasnal-id visualize teaser-matches` draws the paper supplement's correspondence figure: SIFT
+  against DISK+LightGlue on two cases chosen by rule (`viz/matcher_examples.py`). The rescue is the
+  unseen-photographer cosine miss whose correct statue DISK+LightGlue's journalled matches favour by
+  the widest margin, shown against the photograph re-ranking compared; on the current journal that
+  is *Pacjent i Lekarz* (404 matches against at most 7 for any other statue). The failure is the
+  teaser's Słupniki pair, where neither matcher separates the statues and the matches land on the
+  lamp. `draw_match_grid` now scales each candidate to the query's height and gives each row its
+  own heading, which removed the empty columns the first render had.
+
+- **SigLIP 2 as an experiment-only backbone** (`backbone=siglip2`, `google/siglip2-base-patch16-224`
+  pinned by revision; AGENTS.md §7.15): a `siglip` family adapter in `embeddings/siglip.py` that
+  loads only the image processor. Like DINOv3 it is in no export or visualisation list, and its
+  runs write to `results/siglip2/`.
+- **LoFTR as a third local matcher** (`matcher=loftr`): dense, detector-free matching through
+  kornia's "outdoor" weights, verified by the same RANSAC homography as SIFT and DISK. Its long side
+  (840) and confidence floor (0.2, kornia's own) are constants, part of what an inlier count means.
+  Matcher names are declared once, as `MatcherName` in `config.py`.
+- **Seven new parts in `experiment workshop-validation`**, each refusing to report unless it first
+  reproduces a released number to 1e-9 (AGENTS.md §7.15–7.16):
+  - `soft_prior`: location as a weight, chosen on held-out statue folds, with the simulated user
+    10, 25 or 50 m from the statue, and a location-only baseline beside it.
+  - `geo_noise`: the geographic comparison with every coordinate moved 9, 50 or 150 m.
+  - `rejection_signals`: margin and k-th-neighbour scores beside cosine, scored by `open_set`'s own
+    calibration code.
+  - `groups`: top-1 with group classes merged into their members.
+  - `geo_permutation`: a permutation test of whether lookalikes standing together cause the
+    geographic penalty.
+  - `families`: the share of each backbone's errors inside lookalike families, the families drawn
+    by the *other* backbones.
+  - `null_bounds`: paired upper bounds on the capacity and register null results.
+
+  The run also validates LoFTR, a second `wide_top_k` shortlist (k=50) and any `extra_pairs`, and
+  writes to `results/cvww_revision2/`, leaving the first revision's artifact as its record.
+- `geometry.offset_metres`, the inverse of `haversine_metres` at street scale.
 - **One visual system for the publication figures, `krasnal_id.viz.figure_style`** (AGENTS.md
   §7.14). The author's palette, restricted to the validated subsets (backbones blue, orange and
   teal; matchers pink and purple), one vendored typeface (TeX Gyre Heros, GUST Font License), one
-  type scale, and the CVWW kit's 8.1 cm and 17 cm print widths. `visualize paper-figures` takes
+  type scale, and the author kit's 8.1 cm and 17 cm print widths. `visualize paper-figures` takes
   `--layout cvww|journal`; `journal` keeps the old two-backbone sizes.
 - `visualize retrieval-examples --width-cm` draws a sheet at its printed width rather than
   scaling it, so the top-5 sheet fits a page at 13.6 cm with the same type size as every other
@@ -69,11 +143,16 @@ No result changes and no number is published: the photographs still need a day i
   outcomes** beside their aggregates, computed from the same draws, so no released number moves.
 - **`visualize retrieval-examples --top-k 1`** draws a compact sheet of the same deterministic
   queries, one row each with every backbone's first answer.
-- **`visualize workshop-tables`** writes the CVWW manuscript's numbers as named macros and its
+- **`visualize workshop-tables`** writes the paper's numbers as named macros and its
   fold-weight table, from the validation artifact, so no interval in the paper is typed by hand.
 
 ### Fixed
 
+- **`results/open_set-dinov2.json` and `-clip.json` were regenerated**, because the new rejection
+  check's 1e-9 gate found that the files written on 2026-09-05 do not reproduce. Every cited number
+  is unchanged. DINOv2's AUROC moved by 3.5e-7, and one unknown query of 1,691 crossed the 99%
+  threshold (96.51% → 96.57%). The cause was not found (AGENTS.md §7.15). The September files are
+  kept in `results/superseded/2026-09-05/`.
 - **Phone portrait photographs reached the model on their side.** No loader applied the EXIF
   `Orientation` tag, which is how every phone stores a portrait shot. Extraction and single-image
   retrieval now go through `image_io.upright_rgb`. All 1,691 references carry `Orientation = 1` or
@@ -85,6 +164,51 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- `README.md`, the `RESULTS.md` summary of findings and `AGENTS.md` §9 and §12.1 now describe the
+  unreleased work: the thirteen-backbone paradigm study, held-out learned re-ranking, the soft
+  location prior, margin rejection, the scarcity strata and the multi-region baseline. The summary
+  softens two earlier claims to what was measured: lookalikes cause the most frequent confusions
+  but not most errors, and CLIP's weakness is not inherent to language alignment.
+
+- Figure 2(a)'s arrows divide by the left statue's full query count rather than by the
+  competitions counted in the confusion artifact, and the supplement's thirteen-backbone table
+  gains the photographer-effect column (AGENTS.md §7.20).
+
+- The paper's dataset figure's confusion panel follows a stated rule (`shown_confusions`): the most
+  frequent DINOv2 confusions, skipping a group class against its own member and any statue already
+  shown. Two journal-table captions say "statue" and no longer promise an interval they do not
+  print.
+
+- Figure 2(a) of the paper selects its confusion pairs by a stated rule
+  (`paper_figures.shown_confusions`): group/member overlaps and repeated statues are skipped.
+  Retrieval sheets clean raw Commons titles through `retrieval_examples.clean_name` and no longer
+  let long labels collide. Two journal-table captions say "statue" and no longer mention an
+  interval the table does not show (AGENTS.md §7.20).
+
+- `RESULTS.md` §18 records both internal reviews' results: the kernel and inlier-cap sensitivity,
+  unseen-photographer accuracy by remaining references, margin-gated verification, the
+  multi-region baseline, the photographer-credit leakage check and the cost figures.
+
+- The supplement's correspondence figure (`visualize teaser-matches`) is a matcher-by-candidate
+  grid of square crops centred on the verified matches. Lines are drawn in each matcher's colour
+  with a white casing and endpoint dots so they read on dark bronze, rows carry (a)-(d) tags and a
+  rotated label, and each pair carries a "N verified matches" badge.
+- The supplement's per-paradigm curves (`visualize family --curves`) use one subfigure per column
+  with lettered titles. Each row opens with its paradigm in bold on the left and its model key
+  over the right panel, so no legend or label crosses a curve. The type sizes are now the shared
+  tick and label sizes rather than the annotation size.
+
+- The paper's fold-weight table names matchers as the paper does (SIFT, DISK+LightGlue, LoFTR), once
+  per group with a rule between groups, instead of printing configuration identifiers.
+
+- The paper's dataset figure (Figure 2) is restyled in the corpus's own colour, mustard
+  (`figure_style.CORPUS_ACCENT`/`CORPUS_FILL`, validated on white): each confusion arrow is
+  labelled with its share of queries and the statues' separation, the map colours Wikidata
+  positions apart from camera-derived ones with a legend, and the photograph-count bars are
+  mustard with their note shortened so it no longer collides with a bar label. Arrow labels are
+  placed through display coordinates after layout, because an axes inside a subfigure reports its
+  position relative to the subfigure.
+
 - **The paper figures are redrawn under that system.** Panel letters replace in-image titles;
   Figure 1(c)'s second y-axis is gone, with the photographer share labelling each bar; statue
   names in Figure 1(a) wrap instead of truncating; map points and the pool radii are ink rather
@@ -92,14 +216,13 @@ No result changes and no number is published: the photographs still need a day i
   operating points are labelled by the axis instead of by colliding annotations. Correct
   retrievals carry a check-mark badge beside the green frame, so correctness never rests on
   colour.
-- `paper-cvww/`, the workshop manuscript, is ignored like `paper/`, which it draws on; it vendors
-  the CVWW author kit. A complete anonymous draft and supplement now build from it: 8 pages with
+- `paper-cvww/`, the shorter manuscript, is ignored like `paper/`, which it draws on; it vendors
+  its venue's author kit. A complete anonymous draft and supplement now build from it: 8 pages with
   references from page 7, Times via TeX Gyre Termes, and every interval generated. `AGENTS.md` section 11.3 records the paper's positioning and a wrong
   `chen2020simclr` citation found in the journal draft's bibliography.
-- Recorded the author's priority of an archival workshop publication in `AGENTS.md` sections 8
-  and 11.3, with CVWW 2027's contributed papers track as the leading candidate. The earlier
-  *Scientific Reports* plan and APC investigation remain as a fallback and historical record.
-  This records the venue priority only; the manuscript has not been reformatted or submitted.
+- Recorded the author's priority of a shorter archival manuscript in `AGENTS.md` sections 8 and
+  11.3. The earlier *Scientific Reports* plan and APC investigation remain as a fallback and
+  historical record.
 - `data/field-guide.md` asks for JPEG, a photographer with no Commons uploads of these statues, and
   transfer by cable or full-quality backup rather than a messaging app, and describes the sorting
   step. The README's field-query section describes both comparators and the intervals.
