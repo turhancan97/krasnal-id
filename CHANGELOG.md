@@ -164,6 +164,12 @@ No result changes and no number is published: the photographs still need a day i
 
 ### Changed
 
+- `README.md`, the `RESULTS.md` summary of findings and `AGENTS.md` §9 and §12.1 now describe the
+  unreleased work: the thirteen-backbone paradigm study, held-out learned re-ranking, the soft
+  location prior, margin rejection, the scarcity strata and the multi-region baseline. The summary
+  softens two earlier claims to what was measured: lookalikes cause the most frequent confusions
+  but not most errors, and CLIP's weakness is not inherent to language alignment.
+
 - Figure 2(a)'s arrows divide by the left statue's full query count rather than by the
   competitions counted in the confusion artifact, and the supplement's thirteen-backbone table
   gains the photographer-effect column (AGENTS.md §7.20).
