@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "source_sha256": {
+    "RESULTS.md": "173f5c18bc4180b54bf7bdfa2db71338de7f3d14282247b24919c3d29c6bb4f1",
+    "docs/assets/references.json": "70d9c4fde03ffe26b1630b22a43522910ba6611a66b12cc78c74c5fd207b7bbc"
+  },
+  "claims": {
+    "dataset": {
+      "source": "RESULTS.md",
+      "section": "Dataset",
+      "facts": {
+        "statues": 306,
+        "photographs": 1691
+      },
+      "note": "Commons uploads, not a prospective street-photo test."
+    },
+    "method": {
+      "source": "RESULTS.md",
+      "section": "Method",
+      "facts": [
+        "Frozen models, no fine-tuning.",
+        "Cosine similarity; best reference photograph per distinct statue.",
+        "Leave-one-out excludes the query photograph."
+      ]
+    },
+    "pool": {
+      "source": "RESULTS.md",
+      "section": "2. The headline result: accuracy against candidate-pool size",
+      "facts": {
+        "candidate_counts": [
+          2,
+          5,
+          10,
+          20,
+          50,
+          100,
+          200,
+          306
+        ],
+        "dinov2_percent": [
+          98.9,
+          97.7,
+          97.1,
+          96.2,
+          95.2,
+          94.4,
+          93.6,
+          93.1
+        ],
+        "clip_percent": [
+          98.0,
+          95.6,
+          94.0,
+          92.0,
+          89.5,
+          87.2,
+          84.5,
+          82.9
+        ]
+      },
+      "note": "Rounded measured means transcribed from the published results table, not new computation. Research vectors, distinct from browser vectors."
+    },
+    "location": {
+      "source": "RESULTS.md",
+      "section": "16. The reviewer checks: what the explanations survive",
+      "facts": {
+        "placed_statues": 294,
+        "simulated_user_distance_m": 25,
+        "cosine_only_percent": 93.4,
+        "soft_prior_percent": 98.7
+      },
+      "note": "Simulated users, held-out weights. The filter penalty is relative to random pools of the same size, not an unconditional comparison to the full pool. Most errors are not within lookalike families."
+    },
+    "photographer": {
+      "source": "RESULTS.md",
+      "section": "9. Is it recognising the statue, or the photographer?; 18. Internal reviews: sensitivity, scarcity and a multi-vector baseline",
+      "facts": [
+        "Withholding the query photographer reduces retrieval accuracy."
+      ],
+      "note": "Reference scarcity accounts for much of this drop; see section 18. The video does not attribute the whole drop to style."
+    },
+    "verification": {
+      "source": "RESULTS.md",
+      "section": "16. The reviewer checks: what the explanations survive",
+      "facts": {
+        "photographer_withheld_queries": 1157,
+        "dinov2_cosine_percent": 81.8,
+        "sift_percent": 82.1,
+        "disk_lightglue_percent": 84.4,
+        "loftr_percent": 85.5
+      },
+      "note": "Weights selected on held-out statues. SIFT has no established measurable gain in this comparison; do not generalize to every geometry method or protocol."
+    },
+    "uncertainty": {
+      "source": "RESULTS.md",
+      "section": "16. The reviewer checks: what the explanations survive",
+      "facts": {
+        "known_acceptance_percent": 90,
+        "dinov2_cosine_false_acceptance_percent": 38.3,
+        "dinov2_margin_false_acceptance_percent": 19.6
+      },
+      "note": "Research unknown-statue evaluation, not an accuracy guarantee or rejection feature in the browser demo. Illustrative bars have no numeric scores."
+    },
+    "takeaway": {
+      "source": "RESULTS.md",
+      "section": "Summary of findings",
+      "facts": [
+        "Pool size, location and photographer are evaluated separately."
+      ],
+      "note": "The browser reports its own shipped-vector measurements. Street photographs remain an unmeasured domain gap."
+    },
+    "credits": {
+      "source": "docs/assets/references.json",
+      "section": "images",
+      "facts": [
+        "Each selected photograph retains author, source URL, licence and licence URL."
+      ]
+    }
+  },
+  "protected_sha256": {
+    "docs/index.html": "f115ba313b59143567f95906b97be856c6998d431bd22522b5642bbdaa0229c0",
+    "docs/app.js": "161c2c0ea1b58732ead0a863bf1f6e369452707e7805bc7eb8922bb6cb88d77a",
+    "docs/backbones.mjs": "08ad571c4fc4c532686ddf4fef3a9aae86f265fd62a9ffcd0747c1a2113ee750",
+    "docs/resize.mjs": "37855984581490fad10135439a125b29d4b2aa7e1cf498230d38a6bfeddd2879",
+    "docs/assets/references-dinov2.bin": "cf8febd8ce9281ef7015d805e0b07da81e7cfe4cb2a05157a0c65e63a3c65ca5",
+    "docs/assets/references-clip.bin": "3dfe9b4afba9fb530309541a7ff381a3d8b3f2f38f4d4c1387f932355ac73fd1",
+    "pyproject.toml": "1280b7937368307445b21666515c121967098ff762c824fc00a2a5b22414b703",
+    "uv.lock": "efdf6ec4eb581ccf35ae69395a26ca30de3723642246ef2b485258ff3cd09296"
+  }
+}

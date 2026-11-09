@@ -919,6 +919,40 @@ mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
 - **One privacy sentence** in the footer covers the photo, the location and the OpenStreetMap
   tile requests, replacing three separate notices.
 
+
+### 6.10 Explainer review package (2026-11-09)
+
+- **The video starts with an approval stage.** `video/explainer/review.html` is a local review
+  surface outside the published site. It presents a 226-word sourced script, eight storyboard
+  frames, two 15-second stock-voice samples and a ten-second motion study. The complete film and
+  project-page player wait for the owner's explicit approval of script, storyboard and voice;
+  scene times are a 120-second budget, not measured timings for full narration.
+- **Source is separate from the research package.** `story.json` defines narration, timing budgets
+  and visual treatment; `claims.json` records existing research values and source-file hashes;
+  `credits.json` selects exactly the four existing teaser photographs with per-file rights and
+  checksums. The build reads the existing reference thumbnails and results record. No embedding,
+  experiment, dataset, browser-model asset or published figure is regenerated.
+- **The supplied palette is exact.** The video uses an off-white background and dark neutral
+  text, with #507AFF, #D97FAE, #55A398, #8A6BDD, #EAB34D, #FF7F50, #34C759 and #FFCC00.
+  The original teal is intentional here; do not import the deeper plotting variant. DINOv2 stays
+  blue and CLIP orange, with labels beside colour. Schematic vectors, maps, bars and feature
+  connections are labelled illustrative; the candidate-pool series contains only measured points
+  transcribed from the results table. Location gains are simulations over 294 placed statues.
+- **Rendering has its own locked environment.** Manim Community and CPU-only Kokoro dependencies
+  are hash-locked independently of the root Python environment. An explicit native Linux lock
+  includes Cairo/Pango development headers, and bundled TeX Gyre Heros supplies text without
+  LaTeX. Model files and intermediate renders stay in an external cache. The gmum wrapper runs
+  within an existing four-CPU allocation, limits threads and never modifies another environment.
+- **Narration is synthetic and provisional.** Kokoro-82M configuration, weights and the stock
+  `af_heart` / `am_michael` voices are pinned by revision and SHA-256. Samples use identical text,
+  retain all spoken material and pad to fifteen seconds. The motion study uses `af_heart` pending
+  the owner's choice. English captions come from synthesis word timings, fit in a reserved
+  two-line band, and are burned into the preview; matching SRT and WebVTT accompany it. Technical
+  checks establish duration and signal integrity, not approval of pronunciation or delivery.
+- **Attribution travels with the review.** Every photograph has author, source and licence links,
+  a modification disclosure and a full credit entry; original animation code does not replace
+  those image terms. The existing depicted-sculpture disclosure and removal path still apply.
+
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
 2. **Headline experiment**: accuracy vs. candidate-pool size N (synthetic random subsampling, repeated with multiple seeds per N for error bars; real geo-based pools as a secondary comparison if coordinate coverage allows).
@@ -2224,6 +2258,7 @@ krasnal-id/
 │   ├── brand/                 # Doppeldwarf-306 mark (doppeldwarf.py) and the archived Krasnal-ID one
 │   ├── demo/                  # full build, metadata-only calibration and vector-contract tests
 │   └── figures/               # published figures, including the copied paper figures (§6.7)
+├── video/explainer/           # sourced script, Manim review scenes, locked tools and approval package
 ├── src/krasnal_id/
 │   ├── cli.py                 # unified Typer CLI
 │   ├── config.py              # Hydra composition + Pydantic validation

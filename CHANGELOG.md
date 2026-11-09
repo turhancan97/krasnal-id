@@ -24,6 +24,12 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Added
 
+- A local explainer review package under `video/explainer/`, with a sourced 226-word script,
+  eight-scene storyboard, Manim motion study, two Kokoro stock-voice auditions, per-photograph
+  credits and independently locked rendering tools. The palette matches the supplied RGB values
+  exactly; research results and illustrative diagrams are distinguished. The full film and
+  project-page integration wait for owner approval, and nothing is published.
+
 - Metadata-only browser-asset calibration, with image-order and binary-hash guards, atomic JSON
   output and stored-measurement reproduction to 1e-12. Metadata now carries sourced coordinates
   for 294 statues, a verified exponential location prior, per-backbone close-call statistics and
