@@ -6,7 +6,7 @@ Now add more candidates. Do lookalikes overwhelm retrieval? Instead of reporting
 
 Surely location solves this? But nearby lookalikes survive a hard geographic filter. In simulation, a soft distance bonus works better. Across 294 placed statues, DINOv2 rises from 93.4 to 98.7 percent for users twenty-five metres away.
 
-A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison.
+A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops; fewer reference photographs also contribute. LoFTR matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist.
 
 Finally, high similarity need not mean a known statue. Comparing the best two candidates exposes ambiguity. This margin reduces false acceptance in the research; the browser demo uses a separately measured close-call hint.
 

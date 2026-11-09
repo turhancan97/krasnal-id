@@ -1011,6 +1011,39 @@ mean agreement 0.9890, minimum 0.9806, weight-zero control on all 6 examples).
   operations cancel prior MP4 byte-range requests normally; there are no unexpected request
   failures or page errors. A human listening pass was not possible in this environment.
 
+### 6.12 Explainer revision: learned matching and single-line captions
+
+- **The owner requested the revision directly.** After approving `af_heart`, the owner asked
+  to show the method that improves ranking rather than the comparison, and to keep subtitles
+  on one row. This authorizes the narration and storyboard edit without another approval gate.
+  `approval.json` retains the original approval, records the owner's exact request and previous
+  story hash, and binds the updated 221-word story. Section 6.11's figures describe the first
+  delivered version; this section records the revision.
+- **Show how LoFTR helps.** The scene now draws illustrative local correspondences between the
+  existing photographs, adds geometric consistency to visual similarity, and moves a candidate
+  up a two-row shortlist. The measured research result is DINOv2 81.8% → 85.5%, with photographer
+  withheld and weights selected on held-out statues, from `RESULTS.md` §16. It is distinct from
+  browser accuracy. No local-matching model or new experiment runs to make the illustration.
+- **Subtitles stay on exactly one line.** Word-time grouping targets at most 40 characters and
+  3.2 seconds, reserving two characters for trailing punctuation; the hard limit is 42 characters.
+  The renderer uses a constant 52-point font and refuses line breaks or excess width instead of
+  reducing text size. SRT/WebVTT use the same unwrapped cues. The bottom plate is 0.9 scene units
+  high within the original reserved band. The full film has 56 cues, with no cue over 41 characters.
+  An offline test checks phrase splitting and word preservation, and rendered-frame checks reject
+  text taller than one line. Preview/storyboard captions follow the same rule.
+- **Narration remains natural and bounded.** Only the changed chapter is synthesized again;
+  unchanged chapters reuse their checksum-verified WAVs. LoFTR has an explicit pronunciation alias.
+  The complete film remains 120 seconds including eight seconds of credits. The earlier four-CPU
+  allocation, isolated environment, reference-binary guards and no-publish boundary still apply.
+- **Revision verification:** the delivered MP4 is 5,176,545 bytes, 1920×1080 at 30 fps,
+  H.264/AAC with fast-start metadata. All 56 cue midpoints were inspected and passed the
+  rendered-height check (maximum 42 px at half resolution). Both exported subtitle formats
+  contain exactly one text line per cue. Chromium playback, seeking, keyboard controls,
+  fullscreen, downloads and transcript/credit checks pass; 1280 px and 390 px layouts were
+  inspected in both themes, including a playing mobile caption. All 1,718 local asset checks,
+  six offline tests, source guards and reference-binary hashes pass. Human listening remains
+  unverified; decoded-audio signal checks and independent automatic transcription are recorded.
+
 ## 7. Experiments
 1. **Baseline accuracy**: top-1, top-5, and mean reciprocal rank, DINOv2 vs. CLIP, full candidate pool.
 2. **Headline experiment**: accuracy vs. candidate-pool size N (synthetic random subsampling, repeated with multiple seeds per N for error bars; real geo-based pools as a secondary comparison if coordinate coverage allows).

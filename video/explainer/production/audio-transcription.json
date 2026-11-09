@@ -4,7 +4,7 @@
     "repository": "openai/whisper-tiny.en",
     "revision": "87c7102498dcde7456f24cfd30239ca606ed9063"
   },
-  "narration_sha256": "65bfe0896116194c378cb17e0df23a47521424e119378dee2497e92d979bc220",
+  "narration_sha256": "e0fb4e189ee572a22ba53458441ae6af7ef14959672110c35b7868359045cb96",
   "chapters": [
     {
       "id": "hook",
@@ -28,8 +28,8 @@
     },
     {
       "id": "verification",
-      "expected": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison.",
-      "transcribed": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison."
+      "expected": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops; fewer reference photographs also contribute. LoFTR matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist.",
+      "transcribed": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops, fewer reference photographs also contribute. Laughter matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist."
     },
     {
       "id": "uncertainty",

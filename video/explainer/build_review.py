@@ -9,8 +9,9 @@ import re
 import shutil
 import subprocess
 import sys
-import textwrap
 from pathlib import Path
+
+from narrate import CAPTION_MAX_CHARS
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
@@ -98,7 +99,9 @@ def validate_sources(allow_page_change=False):
     assert [float(r[1]) for r in rows] == facts["dinov2_percent"]
     assert [float(r[2]) for r in rows] == facts["clip_percent"]
     print(
-        "Sources, eight-scene budget, exact palette, 226-word draft and four photo credits verified"
+        f"Sources, eight-scene budget, exact palette, "
+        f"{sum(len(s['narration'].split()) for s in story['scenes'])}-word script "
+        "and four photo credits verified"
     )
 
 
@@ -233,6 +236,7 @@ def write_docs(allow_page_change=False):
         page.replace("VOICES", "".join(voices))
         .replace("SAMPLE", esc(story["voice_samples"]["text"]))
         .replace("CARDS", "\n".join(cards))
+        .replace("WORD_COUNT", str(words))
         .replace("PALETTE", palette)
         .replace("PHOTO_LINKS", photo_links)
     )
@@ -318,15 +322,16 @@ def render_preview(cache):
     for kind in ["srt", "vtt"]:
         lines = ["WEBVTT", ""] if kind == "vtt" else []
         for i, cue in enumerate(cues, 1):
-            wrapped = textwrap.wrap(
-                cue["text"], width=44, break_long_words=False, break_on_hyphens=False
-            )
-            assert len(wrapped) <= 2
+            assert "\n" not in cue["text"] and len(cue["text"]) <= CAPTION_MAX_CHARS
             if kind == "srt":
                 lines.append(str(i))
             sep = "," if kind == "srt" else "."
             lines.extend(
-                [f"{timestamp(cue['start'], sep)} --> {timestamp(cue['end'], sep)}", *wrapped, ""]
+                [
+                    f"{timestamp(cue['start'], sep)} --> {timestamp(cue['end'], sep)}",
+                    cue["text"],
+                    "",
+                ]
             )
         (REVIEW / f"preview.{kind}").write_text("\n".join(lines).rstrip() + "\n")
     source = run_manim(cache, "Preview", "motion-study")
@@ -340,6 +345,12 @@ def render_preview(cache):
             "error",
             "-i",
             str(source),
+            "-i",
+            str(cache / "preview.wav"),
+            "-map",
+            "0:v:0",
+            "-map",
+            "1:a:0",
             "-t",
             "10",
             "-c:v",

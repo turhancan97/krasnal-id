@@ -34,9 +34,9 @@
       "speed": 1.0,
       "speech_seconds": 8.425,
       "duration_s": 10,
-      "peak": 0.8799999952316284,
-      "rms": 0.0954090803861618,
-      "sha256": "1ce153832b6760ff9fbf357ec902b3ae98d1eabe8c450daca1c4cf0597c85167",
+      "peak": 0.8799999356269836,
+      "rms": 0.10019171983003616,
+      "sha256": "200dc56b3862dcd6783adb63496b2e956089af7e62acf5c4610268dc28449acc",
       "text": "Which dwarf is this? A photograph becomes a visual fingerprint. We compare directions, then rank the statues by similarity.",
       "spoken_text": "Which dwarf is this? A photograph becomes a visual fingerprint. We compare directions, then rank the statues by similarity."
     }

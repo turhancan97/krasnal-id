@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from film_audio import allocate_frames, validate_approval
-from narrate import RATE, cues_for
+from narrate import CAPTION_MAX_CHARS, RATE, cues_for
 
 
 class FilmProtocolTests(unittest.TestCase):
@@ -40,13 +40,30 @@ class FilmProtocolTests(unittest.TestCase):
                 ("A", 0, 0.5),
                 ("caption", 0.5, 1),
                 ("ends", 1, 2),
-                ("here", 2, 3.99),
-                (".", 4.01, 4.05),
+                ("here", 2, 2.99),
+                (".", 3.21, 3.25),
             ]
         ]
         result = SimpleNamespace(tokens=tokens, audio=range(round(4.5 * RATE)))
         cues = cues_for("A caption ends here.", [result])
         self.assertEqual([cue["text"] for cue in cues], ["A caption ends here."])
+
+    def test_long_narration_is_split_into_single_line_cues(self):
+        text = (
+            "LoFTR matches local details across photographs. Geometric consistency adds "
+            "evidence to visual similarity, moving a better match up the shortlist."
+        )
+        tokens = [
+            SimpleNamespace(text=word, start_ts=i * 0.35, end_ts=i * 0.35 + 0.3)
+            for i, word in enumerate(text.split())
+        ]
+        result = SimpleNamespace(tokens=tokens, audio=range(12 * RATE))
+        cues = cues_for(text, [result])
+        self.assertGreater(len(cues), 1)
+        self.assertEqual(" ".join(c["text"] for c in cues), text)
+        for cue in cues:
+            self.assertNotIn("\n", cue["text"])
+            self.assertLessEqual(len(cue["text"]), CAPTION_MAX_CHARS)
 
     def test_changed_script_invalidates_approval_before_any_render(self):
         approval = {

@@ -52,6 +52,10 @@ def inspect_frames(cache):
         with Image.open(path) as image:
             mask = image.convert("L").resize((880, 80)).point(lambda p: 0 if p < 128 else 255)
             ink = list(mask.getdata()).count(0)
+            bounds = mask.point(lambda p: 255 - p).getbbox()
+            assert bounds is not None
+            text_height = bounds[3] - bounds[1]
+            assert text_height <= 46, f"Caption has more than one line at cue {index}"
             signature = hashlib.sha256(mask.tobytes()).hexdigest()
         assert ink > 50, f"Blank burned-in cue {index}"
         assert signature != last_signature, f"Caption froze at cue {index}"
@@ -64,6 +68,7 @@ def inspect_frames(cache):
                 "image": path.name,
                 "text_mask_sha256": signature,
                 "ink": ink,
+                "text_height_at_half_resolution_px": text_height,
             }
         )
     rows = (len(report["cue_samples"]) + 1) // 2
@@ -111,6 +116,7 @@ def inspect_frames(cache):
     sheet.save(qa / "transitions-contact.png")
     report["chapter_transitions"] = 7
     report["captions_nonempty_and_changing"] = True
+    report["subtitle_lines"] = 1
     (HERE / "production/caption-frames.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"Verified {len(report['cue_samples'])} changing, nonempty rendered cues", flush=True)
     print(qa, flush=True)

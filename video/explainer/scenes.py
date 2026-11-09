@@ -2,7 +2,6 @@
 
 import json
 import os
-import textwrap
 from contextlib import ExitStack
 from pathlib import Path
 
@@ -30,6 +29,7 @@ from manim import (
     RoundedRectangle,
     Scene,
     Square,
+    Succession,
     Text,
     Transform,
     VGroup,
@@ -37,6 +37,7 @@ from manim import (
     config,
     register_font,
 )
+from narrate import CAPTION_MAX_CHARS
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
@@ -114,25 +115,24 @@ def header(index, title=None):
 
 
 CAPTIONS = [
-    "Given a photograph, which individual statue are we looking at?",
+    "Which individual statue are we looking at?",
     "Cosine similarity compares these vectors.",
-    "DINOv2's accuracy falls slowly; CLIP's falls faster.",
-    "In simulation, a soft distance bonus works better.",
-    "Learned geometric matching checks whether local details line up,",
-    "Comparing the best two candidates exposes ambiguity.",
-    "Explore the dataset, and try the identifier.",
+    "DINOv2's accuracy falls slowly;",
+    "In simulation, a soft distance bonus",
+    "LoFTR matches local details",
+    "Comparing the best two candidates",
+    "and try the identifier.",
     "",
 ]
 
 
 def caption(words):
-    lines = textwrap.wrap(words, width=44, break_long_words=False, break_on_hyphens=False)
-    if len(lines) > 2:
-        raise ValueError("Subtitle exceeds two lines")
+    if "\n" in words or len(words) > CAPTION_MAX_CHARS:
+        raise ValueError("Subtitle must be one short line")
     plate = at(
         RoundedRectangle(
             width=14.6,
-            height=1.34,
+            height=0.9,
             corner_radius=0.12,
             fill_color=WHITE,
             fill_opacity=1,
@@ -144,9 +144,8 @@ def caption(words):
     )
     if not words:
         return VGroup(plate)
-    text = at(label("\n".join(lines), 46, width=13.9), 0, -3.53)
-    if text.height > 1.03:
-        text.scale_to_fit_height(1.03)
+    text = at(label(words, 52), 0, -3.53)
+    assert text.width <= 13.9, "Split subtitle phrases instead of shrinking the text"
     return VGroup(plate, text)
 
 
@@ -311,12 +310,26 @@ def verification():
             Dot(end, radius=0.055, color=P["purple"]),
         )
     notes = VGroup(
-        at(label("Learned matching", 29, P["purple"]), 4.75, 1.15),
-        at(label("checks local details", 24, MUTED), 4.75, 0.65),
-        at(label("SIFT", 29, P["pink"]), 4.75, -0.3),
-        at(label("no measurable gain", 24, MUTED), 4.75, -0.8),
+        at(label("LoFTR", 34, P["purple"]), 4.75, 1.35),
+        at(label("Local correspondences", 24, MUTED), 4.75, 0.85),
+        at(label("Geometry + cosine", 26, P["teal"]), 4.75, 0.15),
+        at(pill("1  Candidate B", P["blue"], 3.6), 4.75, -0.55),
+        at(pill("2  Candidate A", P["orange"], 3.6), 4.75, -1.18),
     )
-    foot = at(label("Photographer withheld · illustrative connections", 23, MUTED), 0, -2.05)
+    facts = CLAIMS["verification"]["facts"]
+    foot = VGroup(
+        at(
+            label(
+                f"DINOv2: {facts['dinov2_cosine_percent']}% → {facts['loftr_percent']}% with LoFTR",
+                28,
+                P["teal"],
+            ),
+            0,
+            -2.0,
+        ),
+        at(label("Photographer withheld · held-out weights", 21, MUTED), 0, -2.4),
+        at(label("Illustrative connections and shortlist", 20, MUTED), 0, -2.75),
+    )
     return Group(left, right, connections, notes, foot)
 
 
@@ -515,7 +528,9 @@ class Preview(Scene):
             self.play(
                 FadeIn(refs, shift=LEFT * 0.16), GrowArrow(arrow), FadeIn(facts), run_time=1.1
             )
-            self.wait(max(0, cues[1]["start"] - self.time))
+            photo_start = next(c["start"] for c in cues if c["text"].startswith("A photograph"))
+            if photo_start > self.time:
+                self.wait(photo_start - self.time)
             rquery, encoder, into, out, axes, vectors, arc, info, ranking, rank_title, foot = (
                 retrieval()
             )
@@ -524,7 +539,7 @@ class Preview(Scene):
                 FadeOut(refs),
                 FadeOut(arrow),
                 FadeOut(facts),
-                Transform(top, header(1)),
+                Succession(FadeOut(top), FadeIn(header(1))),
                 run_time=1.0,
             )
             self.play(FadeIn(encoder), GrowArrow(into), GrowArrow(out), Create(axes), run_time=1.0)
@@ -534,7 +549,9 @@ class Preview(Scene):
                 Create(arc),
                 run_time=1.1,
             )
-            self.wait(max(0, cues[2]["start"] + 1.15 - self.time))
+            compare_start = next(c["start"] for c in cues if c["text"].startswith("We compare"))
+            if compare_start + 1.15 > self.time:
+                self.wait(compare_start + 1.15 - self.time)
             self.play(
                 LaggedStart(*[FadeIn(row, shift=RIGHT * 0.15) for row in ranking], lag_ratio=0.15),
                 FadeIn(rank_title),

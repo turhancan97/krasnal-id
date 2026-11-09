@@ -1,15 +1,17 @@
 # Doppeldwarf-306 explainer
 
-The owner approved the 226-word script, eight storyboard frames, motion style and **af_heart**
-voice. The complete film is `docs/media/explainer.mp4`, embedded between the existing teaser and
+The owner approved the storyboard, motion style and **af_heart** voice, then requested
+LoFTR re-ranking in place of the comparison and subtitles with exactly one line. The current
+script has 221 words. The complete film is `docs/media/explainer.mp4`, embedded between the existing teaser and
 abstract on the project page. It is 120 seconds at 1920×1080, 30 fps, H.264/AAC, with fast-start
-playback, natural-speed narration and burned-in English subtitles. Credits occupy the final eight
+playback, natural-speed narration and single-line burned-in English subtitles. Credits occupy the final eight
 seconds. SRT, WebVTT, a transcript and linked photograph/narration credits accompany the movie.
 
 The original [review package](review.html), two 15-second voice auditions and ten-second motion
-study remain as the approved reference. `story.json` preserves that review snapshot;
-`approval.json` is the current approval record, bound to the snapshot's SHA-256. The narration
-text has not been edited after approval.
+study retain the selected visual style and voice. The storyboard and review preview also use
+one-line subtitles. `story.json` contains the current narration; `approval.json` records the
+original voice approval, the owner's requested revision, the previous story hash and the current
+story hash. An unrecorded script change still invalidates the build.
 
 ## View locally
 
@@ -23,7 +25,7 @@ outside `docs/` and is not part of the published site.
 
 ## Source and provenance
 
-- `story.json` defines the unchanged narration, original timing budget and exact eight-colour
+- `story.json` defines the current narration, original timing budget and exact eight-colour
   palette; `script.md` is its readable review copy.
 - `approval.json` records the owner's choice and refuses a changed story. `pronunciations.json`
   supplies explicit phonemes for names/acronyms while keeping the original subtitle words.
@@ -43,6 +45,16 @@ outside `docs/` and is not part of the published site.
   not grant rights in the depicted sculptures; the existing disclosure and removal path apply.
 - `model-lock.json` pins the exact Kokoro configuration, weights and stock voices. Models and
   intermediate WAVs/renders remain in the external task cache, outside tracked source.
+
+Subtitles use short phrases from synthesis word timings, with a 42-character hard limit and a
+constant 52-point font. Long phrases become successive cues; the renderer refuses wrapping or
+shrinking text. SRT and WebVTT each contain exactly one text line per cue. The frame verifier
+also checks the rendered text height to catch accidental stacking.
+
+The LoFTR scene shows local correspondences, geometric consistency added to cosine similarity,
+and an illustrative candidate moving up the shortlist. Its measured 81.8% → 85.5% result is
+DINOv2 with the photographer withheld and weights selected on held-out statues (RESULTS.md §16).
+Those figures describe the research pipeline. No matching or embedding model runs for the video.
 
 The vector directions, similarity bars, geographic positions and feature connections are labelled
 illustrative. Pool curves contain the published measured points. Location findings are labelled

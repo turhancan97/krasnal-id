@@ -75,8 +75,8 @@
       "title": "New photographer, new challenge",
       "start_s": 69,
       "end_s": 88,
-      "narration": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison.",
-      "visual": "Two existing photographs show one statue from different viewpoints. Illustrative feature connections appear between them. A compact comparison distinguishes learned matching from SIFT; it is labelled photographer withheld.",
+      "narration": "A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops; fewer reference photographs also contribute. LoFTR matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist.",
+      "visual": "Two existing photographs show one statue from different viewpoints. Illustrative LoFTR correspondences appear between them, followed by geometric consistency and an animated shortlist swap. A measured DINOv2 result, 81.8% to 85.5%, is labelled photographer withheld and held-out weights; the shortlist itself is illustrative.",
       "transition": "The two image cards become the best two ranked candidates.",
       "claims": [
         "photographer",

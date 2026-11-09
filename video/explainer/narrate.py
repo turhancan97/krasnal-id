@@ -9,6 +9,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RATE = 24000
+CAPTION_MAX_CHARS = 42
+CAPTION_MAX_SECONDS = 3.2
 
 
 def digest(path):
@@ -60,7 +62,11 @@ def cues_for(text, results, offset=0):
     last_end = 0
     for word, begin, end in tokens:
         candidate = " ".join([*words, word])
-        if words and re.search(r"\w", word) and (len(candidate) > 76 or end - start > 4.0):
+        if (
+            words
+            and re.search(r"\w", word)
+            and (len(candidate) > CAPTION_MAX_CHARS - 2 or end - start > CAPTION_MAX_SECONDS)
+        ):
             cues.append({"start": start, "end": last_end, "text": " ".join(words)})
             words = []
             start = None
@@ -83,13 +89,15 @@ def cues_for(text, results, offset=0):
         raise ValueError("Caption words differ from the review narration")
     for cue in cues:
         cue["text"] = re.sub(r"\s+([,.!?;:])", r"\1", cue["text"])
+        cue["text"] = re.sub(r"\s+(['\u2019])\s*", r"\1", cue["text"])
+        assert len(cue["text"]) <= CAPTION_MAX_CHARS, "Caption must fit one line"
     for i, cue in enumerate(cues):
         # Keep text on screen through short pauses, without overlapping the next phrase.
         cue["end"] = cues[i + 1]["start"] if i + 1 < len(cues) else elapsed
     return cues
 
 
-def synthesise(cache):
+def synthesise(cache, preview_only=False):
     import espeakng_loader
     import numpy as np
     import soundfile as sf
@@ -127,6 +135,8 @@ def synthesise(cache):
         for voice in story["voice_samples"]["voices"]
     ]
     jobs.append((story["preview"]["voice"], story["preview"]["text"], 10, "preview"))
+    if preview_only:
+        jobs = jobs[-1:]
     for voice, text, budget, name in jobs:
         print("Synthesising", name, flush=True)
         spoken = text.replace("Wrocław", "[Wrocław](/vɹ\u02c8ɔtsw\u0251f/)").replace(
@@ -179,6 +189,12 @@ def synthesise(cache):
         }
         report["audio"].append(entry)
         print(json.dumps(entry), flush=True)
+    if preview_only:
+        previous = json.loads((review / "audio-receipt.json").read_text())
+        previous["audio"] = [e for e in previous["audio"] if e["file"] != "preview.wav"] + report[
+            "audio"
+        ]
+        report = previous
     (review / "audio-receipt.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     )
@@ -187,6 +203,7 @@ def synthesise(cache):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cache", type=Path, required=True)
+    parser.add_argument("--preview-only", action="store_true")
     args = parser.parse_args()
     args.cache.mkdir(parents=True, exist_ok=True)
-    synthesise(args.cache.resolve())
+    synthesise(args.cache.resolve(), preview_only=args.preview_only)

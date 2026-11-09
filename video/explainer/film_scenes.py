@@ -40,6 +40,7 @@ from scenes import (
     hook,
     label,
     location_map,
+    pill,
     registered_fonts,
     retrieval,
     takeaway,
@@ -264,10 +265,12 @@ class FullFilm(Scene):
         self.enter(4)
         panel = verification()
         left, right, lines, notes, foot = panel
+        notes[3].become(at(pill("1  Candidate A", P["orange"], 3.6), 4.75, -0.55))
+        notes[4].become(at(pill("2  Candidate B", P["blue"], 3.6), 4.75, -1.18))
         self.play(
             FadeIn(left, shift=RIGHT * 0.18),
             FadeIn(right, shift=LEFT * 0.18),
-            FadeIn(foot),
+            FadeIn(VGroup(*foot[1:])),
             run_time=1.0,
         )
         self.beat(
@@ -276,15 +279,25 @@ class FullFilm(Scene):
             Succession(ScaleInPlace(right, 1.025), ScaleInPlace(right, 1 / 1.025)),
         )
         scarcity = at(label("Fewer references also matter", 25, MUTED), -2.3, 2.0)
-        self.beat("Fewer remaining", 6.0, FadeIn(scarcity))
+        self.beat("fewer reference", 5.0, FadeIn(scarcity))
         self.beat(
-            "Learned geometric matching",
-            10.0,
+            "LoFTR matches",
+            9.0,
             LaggedStart(*[Create(line) for line in lines], lag_ratio=0.1),
             FadeIn(VGroup(*notes[:2])),
             seconds=1.5,
         )
-        self.beat("Classical SIFT", 15.0, FadeIn(VGroup(*notes[2:])), seconds=1)
+        self.beat("Geometric consistency", 12.0, FadeIn(VGroup(*notes[2:])), seconds=1)
+        top = at(pill("1  Candidate B", P["blue"], 3.6), 4.75, -0.55)
+        second = at(pill("2  Candidate A", P["orange"], 3.6), 4.75, -1.18)
+        self.beat(
+            "moving a better match",
+            15.0,
+            Transform(notes[3], second),
+            Transform(notes[4], top),
+            FadeIn(foot[0]),
+            seconds=1.2,
+        )
         self.consolidate(panel, scarcity)
         self.wait_to(self.chapter["end"])
 

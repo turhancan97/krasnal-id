@@ -1,36 +1,36 @@
 {
-  "status": "awaiting-owner-review",
-  "narration_words": 226,
-  "full_video_rendered": false,
-  "project_page_modified": false,
+  "status": "approved-reference",
+  "narration_words": 221,
+  "full_video_rendered": true,
+  "project_page_modified": true,
   "frames": [
     {
       "file": "review/frames/01-hook.png",
-      "sha256": "36645fae43f9d5b4fdff71ef3cad667a7afdcf191f32a01d40f7bd01c2ab7ae5"
+      "sha256": "09451a743dd091d624b14600fff16f2f841e20aa184bd5beea2359a2c732a1c6"
     },
     {
       "file": "review/frames/02-retrieval.png",
-      "sha256": "6789877b848d92a2691e671d6cbc60fafa6af37671e9eb2ca1f869085347d16c"
+      "sha256": "05997e2eb1160130e8da69b61a6f580781eeebcb884be1b25eda5105b175fbd8"
     },
     {
       "file": "review/frames/03-pool.png",
-      "sha256": "35db9344d00fa07026a8198177b8c4bfad30b27c6e9cc21ee1b84adf8246f963"
+      "sha256": "90497e09060ae8141bf0f8d93e56a509e7352378e708afad02bca692cf4fc623"
     },
     {
       "file": "review/frames/04-location.png",
-      "sha256": "295972d234361e991f8faaf0849accc23237b9fba4c195e5d5c6dfce4f7c1db7"
+      "sha256": "3ac633ae12e8d6e6e812ce56fa0073b10383956d616cf62792d2cdc75170fca1"
     },
     {
       "file": "review/frames/05-verification.png",
-      "sha256": "53edbf3dc257dd39281de64d114618fad8997f02594a2aface1a2257972f2f82"
+      "sha256": "c47e2cc3437a959ea61667e52851aa26c29ea8c3943a48e22329e2fd8b69d828"
     },
     {
       "file": "review/frames/06-uncertainty.png",
-      "sha256": "958ea1f5c0094c4dfa4101068ceeb9f3e2d465820ee3601804f49f19280930af"
+      "sha256": "b9ca848d527863f5dd6c07b8dede096a9aaf0ffd7b0ec44b879f3c00e9e2fd51"
     },
     {
       "file": "review/frames/07-takeaway.png",
-      "sha256": "77bd1b51b61213de0d34609736e65e200c4fbcb455001891c4535d5a174df14b"
+      "sha256": "3c41464f23ffecf33c29f66a56c1afd318180cd5b20cc5e815031c537c6350ad"
     },
     {
       "file": "review/frames/08-credits.png",
@@ -61,7 +61,7 @@
     "video_codec": "h264",
     "audio_codec": "aac",
     "fast_start": true,
-    "bytes": 757312,
-    "sha256": "12b381ccb385fc92e2bb5cec299ae073af372a2638b762b2d26d9cb5d0d8553b"
+    "bytes": 680793,
+    "sha256": "1226045548683eba16d4159929d1667dff66bd3862a632bac9e970c3210879fd"
   }
 }

@@ -12,6 +12,13 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ### Changed
 
+- The explainer now demonstrates LoFTR correspondences, geometric consistency and a shortlist
+  re-ranking, replacing the comparison. The revised narration and transcript explain the helpful
+  method; measured research gains remain labelled with the photographer-withheld protocol.
+- All explainer subtitles use one line at a fixed, larger font. Long sentences are split into
+  shorter word-timed cues in the movie, SRT/WebVTT and review preview; a regression test and
+  rendered text-height checks enforce the one-line contract. The film remains two minutes.
+
 - The identifier page is minimal: upload first, then examples, then one row with the model and
   location switches. Explanatory paragraphs, the fact strip, the project link card and the long
   footer are gone; example credits sit in a collapsed list and tooltips, results keep theirs

@@ -1,6 +1,6 @@
 # Doppeldwarf-306 · narration draft
 
-226 words · English · 120-second production budget including credits.
+221 words · English · 120-second production budget including credits.
 
 Approved by the owner with af_heart narration. Scene timings are budgets, not measured full-narration timings.
 
@@ -30,7 +30,7 @@ Source: [RESULTS.md - 16. The reviewer checks: what the explanations survive](..
 
 ## 5. New photographer, new challenge (69-88 s)
 
-A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops. Fewer remaining reference photographs also contribute to that drop. Learned geometric matching checks whether local details line up, improving the ranking. Classical SIFT adds no measurable gain in this comparison.
+A new photographer brings different viewpoints, backgrounds, and lighting. Accuracy drops; fewer reference photographs also contribute. LoFTR matches local details across photographs. Geometric consistency adds evidence to visual similarity, moving a better match up the shortlist.
 
 Source: [RESULTS.md - 9. Is it recognising the statue, or the photographer?; 18. Internal reviews: sensitivity, scarcity and a multi-vector baseline](../../RESULTS.md).
 

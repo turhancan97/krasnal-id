@@ -6,11 +6,11 @@ import json
 import re
 import subprocess
 import sys
-import textwrap
 from pathlib import Path
 
 from build_review import HERE, REPO, load, run_manim, sha, timestamp
 from film_audio import PRODUCTION, validate_approval
+from narrate import CAPTION_MAX_CHARS
 
 MEDIA = REPO / "docs/media"
 
@@ -32,17 +32,14 @@ def captions_and_pages():
     for kind in ["srt", "vtt"]:
         lines = ["WEBVTT", ""] if kind == "vtt" else []
         for index, cue in enumerate(schedule["cues"], 1):
-            wrapped = textwrap.wrap(
-                cue["text"], width=44, break_long_words=False, break_on_hyphens=False
-            )
-            assert len(wrapped) <= 2
+            assert "\n" not in cue["text"] and len(cue["text"]) <= CAPTION_MAX_CHARS
             if kind == "srt":
                 lines.append(str(index))
             separator = "," if kind == "srt" else "."
             lines.extend(
                 [
                     f"{timestamp(cue['start'], separator)} --> {timestamp(cue['end'], separator)}",
-                    *wrapped,
+                    cue["text"],
                     "",
                 ]
             )
@@ -271,13 +268,23 @@ def check():
     for cue in schedule["cues"]:
         assert cue["start"] >= last and cue["end"] > cue["start"]
         assert cue["end"] <= 112
-        assert (
-            len(
-                textwrap.wrap(cue["text"], width=44, break_long_words=False, break_on_hyphens=False)
-            )
-            <= 2
-        )
+        assert "\n" not in cue["text"] and len(cue["text"]) <= CAPTION_MAX_CHARS
         last = cue["end"]
+    for kind in ["srt", "vtt"]:
+        blocks = (MEDIA / f"explainer.en.{kind}").read_text().strip().split("\n\n")
+        if kind == "vtt":
+            assert blocks.pop(0) == "WEBVTT"
+        assert len(blocks) == len(schedule["cues"])
+        for index, (block, cue) in enumerate(zip(blocks, schedule["cues"], strict=True), 1):
+            lines = block.splitlines()
+            if kind == "srt":
+                assert lines.pop(0) == str(index)
+            assert len(lines) == 2, "Each exported cue needs one timing line and one text line"
+            separator = "," if kind == "srt" else "."
+            assert lines[0] == (
+                f"{timestamp(cue['start'], separator)} --> {timestamp(cue['end'], separator)}"
+            )
+            assert lines[1] == cue["text"]
     assert schedule["chapters"][-1]["start"] == 112 and schedule["chapters"][-1]["end"] == 120
     files = {
         p.name: sha(p) for p in sorted(MEDIA.glob("explainer*")) if p.name != "explainer-build.json"
@@ -296,6 +303,8 @@ def check():
         "speed": 1.0,
         "burned_in_english_subtitles": True,
         "subtitle_cues": len(schedule["cues"]),
+        "subtitle_lines": 1,
+        "subtitle_max_chars": CAPTION_MAX_CHARS,
         "credits_start_s": 112,
         "approved_story_sha256": schedule["story_sha256"],
         "source_sha256": load("claims.json")["source_sha256"],
