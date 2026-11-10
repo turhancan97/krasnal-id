@@ -792,6 +792,11 @@ already on screen rather than asking for it again.
   The teaser caption states the smallest-correct-winning-margin rule, including image-ID ties,
   from `viz/teaser.py`; its four displayed photographs have individual source and licence links
   in an expandable credit block, with cropping/resizing disclosed.
+- **Every result card's figure carries a caption** (2026-11-10). The copied paper figures have
+  panel letters that mean nothing without one, and the matcher figure is the exploratory in-sample
+  sweep while its card quotes held-out numbers; the caption says so. Editing `RESULTS.md` changes
+  the hash `video/explainer/claims.json` pins: re-pin it only after checking that the pool-size
+  table the explainer parses is unchanged, and leave the delivered film's receipt alone.
 - **There is one written research record.** `RESULTS.md` remains complete; the project page is
   a concise introduction rather than a second copy. `findings.html` redirects immediately to
   `index.html` with a canonical link and visible fallback. `docs/chart.js` is deleted with no
@@ -2662,7 +2667,7 @@ that would bring it back.
   Commons upload, so the domain gap to a street photograph is unmeasured, and `RESULTS.md`
   Limitations already calls it the largest untested gap. **Expect a reviewer to raise it first.**
   The defence is that §7.7's camera-origin experiment puts a lower bound on it from the 51
-  references shot on phones (5.3 points for DINOv2, 15.6 for CLIP) and that the whole measuring
+  references shot on phones (5.2 points for DINOv2, 15.6 for CLIP) and that the whole measuring
   path is built and published — so it is a bounded, instrumented gap rather than an unexamined
   one. Do not overclaim street performance anywhere in the paper.
 - **Licensing is a smaller risk than it was under the other plan.** A Data Descriptor *is* the

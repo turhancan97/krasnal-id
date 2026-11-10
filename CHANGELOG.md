@@ -10,6 +10,24 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Fixed
+
+- `RESULTS.md` reported DINOv2's phone-against-camera gap as 5.3 top-1 points; the artifact gives
+  93.48% against 88.24%, which is 5.2. It also carried "131" cross-label duplicate files, which
+  traces to no artifact: `data/discovery/fetch-audit.json` records 36 files (87 copies under 24
+  labels). Both are corrected, with the one matching mention in `AGENTS.md`.
+- `video/explainer/claims.json` re-pins the `RESULTS.md` hash after that correction. The pool-size
+  table the explainer's guard parses is unchanged; the delivered film's receipt keeps the hash it
+  was built from.
+- The project page's abstract said "one European city" on a page that names Wrocław everywhere
+  else, and the identifier's browser title still said Krasnal-ID.
+
+### Added
+
+- Each result figure on the project page has a caption explaining its panels. The matcher card now
+  says its curve is the exploratory in-sample sweep while the quoted numbers use weights chosen on
+  held-out statues.
+
 ### Changed
 
 - The explainer now demonstrates LoFTR correspondences, geometric consistency and a shortlist
