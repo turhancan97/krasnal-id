@@ -119,7 +119,7 @@
   },
   "protected_sha256": {
     "docs/index.html": "f115ba313b59143567f95906b97be856c6998d431bd22522b5642bbdaa0229c0",
-    "docs/app.js": "161c2c0ea1b58732ead0a863bf1f6e369452707e7805bc7eb8922bb6cb88d77a",
+    "docs/app.js": "312abf093af88b618e9a56b576c8f9ac437e7515b8582c331b7cc7a1c8f5da5c",
     "docs/backbones.mjs": "08ad571c4fc4c532686ddf4fef3a9aae86f265fd62a9ffcd0747c1a2113ee750",
     "docs/resize.mjs": "37855984581490fad10135439a125b29d4b2aa7e1cf498230d38a6bfeddd2879",
     "docs/assets/references-dinov2.bin": "cf8febd8ce9281ef7015d805e0b07da81e7cfe4cb2a05157a0c65e63a3c65ca5",

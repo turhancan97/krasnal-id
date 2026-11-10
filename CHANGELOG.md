@@ -10,8 +10,18 @@ rather than a build-order stage, so `0.4.0` is open-set rejection.
 
 ## [Unreleased]
 
+### Changed
+
+- The project page qualifies the pretraining and geographic comparisons and distinguishes known-query acceptance from correct identification. Its verification card now shows held-out accuracy and paired statue-bootstrap gain intervals from the stored results.
+- Wide project-page figures scroll independently on mobile and have explicit full-size links. Publication plots use larger labels; the backbone comparison reserves more space for model names and rows.
+
 ### Fixed
 
+- The identifier describes coordinate-based proximity clusters without claiming that their members form one themed installation or cannot be distinguished by location.
+- The geography figure's "(a)" tag overprinted its legend once the plot type grew. The legend is
+  now anchored at the panel's left edge, clear of the tag.
+- `video/explainer/claims.json` re-pins the `docs/app.js` hash after the identifier's wording
+  change above; the delivered film's receipt keeps the hash it was built from.
 - `RESULTS.md` reported DINOv2's phone-against-camera gap as 5.3 top-1 points; the artifact gives
   93.48% against 88.24%, which is 5.2. It also carried "131" cross-label duplicate files, which
   traces to no artifact: `data/discovery/fetch-audit.json` records 36 files (87 copies under 24

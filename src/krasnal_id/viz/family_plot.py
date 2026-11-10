@@ -81,7 +81,7 @@ PANELS: tuple[Panel, ...] = (
     Panel("points_per_doubling", "Change per\ndoubling (points)", scale=1.0, zero_line=True),
     Panel("geo_minus_random_pool_10", "Location \u2212 random,\npool 10 (points)", zero_line=True),
     Panel("photographer_attributable", "Photographer\neffect (points)", zero_line=True),
-    Panel("reject_margin_auroc", "Rejection AUROC\n(margin score)", scale=1.0),
+    Panel("reject_margin_auroc", "Margin-score\nAUROC", scale=1.0),
 )
 
 
@@ -141,8 +141,8 @@ def render_family_figure(
     laid_out = rows()
     models = [model for _, model in laid_out if model is not None]
     estimates = collect(metrics, models)
-    height = 0.115 * len(laid_out) + 0.45
-    label_share = 0.17
+    height = 0.125 * len(laid_out) + 0.45
+    label_share = 0.20
     figure = plt.figure(figsize=(width, height), layout="constrained")
     grid = figure.add_gridspec(
         1,
