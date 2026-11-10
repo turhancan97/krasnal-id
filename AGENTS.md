@@ -797,6 +797,17 @@ already on screen rather than asking for it again.
   sweep while its card quotes held-out numbers; the caption says so. Editing `RESULTS.md` changes
   the hash `video/explainer/claims.json` pins: re-pin it only after checking that the pool-size
   table the explainer parses is unchanged, and leave the delivered film's receipt alone.
+- **The verification card is a table, not a figure** (2026-11-10): held-out top-1 and paired
+  statue-interval gains for cosine, SIFT, DISK+LightGlue and LoFTR, typed to match the
+  generated macros the paper uses. `paper-matcher.png` stays a byte copy but the page no longer shows it.
+  Wide figures scroll inside their card on narrow screens and carry a full-size link. The cards
+  qualify their claims the way the paper does: the backbone comparison does not isolate the
+  pretraining objective, the layout result does not separate sculptural similarity from shared
+  backgrounds or contributors, and known acceptance includes incorrect identifications.
+- **A larger type scale can collide a legend with a panel tag, silently.** The geography figure's
+  centred legend overprinted "(a)" after the scale grew; it is now anchored left of centre with
+  tighter columns. Look at every regenerated figure, as §7.14 says. Changing `docs/app.js` also
+  changes a hash `video/explainer/claims.json` pins, like `RESULTS.md`'s above.
 - **There is one written research record.** `RESULTS.md` remains complete; the project page is
   a concise introduction rather than a second copy. `findings.html` redirects immediately to
   `index.html` with a canonical link and visible fallback. `docs/chart.js` is deleted with no
@@ -886,7 +897,9 @@ already on screen rather than asking for it again.
   its height before the library loads; map failure leaves the photograph results usable.
   Top-five placed matches have numbered markers, mustard for rank one, solid round markers
   for Wikidata and dashed squares for positions estimated from photographs. A shaded halo,
-  group count and context markers expose the existing co-location warning's group; the map
+  group count and context markers expose the existing co-location note's group (worded since
+  2026-11-10 as a mapped proximity cluster that location alone may not distinguish, with no claim
+  that its members form one themed installation); the map
   does not pretend overlapping statues are one. An opted-in, usable user fix is a local blue
   marker. Standard OpenStreetMap tiles carry visible contributor attribution. The privacy text
   explicitly distinguishes photographs and exact GPS (kept local) from tile requests, which
@@ -1642,7 +1655,8 @@ every paper figure and both retrieval sheets read from it.
   glyph and matplotlib silently substituted a wrong one.
 - **Figures are drawn at the size they print and placed unscaled.** The author kit's column is
   8.1 cm and its text block 17 cm; `save` never uses `bbox_inches="tight"`, which crops and so gets
-  rescaled by `\linewidth`. So 7 pt ticks are 7 pt on the page in every figure. The top-5 sheet
+  rescaled by `\linewidth`. So 7.5 pt ticks are 7.5 pt on the page in every figure (the scale
+  was raised by half a point on 2026-11-10: ticks and legends 7.5, labels 8, annotations 7). The top-5 sheet
   is drawn at 13.6 cm through `--width-cm` because at 17 cm it is taller than the page; a narrower
   sheet is drawn narrower, never scaled.
 - **One typeface: TeX Gyre Heros, vendored** in `viz/fonts/` under the GUST Font License, so a

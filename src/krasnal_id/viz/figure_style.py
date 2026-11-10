@@ -24,7 +24,7 @@ highlights, never for thin lines or small points.
 **Figures are drawn at the size they are printed.** The short-paper author kit's text block is
 17 cm wide with a 0.8 cm gutter, so a column is 8.1 cm and the full width 17 cm.
 A figure drawn at those widths and placed at ``\\linewidth`` is never scaled, so
-the 7 pt tick labels below really are 7 pt on the page, in every figure.
+the 7.5 pt tick labels below really are 7.5 pt on the page, in every figure.
 """
 
 from dataclasses import dataclass
@@ -75,10 +75,10 @@ WRONG = INK_MUTED  # a wrong one, always with a cross
 
 # --- type scale (points) ----------------------------------------------------
 FONT_FAMILY = "TeX Gyre Heros"
-SIZE_TICK = 7.0
-SIZE_LABEL = 7.5
-SIZE_LEGEND = 7.0
-SIZE_ANNOTATION = 6.5
+SIZE_TICK = 7.5
+SIZE_LABEL = 8.0
+SIZE_LEGEND = 7.5
+SIZE_ANNOTATION = 7.0
 SIZE_PANEL = 8.5  # the bold (a), (b) tags
 
 # --- marks ------------------------------------------------------------------

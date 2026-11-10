@@ -242,7 +242,7 @@ function renderHits(hits) {
   });
 }
 
-/** Flag the finding: a top match inside a co-located group is the hard case. */
+/** Flag proximity clusters without inferring a shared theme or exact position. */
 function renderCoLocated(hits) {
   const box = el("colocated");
   const top = hits[0]?.image.dwarf;
@@ -253,9 +253,9 @@ function renderCoLocated(hits) {
   }
   const names = new Map(meta.dwarfs.map((d) => [d.id, d.name]));
   const others = group.filter((id) => id !== top).map((id) => names.get(id));
-  el("colocated-text").innerHTML =
-    `<b>Hard case.</b> It stands with ${others.join(", ")} as one themed group, ` +
-    `and location cannot tell them apart.`;
+  el("colocated-text").textContent =
+    `Nearby statues. This match belongs to a mapped proximity cluster with ${others.join(", ")}. ` +
+    `Location alone may not distinguish them.`;
   box.hidden = false;
 }
 

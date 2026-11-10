@@ -12,7 +12,7 @@ to the paper at least as strongly as it applies to the repository.
 Every figure is drawn by `krasnal_id.viz.figure_style`: one palette in which colour
 follows the entity, one sans face (TeX Gyre Heros, vendored), one type scale, and
 widths that match the page it is printed on, so no figure is ever scaled and every
-7 pt label prints at 7 pt. A `Layout` picks those widths and which backbones a
+7.5 pt label prints at 7.5 pt. A `Layout` picks those widths and which backbones a
 figure shows; the journal draft keeps its own, unchanged.
 """
 
@@ -307,14 +307,17 @@ def dataset_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -> 
         box_r = right.get_window_extent().transformed(to_figure)
         x = (box_l.x1 + box_r.x0) / 2
         y = (box_l.y0 + box_l.y1) / 2
-        for text, offset, colour in ((above, 0.022, style.INK), (below, -0.022, style.INK_MUTED)):
+        for text, offset, colour in (
+            (above, 0.022, style.INK),
+            (below, -0.022, style.INK_SECONDARY),
+        ):
             figure.text(
                 x,
                 y + offset,
                 text,
                 ha="center",
                 va="bottom" if offset > 0 else "top",
-                fontsize=style.SIZE_ANNOTATION - 0.5,
+                fontsize=style.SIZE_ANNOTATION,
                 color=colour,
                 in_layout=False,
             )
@@ -444,7 +447,7 @@ def _confused_pairs_panel(
             # truncation drops (Solne, Oławskie), and one line overflows a thumbnail.
             cell.set_xlabel(
                 "\n".join(textwrap.wrap(name, 13)),
-                fontsize=style.SIZE_ANNOTATION - 0.5,
+                fontsize=style.SIZE_ANNOTATION,
                 color=style.INK_SECONDARY,
                 labelpad=1.5,
             )
@@ -537,7 +540,7 @@ def _placement_panel(panel: Any, sources: Sources, manifest: DatasetManifest) ->
             ),
         ],
         loc="lower right",
-        fontsize=style.SIZE_ANNOTATION - 0.5,
+        fontsize=style.SIZE_ANNOTATION,
         frameon=False,
         handletextpad=0.2,
         borderaxespad=0.1,
@@ -585,7 +588,7 @@ def _placement_panel(panel: Any, sources: Sources, manifest: DatasetManifest) ->
         "\n".join(f"{radius:.0f} m \N{RIGHTWARDS ARROW} {pool} statues" for pool, radius in radii),
         transform=axes.transAxes,
         va="top",
-        fontsize=style.SIZE_ANNOTATION - 0.5,
+        fontsize=style.SIZE_ANNOTATION,
         color=style.INK,
         bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.8, "alpha": 0.85},
     )
@@ -667,7 +670,7 @@ def _photographer_panel(panel: Any, manifest: DatasetManifest) -> None:
         transform=axes.transAxes,
         ha="right",
         va="top",
-        fontsize=style.SIZE_ANNOTATION - 0.5,
+        fontsize=style.SIZE_ANNOTATION,
         color=style.INK_MUTED,
     )
     _subfigure_tag(panel, "c")
@@ -752,7 +755,15 @@ def geography_figure(sources: Sources, output: Path, layout: Layout = JOURNAL) -
     left.set_ylabel(style.minus("Geographic - random (points)"))
     # Above the plot: the three curves cross the whole plotting area between them,
     # so no corner inside it is clear of a line.
-    left.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(present_geo))
+    # Anchored at the left edge, clear of the (a) tag, which the centred legend overprinted
+    # once the type scale grew; tighter columns keep four entries inside the panel.
+    left.legend(
+        loc="lower left",
+        bbox_to_anchor=(0.03, 1.0),
+        ncol=len(present_geo),
+        columnspacing=1.0,
+        handlelength=1.6,
+    )
     style.panel_tag(left, "a")
 
     enriched = _measured(sources, layout, "confusion-{backbone}")
