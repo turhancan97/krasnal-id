@@ -39,7 +39,7 @@ your own browser.
    14% of DINOv2's errors fall within a lookalike family defined by the other backbones, and family
    members err no more often than other statues (section 16).
 6. **Phone photographs are measurably harder queries.** Using the 51 references that were
-   themselves shot on phones, DINOv2 loses 5.3 top-1 points and CLIP 15.6 against camera-shot
+   themselves shot on phones, DINOv2 loses 5.2 top-1 points and CLIP 15.6 against camera-shot
    queries — and not because they belong to easier or harder classes. It is a lower bound, since
    these are still Commons uploads.
 7. **Open-set rejection does not survive the larger pool, and geometry does not rescue it.**
@@ -108,8 +108,8 @@ Three details matter more than the headline count:
 
 - **Attribution is a first-class field.** Every stored image carries its source URL, author,
   licence and licence URL. Nothing enters the manifest without them.
-- **Cross-label duplicates are excluded.** 131 Commons files were byte-identical across
-  *different* dwarf labels, mostly where a group category and its member categories hold the same
+- **Cross-label duplicates are excluded.** 36 Commons files were byte-identical across
+  *different* dwarf labels (87 copies under 24 labels, per `data/discovery/fetch-audit.json`), mostly where a group category and its member categories hold the same
   photographs. Admitting them would leak the answer into the reference set, so they are dropped —
   even where that empties a class, as it does for three robbers photographed in a single scene.
 - **Evaluation is leave-one-out.** Each of the 1,691 images is queried once against the other
@@ -383,11 +383,11 @@ against the same reference set.
 
 | | phone (51 queries) | camera (1,565) | gap |
 |---|---|---|---|
-| DINOv2 top-1 | 88.2% [76.6, 94.5] | 93.5% [92.2, 94.6] | **−5.3** |
+| DINOv2 top-1 | 88.2% [76.6, 94.5] | 93.5% [92.2, 94.6] | **−5.2** |
 | CLIP top-1 | 68.6% [55.0, 79.7] | 84.2% [82.3, 85.9] | **−15.6** |
 
 **Phone-originated photographs are harder queries, and dramatically so for CLIP.** Its intervals do
-not overlap. DINOv2's 5.3-point gap points the same way but with 51 queries it is not
+not overlap. DINOv2's 5.2-point gap points the same way but with 51 queries it is not
 statistically distinguishable from noise — the honest reading is "consistent with a real gap,
 too few queries to prove one".
 
@@ -406,7 +406,7 @@ chosen, often composed, taken by someone who meant to document the statue. A rea
 angle, passers-by, whatever light was available — is a harder query than anything measured here.
 What this establishes is that the domain gap is real and that CLIP suffers it far worse. The
 published demo ran CLIP when this was written and was therefore the version most exposed to it.
-It now runs DINOv2 by default, so the gap a visitor meets is the 5.3-point one rather than the
+It now runs DINOv2 by default, so the gap a visitor meets is the 5.2-point one rather than the
 15.6-point one — and since the page can still be switched to CLIP, the 15.6-point one is
 reproducible on the same photograph.
 
@@ -998,7 +998,7 @@ unseen-photographer queries (`results/dinov3/rerank_validation/`): cosine 85.2%,
 [0.3, 2.5]). The first addition in this project that does not fade on a stronger representation.
 
 **Camera-origin gap on all four main backbones** (`camera_gap-*.json`): phone-shot references score
-below camera-shot ones by 4.6 top-1 points for DINOv3, 5.0 for SigLIP 2, 5.3 for DINOv2 and 15.6
+below camera-shot ones by 4.6 top-1 points for DINOv3, 5.0 for SigLIP 2, 5.2 for DINOv2 and 15.6
 for CLIP. A lower bound on the street gap, from 51 photographs.
 
 ## 18. Internal reviews: sensitivity, scarcity and a multi-vector baseline

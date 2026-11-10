@@ -319,6 +319,7 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
   color:var(--ink-2); border:1px solid var(--rule); border-radius:10px; box-shadow:var(--shadow)}
 .result-card .card-content{padding:1.6rem 1.8rem}
 .result-card .figure-link{border-radius:0}
+.project-page .result-card figcaption{padding:0 1.8rem 1.4rem; margin:0; max-width:none; font-size:.85rem}
 .results-note{font-size:.88rem; color:var(--ink-2); margin-top:1.8rem}
 .dataset-facts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem;
   margin:1.8rem 0 2rem; padding-bottom:1.8rem; border-bottom:1px solid var(--rule)}
@@ -351,6 +352,7 @@ footer .repo{font-family:"IBM Plex Mono",monospace; font-size:.81rem}
   .project-page .publication-links{gap:.5rem}
   .project-page .publication-links .button{font-size:.84rem; padding:.5rem .85rem}
   .result-card .card-content{padding:1.25rem}
+  .project-page .result-card figcaption{padding:0 1.25rem 1.1rem}
   .project-page .title.is-3{font-size:1.6rem}
   .project-page .title.is-4{font-size:1.25rem}
   .dataset-facts{gap:.7rem}
